@@ -1,5 +1,9 @@
 import LoginFormComponent from "@/components/Auth/Login";
-import HomeComponent from "@/pages/Home";
+import { CenterFeed } from "@/components/CenterFeed";
+import HomeLayout from "@/layouts/HomeLayout";
+import Friends from "@/pages/Friends";
+import Message from "@/pages/Message";
+import Profile from "@/pages/Profile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function AppRoutes() {
@@ -8,17 +12,12 @@ function AppRoutes() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginFormComponent />} />
-          <Route path="/home" element={<HomeComponent />} />
-          {/* <Route path="/signin" element={<Signin />} />
-          <Route path="/reset" element={<Reset />} />
-          <Route path="/reset-password" element={<ResetPassword />} /> */}
-
-          {/* <Route element={<ProtectedRoute />}>
-            <Route element={<ProtectedLayout />}>
-              <Route path="/home" element={<Home />} />
-            </Route>
-          </Route> */}
-          {/* <Route path="*" element={<ErrorPage />} /> */}
+          <Route element={<HomeLayout />}>
+            <Route path="/home" element={<CenterFeed />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/messages" element={<Message />} />
+          </Route>
         </Routes>
       </Router>
     </div>
