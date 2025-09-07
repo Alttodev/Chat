@@ -1,13 +1,4 @@
-import {
-  Search,
-  Bell,
-  MessageCircle,
-  Users,
-  Home,
-  Menu,
-  User,
-  LogOut,
-} from "lucide-react";
+import { Search, Bell, MessageCircle, Users, Home, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,17 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Link, useNavigate } from "react-router-dom";
-import ClixLogo from "@/lib/logo";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { Link } from "react-router-dom";
 
 export function SocialHeader() {
   const menuItems = [
@@ -37,17 +18,6 @@ export function SocialHeader() {
     { icon: MessageCircle, label: "Chat", path: "/messages" },
   ];
 
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    try {
-      navigate("/");
-      toastSuccess("Logout successful!");
-    } catch (error) {
-      toastError(error, "Failed to logout");
-    }
-  };
-
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-sm">
       <div className="flex items-center justify-between px-4 py-2 max-w-full">
@@ -55,7 +25,11 @@ export function SocialHeader() {
         <div className="flex items-center gap-3 flex-2 sm:flex-1">
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-2">
-            <ClixLogo size={30} />
+            <img
+              src="/src/assets/logo.png"
+              alt="Clix Logo"
+              className="w-10 h-10"
+            />
             <span className="hidden sm:block text-xl md:text-2xl font-bold text-emerald-600">
               Clix
             </span>
@@ -95,47 +69,11 @@ export function SocialHeader() {
             <Bell className="w-5 h-5" />
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className="text-emerald-600 font-semibold">
-                    JD
-                  </AvatarFallback>
-                </Avatar>
-                <span className="sr-only">Toggle user menu</span>
-              </span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-full mt-2 border-slate-200 shadow-lg"
-              sideOffset={8}
-            >
-              <DropdownMenuLabel className="text-slate-700 font-semibold">
-                My Account
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-slate-200" />
-
-              <DropdownMenuItem className="group hover:bg-emerald-50 focus:bg-emerald-50 transition-colors duration-200">
-                <User className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
-                <span className="text-slate-700 group-hover:text-emerald-700 font-medium">
-                  JD@gmail.com
-                </span>
-              </DropdownMenuItem>
-
-              <DropdownMenuSeparator className="bg-slate-200" />
-
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="group cursor-pointer hover:bg-red-50 focus:bg-red-50 transition-colors duration-200"
-              >
-                <LogOut className="mr-1 h-4 w-4 text-slate-500 group-hover:text-red-600 transition-colors duration-200" />
-                <span className="text-slate-700 group-hover:text-red-700 font-medium">
-                  Logout
-                </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Avatar className="w-8 h-8">
+            <AvatarFallback className="text-emerald-600 font-semibold">
+              JD
+            </AvatarFallback>
+          </Avatar>
 
           {/* Mobile Menu Drawer */}
           <Sheet>
@@ -151,7 +89,11 @@ export function SocialHeader() {
             <SheetContent side="right" className="w-64">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <ClixLogo size={28} />
+                  <img
+                    src="/src/assets/logo.png"
+                    alt="Clix Logo"
+                    className="w-10 h-10"
+                  />
                   <span className="text-lg font-bold text-emerald-600">
                     Clix
                   </span>

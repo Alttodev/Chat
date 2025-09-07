@@ -50,12 +50,12 @@ export function CenterFeed() {
   ];
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-2 sm:px-4 space-y-6">
+    <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 space-y-6">
       {/* Create Post */}
       <Card>
         <CardContent className="p-4">
           <div className="flex gap-3">
-            <Avatar className="w-10 h-10">
+            <Avatar className="w-10 h-10 text-emerald-600">
               <AvatarImage src="/placeholder.svg?height=40&width=40" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
@@ -67,23 +67,15 @@ export function CenterFeed() {
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0 mt-3">
                 <div className="flex gap-2">
                   <Button
-                    variant="ghost"
                     size="sm"
-                    className="text-muted-foreground text-xs sm:text-sm"
+                    className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer text-xs sm:text-sm"
                   >
                     Photo/Video
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground text-xs sm:text-sm"
-                  >
-                    Feeling/Activity
                   </Button>
                 </div>
                 <Button
                   size="sm"
-                  className="bg-primary hover:bg-primary/90 text-xs sm:text-sm"
+                  className="bg-emerald-600 hover:bg-emerald-600 cursor-pointer text-xs sm:text-sm"
                 >
                   Post
                 </Button>
@@ -99,7 +91,7 @@ export function CenterFeed() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10">
+                <Avatar className="w-10 h-10 text-emerald-600">
                   <AvatarImage src={post.avatar || "/placeholder.svg"} />
                   <AvatarFallback>
                     {post.author
@@ -152,7 +144,7 @@ export function CenterFeed() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-accent hover:bg-accent/10"
+                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
                 <ThumbsUp className="w-4 h-4 mr-1" />
                 Like
@@ -160,7 +152,7 @@ export function CenterFeed() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10"
+                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 mr-1" />
                 Comment
@@ -168,7 +160,7 @@ export function CenterFeed() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10"
+                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
                 <Share className="w-4 h-4 mr-1" />
                 Share

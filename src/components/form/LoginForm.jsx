@@ -7,7 +7,6 @@ import { PasswordInput } from "../form_inputs/PasswordInput";
 import { loginSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
-import ClixLogo from "@/lib/logo";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -39,7 +38,11 @@ const LoginForm = () => {
       <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
-          <ClixLogo size={44} />
+          <img
+            src="/src/assets/logo.png"
+            alt="Clix Logo"
+            className="w-12 h-12"
+          />
         </div>
 
         {/* Heading */}

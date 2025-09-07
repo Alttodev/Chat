@@ -60,7 +60,7 @@ export function RightSidebar() {
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <Avatar className="w-10 h-10">
+                  <Avatar className="w-10 h-10 text-emerald-600">
                     <AvatarImage src={friend.avatar || "/placeholder.svg"} />
                     <AvatarFallback>
                       {friend.name
@@ -76,7 +76,7 @@ export function RightSidebar() {
                     </p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="h-8">
+                <Button size="sm" variant="outline" className="h-8 cursor-pointer">
                   <UserPlus className="w-4 h-4" />
                 </Button>
               </div>
@@ -89,7 +89,7 @@ export function RightSidebar() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Contacts</CardTitle>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="cursor-pointer">
                 <MoreHorizontal className="w-4 h-4" />
               </Button>
             </div>
@@ -101,7 +101,7 @@ export function RightSidebar() {
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer"
               >
                 <div className="relative">
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-8 h-8 text-emerald-600">
                     <AvatarImage src={contact.avatar || "/placeholder.svg"} />
                     <AvatarFallback className="text-xs">
                       {contact.name
