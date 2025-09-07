@@ -8,7 +8,7 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "@/components/ui/sheet"; 
 import { Link } from "react-router-dom";
 
 export function SocialHeader() {
