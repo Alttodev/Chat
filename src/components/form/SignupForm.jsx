@@ -1,14 +1,15 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
-import TextInput from "../form_inputs/TextInput";
-import { PasswordInput } from "../form_inputs/PasswordInput";
-import { loginSchema } from "@/lib/validation";
-import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 
-const LoginForm = () => {
+import { Link, useNavigate } from "react-router-dom";
+import { loginSchema } from "../../lib/validation";
+import { toastError, toastSuccess } from "../../lib/toast";
+import { PasswordInput } from "../form_inputs/PasswordInput";
+import TextInput from "../form_inputs/TextInput";
+
+const SignupForm = () => {
   const navigate = useNavigate();
 
   const {
@@ -26,8 +27,8 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     try {
       console.log(data);
-      toastSuccess("Login successful");
-      navigate("/customer/create");
+      toastSuccess("Signup successful");
+      navigate("/");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -47,12 +48,7 @@ const LoginForm = () => {
 
         {/* Heading */}
         <div className="text-center mb-5">
-          <p className="text-xl font-bold text-gray-800">
-            Welcome to <span className="text-emerald-600">Clix</span>
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            Connect, share, and explore
-          </p>
+          <p className="text-xl font-bold text-emerald-600">Signup</p>
         </div>
 
         {/* Form */}
@@ -105,23 +101,21 @@ const LoginForm = () => {
             disabled={isSubmitting}
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? "Sigining up..." : "Sign up"}
           </Button>
         </form>
 
-        {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-emerald-600 font-medium hover:underline"
-          >
-            Sign up
-          </Link>
+        <div className="flex justify-between mt-6">
+          <div className="text-sm text-gray-600">
+            Back to &nbsp;
+            <Link to="/" className="text-emerald-600">
+              Login
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default SignupForm;

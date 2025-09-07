@@ -19,3 +19,19 @@ export const loginSchema = z.object({
       "Password must contain at least one special character (e.g., !@#$%^&*)"
     ),
 });
+
+export const resetSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: "Email is required." })
+    .email("Please enter a valid email."),
+});
+
+export const customerSchema = z.object({
+  username: z.string().min(1, { message: "Customer Name is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required." })
+    .email("Please enter a valid email."),
+  address: z.string().min(1, { message: "Address is required" }),
+});

@@ -3,12 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import TextInput from "../form_inputs/TextInput";
-import { PasswordInput } from "../form_inputs/PasswordInput";
-import { loginSchema } from "@/lib/validation";
+import { customerSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 
-const LoginForm = () => {
+const CustomerCreateForm = () => {
   const navigate = useNavigate();
 
   const {
@@ -16,18 +15,19 @@ const LoginForm = () => {
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(customerSchema),
     defaultValues: {
+      username: "",
+      address: "",
       email: "",
-      password: "",
     },
   });
 
   const onSubmit = async (data) => {
     try {
       console.log(data);
-      toastSuccess("Login successful");
-      navigate("/customer/create");
+      toastSuccess("Customer created successfully");
+      navigate("/home");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -47,16 +47,23 @@ const LoginForm = () => {
 
         {/* Heading */}
         <div className="text-center mb-5">
-          <p className="text-xl font-bold text-gray-800">
-            Welcome to <span className="text-emerald-600">Clix</span>
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            Connect, share, and explore
-          </p>
+          <p className="text-xl font-bold text-emerald-600">Customer Create</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <div className="flex flex-col gap-1 ">
+            <label className="text-[15px]">Name</label>
+            <TextInput
+              name="username"
+              control={control}
+              placeholder="Name"
+              disabled={isSubmitting}
+            />
+            {errors.username?.message && (
+              <p className="text-red-500 text-sm">{errors.username?.message}</p>
+            )}
+          </div>
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
               Email
@@ -74,54 +81,31 @@ const LoginForm = () => {
             )}
           </div>
 
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <PasswordInput
-              name="password"
+          <div className="flex flex-col gap-1 mt-2">
+            <label className="text-[15px]">Address</label>
+            <TextInput
+              name="address"
               control={control}
-              placeholder="Enter your password"
+              placeholder="Address"
               disabled={isSubmitting}
             />
-            {errors.password?.message && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password?.message}
-              </p>
+            {errors.address?.message && (
+              <p className="text-red-500 text-sm">{errors.address?.message}</p>
             )}
           </div>
-
-          <div className="flex justify-end">
-            <Link
-              to="/reset"
-              className="text-sm text-emerald-600 hover:underline"
+          <div className="mb-3">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
             >
-              Forgot Password?
-            </Link>
+              Create
+            </Button>
           </div>
-
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
-          >
-            {isSubmitting ? "Logging in..." : "Login"}
-          </Button>
         </form>
-
-        {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-emerald-600 font-medium hover:underline"
-          >
-            Sign up
-          </Link>
-        </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default CustomerCreateForm;

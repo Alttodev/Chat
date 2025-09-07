@@ -80,7 +80,7 @@ export default function Message() {
   const [showChat, setShowChat] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Scroll bottom
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);

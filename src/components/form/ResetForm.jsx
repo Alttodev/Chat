@@ -1,33 +1,30 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
-import TextInput from "../form_inputs/TextInput";
-import { PasswordInput } from "../form_inputs/PasswordInput";
-import { loginSchema } from "@/lib/validation";
-import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
+import { Link, useNavigate } from "react-router-dom";
+import { resetSchema } from "../../lib/validation";
+import { toastError, toastSuccess } from "../../lib/toast";
+import TextInput from "../form_inputs/TextInput";
 
-const LoginForm = () => {
+const ResetForm = () => {
   const navigate = useNavigate();
-
   const {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(resetSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
   const onSubmit = async (data) => {
     try {
       console.log(data);
-      toastSuccess("Login successful");
-      navigate("/customer/create");
+      navigate("/");
+      toastSuccess("Reset link sent to your email");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -47,12 +44,7 @@ const LoginForm = () => {
 
         {/* Heading */}
         <div className="text-center mb-5">
-          <p className="text-xl font-bold text-gray-800">
-            Welcome to <span className="text-emerald-600">Clix</span>
-          </p>
-          <p className="text-sm text-gray-500 mt-1">
-            Connect, share, and explore
-          </p>
+          <p className="text-xl font-bold text-emerald-600">Reset Password</p>
         </div>
 
         {/* Form */}
@@ -74,54 +66,26 @@ const LoginForm = () => {
             )}
           </div>
 
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <PasswordInput
-              name="password"
-              control={control}
-              placeholder="Enter your password"
-              disabled={isSubmitting}
-            />
-            {errors.password?.message && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password?.message}
-              </p>
-            )}
-          </div>
-
-          <div className="flex justify-end">
-            <Link
-              to="/reset"
-              className="text-sm text-emerald-600 hover:underline"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-
           <Button
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? "Submitting..." : "Submit"}
           </Button>
         </form>
 
-        {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="text-emerald-600 font-medium hover:underline"
-          >
-            Sign up
-          </Link>
+        <div className="flex justify-between mt-6">
+          <div className="text-sm text-gray-600">
+            Back to &nbsp;
+            <Link to="/" className="text-emerald-600">
+              Login
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default ResetForm;
