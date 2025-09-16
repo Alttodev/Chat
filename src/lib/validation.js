@@ -17,7 +17,8 @@ export const loginSchema = z.object({
     .regex(
       /[^a-zA-Z0-9]/,
       "Password must contain at least one special character (e.g., !@#$%^&*)"
-    ),
+  ),
+   captcha: z.string().nonempty("Please complete the captcha"),
 });
 
 export const resetSchema = z.object({

@@ -7,21 +7,29 @@ import { PasswordInput } from "../form_inputs/PasswordInput";
 import { loginSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const LoginForm = () => {
+  const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
 
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
+      captcha: "",
     },
   });
+
+  const handleCaptchaChange = (token) => {
+    setValue("captcha", token || "", { shouldValidate: true });
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -88,6 +96,15 @@ const LoginForm = () => {
               <p className="text-red-500 text-sm mt-1">
                 {errors.password?.message}
               </p>
+            )}
+          </div>
+          <div>
+            <ReCAPTCHA
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={handleCaptchaChange}
+            />
+            {errors.captcha && (
+              <p className="text-red-500 text-sm">{errors.captcha.message}</p>
             )}
           </div>
 
