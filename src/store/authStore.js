@@ -6,8 +6,11 @@ export const useAuthStore = create()(
     (set) => ({
       token: null,
       user: null,
+      isEditing: false,
       setToken: (token) => set({ token }),
       setUser: (user) => set({ user }),
+      openEditing: () => set({ isEditing: true }),
+      closeEditing:() => set({ isEditing: false }),
       clearToken: () => set({ token: null }),
     }),
     {

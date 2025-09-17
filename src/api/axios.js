@@ -26,13 +26,19 @@ export const userReset = async (formData) => {
 export const userResetPassword = async ({ id, token, password }) => {
   const { data } = await axiosInstance.post(
     `/auth/resetpassword/${id}/${token}`,
-    { password } 
+    { password }
   );
   return data;
 };
 
-
 export const getProfile = async () => {
   const { data } = await axiosInstance.get(`/profile/me`);
+  return data;
+};
+
+//update
+
+export const userUpdate = async (formData) => {
+  const { data } = await axiosInstance.put(`/profile/update`, formData);
   return data;
 };

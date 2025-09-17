@@ -7,9 +7,12 @@ import { userSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { useUserCreate } from "@/hooks/authHooks";
+import { useAuthStore } from "@/store/authStore";
+import { getProfile } from "@/api/axios";
 
 const ProfileCreateForm = () => {
   const navigate = useNavigate();
+  const { setProfile } = useAuthStore();
   const { mutateAsync: userCreate } = useUserCreate();
   const {
     handleSubmit,
@@ -27,6 +30,8 @@ const ProfileCreateForm = () => {
   const onSubmit = async (data) => {
     try {
       const res = await userCreate(data);
+      const response = await getProfile();
+      setProfile(response);
       toastSuccess(res?.message);
       navigate("/home");
     } catch (error) {

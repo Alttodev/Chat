@@ -10,25 +10,49 @@ import TextInput from "../form_inputs/TextInput";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { loginSchema } from "@/lib/validation";
+import { userSchema } from "@/lib/validation";
+import { useUserUpdate } from "@/hooks/authHooks";
+import { useEffect } from "react";
+import { Button } from "../ui/button";
 
-export function PersonalInfoForm({ profileData, setProfileData, isEditing }) {
-  const { handleSubmit, control } = useForm({
-    resolver: zodResolver(loginSchema),
+export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
+  const { mutateAsync: userUpdate } = useUserUpdate();
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       email: "",
       password: "",
+      address: "",
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      toastSuccess("Login successful");
+      const res = await userUpdate(data);
+
+      toastSuccess(res?.message);
+      closeEditing(false);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
   };
+
+  useEffect(() => {
+    if (userProfile) {
+      reset({
+        userName: userProfile?.profile?.userName || "",
+        address: userProfile?.profile?.address || "",
+        email: userProfile?.profile?.email || "",
+      });
+    }
+  }, [userProfile, reset]);
+
   return (
     <Card className="border-border shadow-sm">
       <CardHeader>
@@ -49,15 +73,16 @@ export function PersonalInfoForm({ profileData, setProfileData, isEditing }) {
                 Full Name
               </label>
               <TextInput
-                name="name"
+                name="userName"
                 control={control}
-                value={profileData.name}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, name: e.target.value })
-                }
                 disabled={!isEditing}
                 className="bg-card"
               />
+              {errors.userName?.message && (
+                <p className="text-red-500 text-sm">
+                  {errors.userName?.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -69,13 +94,14 @@ export function PersonalInfoForm({ profileData, setProfileData, isEditing }) {
                 name="email"
                 type="email"
                 control={control}
-                value={profileData.email}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, email: e.target.value })
-                }
                 disabled={!isEditing}
                 className="bg-card"
               />
+              {errors.email?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email?.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -86,14 +112,26 @@ export function PersonalInfoForm({ profileData, setProfileData, isEditing }) {
               <TextInput
                 name="address"
                 control={control}
-                value={profileData.address}
-                onChange={(e) =>
-                  setProfileData({ ...profileData, address: e.target.value })
-                }
                 disabled={!isEditing}
                 className="bg-card"
               />
+              {errors.address?.message && (
+                <p className="text-red-500 text-sm">
+                  {errors.address?.message}
+                </p>
+              )}
             </div>
+            {isEditing ? (
+              <div>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+                >
+                  {isSubmitting ? "Save..." : "Save"}
+                </Button>
+              </div>
+            ) : null}
           </form>
         </div>
       </CardContent>

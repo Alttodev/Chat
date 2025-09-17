@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +13,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  User,
   Bell,
   Shield,
   Edit3,
@@ -26,15 +25,14 @@ import {
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { useAuthStore } from "@/store/authStore";
+import { useUserDetail } from "@/hooks/authHooks";
 
 function Profile() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    address: "123 Main St, San Francisco, CA 94102",
-    bio: "Coffee Lover ☕ | Tech Enthusiast 💻 | Traveler ✈️   | Nature Explorer 🌲 ",
-  });
+  const { clearToken, isEditing, openEditing, closeEditing } = useAuthStore();
+
+  const { data: profileData } = useUserDetail();
+  const userProfile = useMemo(() => profileData, [profileData]);
 
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -44,7 +42,6 @@ function Profile() {
   });
 
   const recentActivity = [
-    { action: "Updated profile picture", time: "2 hours ago", type: "profile" },
     { action: "Changed password", time: "1 day ago", type: "security" },
 
     {
@@ -55,13 +52,14 @@ function Profile() {
   ];
 
   const handleSave = () => {
-    setIsEditing(false);
+    openEditing(false);
   };
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
     try {
+      clearToken();
       navigate("/");
       toastSuccess("Logout successful!");
     } catch (error) {
@@ -79,10 +77,8 @@ function Profile() {
               <Avatar className="h-24 w-24 shadow-lg">
                 <AvatarImage src="/professional-headshot.png" alt="Profile" />
                 <AvatarFallback className="text-2xl font-semibold bg-emerald-600 text-white">
-                  {profileData.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
+                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
+                    "-"}
                 </AvatarFallback>
               </Avatar>
             </div>
@@ -91,45 +87,23 @@ function Profile() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-balance">
-                    {profileData.name}
+                    {userProfile?.profile?.userName}
                   </h1>
-                  <p className="text-muted-foreground">{profileData.email}</p>
-                  <p className="text-muted-foreground">{profileData.address}</p>
+                  <p className="text-muted-foreground">
+                    {userProfile?.profile?.email}
+                  </p>
+                  <p className="text-muted-foreground">
+                    {userProfile?.profile?.address}
+                  </p>
                 </div>
                 <Button
                   className="bg-emerald-600 hover:bg-emerald-700 text-white w-fit cursor-pointer"
-                  onClick={() =>
-                    isEditing ? handleSave() : setIsEditing(true)
-                  }
+                  onClick={() => (isEditing ? handleSave() : openEditing(true))}
                 >
-                  {isEditing ? (
-                    <>
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Changes
-                    </>
-                  ) : (
-                    <>
-                      <Edit3 className="mr-2 h-4 w-4" />
-                      Edit Profile
-                    </>
-                  )}
+                  <Edit3 className="mr-2 h-4 w-4" />
+                  Edit Profile
                 </Button>
               </div>
-
-              {isEditing ? (
-                <Textarea
-                  value={profileData.bio}
-                  onChange={(e) =>
-                    setProfileData({ ...profileData, bio: e.target.value })
-                  }
-                  placeholder="Tell us about yourself..."
-                  className="mt-2"
-                />
-              ) : (
-                <p className="text-muted-foreground text-pretty max-w-2xl">
-                  {profileData.bio}
-                </p>
-              )}
             </div>
           </div>
         </CardContent>
@@ -139,9 +113,9 @@ function Profile() {
         {/* Personal Information */}
         <div className="space-y-6">
           <PersonalInfoForm
-            profileData={profileData}
-            setProfileData={setProfileData}
+            userProfile={userProfile}
             isEditing={isEditing}
+            closeEditing={closeEditing}
           />
 
           {/* Settings Section */}
@@ -218,9 +192,6 @@ function Profile() {
                     className="flex items-start gap-3 p-3 rounded-lg bg-muted/50"
                   >
                     <div className="mt-0.5">
-                      {activity.type === "profile" && (
-                        <User className="h-4 w-4 text-primary" />
-                      )}
                       {activity.type === "security" && (
                         <Shield className="h-4 w-4 text-primary" />
                       )}

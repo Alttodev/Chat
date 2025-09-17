@@ -16,7 +16,7 @@ const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
   const { mutateAsync: userLogin } = useUserLogin();
-  const { setToken, setUser } = useAuthStore();
+  const { setToken, setUser} = useAuthStore();
 
   const {
     handleSubmit,

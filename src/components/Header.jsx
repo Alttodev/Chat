@@ -8,10 +8,15 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"; 
+} from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
+import { useUserDetail } from "@/hooks/authHooks";
+import { useMemo } from "react";
 
 export function SocialHeader() {
+  const { data: profileData } = useUserDetail();
+   const userProfile = useMemo(() => profileData, [profileData]);
+
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
     { icon: Users, label: "Friends", path: "/friends" },
@@ -71,7 +76,7 @@ export function SocialHeader() {
 
           <Avatar className="w-8 h-8">
             <AvatarFallback className="text-emerald-600 font-semibold">
-              JD
+              {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
             </AvatarFallback>
           </Avatar>
 
