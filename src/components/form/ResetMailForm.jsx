@@ -2,29 +2,39 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { resetSchema } from "../../lib/validation";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { resetMailSchema } from "../../lib/validation";
 import { toastError, toastSuccess } from "../../lib/toast";
-import TextInput from "../form_inputs/TextInput";
-import { useUserReset } from "@/hooks/authHooks";
+import { PasswordInput } from "../form_inputs/PasswordInput";
+import { useUserResetPassword } from "@/hooks/authHooks";
 
-const ResetForm = () => {
+const ResetMailForm = () => {
   const navigate = useNavigate();
-  const { mutateAsync: userReset } = useUserReset();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const id = searchParams.get("id");
+  const token = searchParams.get("token");
+
+  const { mutateAsync: userReset } = useUserResetPassword();
   const {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(resetSchema),
+    resolver: zodResolver(resetMailSchema),
     defaultValues: {
-      email: "",
+      password: "",
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      const res = await userReset(data);
+      const res = await userReset({
+        id,
+        token,
+        password: data.password,
+      });
       navigate("/");
       toastSuccess(res?.message);
     } catch (error) {
@@ -46,24 +56,24 @@ const ResetForm = () => {
 
         {/* Heading */}
         <div className="text-center mb-5">
-          <p className="text-xl font-bold text-emerald-600">Reset</p>
+          <p className="text-xl font-bold text-emerald-600">Reset Password</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Email
+              Password
             </label>
-            <TextInput
-              name="email"
+            <PasswordInput
+              name="password"
               control={control}
-              placeholder="Enter your email"
+              placeholder="Enter your password"
               disabled={isSubmitting}
             />
-            {errors.email?.message && (
+            {errors.password?.message && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.email?.message}
+                {errors.password?.message}
               </p>
             )}
           </div>
@@ -90,4 +100,4 @@ const ResetForm = () => {
   );
 };
 
-export default ResetForm;
+export default ResetMailForm;

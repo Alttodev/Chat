@@ -1,23 +1,24 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TextInput from "../form_inputs/TextInput";
-import { customerSchema } from "@/lib/validation";
+import { userSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
+import { useUserCreate } from "@/hooks/authHooks";
 
-const CustomerCreateForm = () => {
+const ProfileCreateForm = () => {
   const navigate = useNavigate();
-
+  const { mutateAsync: userCreate } = useUserCreate();
   const {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(customerSchema),
+    resolver: zodResolver(userSchema),
     defaultValues: {
-      username: "",
+      userName: "",
       address: "",
       email: "",
     },
@@ -25,8 +26,8 @@ const CustomerCreateForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      toastSuccess("Customer created successfully");
+      const res = await userCreate(data);
+      toastSuccess(res?.message);
       navigate("/home");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
@@ -47,7 +48,7 @@ const CustomerCreateForm = () => {
 
         {/* Heading */}
         <div className="text-center mb-5">
-          <p className="text-xl font-bold text-emerald-600">Customer Create</p>
+          <p className="text-xl font-bold text-emerald-600">Profile Create</p>
         </div>
 
         {/* Form */}
@@ -55,13 +56,13 @@ const CustomerCreateForm = () => {
           <div className="flex flex-col gap-1 ">
             <label className="text-[15px]">Name</label>
             <TextInput
-              name="username"
+              name="userName"
               control={control}
               placeholder="Name"
               disabled={isSubmitting}
             />
-            {errors.username?.message && (
-              <p className="text-red-500 text-sm">{errors.username?.message}</p>
+            {errors.userName?.message && (
+              <p className="text-red-500 text-sm">{errors.userName?.message}</p>
             )}
           </div>
           <div>
@@ -108,4 +109,4 @@ const CustomerCreateForm = () => {
   );
 };
 
-export default CustomerCreateForm;
+export default ProfileCreateForm;

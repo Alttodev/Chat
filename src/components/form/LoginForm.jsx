@@ -8,12 +8,15 @@ import { loginSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import ReCAPTCHA from "react-google-recaptcha";
-// import { useAuthStore } from "@/store/authStore";
+import { useUserLogin } from "@/hooks/authHooks";
+import { useAuthStore } from "@/store/authStore";
+import { getProfile } from "@/api/axios";
 
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
-  // const { setToken, setUser } = useAuthStore();
+  const { mutateAsync: userLogin } = useUserLogin();
+  const { setToken, setUser } = useAuthStore();
 
   const {
     handleSubmit,
@@ -35,11 +38,18 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      toastSuccess("Login successful");
-      navigate("/customer/create");
+      const res = await userLogin(data);
+      setToken(res?.token);
+      setUser(res?.user);
+      toastSuccess(res?.message);
+      await getProfile();
+      navigate("/home");
     } catch (error) {
-      toastError(error?.response?.data?.message || "Something went wrong");
+      if (error?.response?.data?.message === "Profile not found") {
+        navigate("/profile/create");
+      } else {
+        toastError(error?.response?.data?.message || "Something went wrong");
+      }
     }
   };
 

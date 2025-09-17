@@ -3,20 +3,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { loginSchema } from "../../lib/validation";
+import { signupSchema } from "../../lib/validation";
 import { toastError, toastSuccess } from "../../lib/toast";
 import { PasswordInput } from "../form_inputs/PasswordInput";
 import TextInput from "../form_inputs/TextInput";
+import { useUserSignup } from "@/hooks/authHooks";
 
 const SignupForm = () => {
   const navigate = useNavigate();
-
+  const { mutateAsync: userCreate } = useUserSignup();
   const {
     handleSubmit,
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -25,8 +26,8 @@ const SignupForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log(data);
-      toastSuccess("Signup successful");
+      const res = await userCreate(data);
+      toastSuccess(res?.message);
       navigate("/");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

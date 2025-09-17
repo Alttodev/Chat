@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
@@ -8,14 +9,17 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("chat-storage");
+    const token = useAuthStore.getState().token;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 axiosInstance.interceptors.response.use(
@@ -24,6 +28,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
+      useAuthStore.clearToken();
       window.location.href = "/";
     }
     return Promise.reject(error);
