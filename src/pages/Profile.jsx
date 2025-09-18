@@ -16,23 +16,34 @@ import {
   Bell,
   Shield,
   Edit3,
-  Save,
-  Activity,
   Calendar,
   Clock,
   LogOut,
+  User,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { useUserDetail } from "@/hooks/authHooks";
+import dayjs from "dayjs";
+import { formatDate, formatRelative } from "@/lib/dateHelpers";
 
 function Profile() {
-  const { clearToken, isEditing, openEditing, closeEditing } = useAuthStore();
+  const { clearToken, isEditing, openEditing, closeEditing, user } =
+    useAuthStore();
 
   const { data: profileData } = useUserDetail();
+
   const userProfile = useMemo(() => profileData, [profileData]);
+
+  const memberSince = dayjs(userProfile?.profile?.memberSince).format("MMM YY");
+
+  const lastUpdated = formatRelative(userProfile?.profile?.lastUpdated);
+
+  const lastLogin = formatDate(user?.lastLogin);
+
+  const changedPassword = formatRelative(user?.changedPassword);
 
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -42,11 +53,11 @@ function Profile() {
   });
 
   const recentActivity = [
-    { action: "Changed password", time: "1 day ago", type: "security" },
+    { action: "Changed password", time: changedPassword, type: "security" },
 
     {
       action: "Updated Personal information",
-      time: "1 week ago",
+      time: lastUpdated,
       type: "profile",
     },
   ];
@@ -195,8 +206,8 @@ function Profile() {
                       {activity.type === "security" && (
                         <Shield className="h-4 w-4 text-primary" />
                       )}
-                      {activity.type === "login" && (
-                        <Activity className="h-4 w-4 text-primary" />
+                      {activity.type === "profile" && (
+                        <User className="h-4 w-4 text-primary" />
                       )}
                     </div>
                     <div className="flex-1 space-y-1">
@@ -226,14 +237,14 @@ function Profile() {
                 <span className="text-sm text-muted-foreground">
                   Member since
                 </span>
-                <Badge variant="secondary">Jan 2023</Badge>
+                <Badge variant="secondary">{memberSince}</Badge>
               </div>
 
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">
                   Last login
                 </span>
-                <Badge variant="outline">Today</Badge>
+                <Badge variant="outline">{lastLogin}</Badge>
               </div>
             </CardContent>
           </Card>
