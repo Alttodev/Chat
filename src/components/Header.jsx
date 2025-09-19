@@ -12,10 +12,14 @@ import {
 import { Link } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
 import { useMemo } from "react";
+import { OnlineStatus } from "./onlineStatus";
 
 export function SocialHeader() {
   const { data: profileData } = useUserDetail();
-   const userProfile = useMemo(() => profileData, [profileData]);
+  const userProfile = useMemo(() => profileData, [profileData]);
+
+  const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
+  const userId = storedData?.state?.user?._id;
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
@@ -73,13 +77,16 @@ export function SocialHeader() {
           >
             <Bell className="w-5 h-5" />
           </Button>
-
-          <Avatar className="w-8 h-8">
-            <AvatarFallback className="text-emerald-600 font-semibold">
-              {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
-            </AvatarFallback>
-          </Avatar>
-
+          <div className="relative">
+            <Avatar className="w-8 h-8">
+              <AvatarFallback className="text-emerald-600 font-semibold">
+                {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute bottom-0 right-0">
+              <OnlineStatus userId={userId} size="h-2 w-2" />
+            </div>
+          </div>
           {/* Mobile Menu Drawer */}
           <Sheet>
             <SheetTrigger asChild>

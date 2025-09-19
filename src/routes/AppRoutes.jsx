@@ -9,6 +9,7 @@ import Friends from "@/pages/Friends";
 import Message from "@/pages/Message";
 import Profile from "@/pages/Profile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -20,11 +21,13 @@ function AppRoutes() {
           <Route path="/profile/create" element={<ProfileCreateForm />} />
           <Route path="/reset" element={<ResetFormComponent />} />
           <Route path="/reset-password" element={<ResetMailFormComponent />} />
-          <Route element={<HomeLayout />}>
-            <Route path="/home" element={<CenterFeed />} />
-            <Route path="/friends" element={<Friends />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/messages" element={<Message />} />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<HomeLayout />}>
+              <Route path="/home" element={<CenterFeed />} />
+              <Route path="/friends" element={<Friends />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/messages" element={<Message />} />
+            </Route>
           </Route>
         </Routes>
       </Router>

@@ -7,13 +7,16 @@ import { userSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { useUserCreate } from "@/hooks/authHooks";
-import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/api/axios";
+import { useSocket } from "@/lib/socket";
+import { useAuthStore } from "@/store/authStore";
 
 const ProfileCreateForm = () => {
   const navigate = useNavigate();
-  const { setProfile } = useAuthStore();
   const { mutateAsync: userCreate } = useUserCreate();
+  const { user } = useAuthStore();
+  console.log(user);
+  const { connectSocket } = useSocket();
   const {
     handleSubmit,
     control,
@@ -30,9 +33,9 @@ const ProfileCreateForm = () => {
   const onSubmit = async (data) => {
     try {
       const res = await userCreate(data);
-      const response = await getProfile();
-      setProfile(response);
+      connectSocket(user?._id);
       toastSuccess(res?.message);
+      await getProfile();
       navigate("/home");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

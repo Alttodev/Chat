@@ -11,12 +11,14 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useUserLogin } from "@/hooks/authHooks";
 import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/api/axios";
+import { useSocket } from "@/lib/socket";
 
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
   const { mutateAsync: userLogin } = useUserLogin();
-  const { setToken, setUser} = useAuthStore();
+  const { setToken, setUser } = useAuthStore();
+   const { connectSocket } = useSocket();
 
   const {
     handleSubmit,
@@ -35,12 +37,14 @@ const LoginForm = () => {
   const handleCaptchaChange = (token) => {
     setValue("captcha", token || "", { shouldValidate: true });
   };
+ 
 
   const onSubmit = async (data) => {
     try {
       const res = await userLogin(data);
       setToken(res?.token);
       setUser(res?.user);
+      connectSocket(res?.user?._id);
       toastSuccess(res?.message);
       await getProfile();
       navigate("/home");
