@@ -31,8 +31,13 @@ export const userResetPassword = async ({ id, token, password }) => {
   return data;
 };
 
-export const getProfile = async () => {
-  const { data } = await axiosInstance.get(`/profile/me`);
+export const userPost = async (formData) => {
+  const { data } = await axiosInstance.post(`/post/create`, formData);
+  return data;
+};
+
+export const userPostLike = async (id) => {
+  const { data } = await axiosInstance.post(`/post/${id}/like`);
   return data;
 };
 
@@ -40,5 +45,17 @@ export const getProfile = async () => {
 
 export const userUpdate = async (formData) => {
   const { data } = await axiosInstance.put(`/profile/update`, formData);
+  return data;
+};
+
+//get
+
+export const getProfile = async () => {
+  const { data } = await axiosInstance.get(`/profile/me`);
+  return data;
+};
+
+export const getUserPost = async () => {
+  const { data } = await axiosInstance.get(`/post/list`);
   return data;
 };
