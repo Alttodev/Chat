@@ -48,6 +48,11 @@ export const userUpdate = async (formData) => {
   return data;
 };
 
+export const userPostUpdate = async (id,formData) => {
+  const { data } = await axiosInstance.put(`/post/update/${id}`, formData);
+  return data;
+};
+
 //get
 
 export const getProfile = async () => {
@@ -57,5 +62,19 @@ export const getProfile = async () => {
 
 export const getUserPost = async () => {
   const { data } = await axiosInstance.get(`/post/list`);
+  return data;
+};
+
+
+export const getUserPostInfo = async (id) => {
+  const { data } = await axiosInstance.get(`/post/info/${id}`);
+  return data;
+};
+
+
+//delete
+
+export const userPostDelete = async (id) => {
+  const { data } = await axiosInstance.delete(`/post/delete/${id}`);
   return data;
 };

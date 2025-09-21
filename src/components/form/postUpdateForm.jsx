@@ -3,10 +3,18 @@ import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "../ui/textarea";
-import { usePostCreate } from "@/hooks/postHooks";
+import { usePostInfo, usePostUpdate } from "@/hooks/postHooks";
+import { useZustandPopup } from "@/lib/zustand";
+import { useEffect, useMemo } from "react";
+import { PostFormSkeleton } from "../skeleton/postFormSkeleton";
 
-export function PostForm({ userProfile }) {
-  const { mutateAsync: createPost } = usePostCreate();
+export function PostUpdateForm({ userProfile }) {
+  const { closeModal, modalData } = useZustandPopup();
+  const postId = modalData?.postId;
+  const { data: postInfo, isFetching } = usePostInfo(postId);
+  const { mutateAsync: updatePost } = usePostUpdate();
+
+  const data = useMemo(() => postInfo, [postInfo]);
 
   const {
     handleSubmit,
@@ -21,22 +29,30 @@ export function PostForm({ userProfile }) {
 
   const onSubmit = async (formData) => {
     try {
-      const res = await createPost(formData);
+      const res = await updatePost({ id: postId, formData: formData });
       toastSuccess(res?.message);
+      closeModal();
       reset();
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
   };
 
+  useEffect(() => {
+    if (data) {
+      reset({
+        postText: data?.post?.postText || "",
+      });
+    }
+  }, [data, reset]);
+
+  if (isFetching) {
+    return <PostFormSkeleton />;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="flex gap-3">
-        <Avatar className="w-10 h-10 text-emerald-600">
-          <AvatarFallback>
-            {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
-          </AvatarFallback>
-        </Avatar>
         <div className="flex-1 space-y-2">
           <Controller
             name="postText"
@@ -59,9 +75,9 @@ export function PostForm({ userProfile }) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+          className="w-25 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
-          {isSubmitting ? "Posting..." : "Post"}
+          {isSubmitting ? "Update..." : "Update"}
         </Button>
       </div>
     </form>

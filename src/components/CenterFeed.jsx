@@ -1,26 +1,53 @@
-import { MessageCircle, Share, MoreHorizontal, ThumbsUp } from "lucide-react";
+import {
+  MessageCircle,
+  Share,
+  MoreHorizontal,
+  ThumbsUp,
+  Delete,
+  Trash2,
+  SquarePen,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
 import { useUserDetail } from "@/hooks/authHooks";
 import { useMemo } from "react";
 import { PostForm } from "./form/PostForm";
-import { usePostList } from "@/hooks/postHooks";
+import { usePostDelete, usePostList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { Spinner } from "./ui/shadcn-io/spinner";
 import PostLikeComponent from "./Post/PostLike";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { toastError, toastSuccess } from "@/lib/toast";
+import { PostDialog } from "./modals/postModal";
+import { useZustandPopup } from "@/lib/zustand";
 
 export function CenterFeed() {
+  const { openModal } = useZustandPopup();
   const { data: profileData } = useUserDetail();
   const { data: postList, isFetching } = usePostList();
+  const { mutateAsync: deletePost } = usePostDelete();
 
   const userProfile = useMemo(() => profileData, [profileData]);
   const userPost = useMemo(() => postList, [postList]);
 
+  const handleDelete = async (id) => {
+    try {
+      const res = await deletePost(id);
+      toastSuccess(res?.message);
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
+  };
+
   if (isFetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
       </div>
     );
@@ -56,9 +83,46 @@ export function CenterFeed() {
                   </p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
+              {post?.isOwner ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
+                      <MoreHorizontal className="w-4 h-4" />
+                      <span className="sr-only">Toggle user menu</span>
+                    </span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-full mt-1 border-slate-200 shadow-lg"
+                    sideOffset={8}
+                  >
+                    <DropdownMenuItem
+                      className="cursor-pointer transition-colors duration-200"
+                      onClick={() =>
+                        openModal({
+                          userProfile: userProfile,
+                          postId: post._id,
+                        })
+                      }
+                    >
+                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
+                      <span className="text-emerald-700 font-medium">
+                        Edit Post
+                      </span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="cursor-pointer transition-colors duration-200 mt-1"
+                      onClick={() => handleDelete(post._id)}
+                    >
+                      <Trash2 className="mr-1 h-4 w-4 text-slate-500  transition-colors duration-200" />
+                      <span className="text-red-500 font-medium">
+                        Delete Post
+                      </span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
             </div>
           </CardHeader>
 
@@ -93,6 +157,7 @@ export function CenterFeed() {
           </CardContent>
         </Card>
       ))}
+      <PostDialog />
     </div>
   );
 }
