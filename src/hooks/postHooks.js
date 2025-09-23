@@ -1,7 +1,9 @@
 import {
   getUserPost,
+  getUserPostComments,
   getUserPostInfo,
   userPost,
+  userPostComment,
   userPostDelete,
   userPostLike,
   userPostUpdate,
@@ -58,6 +60,28 @@ export const usePostInfo = (id) => {
   return useQuery({
     queryKey: ["user_post_info"],
     queryFn: () => getUserPostInfo(id),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const usePostComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }) => userPostComment(id, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user_post_comment"]);
+    },
+  });
+};
+
+// getUserPostComments
+
+export const usePostComments = (id) => {
+  return useQuery({
+    queryKey: ["user_post_comment"],
+    queryFn: () => getUserPostComments(id),
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,

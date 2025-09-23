@@ -6,3 +6,11 @@ export const useZustandPopup = create((set) => ({
   openModal: (data) => set({ isOpen: true, modalData: data }),
   closeModal: () => set({ isOpen: false, modalData: null }),
 }));
+
+export const useCommentStore = create((set) => ({
+  openPostId: null,
+  toggleComments: (postId) =>
+    set((state) => ({
+      openPostId: state.openPostId === postId ? null : postId,
+    })),
+}));

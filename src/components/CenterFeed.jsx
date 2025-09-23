@@ -25,10 +25,12 @@ import {
 } from "./ui/dropdown-menu";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { PostDialog } from "./modals/postModal";
-import { useZustandPopup } from "@/lib/zustand";
+import { useCommentStore, useZustandPopup } from "@/lib/zustand";
+import { CommentSection } from "./Post/CommentSection";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
+  const { openPostId, toggleComments } = useCommentStore();
   const { data: profileData } = useUserDetail();
   const { data: postList, isFetching } = usePostList();
   const { mutateAsync: deletePost } = usePostDelete();
@@ -140,6 +142,7 @@ export function CenterFeed() {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => toggleComments(post._id)}
                 className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 mr-1" />
@@ -154,6 +157,11 @@ export function CenterFeed() {
                 Share
               </Button>
             </div>
+            {openPostId === post._id && (
+              <div className="border-t border-border mt-3">
+                <CommentSection postId={post._id} userProfile={userProfile} />
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

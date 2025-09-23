@@ -41,6 +41,12 @@ export const userPostLike = async (id) => {
   return data;
 };
 
+export const userPostComment = async (id,formData) => {
+  const { data } = await axiosInstance.post(`/post/${id}/comment`,formData);
+  return data;
+};
+
+
 //update
 
 export const userUpdate = async (formData) => {
@@ -70,6 +76,12 @@ export const getUserPostInfo = async (id) => {
   const { data } = await axiosInstance.get(`/post/info/${id}`);
   return data;
 };
+
+export const getUserPostComments = async (id) => {
+  const { data } = await axiosInstance.get(`/post/${id}/comments`);
+  return data;
+};
+
 
 
 //delete
