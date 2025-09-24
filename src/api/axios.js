@@ -41,11 +41,10 @@ export const userPostLike = async (id) => {
   return data;
 };
 
-export const userPostComment = async (id,formData) => {
-  const { data } = await axiosInstance.post(`/post/${id}/comment`,formData);
+export const userPostComment = async (id, formData) => {
+  const { data } = await axiosInstance.post(`/post/${id}/comment`, formData);
   return data;
 };
-
 
 //update
 
@@ -54,7 +53,7 @@ export const userUpdate = async (formData) => {
   return data;
 };
 
-export const userPostUpdate = async (id,formData) => {
+export const userPostUpdate = async (id, formData) => {
   const { data } = await axiosInstance.put(`/post/update/${id}`, formData);
   return data;
 };
@@ -71,7 +70,6 @@ export const getUserPost = async () => {
   return data;
 };
 
-
 export const getUserPostInfo = async (id) => {
   const { data } = await axiosInstance.get(`/post/info/${id}`);
   return data;
@@ -82,11 +80,16 @@ export const getUserPostComments = async (id) => {
   return data;
 };
 
-
-
 //delete
 
 export const userPostDelete = async (id) => {
   const { data } = await axiosInstance.delete(`/post/delete/${id}`);
+  return data;
+};
+
+export const userCommentDelete = async ({ postId, commentId }) => {
+  const { data } = await axiosInstance.delete(
+    `/post/${postId}/comment/${commentId}`
+  );
   return data;
 };

@@ -2,6 +2,7 @@ import {
   getUserPost,
   getUserPostComments,
   getUserPostInfo,
+  userCommentDelete,
   userPost,
   userPostComment,
   userPostDelete,
@@ -71,7 +72,7 @@ export const usePostComment = () => {
   return useMutation({
     mutationFn: ({ id, formData }) => userPostComment(id, formData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user_post_comment"]);
+      queryClient.invalidateQueries(["comment"]);
     },
   });
 };
@@ -80,10 +81,22 @@ export const usePostComment = () => {
 
 export const usePostComments = (id) => {
   return useQuery({
-    queryKey: ["user_post_comment"],
+    queryKey: ["comment"],
     queryFn: () => getUserPostComments(id),
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+  });
+};
+
+// delete comment
+
+export const usePostCommentDelete = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars) => userCommentDelete(vars),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["comment"]);
+    },
   });
 };

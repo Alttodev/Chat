@@ -1,8 +1,7 @@
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Textarea } from "../ui/textarea";
 import { usePostComment } from "@/hooks/postHooks";
 import TextInput from "../form_inputs/TextInput";
 import { Send } from "lucide-react";

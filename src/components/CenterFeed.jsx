@@ -159,7 +159,11 @@ export function CenterFeed() {
             </div>
             {openPostId === post._id && (
               <div className="border-t border-border mt-3">
-                <CommentSection postId={post._id} userProfile={userProfile} />
+                <CommentSection
+                  postId={post._id}
+                  post={post}
+                  userProfile={userProfile}
+                />
               </div>
             )}
           </CardContent>
