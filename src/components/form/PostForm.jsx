@@ -4,20 +4,25 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "../ui/textarea";
 import { usePostCreate } from "@/hooks/postHooks";
+import { Paperclip } from "lucide-react";
+import { useZustandImagePopup } from "@/lib/zustand";
 
 export function PostForm({ userProfile }) {
   const { mutateAsync: createPost } = usePostCreate();
-
+  const { openImageModal } = useZustandImagePopup();
   const {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
       postText: "",
     },
   });
+
+  const textValue = watch("postText");
 
   const onSubmit = async (formData) => {
     try {
@@ -41,7 +46,6 @@ export function PostForm({ userProfile }) {
           <Controller
             name="postText"
             control={control}
-            rules={{ required: "Post text is required" }}
             render={({ field }) => (
               <Textarea
                 {...field}
@@ -50,18 +54,24 @@ export function PostForm({ userProfile }) {
               />
             )}
           />
-          {errors.postText?.message && (
-            <p className="text-red-500 text-sm">{errors.postText?.message}</p>
-          )}
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        <span
+          onClick={openImageModal}
+          className="w-12 h-12 flex items-center justify-center  ml-12
+               text-emerald-600 
+               transition cursor-pointer"
+        >
+          <Paperclip className="w-5 h-5" />
+        </span>
+
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={!textValue || isSubmitting}
           className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
-          {isSubmitting ? "Posting..." : "Post"}
+          Post
         </Button>
       </div>
     </form>

@@ -40,7 +40,7 @@ export function CommentForm({ userProfile, postId }) {
         </Avatar>
         <div className="flex-1 gap-2">
           <TextInput
-            rules={{ required: "comment is required" }}
+            rules={{ required: "Enter comment" }}
             name="comment"
             className="flex-1"
             control={control}
@@ -57,7 +57,7 @@ export function CommentForm({ userProfile, postId }) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+          className="w-12 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
           <Send className="w-4 h-4" />
         </Button>

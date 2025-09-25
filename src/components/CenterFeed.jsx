@@ -27,6 +27,7 @@ import { toastError, toastSuccess } from "@/lib/toast";
 import { PostDialog } from "./modals/postModal";
 import { useCommentStore, useZustandPopup } from "@/lib/zustand";
 import { CommentSection } from "./Post/CommentSection";
+import { PostImageDialog } from "./modals/postImageModal";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -159,17 +160,14 @@ export function CenterFeed() {
             </div>
             {openPostId === post._id && (
               <div className="border-t border-border mt-3">
-                <CommentSection
-                  postId={post._id}
-                  post={post}
-                  userProfile={userProfile}
-                />
+                <CommentSection postId={post._id} userProfile={userProfile} />
               </div>
             )}
           </CardContent>
         </Card>
       ))}
       <PostDialog />
+      <PostImageDialog />
     </div>
   );
 }

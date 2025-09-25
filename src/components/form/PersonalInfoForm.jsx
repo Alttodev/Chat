@@ -128,7 +128,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                   disabled={isSubmitting}
                   className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
                 >
-                  {isSubmitting ? "Save..." : "Save"}
+                   Save
                 </Button>
               </div>
             ) : null}
