@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useZustandImagePopup } from "@/lib/zustand";
 import { ImageUpload } from "../form_inputs/ImageUpload";
+import { usePostCreate } from "@/hooks/postHooks";
+import { toastError, toastSuccess } from "@/lib/toast";
 
 export function PostImageForm() {
   const { closeImageModal } = useZustandImagePopup();
+  const { mutateAsync: createPost } = usePostCreate();
 
   const {
     handleSubmit,
@@ -16,7 +19,7 @@ export function PostImageForm() {
   } = useForm({
     defaultValues: {
       postText: "",
-      image: null,
+      image: "",
     },
   });
 
@@ -24,13 +27,18 @@ export function PostImageForm() {
 
   const onSubmit = async (formData) => {
     try {
-      console.log("Submitting:", formData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = new FormData();
+      data.append("postText", formData.postText);
+      if (formData.image) {
+        data.append("image", formData.image);
+      }
+
+      const res = await createPost(data);
+      toastSuccess(res?.message);
       reset();
       closeImageModal(null);
-      console.log("Post created successfully!");
     } catch (error) {
-      console.error("Error creating post:", error);
+      toastError(error?.response?.data?.message || "Something went wrong");
     }
   };
 

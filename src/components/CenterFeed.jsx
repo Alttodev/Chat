@@ -2,8 +2,6 @@ import {
   MessageCircle,
   Share,
   MoreHorizontal,
-  ThumbsUp,
-  Delete,
   Trash2,
   SquarePen,
 } from "lucide-react";
@@ -133,6 +131,13 @@ export function CenterFeed() {
             <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base ">
               {post?.postText}
             </p>
+            {post?.image && (
+              <img
+                className="w-full h-auto object-cover rounded-lg "
+                src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
+                alt="post"
+              />
+            )}
 
             {/* Post Stats */}
             <div className="mb-3 pb-3 border-b border-border" />
