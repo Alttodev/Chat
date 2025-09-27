@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserDetail } from "@/hooks/authHooks";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { PostForm } from "./form/PostForm";
 import { usePostDelete, usePostList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
@@ -31,28 +31,50 @@ import {
 import { CommentSection } from "./Post/CommentSection";
 import { PostImageDialog } from "./modals/postImageModal";
 import { ShareDialog } from "./modals/shareModal";
+import { PostFormSkeleton } from "./skeleton/postFormSkeleton";
+import { PostSkeleton } from "./skeleton/postListSkeleton";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
   const { openShareModal } = useZustandSharePopup();
   const { openPostId, toggleComments } = useCommentStore();
   const { data: profileData } = useUserDetail();
-  const { data: postList, isFetching } = usePostList();
   const { mutateAsync: deletePost } = usePostDelete();
 
   const userProfile = useMemo(() => profileData, [profileData]);
-  const userPost = useMemo(() => postList, [postList]);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    usePostList();
+
+  const loadMoreRef = useRef(null);
+
+  const posts = useMemo(
+    () => data?.pages?.flatMap((page) => page.posts) || [],
+    [data]
+  );
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    });
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const handleDelete = async (id) => {
     try {
       const res = await deletePost(id);
       toastSuccess(res?.message);
-    } catch (error) {
-      toastError(error?.response?.data?.message || "Something went wrong");
+    } catch (err) {
+      toastError(err?.response?.data?.message || "Something went wrong");
     }
   };
 
-  if (isFetching) {
+  if (status === "loading") {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -70,8 +92,8 @@ export function CenterFeed() {
       </Card>
 
       {/* Posts Feed */}
-      {userPost?.posts?.map((post) => (
-        <Card key={post.id} className="overflow-hidden">
+      {posts.map((post) => (
+        <Card key={post._id} className="overflow-hidden">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -90,7 +112,7 @@ export function CenterFeed() {
                   </p>
                 </div>
               </div>
-              {post?.isOwner ? (
+              {post?.isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
@@ -106,10 +128,7 @@ export function CenterFeed() {
                     <DropdownMenuItem
                       className="cursor-pointer transition-colors duration-200"
                       onClick={() =>
-                        openModal({
-                          userProfile: userProfile,
-                          postId: post._id,
-                        })
+                        openModal({ userProfile, postId: post._id })
                       }
                     >
                       <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
@@ -122,33 +141,31 @@ export function CenterFeed() {
                       className="cursor-pointer transition-colors duration-200 mt-1"
                       onClick={() => handleDelete(post._id)}
                     >
-                      <Trash2 className="mr-1 h-4 w-4 text-slate-500  transition-colors duration-200" />
+                      <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
                       <span className="text-red-500 font-medium">
                         Delete Post
                       </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              ) : null}
+              )}
             </div>
           </CardHeader>
 
           <CardContent className="pt-0">
-            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base ">
+            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
               {post?.postText}
             </p>
             {post?.image && (
               <img
-                className="w-full h-auto object-cover rounded-lg "
+                className="w-full h-auto object-cover rounded-lg"
                 src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
                 alt="post"
               />
             )}
 
-            {/* Post Stats */}
             <div className="mb-3 pb-3 border-b border-border" />
 
-            {/* Action Buttons */}
             <div className="flex items-center justify-between">
               <PostLikeComponent post={post} userId={post?.user?._id} />
               <Button
@@ -157,8 +174,7 @@ export function CenterFeed() {
                 onClick={() => toggleComments(post._id)}
                 className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
-                <MessageCircle className="w-4 h-4 mr-1" />
-                Comment
+                <MessageCircle className="w-4 h-4 mr-1" /> Comment
               </Button>
               <Button
                 variant="ghost"
@@ -166,10 +182,10 @@ export function CenterFeed() {
                 onClick={() => openShareModal(post._id)}
                 className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
-                <Share className="w-4 h-4 mr-1" />
-                Share
+                <Share className="w-4 h-4 mr-1" /> Share
               </Button>
             </div>
+
             {openPostId === post._id && (
               <div className="border-t border-border mt-3">
                 <CommentSection postId={post._id} userProfile={userProfile} />
@@ -178,9 +194,20 @@ export function CenterFeed() {
           </CardContent>
         </Card>
       ))}
+
       <PostDialog />
       <PostImageDialog />
       <ShareDialog />
+
+      <div ref={loadMoreRef} style={{ height: "20px" }} />
+      {isFetchingNextPage && <PostSkeleton />}
+      {!hasNextPage && (
+        <div className="flex justify-center">
+          <span className="px-3 text-sm text-muted-foreground">
+            No more posts
+          </span>
+        </div>
+      )}
     </div>
   );
 }

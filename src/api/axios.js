@@ -65,8 +65,10 @@ export const getProfile = async () => {
   return data;
 };
 
-export const getUserPost = async () => {
-  const { data } = await axiosInstance.get(`/post/list`);
+export const getUserPost = async ({ pageParam = 1 }) => {
+  const { data } = await axiosInstance.get(
+    `/post/list?page=${pageParam}&limit=5`
+  );
   return data;
 };
 
