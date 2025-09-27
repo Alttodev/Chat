@@ -56,12 +56,17 @@ export function PostForm({ userProfile }) {
                 {...field}
                 ref={textareaRef}
                 placeholder={`What's on your mind, ${userProfile?.profile?.userName}?`}
-                className="min-h-[100px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base pr-10"
+                className="min-h-[100px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base pr-10  overflow-y-auto thin-scrollbar"
               />
             )}
           />
 
-          <EmojiPickerButton textareaRef={textareaRef} setValue={setValue} getValues={getValues} name="postText" />
+          <EmojiPickerButton
+            textareaRef={textareaRef}
+            setValue={setValue}
+            getValues={getValues}
+            name="postText"
+          />
         </div>
       </div>
 

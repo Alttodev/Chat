@@ -69,7 +69,7 @@ export function PostUpdateForm({ userProfile }) {
                 {...field}
                 ref={textareaRef}
                 placeholder={`What's on your mind, ${userProfile?.profile?.userName}?`}
-                className="min-h-[85px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base"
+                className="min-h-[85px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar"
               />
             )}
           />

@@ -59,7 +59,7 @@ export function PostImageForm() {
               {...field}
               ref={textareaRef}
               placeholder="Enter description....."
-              className="min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base pr-10"
+              className="min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base pr-10  overflow-y-auto thin-scrollbar"
             />
           )}
         />

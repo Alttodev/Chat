@@ -121,3 +121,19 @@
       font-family: "Poppins", sans-serif;
   }
 }
+
+.thin-scrollbar {
+  scrollbar-width: thin;           
+  scrollbar-color: #9ca3af transparent; 
+
+}
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px; 
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 9999px;
+}

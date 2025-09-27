@@ -50,7 +50,7 @@ export default function EmojiPickerButton({
     <div className="relative">
       <span
         onClick={() => setShowEmojiPicker((prev) => !prev)}
-        className="absolute bottom-5 right-2 text-emerald-600 cursor-pointer"
+        className="absolute bottom-5 right-3 text-emerald-600 cursor-pointer"
       >
         <Smile className="w-6 h-6" />
       </span>

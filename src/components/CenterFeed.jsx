@@ -74,7 +74,7 @@ export function CenterFeed() {
     }
   };
 
-  if (status === "loading") {
+  if (status === "pending") {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
