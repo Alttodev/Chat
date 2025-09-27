@@ -1,12 +1,12 @@
 import { Controller, useForm } from "react-hook-form";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "../ui/textarea";
 import { usePostInfo, usePostUpdate } from "@/hooks/postHooks";
 import { useZustandPopup } from "@/lib/zustand";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { PostFormSkeleton } from "../skeleton/postFormSkeleton";
+import EmojiPickerButton from "../EmojiPickerButton";
 
 export function PostUpdateForm({ userProfile }) {
   const { closeModal, modalData } = useZustandPopup();
@@ -20,12 +20,18 @@ export function PostUpdateForm({ userProfile }) {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting },
+    watch,
+    setValue,
+    getValues,
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
       postText: "",
     },
   });
+
+  const textValue = watch("postText");
+  const textareaRef = useRef(null);
 
   const onSubmit = async (formData) => {
     try {
@@ -61,20 +67,24 @@ export function PostUpdateForm({ userProfile }) {
             render={({ field }) => (
               <Textarea
                 {...field}
+                ref={textareaRef}
                 placeholder={`What's on your mind, ${userProfile?.profile?.userName}?`}
-                className="min-h-[125px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base"
+                className="min-h-[85px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base"
               />
             )}
           />
-          {errors.postText?.message && (
-            <p className="text-red-500 text-sm">{errors.postText?.message}</p>
-          )}
+          <EmojiPickerButton
+            textareaRef={textareaRef}
+            setValue={setValue}
+            getValues={getValues}
+            name="postText"
+          />
         </div>
       </div>
       <div className="flex justify-end">
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={!textValue || isSubmitting}
           className="w-25 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
           {isSubmitting ? "Update..." : "Update"}

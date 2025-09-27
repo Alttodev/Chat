@@ -23,12 +23,18 @@ import {
 } from "./ui/dropdown-menu";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { PostDialog } from "./modals/postModal";
-import { useCommentStore, useZustandPopup } from "@/lib/zustand";
+import {
+  useCommentStore,
+  useZustandPopup,
+  useZustandSharePopup,
+} from "@/lib/zustand";
 import { CommentSection } from "./Post/CommentSection";
 import { PostImageDialog } from "./modals/postImageModal";
+import { ShareDialog } from "./modals/shareModal";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
+  const { openShareModal } = useZustandSharePopup();
   const { openPostId, toggleComments } = useCommentStore();
   const { data: profileData } = useUserDetail();
   const { data: postList, isFetching } = usePostList();
@@ -58,7 +64,7 @@ export function CenterFeed() {
     <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 space-y-6">
       {/* Create Post */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-3">
           <PostForm userProfile={userProfile} />
         </CardContent>
       </Card>
@@ -157,6 +163,7 @@ export function CenterFeed() {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={() => openShareModal(post._id)}
                 className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
               >
                 <Share className="w-4 h-4 mr-1" />
@@ -173,6 +180,7 @@ export function CenterFeed() {
       ))}
       <PostDialog />
       <PostImageDialog />
+      <ShareDialog />
     </div>
   );
 }

@@ -13,7 +13,7 @@ export function PostImageDialog() {
       <DialogContent className="w-[calc(100%-2rem)] max-w-[550px]  [&_button]:cursor-pointer">
         <DialogHeader>
           <DialogTitle className="text-emerald-600 flex justify-center">
-            Post
+            Upload Post
           </DialogTitle>
         </DialogHeader>
         <PostImageForm />

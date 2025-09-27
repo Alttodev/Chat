@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Heart } from "lucide-react";
 import { usePostLike } from "@/hooks/postHooks";
 import { Button } from "../ui/button";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 
 function PostLikeComponent({ post, userId }) {
   const { mutateAsync: postLike } = usePostLike(userId);
@@ -16,7 +16,6 @@ function PostLikeComponent({ post, userId }) {
 
     try {
       const res = await postLike(post._id);
-      toastSuccess(res?.message);
       setLikes(res.likes);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

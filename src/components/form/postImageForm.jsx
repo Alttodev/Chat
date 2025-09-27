@@ -5,6 +5,8 @@ import { useZustandImagePopup } from "@/lib/zustand";
 import { ImageUpload } from "../form_inputs/ImageUpload";
 import { usePostCreate } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { useRef } from "react";
+import EmojiPickerButton from "../EmojiPickerButton";
 
 export function PostImageForm() {
   const { closeImageModal } = useZustandImagePopup();
@@ -15,6 +17,8 @@ export function PostImageForm() {
     control,
     reset,
     watch,
+    setValue,
+    getValues,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
@@ -24,6 +28,8 @@ export function PostImageForm() {
   });
 
   const textValue = watch("image");
+  const imageValue = watch("image");
+  const textareaRef = useRef(null);
 
   const onSubmit = async (formData) => {
     try {
@@ -44,28 +50,34 @@ export function PostImageForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      <div className="space-y-1">
+      <div className="space-y-1 relative">
         <Controller
           name="postText"
           control={control}
           render={({ field }) => (
             <Textarea
               {...field}
+              ref={textareaRef}
               placeholder="Enter description....."
-              className="min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base"
+              className="min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base pr-10"
             />
           )}
         />
+
+        <EmojiPickerButton
+          textareaRef={textareaRef}
+          setValue={setValue}
+          getValues={getValues}
+          name="postText"
+        />
       </div>
 
-      {/* Reusable Upload Component */}
       <ImageUpload name="image" control={control} />
 
-      {/* Action Buttons */}
-      <div className="flex justify-end ">
+      <div className="flex justify-end">
         <Button
           type="submit"
-          disabled={!textValue || isSubmitting}
+          disabled={(!textValue && !imageValue) || isSubmitting}
           className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
           Post

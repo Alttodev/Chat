@@ -13,12 +13,15 @@ export function CommentForm({ userProfile, postId }) {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { isSubmitting },
   } = useForm({
     defaultValues: {
       comment: "",
     },
   });
+
+  const commentValue = watch("comment");
 
   const onSubmit = async (formData) => {
     try {
@@ -40,23 +43,17 @@ export function CommentForm({ userProfile, postId }) {
         </Avatar>
         <div className="flex-1 gap-2">
           <TextInput
-            rules={{ required: "Enter comment" }}
             name="comment"
             className="flex-1"
             control={control}
             placeholder="Write a comment..."
             disabled={isSubmitting}
           />
-          {errors.comment?.message && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.comment?.message}
-            </p>
-          )}
         </div>
 
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={!commentValue || isSubmitting}
           className="w-12 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
         >
           <Send className="w-4 h-4" />

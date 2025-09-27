@@ -21,3 +21,11 @@ export const useCommentStore = create((set) => ({
       openPostId: state.openPostId === postId ? null : postId,
     })),
 }));
+
+
+export const useZustandSharePopup = create((set) => ({
+  isShareOpen: false,
+  modalShareData: null,
+  openShareModal: (data) => set({ isShareOpen: true, modalShareData: data }),
+  closeShareModal: () => set({ isShareOpen: false, modalShareData: null }),
+}));
