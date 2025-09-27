@@ -9,7 +9,12 @@ import {
   userPostLike,
   userPostUpdate,
 } from "@/api/axios";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export const usePostCreate = () => {
   const queryClient = useQueryClient();
@@ -22,18 +27,23 @@ export const usePostCreate = () => {
 };
 
 export const usePostLike = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => userPostLike(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user_post"]);
+    },
   });
 };
-
 
 export const usePostList = () => {
   return useInfiniteQuery({
     queryKey: ["user_post"],
     queryFn: getUserPost,
     getNextPageParam: (lastPage) => {
-      return lastPage.nextPage <= lastPage.totalPages ? lastPage.nextPage : undefined;
+      return lastPage.nextPage <= lastPage.totalPages
+        ? lastPage.nextPage
+        : undefined;
     },
     cacheTime: 0,
     refetchOnWindowFocus: false,
