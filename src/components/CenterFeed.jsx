@@ -168,22 +168,26 @@ export function CenterFeed() {
 
             <div className="flex items-center justify-between">
               <PostLikeComponent post={post} userId={post?.user?._id} />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleComments(post._id)}
-                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4 mr-1" /> Comment
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => openShareModal(post._id)}
-                className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
-              >
-                <Share className="w-4 h-4 mr-1" /> Share
-              </Button>
+              <div className="flex-1 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleComments(post._id)}
+                  className=" text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 mr-1" /> Comment
+                </Button>
+              </div>
+              <div className="flex-1 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openShareModal(post._id)}
+                  className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent  cursor-pointer"
+                >
+                  <Share className="w-4 h-4 mr-1" /> Share
+                </Button>
+              </div>
             </div>
 
             {openPostId === post._id && (

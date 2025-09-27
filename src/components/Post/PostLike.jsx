@@ -24,25 +24,24 @@ function PostLikeComponent({ post, userId }) {
   };
 
   return (
-    <>
+    <div className="flex-1 flex justify-center">
       <Button
         variant="ghost"
         size="sm"
         onClick={handleLike}
-        className="flex-1 text-xs sm:text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer"
+        className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
       >
         <Heart
           style={{
             width: 16,
             height: 16,
-            marginRight: 6,
             fill: isLiked ? "red" : "none",
             stroke: isLiked ? "red" : "currentColor",
           }}
         />
         {likes}
       </Button>
-    </>
+    </div>
   );
 }
 
