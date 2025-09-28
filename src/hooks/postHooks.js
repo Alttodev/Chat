@@ -1,4 +1,5 @@
 import {
+  getUserInfoPost,
   getUserPost,
   getUserPostComments,
   getUserPostInfo,
@@ -40,6 +41,20 @@ export const usePostList = () => {
   return useInfiniteQuery({
     queryKey: ["user_post"],
     queryFn: getUserPost,
+    getNextPageParam: (lastPage) => {
+      return lastPage.nextPage <= lastPage.totalPages
+        ? lastPage.nextPage
+        : undefined;
+    },
+    cacheTime: 0,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useUserPostList = (id) => {
+  return useInfiniteQuery({
+    queryKey: ["user_Info_post"],
+    queryFn:()=> getUserInfoPost(id),
     getNextPageParam: (lastPage) => {
       return lastPage.nextPage <= lastPage.totalPages
         ? lastPage.nextPage

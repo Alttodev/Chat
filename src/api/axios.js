@@ -77,6 +77,13 @@ export const getUserPost = async ({ pageParam = 1 }) => {
   return data;
 };
 
+export const getUserInfoPost = async ({id, pageParam = 1 }) => {
+  const { data } = await axiosInstance.get(
+    `/post/list/${id}?page=${pageParam}&limit=5`
+  );
+  return data;
+};
+
 export const getUserPostInfo = async (id) => {
   const { data } = await axiosInstance.get(`/post/info/${id}`);
   return data;

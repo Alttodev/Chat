@@ -38,7 +38,7 @@ export function CommentForm({ userProfile, postId }) {
       <div className="flex gap-3">
         <Avatar className="w-8 h-8 text-emerald-600">
           <AvatarFallback>
-            {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
+            {userProfile?.userName?.charAt(0).toUpperCase() || "-"}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 gap-2">

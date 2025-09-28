@@ -81,7 +81,7 @@ const Friends = () => {
   const onlineFriends = friends.filter((f) => f.isOnline);
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 py-8 space-y-8">
+    <div className="w-full max-w-5xl mx-auto px-4  space-y-8">
       {/* Header */}
       <div className="bg-emerald-600 text-white p-6 rounded-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

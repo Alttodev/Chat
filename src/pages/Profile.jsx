@@ -90,7 +90,7 @@ function Profile() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div className="w-full max-w-4xl mx-auto px-4  space-y-8">
       {/* Header Section */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-6">

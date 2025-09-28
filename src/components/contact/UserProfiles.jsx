@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Link } from "react-router-dom";
 
 export function UserProfiles({ data }) {
   return (
@@ -11,7 +12,8 @@ export function UserProfiles({ data }) {
         </CardHeader>
         <CardContent className="space-y-2">
           {data?.profiles?.map((contact, index) => (
-            <div
+            <Link
+              to={`/users/${contact?.id}`}
               key={index}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer"
             >
@@ -33,7 +35,7 @@ export function UserProfiles({ data }) {
                   {contact?.isOnline ? "online" : "offline"}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </CardContent>
       </Card>

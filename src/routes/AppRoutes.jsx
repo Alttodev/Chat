@@ -10,6 +10,7 @@ import Message from "@/pages/Message";
 import Profile from "@/pages/Profile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import UsersInfo from "@/pages/UsersInfo";
 
 function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ function AppRoutes() {
               <Route path="/friends" element={<Friends />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
+              <Route path="/users/:id" element={<UsersInfo />} />
             </Route>
           </Route>
         </Routes>
