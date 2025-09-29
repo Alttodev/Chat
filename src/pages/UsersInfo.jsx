@@ -1,4 +1,4 @@
-import { Mail, MapPin, MessageCircle, Share } from "lucide-react";
+import { MapPin, MessageCircle, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
@@ -29,6 +29,7 @@ const UsersInfo = () => {
   );
   const user = data?.pages?.[0]?.user;
   const currentUser = data?.pages?.[0]?.currentUser;
+  const totalPosts = data?.pages?.[0]?.totalPosts;
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -55,7 +56,7 @@ const UsersInfo = () => {
       {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
@@ -75,17 +76,21 @@ const UsersInfo = () => {
                     {user?.userName}
                   </h1>
                   <div className="flex gap-2 items-center text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{user?.email}</span>
-                  </div>
-
-                  <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-lg font-semibold text-black">
+                      {totalPosts}
+                    </span>
+                    <span className="text-sm text-muted-foreground">Posts</span>
                   </div>
                 </div>
               </div>
             </div>
+            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer ">
+              Follow
+            </Button>
           </div>
         </CardContent>
       </Card>
