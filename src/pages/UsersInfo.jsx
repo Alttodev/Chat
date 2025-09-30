@@ -1,4 +1,4 @@
-import { MapPin, MessageCircle, Share } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
@@ -72,9 +72,13 @@ const UsersInfo = () => {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-balance">
+                  <div className="text-xl font-bold text-balance">
                     {user?.userName}
-                  </h1>
+                  </div>
+                  <div className="flex gap-2 items-center text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    <span>{user?.email}</span>
+                  </div>
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address}</span>

@@ -18,8 +18,7 @@ export function LeftSidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
-    // { icon: Calendar, label: "Events", path: "/events" },
-    // { icon: Settings, label: "Settings", path: "/settings" },
+    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (

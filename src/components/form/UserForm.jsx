@@ -14,7 +14,7 @@ import { useAuthStore } from "@/store/authStore";
 const ProfileCreateForm = () => {
   const navigate = useNavigate();
   const { mutateAsync: userCreate } = useUserCreate();
-  const { user } = useAuthStore();
+  const { user,setProfileId } = useAuthStore();
   console.log(user);
   const { connectSocket } = useSocket();
   const {
@@ -35,7 +35,8 @@ const ProfileCreateForm = () => {
       const res = await userCreate(data);
       connectSocket(user?._id);
       toastSuccess(res?.message);
-      await getProfile();
+      const resp = await getProfile();
+      setProfileId(resp?.profile?.id);
       navigate("/home");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

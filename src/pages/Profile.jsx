@@ -1,105 +1,68 @@
-import { useMemo, useState } from "react";
+import { Mail, MapPin, MessageCircle, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
+import { useEffect, useMemo, useRef } from "react";
+import { useUserPostList } from "@/hooks/postHooks";
+import { formatRelative } from "@/lib/dateHelpers";
+import { ShareDialog } from "@/components/modals/shareModal";
+import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import {
-  Bell,
-  Shield,
-  Edit3,
-  Calendar,
-  Clock,
-  LogOut,
-  User,
-  Mail,
-  MapPin,
-} from "lucide-react";
-import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
-import { useNavigate } from "react-router-dom";
-import { toastError, toastSuccess } from "@/lib/toast";
-import { useAuthStore } from "@/store/authStore";
-import { useUserDetail } from "@/hooks/authHooks";
-import dayjs from "dayjs";
-import { formatDate, formatRelative } from "@/lib/dateHelpers";
+import { CommentSection } from "@/components/Post/CommentSection";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { OnlineStatus } from "@/components/onlineStatus";
-import { useSocket } from "@/lib/socket";
+import { useAuthStore } from "@/store/authStore";
 
-function Profile() {
-  const { clearToken, isEditing, openEditing, closeEditing, user } =
-    useAuthStore();
-  const { disconnectSocket } = useSocket();
+const Profile = () => {
+  const { profileId } = useAuthStore();
+  const { openShareModal } = useZustandSharePopup();
+  const { openPostId, toggleComments } = useCommentStore();
+  const loadMoreRef = useRef(null);
+
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
 
-  const { data: profileData } = useUserDetail();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+    useUserPostList({ id: profileId });
 
-  const userProfile = useMemo(() => profileData, [profileData]);
+  const posts = useMemo(
+    () => data?.pages?.flatMap((page) => page.posts) || [],
+    [data]
+  );
+  const user = data?.pages?.[0]?.user;
+  const currentUser = data?.pages?.[0]?.currentUser;
+  const totalPosts = data?.pages?.[0]?.totalPosts;
 
-  const memberSince =
-    dayjs(userProfile?.profile?.memberSince).format("MMM YY") || "-";
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    });
+    observer.observe(loadMoreRef.current);
 
-  const lastUpdated = formatRelative(userProfile?.profile?.lastUpdated) || "-";
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const lastLogin = formatDate(user?.lastLogin) || "-";
-
-  const changedPassword = user?.changedPassword
-    ? formatRelative(user.changedPassword)
-    : "Never changed";
-
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    logout: false,
-    activityStatus: true,
-  });
-
-  const recentActivity = [
-    { action: "Changed password", time: changedPassword, type: "security" },
-
-    {
-      action: "Updated Personal information",
-      time: lastUpdated,
-      type: "profile",
-    },
-  ];
-
-  const handleSave = () => {
-    openEditing(false);
-  };
-
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    try {
-      clearToken();
-      closeEditing();
-      disconnectSocket();
-      navigate("/");
-      toastSuccess("Logout successful!");
-    } catch (error) {
-      toastError(error, "Failed to logout");
-    }
-  };
+  if (status === "pending") {
+    return (
+      <div className="min-h-90 flex items-center justify-center">
+        <Spinner className="text-emerald-600" size={44} />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4  space-y-8">
-      {/* Header Section */}
+    <div className="w-full max-w-5xl mx-auto px-4 space-y-8">
+      {/* Header */}
       <Card className="border-border shadow-sm">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <CardContent className="pt-3">
+          <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                    "-"}
+                  {user?.userName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
 
@@ -111,163 +74,112 @@ function Profile() {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold text-balance">
-                    {userProfile?.profile?.userName}
-                  </h1>
-                  <div className="flex gap-2 items-center text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{userProfile?.profile?.email}</span>
+                  <div className="text-xl font-bold text-balance">
+                    {user?.userName}
                   </div>
 
                   <div className="flex gap-2 items-center text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    <span>{user?.email}</span>
+                  </div>
+                  <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>{userProfile?.profile?.address}</span>
+                    <span>{user?.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-lg font-semibold text-black">
+                      {totalPosts}
+                    </span>
+                    <span className="text-sm text-muted-foreground">Posts</span>
                   </div>
                 </div>
-                <Button
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white w-fit cursor-pointer"
-                  onClick={() => (isEditing ? handleSave() : openEditing(true))}
-                >
-                  <Edit3 className="mr-2 h-4 w-4" />
-                  Edit Profile
-                </Button>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1  gap-8">
-        {/* Personal Information */}
-        <div className="space-y-6">
-          <PersonalInfoForm
-            userProfile={userProfile}
-            isEditing={isEditing}
-            closeEditing={closeEditing}
-          />
-        </div>
-
-        {/* Activity Section */}
-        <div className="space-y-6">
-          <Card className="border-border shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-primary" />
-                Recent Activity
-              </CardTitle>
-              <CardDescription>
-                Your recent account activity and changes
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivity.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/50"
-                  >
-                    <div className="mt-0.5">
-                      {activity.type === "security" && (
-                        <Shield className="h-4 w-4 text-primary" />
-                      )}
-                      {activity.type === "profile" && (
-                        <User className="h-4 w-4 text-primary" />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-relaxed">
-                        {activity.action}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-3 w-3 text-muted-foreground" />
-                        <p className="text-xs text-muted-foreground">
-                          {activity.time}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+      {posts.map((post) => (
+        <Card key={post._id} className="overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10 text-emerald-600">
+                  <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                  <AvatarFallback>
+                    {user?.userName?.charAt(0).toUpperCase() || "-"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-sm sm:text-base">
+                    {user?.userName}
+                  </p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    {formatRelative(post?.createdAt)}
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Stats */}
-          <Card className="border-border shadow-sm">
-            <CardHeader>
-              <CardTitle>Account Status</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Member since
-                </span>
-                <Badge variant="secondary">{memberSince}</Badge>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">
-                  Last login
-                </span>
-                <Badge variant="outline">{lastLogin}</Badge>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        {/* Settings Section */}
-        <Card className="border-border shadow-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              Privacy & Notifications
-            </CardTitle>
-            <CardDescription>
-              Control your privacy settings and notification preferences
-            </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <Separator />
 
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  <label className="text-base font-medium">
-                    Push Notifications
-                  </label>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Get push notifications on your devices
-                </p>
-              </div>
-              <Switch
-                checked={settings.pushNotifications}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, pushNotifications: checked })
-                }
+          <CardContent className="pt-0">
+            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
+              {post?.postText}
+            </p>
+            {post?.image && (
+              <img
+                className="w-full h-auto object-cover rounded-lg"
+                src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
+                alt="post"
               />
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <LogOut className="h-4 w-4" />
-                  <label className="text-base font-medium">Logout</label>
-                </div>
-              </div>
+            )}
 
-              <Button
-                variant="destructive"
-                onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
-              >
-                Logout
-              </Button>
+            <div className="mb-3 pb-3 border-b border-border" />
+
+            <div className="flex items-center justify-between">
+              <PostLikeComponent post={post} userId={post?.user?._id} />
+              <div className="flex-1 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleComments(post?._id)}
+                  className=" text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 mr-1" /> Comment
+                </Button>
+              </div>
+              <div className="flex-1 flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openShareModal(post?._id)}
+                  className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent  cursor-pointer"
+                >
+                  <Share className="w-4 h-4 mr-1" /> Share
+                </Button>
+              </div>
             </div>
+
+            {openPostId === post._id && (
+              <div className="border-t border-border mt-3">
+                <CommentSection postId={post._id} userProfile={currentUser} />
+              </div>
+            )}
           </CardContent>
         </Card>
-      </div>
+      ))}
+      <ShareDialog />
+      <div ref={loadMoreRef} style={{ height: "20px" }} />
+      {isFetchingNextPage && <PostSkeleton />}
+      {!hasNextPage && (
+        <div className="flex justify-center">
+          <span className="px-3 text-sm text-muted-foreground">
+            No more posts
+          </span>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default Profile;

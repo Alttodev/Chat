@@ -60,6 +60,7 @@ export const useUserPostList = (id) => {
         ? lastPage.nextPage
         : undefined;
     },
+     enabled: !!id,
     cacheTime: 0,
     refetchOnWindowFocus: false,
   });

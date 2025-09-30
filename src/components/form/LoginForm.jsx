@@ -17,7 +17,7 @@ const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
   const { mutateAsync: userLogin } = useUserLogin();
-  const { setToken, setUser } = useAuthStore();
+  const { setToken, setUser,setProfileId} = useAuthStore();
    const { connectSocket } = useSocket();
 
   const {
@@ -46,7 +46,8 @@ const LoginForm = () => {
       setUser(res?.user);
       connectSocket(res?.user?._id);
       toastSuccess(res?.message);
-      await getProfile();
+      const resp = await getProfile();
+      setProfileId(resp?.profile?.id); 
       navigate("/home");
     } catch (error) {
       if (error?.response?.data?.message === "Profile not found") {
