@@ -43,7 +43,7 @@ export function CenterFeed() {
 
   const userProfile = useMemo(() => profileData, [profileData]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     usePostList();
 
   const loadMoreRef = useRef(null);
@@ -74,7 +74,7 @@ export function CenterFeed() {
     }
   };
 
-  if (status === "pending") {
+  if (isFetching) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />

@@ -1,9 +1,11 @@
 import {
+  getRequestList,
   getUserInfoPost,
   getUserPost,
   getUserPostComments,
   getUserPostInfo,
   userCommentDelete,
+  userFollowRequest,
   userPost,
   userPostComment,
   userPostDelete,
@@ -27,12 +29,25 @@ export const usePostCreate = () => {
   });
 };
 
+
+
+export const useProfileFollow = () => {
+  // const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => userFollowRequest(id),
+    // onSuccess: () => {
+    //   queryClient.invalidateQueries(["user_post"]);
+    // },
+  });
+};
+
 export const usePostLike = () => {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => userPostLike(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
+      // queryClient.invalidateQueries(["user_post"]);
+      // queryClient.invalidateQueries(["user_Info_post"]);
     },
   });
 };
@@ -54,13 +69,13 @@ export const usePostList = () => {
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
     queryKey: ["user_Info_post"],
-    queryFn:()=> getUserInfoPost(id),
+    queryFn: () => getUserInfoPost(id),
     getNextPageParam: (lastPage) => {
       return lastPage.nextPage <= lastPage.totalPages
         ? lastPage.nextPage
         : undefined;
     },
-     enabled: !!id,
+    enabled: !!id,
     cacheTime: 0,
     refetchOnWindowFocus: false,
   });
@@ -88,7 +103,7 @@ export const usePostUpdate = () => {
 
 export const usePostInfo = (id) => {
   return useQuery({
-    queryKey: ["user_post_info"],
+    queryKey: ["user_post_info",id],
     queryFn: () => getUserPostInfo(id),
     cacheTime: 0,
     keepPreviousData: true,
@@ -100,8 +115,8 @@ export const usePostComment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, formData }) => userPostComment(id, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["comment"]);
+    onSuccess: (_,id) => {
+      queryClient.invalidateQueries(["comment",id]);
     },
   });
 };
@@ -110,8 +125,20 @@ export const usePostComment = () => {
 
 export const usePostComments = (id) => {
   return useQuery({
-    queryKey: ["comment"],
+    queryKey: ["comment",id],
     queryFn: () => getUserPostComments(id),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+
+
+export const useRequestList = () => {
+  return useQuery({
+    queryKey: ["follow_request"],
+    queryFn: () => getRequestList(),
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,

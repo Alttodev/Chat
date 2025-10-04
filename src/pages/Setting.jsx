@@ -31,15 +31,22 @@ import dayjs from "dayjs";
 import { formatDate, formatRelative } from "@/lib/dateHelpers";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { useSocket } from "@/lib/socket";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 function SettingsComponent() {
-  const { clearToken, isEditing, openEditing, closeEditing, user,setProfileId } =
-    useAuthStore();
+  const {
+    clearToken,
+    isEditing,
+    openEditing,
+    closeEditing,
+    user,
+    setProfileId,
+  } = useAuthStore();
   const { disconnectSocket } = useSocket();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
 
-  const { data: profileData } = useUserDetail();
+  const { data: profileData, isFetching } = useUserDetail();
 
   const userProfile = useMemo(() => profileData, [profileData]);
 
@@ -89,6 +96,14 @@ function SettingsComponent() {
       toastError(error, "Failed to logout");
     }
   };
+
+  if (isFetching) {
+    return (
+      <div className="min-h-90 flex items-center justify-center">
+        <Spinner className="text-emerald-600" size={44} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4  space-y-8">
@@ -271,4 +286,4 @@ function SettingsComponent() {
   );
 }
 
-export default  SettingsComponent;
+export default SettingsComponent;

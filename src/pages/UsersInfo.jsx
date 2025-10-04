@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
-import { useUserPostList } from "@/hooks/postHooks";
+import { useProfileFollow, useUserPostList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { ShareDialog } from "@/components/modals/shareModal";
 import PostLikeComponent from "@/components/Post/PostLike";
@@ -12,6 +12,7 @@ import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useParams } from "react-router-dom";
 import { OnlineStatus } from "@/components/onlineStatus";
+import { toastError, toastSuccess } from "@/lib/toast";
 
 const UsersInfo = () => {
   const { openShareModal } = useZustandSharePopup();
@@ -20,7 +21,9 @@ const UsersInfo = () => {
   const params = useParams();
   const id = params?.id;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { mutateAsync: followRequest } = useProfileFollow();
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: id });
 
   const posts = useMemo(
@@ -43,7 +46,16 @@ const UsersInfo = () => {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (status === "pending") {
+  const handleFollow = async (userId) => {
+    try {
+      const res = await followRequest(userId);
+      toastSuccess(res?.message);
+    } catch (err) {
+      toastError(err?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  if (isFetching) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -52,7 +64,7 @@ const UsersInfo = () => {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 space-y-8">
+    <div className="w-full max-w-3xl mx-auto px-4 space-y-8">
       {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
@@ -92,7 +104,10 @@ const UsersInfo = () => {
                 </div>
               </div>
             </div>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer ">
+            <Button
+              onClick={() => handleFollow(user?._id)}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
+            >
               Follow
             </Button>
           </div>

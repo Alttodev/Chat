@@ -141,9 +141,7 @@ const Friends = () => {
         </TabsContent>
 
         <TabsContent value="requests" className="grid gap-4">
-          {friendRequests.map((r) => (
-            <RequestCard key={r.id} request={r} />
-          ))}
+          <RequestCard />
         </TabsContent>
       </Tabs>
     </div>

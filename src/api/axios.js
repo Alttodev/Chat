@@ -46,6 +46,11 @@ export const userPostComment = async (id, formData) => {
   return data;
 };
 
+export const userFollowRequest = async (id) => {
+  const { data } = await axiosInstance.post(`/follow/send/${id}`);
+  return data;
+};
+
 //update
 
 export const userUpdate = async (formData) => {
@@ -91,6 +96,13 @@ export const getUserPostInfo = async (id) => {
 
 export const getUserPostComments = async (id) => {
   const { data } = await axiosInstance.get(`/posts/${id}/comments`);
+  return data;
+};
+
+
+
+export const getRequestList = async () => {
+  const { data } = await axiosInstance.get(`/follow/requests`);
   return data;
 };
 

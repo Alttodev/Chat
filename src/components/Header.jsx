@@ -1,4 +1,4 @@
-import { Search, Bell, MessageCircle, Users, Home, Menu } from "lucide-react";
+import { Search, MessageCircle, Users, Home, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
 import { useMemo } from "react";
 import { OnlineStatus } from "./onlineStatus";
+import NotificationSection from "./notification/NotificationSection";
 
 export function SocialHeader() {
   const { data: profileData } = useUserDetail();
@@ -70,13 +71,7 @@ export function SocialHeader() {
 
         {/* Right section */}
         <div className="flex items-center gap-2 flex-1 justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-primary hover:bg-accent/10"
-          >
-            <Bell className="w-5 h-5" />
-          </Button>
+          <NotificationSection />
           <div className="relative">
             <Avatar className="w-8 h-8">
               <AvatarFallback className="text-emerald-600 font-semibold">

@@ -1,9 +1,21 @@
-import { Mail, MapPin, MessageCircle, Share } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  MessageCircle,
+  MoreHorizontal,
+  Share,
+  SquarePen,
+  Trash2,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
+import {
+  useCommentStore,
+  useZustandPopup,
+  useZustandSharePopup,
+} from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
-import { useUserPostList } from "@/hooks/postHooks";
+import { usePostDelete, useUserPostList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { ShareDialog } from "@/components/modals/shareModal";
 import PostLikeComponent from "@/components/Post/PostLike";
@@ -12,8 +24,18 @@ import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { useAuthStore } from "@/store/authStore";
+import { toastError, toastSuccess } from "@/lib/toast";
+import { useUserDetail } from "@/hooks/authHooks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { PostDialog } from "@/components/modals/postModal";
 
 const Profile = () => {
+  const { openModal } = useZustandPopup();
   const { profileId } = useAuthStore();
   const { openShareModal } = useZustandSharePopup();
   const { openPostId, toggleComments } = useCommentStore();
@@ -22,9 +44,12 @@ const Profile = () => {
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { mutateAsync: deletePost } = usePostDelete();
+  const { data: profileData } = useUserDetail();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: profileId });
 
+  const userProfile = useMemo(() => profileData, [profileData]);
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data]
@@ -45,7 +70,16 @@ const Profile = () => {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (status === "pending") {
+  const handleDelete = async (id) => {
+    try {
+      const res = await deletePost(id);
+      toastSuccess(res?.message);
+    } catch (err) {
+      toastError(err?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  if (isFetching) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -54,7 +88,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 space-y-8">
+    <div className="w-full max-w-3xl mx-auto px-4 space-y-8">
       {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
@@ -119,6 +153,43 @@ const Profile = () => {
                   </p>
                 </div>
               </div>
+              {post?.isOwner && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
+                      <MoreHorizontal className="w-4 h-4" />
+                      <span className="sr-only">Toggle user menu</span>
+                    </span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-full mt-1 border-slate-200 shadow-lg"
+                    sideOffset={8}
+                  >
+                    <DropdownMenuItem
+                      className="cursor-pointer transition-colors duration-200"
+                      onClick={() =>
+                        openModal({ userProfile, postId: post._id })
+                      }
+                    >
+                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
+                      <span className="text-emerald-700 font-medium">
+                        Edit Post
+                      </span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="cursor-pointer transition-colors duration-200 mt-1"
+                      onClick={() => handleDelete(post._id)}
+                    >
+                      <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
+                      <span className="text-red-500 font-medium">
+                        Delete Post
+                      </span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </CardHeader>
 
@@ -169,6 +240,7 @@ const Profile = () => {
         </Card>
       ))}
       <ShareDialog />
+      <PostDialog />
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}
       {!hasNextPage && (

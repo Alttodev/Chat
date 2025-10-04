@@ -5,31 +5,30 @@ export const OnlineStatus = ({ userId, size }) => {
   const { socket } = useSocket();
   const [isOnline, setIsOnline] = useState(false);
 
- useEffect(() => {
-  if (!socket) return;
+  useEffect(() => {
+    if (!socket) return;
 
-  // Ask server for this user's status
-  socket.emit("check-user-status", userId);
+    // Ask server for this user's status
+    socket.emit("check-user-status", userId);
 
-  socket.on("user-online", (id) => {
-    if (id === userId) setIsOnline(true);
-  });
+    socket.on("user-online", (id) => {
+      if (id === userId) setIsOnline(true);
+    });
 
-  socket.on("user-offline", (id) => {
-    if (id === userId) setIsOnline(false);
-  });
+    socket.on("user-offline", (id) => {
+      if (id === userId) setIsOnline(false);
+    });
 
-  socket.on("user-status", ({ id, online }) => {
-    if (id === userId) setIsOnline(online);
-  });
+    socket.on("user-status", ({ id, online }) => {
+      if (id === userId) setIsOnline(online);
+    });
 
-  return () => {
-    socket.off("user-online");
-    socket.off("user-offline");
-    socket.off("user-status");
-  };
-}, [socket, userId]);
-
+    return () => {
+      socket.off("user-online");
+      socket.off("user-offline");
+      socket.off("user-status");
+    };
+  }, [socket, userId]);
 
   return (
     <div className="flex items-center gap-2">
