@@ -1,4 +1,5 @@
 import {
+  getFollowRequestInfo,
   getRequestList,
   getUserInfoPost,
   getUserPost,
@@ -29,15 +30,13 @@ export const usePostCreate = () => {
   });
 };
 
-
-
 export const useProfileFollow = () => {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id) => userFollowRequest(id),
-    // onSuccess: () => {
-    //   queryClient.invalidateQueries(["user_post"]);
-    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["request_info"]);
+    },
   });
 };
 
@@ -103,7 +102,7 @@ export const usePostUpdate = () => {
 
 export const usePostInfo = (id) => {
   return useQuery({
-    queryKey: ["user_post_info",id],
+    queryKey: ["user_post_info", id],
     queryFn: () => getUserPostInfo(id),
     cacheTime: 0,
     keepPreviousData: true,
@@ -115,8 +114,8 @@ export const usePostComment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, formData }) => userPostComment(id, formData),
-    onSuccess: (_,id) => {
-      queryClient.invalidateQueries(["comment",id]);
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries(["comment", id]);
     },
   });
 };
@@ -125,15 +124,13 @@ export const usePostComment = () => {
 
 export const usePostComments = (id) => {
   return useQuery({
-    queryKey: ["comment",id],
+    queryKey: ["comment", id],
     queryFn: () => getUserPostComments(id),
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
 };
-
-
 
 export const useRequestList = () => {
   return useQuery({
@@ -142,6 +139,16 @@ export const useRequestList = () => {
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useRequestListInfo = ({ fromId, toId }) => {
+  return useQuery({
+    queryKey: ["request_info", fromId, toId],
+    queryFn: () => getFollowRequestInfo({ fromId, toId }),
+    enabled: !!fromId && !!toId,
+    refetchOnWindowFocus: false,
+    cacheTime: 0,
   });
 };
 

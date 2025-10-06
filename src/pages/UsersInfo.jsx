@@ -3,7 +3,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
-import { useProfileFollow, useUserPostList } from "@/hooks/postHooks";
+import {
+  useProfileFollow,
+  useRequestListInfo,
+  useUserPostList,
+} from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { ShareDialog } from "@/components/modals/shareModal";
 import PostLikeComponent from "@/components/Post/PostLike";
@@ -13,9 +17,12 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useParams } from "react-router-dom";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store/authStore";
 
 const UsersInfo = () => {
   const { openShareModal } = useZustandSharePopup();
+  const { profileId } = useAuthStore();
   const { openPostId, toggleComments } = useCommentStore();
   const loadMoreRef = useRef(null);
   const params = useParams();
@@ -23,7 +30,30 @@ const UsersInfo = () => {
 
   const { mutateAsync: followRequest } = useProfileFollow();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+  const { data: requestStatus } = useRequestListInfo({
+    fromId: profileId,
+    toId: id,
+  });
+
+  const reqStatus = requestStatus?.request?.status;
+  const isValidStatus = ["pending", "accepted", "declined"].includes(reqStatus);
+  let statusMessage = "";
+  switch (reqStatus) {
+    case "pending":
+      statusMessage = "Request Sent";
+      break;
+    case "accepted":
+      statusMessage = "Request Accepted";
+      break;
+    case "declined":
+      statusMessage = "Request Declined";
+      break;
+    default:
+      statusMessage = "No Request";
+      break;
+  }
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useUserPostList({ id: id });
 
   const posts = useMemo(
@@ -55,7 +85,7 @@ const UsersInfo = () => {
     }
   };
 
-  if (isFetching) {
+  if (status === "pending") {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -104,12 +134,18 @@ const UsersInfo = () => {
                 </div>
               </div>
             </div>
-            <Button
-              onClick={() => handleFollow(user?._id)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
-            >
-              Follow
-            </Button>
+            <div>
+              {isValidStatus ? (
+                <Badge variant="secondary">{statusMessage}</Badge>
+              ) : (
+                <Button
+                  onClick={() => handleFollow(user?._id)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
+                >
+                  Follow
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

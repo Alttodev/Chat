@@ -106,6 +106,11 @@ export const getRequestList = async () => {
   return data;
 };
 
+export const getFollowRequestInfo = async ({fromId,toId}) => {
+  const { data } = await axiosInstance.get(`/follow/requests/${fromId}/${toId}`);
+  return data;
+};
+
 //delete
 
 export const userPostDelete = async (id) => {

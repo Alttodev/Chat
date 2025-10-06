@@ -8,7 +8,7 @@ import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 
 export const RequestCard = () => {
-  const { data: request,isFetching } = useRequestList();
+  const { data: request, isFetching } = useRequestList();
   const requestData = useMemo(() => request, [request]);
 
   if (!requestData || requestData.requests.length === 0) {
@@ -17,8 +17,8 @@ export const RequestCard = () => {
     );
   }
   if (isFetching) {
-  return<SkeletonRequest/>
-}
+    return <SkeletonRequest />;
+  }
   return (
     <Fragment>
       {requestData &&
@@ -27,7 +27,7 @@ export const RequestCard = () => {
             <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
+                  <AvatarFallback className="text-xl font-semibold  text-emerald-700">
                     {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
