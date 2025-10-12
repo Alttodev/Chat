@@ -1,84 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { StatsCards } from "@/components/Friends/StatusCard";
 import { FriendCard } from "@/components/Friends/FriendCard";
 import { RequestCard } from "@/components/Friends/RequestCard";
+import { useFriendsCount } from "@/hooks/postHooks";
 
 const Friends = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
-  const friends = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      username: "@sarah_j",
-      avatar: "/professional-woman.png",
-      isOnline: true,
-      mutualFriends: 12,
-    },
-    {
-      id: "2",
-      name: "Mike Chen",
-      username: "@mike_c",
-      avatar: "/man-asian-professional.jpg",
-      isOnline: true,
-      mutualFriends: 8,
-    },
-    {
-      id: "3",
-      name: "Emily Rodriguez",
-      username: "@emily_r",
-      avatar: "/woman-latina-professional.jpg",
-      isOnline: false,
-      lastSeen: "2 hours ago",
-      mutualFriends: 15,
-    },
-    {
-      id: "4",
-      name: "David Kim",
-      username: "@david_k",
-      avatar: "/man-korean-professional.jpg",
-      isOnline: false,
-      lastSeen: "1 day ago",
-      mutualFriends: 6,
-    },
-    {
-      id: "5",
-      name: "Lisa Thompson",
-      username: "@lisa_t",
-      avatar: "/professional-blonde-woman.png",
-      isOnline: true,
-      mutualFriends: 20,
-    },
-  ];
-  const friendRequests = [
-    {
-      id: "1",
-      name: "Alex Martinez",
-      username: "@alex_m",
-      avatar: "/man-hispanic-professional.jpg",
-      mutualFriends: 5,
-      requestDate: "2 days ago",
-    },
-    {
-      id: "2",
-      name: "Jessica Wong",
-      username: "@jessica_w",
-      avatar: "/woman-asian-professional.jpg",
-      mutualFriends: 3,
-      requestDate: "1 week ago",
-    },
-  ];
-
-  const filteredFriends = friends.filter(
-    (f) =>
-      f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-  const onlineFriends = friends.filter((f) => f.isOnline);
+  const { data: count } = useFriendsCount();
+  const countData = useMemo(() => count, [count]);
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4  space-y-8">
@@ -105,9 +38,9 @@ const Friends = () => {
 
       {/* Stats */}
       <StatsCards
-        total={friends.length}
-        online={onlineFriends.length}
-        requests={friendRequests.length}
+        total={countData?.totalFriends}
+        online={countData?.totalOnline}
+        requests={countData?.totalRequests}
       />
 
       {/* Tabs */}
@@ -129,15 +62,11 @@ const Friends = () => {
         </TabsList>
 
         <TabsContent value="all" className="grid gap-4">
-          {filteredFriends.map((f) => (
-            <FriendCard key={f.id} friend={f} />
-          ))}
+          <FriendCard />
         </TabsContent>
 
         <TabsContent value="online" className="grid gap-4">
-          {onlineFriends.map((f) => (
-            <FriendCard key={f.id} friend={f} onlineOnly />
-          ))}
+          <FriendCard tabValue="online" />
         </TabsContent>
 
         <TabsContent value="requests" className="grid gap-4">

@@ -1,5 +1,7 @@
 import {
   getFollowRequestInfo,
+  getFriendsCount,
+  getFriendsList,
   getRequestList,
   getUserInfoPost,
   getUserPost,
@@ -7,6 +9,7 @@ import {
   getUserPostInfo,
   userCommentDelete,
   userFollowRequest,
+  userFollowRequestUpdate,
   userPost,
   userPostComment,
   userPostDelete,
@@ -51,6 +54,18 @@ export const usePostLike = () => {
   });
 };
 
+export const usePostComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }) => userPostComment(id, formData),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries(["comment", id]);
+    },
+  });
+};
+
+//get
+
 export const usePostList = () => {
   return useInfiniteQuery({
     queryKey: ["user_post"],
@@ -80,26 +95,6 @@ export const useUserPostList = (id) => {
   });
 };
 
-export const usePostDelete = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id) => userPostDelete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
-    },
-  });
-};
-
-export const usePostUpdate = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, formData }) => userPostUpdate(id, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
-    },
-  });
-};
-
 export const usePostInfo = (id) => {
   return useQuery({
     queryKey: ["user_post_info", id],
@@ -109,18 +104,6 @@ export const usePostInfo = (id) => {
     refetchOnWindowFocus: false,
   });
 };
-
-export const usePostComment = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, formData }) => userPostComment(id, formData),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries(["comment", id]);
-    },
-  });
-};
-
-// getUserPostComments
 
 export const usePostComments = (id) => {
   return useQuery({
@@ -144,7 +127,7 @@ export const useRequestList = () => {
 
 export const useRequestListInfo = ({ fromId, toId }) => {
   return useQuery({
-    queryKey: ["request_info", fromId, toId],
+    queryKey: ["request_info"],
     queryFn: () => getFollowRequestInfo({ fromId, toId }),
     enabled: !!fromId && !!toId,
     refetchOnWindowFocus: false,
@@ -152,7 +135,61 @@ export const useRequestListInfo = ({ fromId, toId }) => {
   });
 };
 
-// delete comment
+export const useFriendsList = () => {
+  return useQuery({
+    queryKey: ["friends"],
+    queryFn: () => getFriendsList(),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+// getFriendsCount
+
+export const useFriendsCount = () => {
+  return useQuery({
+    queryKey: ["friends-count"],
+    queryFn: () => getFriendsCount(),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+//update
+
+export const useFollowRequestUpdate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }) => userFollowRequestUpdate(id, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["request_info"]);
+    },
+  });
+};
+
+export const usePostUpdate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, formData }) => userPostUpdate(id, formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user_post"]);
+    },
+  });
+};
+
+// delete
+
+export const usePostDelete = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => userPostDelete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["user_post"]);
+    },
+  });
+};
 
 export const usePostCommentDelete = () => {
   const queryClient = useQueryClient();

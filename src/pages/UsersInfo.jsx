@@ -17,7 +17,6 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useParams } from "react-router-dom";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/store/authStore";
 
 const UsersInfo = () => {
@@ -28,7 +27,7 @@ const UsersInfo = () => {
   const params = useParams();
   const id = params?.id;
 
-  const { mutateAsync: followRequest } = useProfileFollow();
+  const { mutateAsync: followRequest, isLoading } = useProfileFollow();
 
   const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
@@ -38,22 +37,23 @@ const UsersInfo = () => {
   const reqStatus = requestStatus?.request?.status;
   const isValidStatus = ["pending", "accepted", "declined"].includes(reqStatus);
   let statusMessage = "";
+
   switch (reqStatus) {
     case "pending":
-      statusMessage = "Request Sent";
-      break;
-    case "accepted":
-      statusMessage = "Request Accepted";
+      statusMessage = "Requested";
       break;
     case "declined":
-      statusMessage = "Request Declined";
+      statusMessage = "Declined";
+      break;
+    case "accepted":
+      statusMessage = "Following";
       break;
     default:
       statusMessage = "No Request";
       break;
   }
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: id });
 
   const posts = useMemo(
@@ -85,7 +85,7 @@ const UsersInfo = () => {
     }
   };
 
-  if (status === "pending") {
+  if (isFetching) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -136,10 +136,13 @@ const UsersInfo = () => {
             </div>
             <div>
               {isValidStatus ? (
-                <Badge variant="secondary">{statusMessage}</Badge>
+                <Button className="text-sm bg-emerald-600 hover:bg-emerald-600">
+                  {statusMessage}
+                </Button>
               ) : (
                 <Button
                   onClick={() => handleFollow(user?._id)}
+                  disabled={isLoading}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
                 >
                   Follow

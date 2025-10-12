@@ -63,6 +63,11 @@ export const userPostUpdate = async (id, formData) => {
   return data;
 };
 
+export const userFollowRequestUpdate = async (id, formData) => {
+  const { data } = await axiosInstance.put(`/follow/${id}/respond`, formData);
+  return data;
+};
+
 //get
 
 export const getProfile = async () => {
@@ -82,7 +87,7 @@ export const getUserPost = async ({ pageParam = 1 }) => {
   return data;
 };
 
-export const getUserInfoPost = async ({id, pageParam = 1 }) => {
+export const getUserInfoPost = async ({ id, pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
     `/post/list/${id}?page=${pageParam}&limit=5`
   );
@@ -99,18 +104,27 @@ export const getUserPostComments = async (id) => {
   return data;
 };
 
-
-
 export const getRequestList = async () => {
   const { data } = await axiosInstance.get(`/follow/requests`);
   return data;
 };
 
-export const getFollowRequestInfo = async ({fromId,toId}) => {
-  const { data } = await axiosInstance.get(`/follow/requests/${fromId}/${toId}`);
+export const getFollowRequestInfo = async ({ fromId, toId }) => {
+  const { data } = await axiosInstance.get(
+    `/follow/requests/${fromId}/${toId}`
+  );
   return data;
 };
 
+export const getFriendsList = async () => {
+  const { data } = await axiosInstance.get(`/follow/friends`);
+  return data;
+};
+
+export const getFriendsCount = async () => {
+  const { data } = await axiosInstance.get(`/follow/counts`);
+  return data;
+};
 //delete
 
 export const userPostDelete = async (id) => {
