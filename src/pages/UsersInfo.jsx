@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef } from "react";
 import {
   useProfileFollow,
   useRequestListInfo,
+  useUserInfoCount,
   useUserPostList,
 } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
@@ -28,6 +29,9 @@ const UsersInfo = () => {
   const id = params?.id;
 
   const { mutateAsync: followRequest, isLoading } = useProfileFollow();
+
+  const { data: count } = useUserInfoCount(id);
+  const countData = useMemo(() => count, [count]);
 
   const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
@@ -115,21 +119,33 @@ const UsersInfo = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <div className="text-xl font-bold text-balance">
-                    {user?.userName}
+                    {user?.userName || "-"}
                   </div>
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <Mail className="h-4 w-4" />
-                    <span>{user?.email}</span>
+                    <span>{user?.email || "-"}</span>
                   </div>
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>{user?.address}</span>
+                    <span>{user?.address || "-"}</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg font-semibold text-black">
-                      {totalPosts}
-                    </span>
-                    <span className="text-sm text-muted-foreground">Posts</span>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col   mt-2">
+                      <span className="text-lg font-semibold text-black">
+                        {totalPosts}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        Posts
+                      </span>
+                    </div>
+                    <div className="flex flex-col   mt-2">
+                      <span className="text-lg font-semibold text-black">
+                        {countData?.totalFriends}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        Followers
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

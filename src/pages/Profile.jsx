@@ -15,7 +15,11 @@ import {
   useZustandSharePopup,
 } from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
-import { usePostDelete, useUserPostList } from "@/hooks/postHooks";
+import {
+  useFriendsCount,
+  usePostDelete,
+  useUserPostList,
+} from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { ShareDialog } from "@/components/modals/shareModal";
 import PostLikeComponent from "@/components/Post/PostLike";
@@ -46,6 +50,8 @@ const Profile = () => {
 
   const { mutateAsync: deletePost } = usePostDelete();
   const { data: profileData } = useUserDetail();
+  const { data: count } = useFriendsCount();
+  const countData = useMemo(() => count, [count]);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: profileId });
 
@@ -120,11 +126,23 @@ const Profile = () => {
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address}</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg font-semibold text-black">
-                      {totalPosts}
-                    </span>
-                    <span className="text-sm text-muted-foreground">Posts</span>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col   mt-2">
+                      <span className="text-lg font-semibold text-black">
+                        {totalPosts}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        Posts
+                      </span>
+                    </div>
+                    <div className="flex flex-col   mt-2">
+                      <span className="text-lg font-semibold text-black">
+                        {countData?.totalFriends}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        Followers
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
