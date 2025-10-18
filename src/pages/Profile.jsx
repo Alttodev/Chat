@@ -1,5 +1,4 @@
 import {
-  Mail,
   MapPin,
   MessageCircle,
   MoreHorizontal,
@@ -119,15 +118,11 @@ const Profile = () => {
                   </div>
 
                   <div className="flex gap-2 items-center text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{user?.email}</span>
-                  </div>
-                  <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address}</span>
                   </div>
                   <div className="flex gap-4">
-                    <div className="flex flex-col   mt-2">
+                    <div className="flex flex-col   mt-1">
                       <span className="text-lg font-semibold text-black">
                         {totalPosts}
                       </span>
@@ -135,7 +130,7 @@ const Profile = () => {
                         Posts
                       </span>
                     </div>
-                    <div className="flex flex-col   mt-2">
+                    <div className="flex flex-col   mt-1">
                       <span className="text-lg font-semibold text-black">
                         {countData?.totalFriends}
                       </span>
@@ -191,9 +186,7 @@ const Profile = () => {
                       }
                     >
                       <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
-                      <span className="text-emerald-700 font-medium">
-                        Edit Post
-                      </span>
+                      <span className="text-emerald-700 font-medium">Edit</span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
@@ -201,9 +194,7 @@ const Profile = () => {
                       onClick={() => handleDelete(post._id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
-                      <span className="text-red-500 font-medium">
-                        Delete Post
-                      </span>
+                      <span className="text-red-500 font-medium">Delete</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

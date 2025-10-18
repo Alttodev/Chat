@@ -1,4 +1,4 @@
-import { Mail, MapPin, MessageCircle, Share } from "lucide-react";
+import { MapPin, MessageCircle, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
@@ -15,12 +15,14 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
+import { Badge } from "@/components/ui/badge";
 
 const UsersInfo = () => {
+  const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments } = useCommentStore();
@@ -121,16 +123,13 @@ const UsersInfo = () => {
                   <div className="text-xl font-bold text-balance">
                     {user?.userName || "-"}
                   </div>
-                  <div className="flex gap-2 items-center text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{user?.email || "-"}</span>
-                  </div>
+
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
                   <div className="flex gap-4">
-                    <div className="flex flex-col   mt-2">
+                    <div className="flex flex-col   mt-1">
                       <span className="text-lg font-semibold text-black">
                         {totalPosts}
                       </span>
@@ -138,7 +137,7 @@ const UsersInfo = () => {
                         Posts
                       </span>
                     </div>
-                    <div className="flex flex-col   mt-2">
+                    <div className="flex flex-col  mt-1">
                       <span className="text-lg font-semibold text-black">
                         {countData?.totalFriends}
                       </span>
@@ -150,9 +149,10 @@ const UsersInfo = () => {
                 </div>
               </div>
             </div>
-            <div>
+
+            <div className="flex flex-col  gap-2 ">
               {isValidStatus ? (
-                <Button className="text-sm bg-emerald-600 hover:bg-emerald-600">
+                <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none ">
                   {statusMessage}
                 </Button>
               ) : (
@@ -164,6 +164,19 @@ const UsersInfo = () => {
                   Follow
                 </Button>
               )}
+              {reqStatus === "accepted" ? (
+                <span
+                  onClick={() => navigate("/messages")}
+                  size="sm"
+                  className="flex justify-around cursor-pointer"
+                >
+                  <img
+                    src="/src/assets/logo.png"
+                    alt="Clix Logo"
+                    className="w-8 h-8"
+                  />
+                </span>
+              ) : null}
             </div>
           </div>
         </CardContent>

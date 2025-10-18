@@ -1,16 +1,18 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useFriendsList } from "@/hooks/postHooks";
-import { MessageCircle } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
+import { Link, useNavigate } from "react-router-dom";
 
 export const FriendCard = ({ tabValue }) => {
+  const navigate = useNavigate();
   const { data: friendsList, isFetching } = useFriendsList();
   const friendData = useMemo(() => friendsList, [friendsList]);
 
-  const friends = friendData?.friends?.filter((item) => item?.isFriends === true);
+  const friends = friendData?.friends?.filter(
+    (item) => item?.isFriends === true
+  );
   const onlineFriends = friendData?.friends?.filter(
     (item) => item?.from?.isOnline === true && item?.isFriends === true
   );
@@ -29,7 +31,10 @@ export const FriendCard = ({ tabValue }) => {
         friendsData?.map((item) => (
           <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+              <Link
+                to={`/users/${item?.from?._id}`}
+                className="flex items-center gap-4"
+              >
                 <div className="relative">
                   <Avatar className="h-12 w-12">
                     <AvatarFallback className="text-xl font-semibold  text-emerald-700">
@@ -47,17 +52,19 @@ export const FriendCard = ({ tabValue }) => {
                   <h3 className="font-semibold">{item?.from?.userName}</h3>
                   <p className="text-sm text-gray-500">{item?.from?.address}</p>
                 </div>
-              </div>
+              </Link>
 
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
-                >
-                  <MessageCircle className="h-3 w-3 mr-2" />
-                  Chat
-                </Button>
-              </div>
+              <span
+                onClick={() => navigate("/messages")}
+                size="sm"
+                className="flex justify-around cursor-pointer"
+              >
+                <img
+                  src="/src/assets/logo.png"
+                  alt="Clix Logo"
+                  className="w-8 h-8"
+                />
+              </span>
             </CardContent>
           </Card>
         ))}

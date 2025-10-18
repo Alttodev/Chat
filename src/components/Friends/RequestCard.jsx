@@ -7,6 +7,7 @@ import { Check, X } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { toastError, toastSuccess } from "@/lib/toast";
+import { Link } from "react-router-dom";
 
 export const RequestCard = () => {
   const { mutateAsync: requestRespond } = useFollowRequestUpdate();
@@ -40,7 +41,8 @@ export const RequestCard = () => {
         requestedData?.map((item) => (
           <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+              <Link
+                to={`/users/${item?.from?._id}`}className="flex items-center gap-4">
                 <Avatar className="h-12 w-12">
                   <AvatarFallback className="text-xl font-semibold  text-emerald-700">
                     {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
@@ -53,7 +55,7 @@ export const RequestCard = () => {
                     Requested {formatRelative(item?.createdAt)}
                   </span>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex gap-2">
                 <Button

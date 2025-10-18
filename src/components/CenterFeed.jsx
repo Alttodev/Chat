@@ -133,7 +133,7 @@ export function CenterFeed() {
                     >
                       <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
                       <span className="text-emerald-700 font-medium">
-                        Edit Post
+                        Edit
                       </span>
                     </DropdownMenuItem>
 
@@ -143,7 +143,7 @@ export function CenterFeed() {
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
                       <span className="text-red-500 font-medium">
-                        Delete Post
+                        Delete
                       </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
