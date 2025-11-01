@@ -47,7 +47,7 @@ export function UserProfiles({ data }) {
         <div className="flex items-center justify-center">
           {profiles.length > 0 && (
             <button
-              onClick={() => navigate("/friends")}
+              onClick={() => navigate("/userslist")}
               className="text-sm  text-emerald-600 hover:underline  mt-2 cursor-pointer"
             >
               View All

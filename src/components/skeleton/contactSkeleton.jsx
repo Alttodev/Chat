@@ -4,7 +4,7 @@ export function ContactSkeleton() {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Contacts</CardTitle>
+        <CardTitle className="text-lg">People You May Know</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
         {[...Array(3)].map((_, index) => (

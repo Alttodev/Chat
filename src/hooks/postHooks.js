@@ -128,7 +128,7 @@ export const useRequestList = () => {
 
 export const useRequestListInfo = ({ fromId, toId }) => {
   return useQuery({
-    queryKey: ["request_info"],
+    queryKey: ["request_info", fromId, toId],
     queryFn: () => getFollowRequestInfo({ fromId, toId }),
     enabled: !!fromId && !!toId,
     refetchOnWindowFocus: false,

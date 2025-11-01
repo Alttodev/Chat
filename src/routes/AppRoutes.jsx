@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import UsersInfo from "@/pages/UsersInfo";
 import SettingsComponent from "@/pages/Setting";
 import Profile from "@/pages/Profile";
+import UsersList from "@/pages/UsersList";
 
 function AppRoutes() {
   return (
@@ -31,6 +32,7 @@ function AppRoutes() {
               <Route path="/messages" element={<Message />} />
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/users/:id" element={<UsersInfo />} />
+              <Route path="/userslist" element={<UsersList />}/>
             </Route>
           </Route>
         </Routes>
