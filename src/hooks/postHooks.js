@@ -83,7 +83,7 @@ export const usePostList = () => {
 
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
-    queryKey: ["user_Info_post"],
+    queryKey: ["user_Info_post",id],
     queryFn: () => getUserInfoPost(id),
     getNextPageParam: (lastPage) => {
       return lastPage.nextPage <= lastPage.totalPages

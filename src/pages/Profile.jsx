@@ -55,6 +55,7 @@ const Profile = () => {
     useUserPostList({ id: profileId });
 
   const userProfile = useMemo(() => profileData, [profileData]);
+ 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data]
@@ -101,7 +102,7 @@ const Profile = () => {
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                  {user?.userName?.charAt(0).toUpperCase() || "-"}
+                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
 
@@ -114,12 +115,12 @@ const Profile = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <div className="text-xl font-bold text-balance">
-                    {user?.userName}
+                    {userProfile?.profile?.userName}
                   </div>
 
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>{user?.address}</span>
+                    <span>{userProfile?.profile?.address}</span>
                   </div>
                   <div className="flex gap-4">
                     <div className="flex flex-col   mt-1">

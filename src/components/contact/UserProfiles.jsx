@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback} from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 
 export function UserProfiles({ data }) {
   const navigate = useNavigate();
   const profiles = data?.profiles || [];
-  console.log( profiles," profiles")
+
   if (!data?.profiles || data?.profiles.length === 0) {
     return <div className="text-center py-10 text-gray-500">No User</div>;
   }
@@ -16,7 +16,7 @@ export function UserProfiles({ data }) {
       </CardHeader>
 
       <CardContent className="space-y-2">
-        {profiles.slice(0, 3).map((contact, index) => (
+        {profiles.slice(0, 5).map((contact, index) => (
           <Link
             to={`/users/${contact?.id}`}
             key={index}
