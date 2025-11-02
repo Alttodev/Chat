@@ -34,7 +34,13 @@ function UsersList() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute bottom-2 right-2">
-                  <OnlineStatus userId={user?.id} size="h-3 w-3" />
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-3 w-3 rounded-full ${
+                        user?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                      }`}
+                    ></span>
+                  </div>
                 </div>
               </div>
 

@@ -112,7 +112,13 @@ const UsersInfo = () => {
               </Avatar>
 
               <div className="absolute bottom-2 right-2">
-                <OnlineStatus userId={user?._id} size="h-3 w-3" />
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`h-3 w-3 rounded-full ${
+                      user?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                    }`}
+                  ></span>
+                </div>
               </div>
             </div>
 
@@ -163,18 +169,21 @@ const UsersInfo = () => {
 
             <div className="flex flex-col  gap-2 ">
               {isValidStatus ? (
-                <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none ">
+                <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none">
                   {statusMessage}
                 </Button>
               ) : (
-                <Button
-                  onClick={() => handleFollow(user?._id)}
-                  disabled={isLoading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
-                >
-                  Follow
-                </Button>
+                profileId !== id && (
+                  <Button
+                    onClick={() => handleFollow(user?._id)}
+                    disabled={isLoading}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  >
+                    Follow
+                  </Button>
+                )
               )}
+
               {reqStatus === "accepted" ? (
                 <span
                   onClick={() => navigate("/messages")}

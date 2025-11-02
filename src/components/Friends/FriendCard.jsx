@@ -4,6 +4,7 @@ import { useFriendsList } from "@/hooks/postHooks";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { Link, useNavigate } from "react-router-dom";
+import { MapPin } from "lucide-react";
 
 export const FriendCard = ({ tabValue }) => {
   const navigate = useNavigate();
@@ -50,7 +51,10 @@ export const FriendCard = ({ tabValue }) => {
                 </div>
                 <div>
                   <h3 className="font-semibold">{item?.from?.userName}</h3>
-                  <p className="text-sm text-gray-500">{item?.from?.address}</p>
+                  <div className="flex gap-1 items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{item?.from?.address || "-"}</span>
+                  </div>
                 </div>
               </Link>
 

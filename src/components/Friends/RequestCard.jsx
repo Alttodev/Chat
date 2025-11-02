@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useFollowRequestUpdate, useRequestList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
-import { Check, X } from "lucide-react";
+import { Check, MapPin, X } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -42,7 +42,9 @@ export const RequestCard = () => {
           <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <Link
-                to={`/users/${item?.from?._id}`}className="flex items-center gap-4">
+                to={`/users/${item?.from?._id}`}
+                className="flex items-center gap-4"
+              >
                 <Avatar className="h-12 w-12">
                   <AvatarFallback className="text-xl font-semibold  text-emerald-700">
                     {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
@@ -50,7 +52,10 @@ export const RequestCard = () => {
                 </Avatar>
                 <div>
                   <h3 className="font-semibold">{item?.from?.userName}</h3>
-                  <p className="text-sm text-gray-500">{item?.from?.address}</p>
+                  <div className="flex gap-1 items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{item?.from?.address || "-"}</span>
+                  </div>
                   <span className="text-xs text-gray-400">
                     Requested {formatRelative(item?.createdAt)}
                   </span>
