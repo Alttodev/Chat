@@ -13,6 +13,7 @@ import UsersInfo from "@/pages/UsersInfo";
 import SettingsComponent from "@/pages/Setting";
 import Profile from "@/pages/Profile";
 import UsersList from "@/pages/UsersList";
+import UsersFriendsList from "@/pages/UsersFriendsList";
 
 function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ function AppRoutes() {
             <Route element={<HomeLayout />}>
               <Route path="/home" element={<CenterFeed />} />
               <Route path="/friends" element={<Friends />} />
+              <Route path="/friends/:id" element={<UsersFriendsList />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/settings" element={<SettingsComponent />} />

@@ -3,6 +3,7 @@ import {
   getFriendsCount,
   getFriendsList,
   getRequestList,
+  getUserFollowers,
   getUserInfoCount,
   getUserInfoPost,
   getUserPost,
@@ -146,6 +147,18 @@ export const useFriendsList = () => {
   });
 };
 
+
+
+export const useUserFollowers = (id) => {
+  return useQuery({
+    queryKey: ["user-followers", id],
+    queryFn: () => getUserFollowers(id),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
 // getFriendsCount
 
 export const useFriendsCount = () => {
@@ -161,7 +174,7 @@ export const useFriendsCount = () => {
 //getUserInfoCount
 export const useUserInfoCount = (id) => {
   return useQuery({
-    queryKey: ["user-count"],
+    queryKey: ["user-count",id],
     queryFn: () => getUserInfoCount(id),
     cacheTime: 0,
     keepPreviousData: true,

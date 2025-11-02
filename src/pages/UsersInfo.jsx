@@ -15,7 +15,7 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
@@ -133,15 +133,27 @@ const UsersInfo = () => {
                         {totalPosts}
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        Posts
+                        {totalPosts <= 1 ? "Post" : "Posts"}
                       </span>
                     </div>
                     <div className="flex flex-col  mt-1">
-                      <span className="text-lg font-semibold text-black">
-                        {countData?.totalFriends}
-                      </span>
+                      {countData?.totalFriends > 0 ? (
+                        <Link
+                          to={`/friends/${user?._id}`}
+                          className="text-lg font-semibold text-black"
+                        >
+                          {countData?.totalFriends}
+                        </Link>
+                      ) : (
+                        <span className="text-lg font-semibold text-black">
+                          {countData?.totalFriends}
+                        </span>
+                      )}
+
                       <span className="text-sm text-muted-foreground">
-                        Followers
+                        {countData?.totalFriends <= 1
+                          ? "Follower"
+                          : "Followers"}
                       </span>
                     </div>
                   </div>

@@ -15,7 +15,7 @@ const ProfileCreateForm = () => {
   const navigate = useNavigate();
   const { mutateAsync: userCreate } = useUserCreate();
   const { user,setProfileId } = useAuthStore();
-  console.log(user);
+ 
   const { connectSocket } = useSocket();
   const {
     handleSubmit,

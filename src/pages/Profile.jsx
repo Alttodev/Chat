@@ -36,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PostDialog } from "@/components/modals/postModal";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -51,16 +52,17 @@ const Profile = () => {
   const { data: profileData } = useUserDetail();
   const { data: count } = useFriendsCount();
   const countData = useMemo(() => count, [count]);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: profileId });
 
   const userProfile = useMemo(() => profileData, [profileData]);
- 
+
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data]
   );
-  const user = data?.pages?.[0]?.user;
+  const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
 
@@ -102,7 +104,8 @@ const Profile = () => {
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
+                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
+                    "-"}
                 </AvatarFallback>
               </Avatar>
 
@@ -128,15 +131,27 @@ const Profile = () => {
                         {totalPosts}
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        Posts
+                        {totalPosts <= 1 ? "Post" : "Posts"}
                       </span>
                     </div>
                     <div className="flex flex-col   mt-1">
-                      <span className="text-lg font-semibold text-black">
-                        {countData?.totalFriends}
-                      </span>
+                      {countData?.totalFriends > 0 ? (
+                        <Link
+                          to="/friends"
+                          className="text-lg font-semibold text-black"
+                        >
+                          {countData?.totalFriends}
+                        </Link>
+                      ) : (
+                        <span className="text-lg font-semibold text-black">
+                          {countData?.totalFriends}
+                        </span>
+                      )}
+
                       <span className="text-sm text-muted-foreground">
-                        Followers
+                        {countData?.totalFriends <= 1
+                          ? "Follower"
+                          : "Followers"}
                       </span>
                     </div>
                   </div>

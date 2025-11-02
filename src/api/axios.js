@@ -131,6 +131,11 @@ export const getUserInfoCount = async (id) => {
   return data;
 };
 
+export const getUserFollowers = async (id) => {
+  const { data } = await axiosInstance.get(`/follow/friends/${id}`);
+  return data;
+};
+
 //delete
 
 export const userPostDelete = async (id) => {

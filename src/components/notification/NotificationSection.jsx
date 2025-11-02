@@ -18,7 +18,6 @@ function NotificationSection() {
       socket.off("new-notification");
     };
   }, [socket]);
-  console.log(count, "count");
 
   return (
     <div className="relative inline-block">
