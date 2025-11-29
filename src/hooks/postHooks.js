@@ -17,6 +17,7 @@ import {
   userPostDelete,
   userPostLike,
   userPostUpdate,
+  userRequestDelete,
 } from "@/api/axios";
 import {
   useInfiniteQuery,
@@ -84,7 +85,7 @@ export const usePostList = () => {
 
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
-    queryKey: ["user_Info_post",id],
+    queryKey: ["user_Info_post", id],
     queryFn: () => getUserInfoPost(id),
     getNextPageParam: (lastPage) => {
       return lastPage.nextPage <= lastPage.totalPages
@@ -134,6 +135,7 @@ export const useRequestListInfo = ({ fromId, toId }) => {
     enabled: !!fromId && !!toId,
     refetchOnWindowFocus: false,
     cacheTime: 0,
+    
   });
 };
 
@@ -146,8 +148,6 @@ export const useFriendsList = () => {
     refetchOnWindowFocus: false,
   });
 };
-
-
 
 export const useUserFollowers = (id) => {
   return useQuery({
@@ -174,14 +174,13 @@ export const useFriendsCount = () => {
 //getUserInfoCount
 export const useUserInfoCount = (id) => {
   return useQuery({
-    queryKey: ["user-count",id],
+    queryKey: ["user-count", id],
     queryFn: () => getUserInfoCount(id),
     cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
 };
-
 
 //update
 
@@ -223,6 +222,20 @@ export const usePostCommentDelete = () => {
     mutationFn: (vars) => userCommentDelete(vars),
     onSuccess: () => {
       queryClient.invalidateQueries(["comment"]);
+    },
+  });
+};
+
+export const useRequestDelete = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ fromId, toId }) => userRequestDelete({ fromId, toId }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries([
+        "request_info",
+        variables.fromId,
+        variables.toId,
+      ]);
     },
   });
 };

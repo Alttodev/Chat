@@ -35,8 +35,8 @@ function PostLikeComponent({ post, userId }) {
           style={{
             width: 16,
             height: 16,
-            fill: isLiked ? "red" : "none",
-            stroke: isLiked ? "red" : "currentColor",
+            fill: isLiked ? "#10b981" : "none",
+            stroke: isLiked ? "#10b981" : "currentColor",
           }}
         />
         {likes}

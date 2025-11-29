@@ -149,3 +149,10 @@ export const userCommentDelete = async ({ postId, commentId }) => {
   );
   return data;
 };
+
+export const userRequestDelete = async ({ fromId, toId }) => {
+  const { data } = await axiosInstance.delete(
+    `/follow/delete/requests/${fromId}/${toId}`
+  );
+  return data;
+};

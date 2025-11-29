@@ -5,6 +5,7 @@ import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
 import {
   useProfileFollow,
+  useRequestDelete,
   useRequestListInfo,
   useUserInfoCount,
   useUserPostList,
@@ -16,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { OnlineStatus } from "@/components/onlineStatus";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 
@@ -30,6 +30,8 @@ const UsersInfo = () => {
   const id = params?.id;
 
   const { mutateAsync: followRequest, isLoading } = useProfileFollow();
+  const { mutateAsync: unfollowRequest, isLoading: deleteLoading } =
+    useRequestDelete();
 
   const { data: count } = useUserInfoCount(id);
   const countData = useMemo(() => count, [count]);
@@ -40,23 +42,7 @@ const UsersInfo = () => {
   });
 
   const reqStatus = requestStatus?.request?.status;
-  const isValidStatus = ["pending", "accepted", "declined"].includes(reqStatus);
-  let statusMessage = "";
-
-  switch (reqStatus) {
-    case "pending":
-      statusMessage = "Requested";
-      break;
-    case "declined":
-      statusMessage = "Declined";
-      break;
-    case "accepted":
-      statusMessage = "Following";
-      break;
-    default:
-      statusMessage = "No Request";
-      break;
-  }
+  const friends = requestStatus?.request?.isFriends;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useUserPostList({ id: id });
@@ -84,6 +70,18 @@ const UsersInfo = () => {
   const handleFollow = async (userId) => {
     try {
       const res = await followRequest(userId);
+      toastSuccess(res?.message);
+    } catch (err) {
+      toastError(err?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      const res = await unfollowRequest({
+        fromId: profileId,
+        toId: id,
+      });
       toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
@@ -167,19 +165,21 @@ const UsersInfo = () => {
               </div>
             </div>
 
-            <div className="flex flex-col  gap-2 ">
-              {isValidStatus ? (
+            <div className="flex flex-col gap-2">
+              {reqStatus === "pending" ? (
                 <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none">
-                  {statusMessage}
+                  Requested
                 </Button>
               ) : (
                 profileId !== id && (
                   <Button
-                    onClick={() => handleFollow(user?._id)}
-                    disabled={isLoading}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                    onClick={() =>
+                      friends ? handleUnfollow() : handleFollow(user?._id)
+                    }
+                    disabled={isLoading || deleteLoading}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
                   >
-                    Follow
+                    {friends ? "Unfollow" : "Follow"}
                   </Button>
                 )
               )}
