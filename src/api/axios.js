@@ -51,6 +51,17 @@ export const userFollowRequest = async (id) => {
   return data;
 };
 
+export const userChatBot = async (payload) => {
+  const { data } = await axiosInstance.post(
+    `/chatbot/chat`,
+    payload,
+    { headers: { "Content-Type": "application/json" } }
+  );
+
+  return data;
+};
+
+
 //update
 
 export const userUpdate = async (formData) => {

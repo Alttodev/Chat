@@ -6,10 +6,12 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./lib/socket";
+import { ChatWidget } from "./components/chatbot/ChatBotify";
 
 const queryClient = new QueryClient();
 
-const userId = JSON.parse(localStorage.getItem("chat-storage"))?.state?.user?._id;
+const userId = JSON.parse(localStorage.getItem("chat-storage"))?.state?.user
+  ?._id;
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -23,6 +25,7 @@ createRoot(document.getElementById("root")).render(
         />
 
         <App />
+        <ChatWidget />
       </QueryClientProvider>
     </SocketProvider>
   </StrictMode>

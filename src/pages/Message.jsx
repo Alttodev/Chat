@@ -139,6 +139,7 @@ export default function Message() {
         >
           {/* Header */}
           <ChatHeader contact={selectedContact} setShowChat={setShowChat} />
+         
 
           {/* Messages */}
           <MessagesList
