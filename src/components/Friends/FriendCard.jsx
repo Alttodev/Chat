@@ -7,7 +7,6 @@ import { Link } from "react-router-dom";
 import { MapPin, UsersRound } from "lucide-react";
 
 export const FriendCard = ({ tabValue }) => {
-  // const navigate = useNavigate();
   const { data: friendsList, isFetching } = useFriendsList();
   const friendData = useMemo(() => friendsList, [friendsList]);
 
@@ -30,36 +29,35 @@ export const FriendCard = ({ tabValue }) => {
     <Fragment>
       {friendsData &&
         friendsData?.map((item) => (
-          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <Link
-                to={`/users/${item?.from?._id}`}
-                className="flex items-center gap-4"
-              >
-                <div className="relative">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="text-xl font-semibold  text-emerald-700">
-                      {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
-                    </AvatarFallback>
-                  </Avatar>
+          <Link to={`/users/${item?.from?._id}`}>
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Avatar className="h-12 w-12">
+                      <AvatarFallback className="text-xl font-semibold  text-emerald-700">
+                        {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  <div
-                    className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
-                      item?.from?.isOnline ? "bg-green-500" : "bg-yellow-500"
-                    }`}
-                  ></div>
-                </div>
-                <div>
-                  <h3 className="font-semibold">{item?.from?.userName}</h3>
-                  <div className="flex gap-1 items-center text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{item?.from?.address || "-"}</span>
+                    <div
+                      className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
+                        item?.from?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                      }`}
+                    ></div>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">{item?.from?.userName}</h3>
+                    <div className="flex gap-1 items-center text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{item?.from?.address || "-"}</span>
+                    </div>
                   </div>
                 </div>
-              </Link>
-              <UsersRound className="size-7  text-green-500 p-1 rounded" />
-            </CardContent>
-          </Card>
+                <UsersRound className="size-7  text-green-500 p-1 rounded" />
+              </CardContent>
+            </Card>
+          </Link>
         ))}
     </Fragment>
   );
