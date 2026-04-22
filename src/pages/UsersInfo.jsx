@@ -16,12 +16,12 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 
 const UsersInfo = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments } = useCommentStore();
