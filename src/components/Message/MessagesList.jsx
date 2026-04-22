@@ -1,14 +1,24 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Check, CheckCheck } from "lucide-react";
+import { Check, CheckCheck, MoreHorizontal, Trash2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const formatTime = (date) =>
-  date.toLocaleTimeString("en-US", {
+const formatTime = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
   });
+};
 
 const getStatusIcon = (status) => {
   switch (status) {
@@ -25,89 +35,139 @@ const getStatusIcon = (status) => {
 
 export default function MessagesList({
   messages,
-  isTyping,
-  selectedContact,
   messagesEndRef,
+  currentUserId,
+  isLoading,
+  onDeleteMessage,
+  deletingMessageId,
 }) {
+  if (isLoading) {
+    return (
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-3">
+          <Skeleton className="h-10 w-40" />
+          <Skeleton className="h-10 w-60 ml-auto" />
+          <Skeleton className="h-10 w-44" />
+        </div>
+      </ScrollArea>
+    );
+  }
+
   return (
     <ScrollArea className="flex-1 p-4">
       <div className="space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn(
-              "flex gap-3 max-w-[80%]",
-              message.sender === "user" ? "ml-auto flex-row-reverse" : ""
-            )}
-          >
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage
-                src={message.senderAvatar || "/placeholder.svg"}
-                alt={message.senderName}
-              />
-              <AvatarFallback>
-                {message.senderName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
+        {messages.map((message) => {
+          const isOwnMessage =
+            message?.sender?._id?.toString() === currentUserId?.toString();
+          const status = isOwnMessage
+            ? message?.seenBy?.length > 1
+              ? "read"
+              : "sent"
+            : null;
+          const hasOnlyImage = !!message.image && !message.text;
+          const hasImageAndText = !!message.image && !!message.text;
+          const isDeleted =
+            !!message?.isDeleted ||
+            !!message?.deleted ||
+            !!message?.deletedAt ||
+            message?.type === "deleted";
+          const deletedText = message?.deletedText || "Message deleted";
+
+          return (
             <div
+              key={message._id || message.id}
               className={cn(
-                "flex flex-col gap-1",
-                message.sender === "user" ? "items-end" : "items-start"
+                "flex gap-3 max-w-[80%]",
+                isOwnMessage ? "ml-auto flex-row-reverse" : "",
               )}
             >
+              {/* {isOwnMessage ? null : (
+                <Avatar className="w-8 h-8 flex-shrink-0">
+                  <AvatarImage src="/placeholder.svg" alt={senderName} />
+                  <AvatarFallback>
+                    {senderName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              )} */}
               <div
                 className={cn(
-                  "px-4 py-2 rounded-2xl max-w-md break-words",
-                  message.sender === "user"
-                    ? "bg-emerald-600 text-white rounded-br-md"
-                    : "bg-muted text-muted-foreground rounded-bl-md"
+                  "flex flex-col gap-1",
+                  isOwnMessage ? "items-end" : "items-start",
                 )}
               >
-                <p className="text-sm leading-relaxed">{message.text}</p>
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-muted-foreground">
-                  {formatTime(message.timestamp)}
-                </span>
-                {message.sender === "user" &&
-                  getStatusIcon(message.status)}
+                <div
+                  className={cn(
+                    "rounded-2xl max-w-md break-words relative",
+                    hasOnlyImage || hasImageAndText
+                      ? "bg-transparent p-0"
+                      : isOwnMessage
+                        ? "px-4 py-2 bg-emerald-600 text-white rounded-br-md"
+                        : "px-4 py-2 bg-muted text-muted-foreground rounded-bl-md",
+                  )}
+                >
+                  {isOwnMessage && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <span className="absolute -top-2 -right-2 cursor-pointer bg-background rounded-full p-1 border">
+                          <MoreHorizontal className="w-3 h-3 text-muted-foreground" />
+                        </span>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => onDeleteMessage?.(message)}
+                          disabled={
+                            deletingMessageId === message?._id ||
+                            !message?._id ||
+                            isDeleted
+                          }
+                          className="cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
+                          <span className="text-red-500">Delete</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  {!isDeleted && message.image && (
+                    <img
+                      src={`${import.meta.env.VITE_APP_API_URL}${message.image}`}
+                      alt="chat"
+                      className={cn(
+                        "rounded-md max-h-72 object-cover",
+                        hasOnlyImage ? "" : "mb-2"
+                      )}
+                    />
+                  )}
+                  {(message.text || isDeleted) && (
+                    <p
+                      className={cn(
+                        "text-sm leading-relaxed",
+                        hasImageAndText && !isDeleted && "mt-2 px-4 py-2 rounded-2xl",
+                        hasImageAndText &&
+                          !isDeleted &&
+                          (isOwnMessage
+                            ? "bg-emerald-600 text-white rounded-br-md"
+                            : "bg-muted text-muted-foreground rounded-bl-md"),
+                        isDeleted && "italic text-muted-foreground"
+                      )}
+                    >
+                      {isDeleted ? deletedText : message.text}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-muted-foreground">
+                    {formatTime(message.createdAt || message.timestamp)}
+                  </span>
+                  {isOwnMessage && getStatusIcon(status)}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-
-        {isTyping && (
-          <div className="flex gap-3 max-w-[80%]">
-            <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarImage
-                src={selectedContact.avatar || "/placeholder.svg"}
-                alt={selectedContact.name}
-              />
-              <AvatarFallback>
-                {selectedContact.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </AvatarFallback>
-            </Avatar>
-            <div className="bg-muted px-4 py-2 rounded-2xl rounded-bl-md">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" />
-                <div
-                  className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"
-                  style={{ animationDelay: "150ms" }}
-                />
-                <div
-                  className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"
-                  style={{ animationDelay: "300ms" }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
     </ScrollArea>

@@ -3,11 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useFriendsList } from "@/hooks/postHooks";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { MapPin } from "lucide-react";
 
 export const FriendCard = ({ tabValue }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { data: friendsList, isFetching } = useFriendsList();
   const friendData = useMemo(() => friendsList, [friendsList]);
 
@@ -58,7 +58,7 @@ export const FriendCard = ({ tabValue }) => {
                 </div>
               </Link>
 
-              <span
+              {/* <span
                 onClick={() => navigate("/messages")}
                 size="sm"
                 className="flex justify-around cursor-pointer"
@@ -68,7 +68,7 @@ export const FriendCard = ({ tabValue }) => {
                   alt="Clix Logo"
                   className="w-8 h-8"
                 />
-              </span>
+              </span> */}
             </CardContent>
           </Card>
         ))}

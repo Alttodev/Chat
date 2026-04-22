@@ -29,8 +29,8 @@ const UsersInfo = () => {
   const params = useParams();
   const id = params?.id;
 
-  const { mutateAsync: followRequest, isLoading } = useProfileFollow();
-  const { mutateAsync: unfollowRequest, isLoading: deleteLoading } =
+  const { mutateAsync: followRequest, isPending: isFollowing } = useProfileFollow();
+  const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
 
   const { data: count } = useUserInfoCount(id);
@@ -44,8 +44,8 @@ const UsersInfo = () => {
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
-    useUserPostList({ id: id });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useUserPostList(id);
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
@@ -88,7 +88,7 @@ const UsersInfo = () => {
     }
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -176,7 +176,7 @@ const UsersInfo = () => {
                     onClick={() =>
                       friends ? handleUnfollow() : handleFollow(user?._id)
                     }
-                    disabled={isLoading || deleteLoading}
+                    disabled={isFollowing || isUnfollowing}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
                   >
                     {friends ? "Unfollow" : "Follow"}
@@ -184,9 +184,15 @@ const UsersInfo = () => {
                 )
               )}
 
-              {reqStatus === "accepted" ? (
+              {/* {reqStatus === "accepted" ? (
                 <span
-                  onClick={() => navigate("/messages")}
+                  onClick={() =>
+                    navigate(
+                      `/messages?userId=${user?._id}&name=${encodeURIComponent(
+                        user?.userName || "User"
+                      )}`
+                    )
+                  }
                   size="sm"
                   className="flex justify-around cursor-pointer"
                 >
@@ -196,7 +202,7 @@ const UsersInfo = () => {
                     className="w-8 h-8"
                   />
                 </span>
-              ) : null}
+              ) : null} */}
             </div>
           </div>
         </CardContent>

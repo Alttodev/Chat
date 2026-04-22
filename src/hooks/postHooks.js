@@ -31,7 +31,7 @@ export const usePostCreate = () => {
   return useMutation({
     mutationFn: (formData) => userPost(formData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
+      queryClient.invalidateQueries({ queryKey: ["user_post"] });
     },
   });
 };
@@ -41,7 +41,7 @@ export const useProfileFollow = () => {
   return useMutation({
     mutationFn: (id) => userFollowRequest(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(["request_info"]);
+      queryClient.invalidateQueries({ queryKey: ["request_info"] });
     },
   });
 };
@@ -61,8 +61,11 @@ export const usePostComment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, formData }) => userPostComment(id, formData),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries(["comment", id]);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["comment", variables.id],
+        exact: true,
+      });
     },
   });
 };
@@ -78,7 +81,6 @@ export const usePostList = () => {
         ? lastPage.nextPage
         : undefined;
     },
-    cacheTime: 0,
     refetchOnWindowFocus: false,
   });
 };
@@ -86,14 +88,13 @@ export const usePostList = () => {
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
     queryKey: ["user_Info_post", id],
-    queryFn: () => getUserInfoPost(id),
+    queryFn: ({ pageParam = 1 }) => getUserInfoPost({ id, pageParam }),
     getNextPageParam: (lastPage) => {
       return lastPage.nextPage <= lastPage.totalPages
         ? lastPage.nextPage
         : undefined;
     },
     enabled: !!id,
-    cacheTime: 0,
     refetchOnWindowFocus: false,
   });
 };
@@ -102,7 +103,6 @@ export const usePostInfo = (id) => {
   return useQuery({
     queryKey: ["user_post_info", id],
     queryFn: () => getUserPostInfo(id),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -112,7 +112,6 @@ export const usePostComments = (id) => {
   return useQuery({
     queryKey: ["comment", id],
     queryFn: () => getUserPostComments(id),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -122,7 +121,6 @@ export const useRequestList = () => {
   return useQuery({
     queryKey: ["follow_request"],
     queryFn: () => getRequestList(),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -134,7 +132,6 @@ export const useRequestListInfo = ({ fromId, toId }) => {
     queryFn: () => getFollowRequestInfo({ fromId, toId }),
     enabled: !!fromId && !!toId,
     refetchOnWindowFocus: false,
-    cacheTime: 0,
     
   });
 };
@@ -143,7 +140,6 @@ export const useFriendsList = () => {
   return useQuery({
     queryKey: ["friends"],
     queryFn: () => getFriendsList(),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -153,7 +149,6 @@ export const useUserFollowers = (id) => {
   return useQuery({
     queryKey: ["user-followers", id],
     queryFn: () => getUserFollowers(id),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -165,7 +160,6 @@ export const useFriendsCount = () => {
   return useQuery({
     queryKey: ["friends-count"],
     queryFn: () => getFriendsCount(),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -176,7 +170,6 @@ export const useUserInfoCount = (id) => {
   return useQuery({
     queryKey: ["user-count", id],
     queryFn: () => getUserInfoCount(id),
-    cacheTime: 0,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
@@ -189,7 +182,11 @@ export const useFollowRequestUpdate = () => {
   return useMutation({
     mutationFn: ({ id, formData }) => userFollowRequestUpdate(id, formData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["request_info"]);
+      queryClient.invalidateQueries({ queryKey: ["follow_request"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+      queryClient.invalidateQueries({ queryKey: ["friends-count"] });
+      queryClient.invalidateQueries({ queryKey: ["request_info"] });
+      queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
     },
   });
 };
@@ -199,7 +196,7 @@ export const usePostUpdate = () => {
   return useMutation({
     mutationFn: ({ id, formData }) => userPostUpdate(id, formData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
+      queryClient.invalidateQueries({ queryKey: ["user_post"] });
     },
   });
 };
@@ -211,7 +208,7 @@ export const usePostDelete = () => {
   return useMutation({
     mutationFn: (id) => userPostDelete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user_post"]);
+      queryClient.invalidateQueries({ queryKey: ["user_post"] });
     },
   });
 };
@@ -220,8 +217,11 @@ export const usePostCommentDelete = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (vars) => userCommentDelete(vars),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["comment"]);
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["comment", variables.postId],
+        exact: true,
+      });
     },
   });
 };
@@ -231,11 +231,14 @@ export const useRequestDelete = () => {
   return useMutation({
     mutationFn: ({ fromId, toId }) => userRequestDelete({ fromId, toId }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries([
-        "request_info",
-        variables.fromId,
-        variables.toId,
-      ]);
+      queryClient.invalidateQueries({ queryKey: ["follow_request"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+      queryClient.invalidateQueries({ queryKey: ["friends-count"] });
+      queryClient.invalidateQueries({
+        queryKey: ["request_info", variables.fromId, variables.toId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["request_info"] });
+      queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
     },
   });
 };

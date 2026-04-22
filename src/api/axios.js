@@ -61,6 +61,80 @@ export const userChatBot = async (payload) => {
   return data;
 };
 
+// zego
+
+export const getZegoToken = async (payload = {}) => {
+  const endpoint = import.meta.env.VITE_ZEGO_TOKEN_ENDPOINT || "/zego/token";
+  const { data } = await axiosInstance.post(endpoint, payload);
+  return data;
+};
+
+// notifications
+
+export const getNotifications = async ({ limit = 30 } = {}) => {
+  const { data } = await axiosInstance.get(`/notifications?limit=${limit}`);
+  return data;
+};
+
+export const getNotificationCounts = async () => {
+  const { data } = await axiosInstance.get(`/notifications/counts`);
+  return data;
+};
+
+export const markNotificationSeen = async (payload) => {
+  const { data } = await axiosInstance.put(`/notifications/seen`, payload);
+  return data;
+};
+
+// chat
+
+export const getChatConversations = async () => {
+  const { data } = await axiosInstance.get(`/chat/conversations`);
+  return data;
+};
+
+export const getChatMessages = async ({
+  conversationId,
+  page = 1,
+  limit = 30,
+}) => {
+  const { data } = await axiosInstance.get(
+    `/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`
+  );
+  return data;
+};
+
+export const sendChatMessage = async ({ targetUserId, formData }) => {
+  const { data } = await axiosInstance.post(
+    `/chat/conversations/${targetUserId}/messages`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return data;
+};
+
+export const markConversationSeen = async (conversationId) => {
+  const { data } = await axiosInstance.put(
+    `/chat/conversations/${conversationId}/seen`
+  );
+  return data;
+};
+
+export const deleteChatMessage = async (messageId) => {
+  const { data } = await axiosInstance.delete(`/chat/messages/${messageId}`);
+  return data;
+};
+
+export const blockChatUser = async (targetUserId) => {
+  const { data } = await axiosInstance.post(`/chat/blocks/${targetUserId}`);
+  return data;
+};
+
+export const unblockChatUser = async (targetUserId) => {
+  const { data } = await axiosInstance.delete(`/chat/blocks/${targetUserId}`);
+  return data;
+};
+
 
 //update
 

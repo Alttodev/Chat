@@ -16,14 +16,34 @@ import { useAuthStore } from "@/store/authStore";
 
 export const RequestCard = () => {
   const { profileId } = useAuthStore();
-  const { mutateAsync: requestRespond, isLoading } = useFollowRequestUpdate();
-  const { mutateAsync: rejectRequest, isLoading: deleteLoading } =
+  const { mutateAsync: requestRespond, isPending: isAccepting } = useFollowRequestUpdate();
+  const { mutateAsync: rejectRequest, isPending: isRejecting } =
     useRequestDelete();
-  const { data: request, isFetching } = useRequestList();
+  const { data: request, isFetching, isError } = useRequestList();
   const requestData = useMemo(() => request, [request]);
-  const requestedData = requestData?.requests?.filter(
-    (item) => item?.isDeleted !== true
-  );
+  const requestItems = useMemo(() => {
+    const value =
+      requestData?.requests ||
+      requestData?.followRequests ||
+      requestData?.data?.requests ||
+      requestData?.data ||
+      [];
+
+    return Array.isArray(value) ? value : [];
+  }, [requestData]);
+
+  const requestedData = useMemo(() => {
+    return requestItems.filter((item) => {
+      const status = String(item?.status || "").toLowerCase();
+      const isPending = status === "pending";
+      const isAlreadyFriend = item?.isFriends === true;
+      const toId = item?.to?._id?.toString?.();
+      const isForCurrentUser = !profileId || !toId || toId === profileId?.toString();
+
+      return isPending && !isAlreadyFriend && isForCurrentUser;
+    });
+  }, [requestItems, profileId]);
+  console.log("Requested Data:", requestedData);
 
   const handleAccept = async ({ id, action }) => {
     try {
@@ -37,79 +57,90 @@ export const RequestCard = () => {
 
   const handleDecline = async ({ id }) => {
     try {
-      const res = await rejectRequest({
-        fromId: id,
-        toId:profileId ,
-      });
+      const res = await rejectRequest({ fromId: id, toId: profileId });
       toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
   };
 
+  if (isFetching) {
+    return <SkeletonRequest />;
+  }
+  if (isError) {
+    return (
+      <div className="text-center py-10 text-gray-500">
+        Could not load requests
+      </div>
+    );
+  }
   if (!requestedData || requestedData.length === 0) {
     return (
       <div className="text-center py-10 text-gray-500">No requests found</div>
     );
   }
-  if (isFetching) {
-    return <SkeletonRequest />;
-  }
 
-  console.log( requestedData," requestedData")
   return (
     <Fragment>
       {requestedData &&
-        requestedData?.map((item) => (
-          <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <Link
-                to={`/users/${item?.from?._id}`}
-                className="flex items-center gap-4"
-              >
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback className="text-xl font-semibold  text-emerald-700">
-                    {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-semibold">{item?.from?.userName}</h3>
-                  <div className="flex gap-1 items-center text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{item?.from?.address || "-"}</span>
-                  </div>
-                  <span className="text-xs text-gray-400">
-                    Requested {formatRelative(item?.createdAt)}
-                  </span>
-                </div>
-              </Link>
+        requestedData?.map((item) => {
+          const requester = item?.from || item?.requester || item?.user;
+          const requesterId = requester?._id;
 
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  disabled={isLoading}
-                  onClick={() =>
-                    handleAccept({ id: item._id, action: "accept" })
-                  }
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+          return (
+            <Card
+              key={item?._id || `${requesterId || "unknown"}-${item?.createdAt || ""}`}
+              className="bg-white shadow-sm hover:shadow-md transition-shadow"
+            >
+              <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <Link
+                  to={requesterId ? `/users/${requesterId}` : "#"}
+                  className="flex items-center gap-4"
                 >
-                  <Check className="h-4 w-4 mr-2" />
-                  Accept
-                </Button>
-                <Button
-                  size="sm"
-                  disabled={deleteLoading}
-                  onClick={() => handleDecline({ id: item.from?._id })}
-                  variant="outline"
-                  className="text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Reject
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="text-xl font-semibold  text-emerald-700">
+                      {requester?.userName?.charAt(0).toUpperCase() || "-"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold">{requester?.userName || "Unknown User"}</h3>
+                    <div className="flex gap-1 items-center text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{requester?.address || "-"}</span>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      Requested {formatRelative(item?.createdAt)}
+                    </span>
+                  </div>
+                </Link>
+
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    disabled={isAccepting || !item?._id}
+                    onClick={() =>
+                      handleAccept({ id: item._id, action: "accept" })
+                    }
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  >
+                    <Check className="h-4 w-4 mr-2" />
+                    Accept
+                  </Button>
+                  <Button
+                    size="sm"
+                    disabled={isRejecting || !requesterId}
+                    onClick={() => handleDecline({ id: requesterId })}
+                    variant="outline"
+                    className="text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
+                  >
+                    <X className="h-4 w-4 mr-2" />
+                    Reject
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
     </Fragment>
   );
 };

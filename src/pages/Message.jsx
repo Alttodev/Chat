@@ -1,160 +1,639 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import ContactsSidebar from "@/components/Message/ContactsSidebar";
 import MessagesList from "@/components/Message/MessagesList";
 import MessageInput from "@/components/Message/MessageInput";
 import ChatHeader from "@/components/Message/ChatHeader";
+import {
+  useBlockChatUser,
+  useChatConversations,
+  useDeleteChatMessage,
+  useChatMessages,
+  useMarkConversationSeen,
+  useSendChatMessage,
+  useUnblockChatUser,
+} from "@/hooks/chatHooks";
+import { useFriendsList } from "@/hooks/postHooks";
+import { useAuthStore } from "@/store/authStore";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { toastError, toastSuccess } from "@/lib/toast";
+import { useSocket } from "@/lib/socket";
+import { useZegoCall } from "@/lib/zegoCall";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
-const mockContacts = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    avatar: "/professional-woman.png",
-    isOnline: true,
-  },
-  {
-    id: "2",
-    name: "Marcus Rodriguez",
-    avatar: "/man-asian-professional.jpg",
-    isOnline: false,
-    lastSeen: "2 hours ago",
-  },
-  {
-    id: "3",
-    name: "Elena Vasquez",
-    avatar: "/woman-latina-professional.jpg",
-    isOnline: true,
-  },
-  {
-    id: "4",
-    name: "David Kim",
-    avatar: "/man-korean-professional.jpg",
-    isOnline: false,
-    lastSeen: "1 day ago",
-  },
-];
-const mockMessages = [
-  {
-    id: "1",
-    text: "Hey! How's your day going?",
-    sender: "friend",
-    timestamp: new Date(Date.now() - 3600000),
-    status: "read",
-    senderName: "Sarah Chen",
-    senderAvatar: "/professional-woman.png",
-  },
-  {
-    id: "2",
-    text: "Pretty good! Just finished that project we discussed. Want to grab coffee later?",
-    sender: "user",
-    timestamp: new Date(Date.now() - 3300000),
-    status: "read",
-    senderName: "You",
-    senderAvatar: "/professional-headshot.png",
-  },
-  {
-    id: "3",
-    text: "That sounds perfect! How about 3 PM at the usual place?",
-    sender: "friend",
-    timestamp: new Date(Date.now() - 3000000),
-    status: "read",
-    senderName: "Sarah Chen",
-    senderAvatar: "/professional-woman.png",
-  },
-  {
-    id: "4",
-    text: "Sounds great! See you there 😊",
-    sender: "user",
-    timestamp: new Date(Date.now() - 2700000),
-    status: "delivered",
-    senderName: "You",
-    senderAvatar: "/professional-headshot.png",
-  },
-];
 export default function Message() {
-  const [messages, setMessages] = useState(mockMessages);
+  const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  const { startAudioCall } = useZegoCall();
+  const { profileId } = useAuthStore();
+  const [searchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
-  const [selectedContact, setSelectedContact] = useState(mockContacts[0]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [blockedUsers, setBlockedUsers] = useState(() => {
+    try {
+      const raw = localStorage.getItem(BLOCKED_USERS_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [deletingMessageId, setDeletingMessageId] = useState(null);
+  const [isCalling, setIsCalling] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const messagesEndRef = useRef(null);
+  const targetUserIdFromUrl = searchParams.get("userId");
+  const targetUserNameFromUrl = searchParams.get("name");
 
+  const { data: conversationData, isLoading: conversationsLoading } =
+    useChatConversations();
+  const { data: friendsData, isLoading: friendsLoading } = useFriendsList();
+  const { mutateAsync: sendMessage, isPending: isSending } =
+    useSendChatMessage();
+  const { mutateAsync: markSeen } = useMarkConversationSeen();
+  const { mutateAsync: deleteMessage } = useDeleteChatMessage();
+  const { mutateAsync: blockUser, isPending: isBlockingUser } =
+    useBlockChatUser();
+  const { mutateAsync: unblockUser, isPending: isUnblockingUser } =
+    useUnblockChatUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const conversations = conversationData?.conversations || [];
+
+  const getZegoUserId = useCallback((userObj) => {
+    if (!userObj) return "";
+
+    return (
+      userObj?.userId?.toString?.() ||
+      userObj?.authUserId?.toString?.() ||
+      userObj?.accountId?.toString?.() ||
+      userObj?._id?.toString?.() ||
+      ""
+    );
+  }, []);
+
+  const contacts = useMemo(() => {
+    const friendRows = friendsData?.friends || [];
+    const acceptedFriends = friendRows.filter(
+      (item) => item?.isFriends === true,
+    );
+    const acceptedFriendIds = new Set(
+      acceptedFriends
+        .map((item) =>
+          item?.from?._id?.toString() === profileId?.toString()
+            ? item?.to?._id
+            : item?.from?._id,
+        )
+        .filter(Boolean)
+        .map((id) => id.toString()),
+    );
+
+    const conversationContacts = conversations
+      .map((conversation) => ({
+        id: conversation?._id,
+        conversationId: conversation?._id,
+        targetUserId: conversation?.otherParticipant?._id,
+        zegoUserId: getZegoUserId(conversation?.otherParticipant),
+        name: conversation?.otherParticipant?.userName || "Unknown",
+        avatar: "",
+        isOnline: !!conversation?.otherParticipant?.isOnline,
+        isBlocked:
+          !!conversation?.isBlockedByCurrentUser ||
+          !!conversation?.isBlocked ||
+          !!conversation?.block?.isBlocked ||
+          !!conversation?.otherParticipant?.isBlockedByCurrentUser ||
+          !!blockedUsers[conversation?.otherParticipant?._id],
+        lastSeen: conversation?.otherParticipant?.lastSeen || "",
+        unreadCount: conversation?.unreadCount || 0,
+        lastMessageAt: conversation?.lastMessageAt || conversation?.updatedAt,
+        lastMessageText:
+          conversation?.lastMessage?.text ||
+          (conversation?.lastMessage?.type === "image" ? "Image" : ""),
+        isFriend: acceptedFriendIds.has(
+          conversation?.otherParticipant?._id?.toString(),
+        ),
+      }))
+      .filter(
+        (contact) =>
+          contact?.targetUserId &&
+          contact?.targetUserId?.toString() !== profileId?.toString() &&
+          contact?.isFriend,
+      )
+      .sort((a, b) => {
+        const aTime = a?.lastMessageAt
+          ? new Date(a.lastMessageAt).getTime()
+          : 0;
+        const bTime = b?.lastMessageAt
+          ? new Date(b.lastMessageAt).getTime()
+          : 0;
+        return bTime - aTime;
+      });
+
+    const extraFriendContacts = acceptedFriends
+      .map((item) => {
+        const friendUser =
+          item?.from?._id?.toString() === profileId?.toString()
+            ? item?.to
+            : item?.from;
+        if (!friendUser?._id) return null;
+        return {
+          id: `friend-${friendUser._id}`,
+          conversationId: null,
+          targetUserId: friendUser._id,
+          zegoUserId: getZegoUserId(friendUser),
+          name: friendUser?.userName || "Unknown",
+          avatar: "",
+          isOnline: !!friendUser?.isOnline,
+          isBlocked: !!blockedUsers[friendUser?._id],
+          lastSeen: friendUser?.lastSeen || "",
+          unreadCount: 0,
+          lastMessageAt: null,
+          lastMessageText: "",
+          isFriend: true,
+        };
+      })
+      .filter(Boolean)
+      .filter(
+        (friend) =>
+          !conversationContacts.some(
+            (contact) =>
+              contact?.targetUserId?.toString() ===
+              friend?.targetUserId?.toString(),
+          ),
+      );
+
+    return [...conversationContacts, ...extraFriendContacts];
+  }, [conversations, blockedUsers, profileId, friendsData, getZegoUserId]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      BLOCKED_USERS_STORAGE_KEY,
+      JSON.stringify(blockedUsers || {}),
+    );
+  }, [blockedUsers]);
+
+  const contactsWithTarget = useMemo(() => {
+    if (!targetUserIdFromUrl || targetUserIdFromUrl === profileId) {
+      return contacts;
+    }
+
+    const exists = contacts.some(
+      (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
+    );
+
+    if (exists) return contacts;
+
+    const friendRows = friendsData?.friends || [];
+    const acceptedIds = new Set(
+      friendRows
+        .filter((item) => item?.isFriends === true)
+        .map((item) =>
+          item?.from?._id?.toString() === profileId?.toString()
+            ? item?.to?._id
+            : item?.from?._id,
+        )
+        .filter(Boolean)
+        .map((id) => id.toString()),
+    );
+
+    if (friendsData && !acceptedIds.has(targetUserIdFromUrl)) {
+      return contacts;
+    }
+
+    return [
+      {
+        id: targetUserIdFromUrl,
+        conversationId: null,
+        targetUserId: targetUserIdFromUrl,
+        zegoUserId: "",
+        name: targetUserNameFromUrl || "User",
+        avatar: "",
+        isOnline: false,
+        isBlocked: !!blockedUsers[targetUserIdFromUrl],
+        lastSeen: "",
+        unreadCount: 0,
+        lastMessageText: "",
+        isFriend: true,
+      },
+      ...contacts,
+    ];
+  }, [
+    contacts,
+    targetUserIdFromUrl,
+    targetUserNameFromUrl,
+    profileId,
+    blockedUsers,
+    friendsData,
+  ]);
+
+  useEffect(() => {
+    if (!contactsWithTarget.length) return;
+
+    if (targetUserIdFromUrl) {
+      const matched = contactsWithTarget.find(
+        (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
+      );
+
+      if (matched) {
+        const currentTargetId = selectedContact?.targetUserId?.toString();
+        const nextTargetId = matched?.targetUserId?.toString();
+
+        if (currentTargetId !== nextTargetId) {
+          setSelectedContact(matched);
+        }
+      } else if (!selectedContact) {
+        setSelectedContact(contactsWithTarget[0]);
+      }
+
+      setShowChat(true);
+      return;
+    }
+
+    if (!selectedContact) {
+      setSelectedContact(contactsWithTarget[0]);
+    }
+  }, [contactsWithTarget, selectedContact, targetUserIdFromUrl]);
+
+  useEffect(() => {
+    if (!selectedContact?.targetUserId || selectedContact?.conversationId)
+      return;
+
+    const matched = contacts.find(
+      (item) =>
+        item?.targetUserId?.toString() ===
+        selectedContact?.targetUserId?.toString(),
+    );
+
+    if (matched) {
+      setSelectedContact(matched);
+    }
+  }, [contacts, selectedContact]);
+
+  useEffect(() => {
+    setNewMessage("");
+    setSelectedImage(null);
+  }, [selectedContact?.targetUserId]);
+
+  const selectedConversationId = useMemo(() => {
+    if (selectedContact?.conversationId) {
+      return selectedContact.conversationId;
+    }
+
+    if (!selectedContact?.targetUserId) return null;
+
+    const matchedConversation = conversations.find(
+      (conversation) =>
+        conversation?.otherParticipant?._id?.toString() ===
+        selectedContact?.targetUserId?.toString(),
+    );
+
+    return matchedConversation?._id || null;
+  }, [selectedContact, conversations]);
+
+  const { data: messageData, isLoading: messagesLoading } = useChatMessages(
+    selectedConversationId,
+  );
+
+  const messages = useMemo(() => {
+    if (Array.isArray(messageData?.messages)) return messageData.messages;
+    if (Array.isArray(messageData?.chatMessages))
+      return messageData.chatMessages;
+    if (Array.isArray(messageData?.data?.messages))
+      return messageData.data.messages;
+    return [];
+  }, [messageData]);
+
+  const clearUnreadCount = useCallback(
+    (conversationId) => {
+      if (!conversationId) return;
+
+      queryClient.setQueryData(["chat_conversations"], (oldData) => {
+        const conversationsList = Array.isArray(oldData?.conversations)
+          ? oldData.conversations
+          : [];
+
+        if (!conversationsList.length) return oldData;
+
+        return {
+          ...oldData,
+          conversations: conversationsList.map((conversation) =>
+            conversation?._id?.toString() === conversationId?.toString()
+              ? { ...conversation, unreadCount: 0 }
+              : conversation,
+          ),
+        };
+      });
+    },
+    [queryClient],
+  );
+
+  const refreshNotificationQueries = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
+    queryClient.invalidateQueries({ queryKey: ["notifications"] });
+  }, [queryClient]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Send new message
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+  useEffect(() => {
+    if (!selectedConversationId) return;
+    clearUnreadCount(selectedConversationId);
+    markSeen(selectedConversationId)
+      .then(() => {
+        refreshNotificationQueries();
+      })
+      .catch(() => {});
+  }, [
+    selectedConversationId,
+    markSeen,
+    clearUnreadCount,
+    refreshNotificationQueries,
+  ]);
 
-    const message = {
-      id: Date.now().toString(),
-      text: newMessage,
-      sender: "user",
-      timestamp: new Date(),
-      status: "sent",
-      senderName: "You",
-      senderAvatar: "/professional-headshot.png",
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (payload = {}) => {
+      const conversationId =
+        payload?.conversationId || payload?.conversation?._id;
+      const message =
+        payload?.message || payload?.chatMessage || payload?.data?.message;
+
+      if (!conversationId || !message?._id) {
+        queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
+        return;
+      }
+
+      queryClient.setQueryData(["chat_messages", conversationId], (oldData) => {
+        const currentMessages = Array.isArray(oldData?.messages)
+          ? oldData.messages
+          : Array.isArray(oldData?.chatMessages)
+            ? oldData.chatMessages
+            : Array.isArray(oldData?.data?.messages)
+              ? oldData.data.messages
+              : [];
+
+        if (!currentMessages.length) {
+          return {
+            ...(oldData || {}),
+            messages: [message],
+          };
+        }
+
+        const exists = currentMessages.some(
+          (item) => item?._id === message?._id,
+        );
+        if (exists) return oldData;
+
+        return {
+          ...oldData,
+          messages: [...currentMessages, message],
+        };
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
+
+      if (conversationId === selectedConversationId) {
+        clearUnreadCount(conversationId);
+        markSeen(conversationId)
+          .then(() => {
+            refreshNotificationQueries();
+          })
+          .catch(() => {});
+      }
     };
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+    const handleMessageSeen = ({ conversationId, seenBy }) => {
+      if (seenBy?.toString() === profileId?.toString()) return;
 
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      const response = {
-        id: (Date.now() + 1).toString(),
-        text: "Thanks for the message! I'll get back to you soon.",
-        sender: "friend",
-        timestamp: new Date(),
-        status: "sent",
-        senderName: selectedContact.name,
-        senderAvatar: selectedContact.avatar,
-      };
-      setMessages((prev) => [...prev, response]);
-    }, 2000);
+      queryClient.setQueryData(["chat_messages", conversationId], (oldData) => {
+        if (!oldData?.messages) return oldData;
+
+        return {
+          ...oldData,
+          messages: oldData.messages.map((msg) => {
+            if (msg?.sender?._id?.toString() !== profileId?.toString()) {
+              return msg;
+            }
+
+            const currentSeen = Array.isArray(msg?.seenBy) ? msg.seenBy : [];
+            const hasSeen = currentSeen.some(
+              (id) => id?.toString() === seenBy?.toString(),
+            );
+
+            if (hasSeen) return msg;
+
+            return { ...msg, seenBy: [...currentSeen, seenBy] };
+          }),
+        };
+      });
+    };
+
+    socket.on("chat:message:new", handleNewMessage);
+    socket.on("chat:message:seen", handleMessageSeen);
+
+    return () => {
+      socket.off("chat:message:new", handleNewMessage);
+      socket.off("chat:message:seen", handleMessageSeen);
+    };
+  }, [
+    socket,
+    queryClient,
+    selectedConversationId,
+    markSeen,
+    profileId,
+    clearUnreadCount,
+    refreshNotificationQueries,
+  ]);
+
+  const handleSendMessage = async () => {
+    if (!selectedContact?.targetUserId) return;
+    if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
+      toastError("You cannot chat with yourself");
+      return;
+    }
+    if (!selectedContact?.isFriend) {
+      toastError("Only accepted friends can message");
+      return;
+    }
+    if (selectedContact?.isBlocked) {
+      toastError("User is blocked");
+      return;
+    }
+    if (!newMessage.trim() && !selectedImage) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("text", newMessage.trim());
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+      }
+
+      const res = await sendMessage({
+        targetUserId: selectedContact.targetUserId,
+        formData,
+      });
+      if (res?.conversationId) {
+        setSelectedContact((prev) =>
+          prev
+            ? {
+                ...prev,
+                id: res.conversationId,
+                conversationId: res.conversationId,
+              }
+            : prev,
+        );
+      }
+      setNewMessage("");
+      setSelectedImage(null);
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
   };
+
+  const handleDeleteMessage = async (message) => {
+    if (!selectedConversationId || !message?._id) return;
+
+    try {
+      setDeletingMessageId(message._id);
+      await deleteMessage({
+        conversationId: selectedConversationId,
+        messageId: message._id,
+      });
+      toastSuccess("Message deleted");
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Could not delete message");
+    } finally {
+      setDeletingMessageId(null);
+    }
+  };
+
+  const handleToggleBlockUser = async () => {
+    if (!selectedContact?.targetUserId) return;
+
+    try {
+      if (selectedContact?.isBlocked) {
+        const res = await unblockUser(selectedContact.targetUserId);
+        setBlockedUsers((prev) => ({
+          ...prev,
+          [selectedContact.targetUserId]: false,
+        }));
+        setSelectedContact((prev) =>
+          prev ? { ...prev, isBlocked: false } : prev,
+        );
+        toastSuccess(res?.message || "User unblocked");
+      } else {
+        const res = await blockUser(selectedContact.targetUserId);
+        setBlockedUsers((prev) => ({
+          ...prev,
+          [selectedContact.targetUserId]: true,
+        }));
+        setSelectedContact((prev) =>
+          prev ? { ...prev, isBlocked: true, isOnline: false } : prev,
+        );
+        toastSuccess(res?.message || "User blocked");
+      }
+    } catch (error) {
+      toastError(
+        error?.response?.data?.message || "Could not update block status",
+      );
+    }
+  };
+
+  const handleAudioCall = async () => {
+    if (!selectedContact?.targetUserId) return;
+    if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
+      toastError("You cannot call yourself");
+      return;
+    }
+    if (!selectedContact?.isFriend) {
+      toastError("Only accepted friends can call");
+      return;
+    }
+    if (selectedContact?.isBlocked) {
+      toastError("User is blocked");
+      return;
+    }
+
+    try {
+      setIsCalling(true);
+      await startAudioCall({
+        targetUserId:
+          selectedContact.zegoUserId || selectedContact.targetUserId,
+        targetUserName: selectedContact.name,
+      });
+      toastSuccess("Calling...");
+    } catch (error) {
+      toastError(error?.message || "call");
+    } finally {
+      setIsCalling(false);
+    }
+  };
+
+  if (conversationsLoading || friendsLoading) {
+    return (
+      <div className="min-h-90 flex items-center justify-center">
+        <Spinner className="text-emerald-600" size={44} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-screen flex flex-col bg-background">
       <div className="flex flex-1 gap-2 overflow-hidden">
-        {/* Sidebar */}
         <ContactsSidebar
-          contacts={mockContacts}
+          contacts={contactsWithTarget}
           selectedContact={selectedContact}
           setSelectedContact={setSelectedContact}
           setShowChat={setShowChat}
           showChat={showChat}
         />
 
-        {/* Chat Area */}
         <Card
           className={cn(
             "flex-1 flex flex-col p-0 overflow-hidden",
-            showChat ? "block" : "hidden md:flex"
+            showChat || !selectedContact ? "flex" : "hidden md:flex",
           )}
         >
-          {/* Header */}
-          <ChatHeader contact={selectedContact} setShowChat={setShowChat} />
-         
+          {!selectedContact ? (
+            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+              No conversations yet
+            </div>
+          ) : (
+            <>
+              <ChatHeader
+                contact={selectedContact}
+                setShowChat={setShowChat}
+                onToggleBlockUser={handleToggleBlockUser}
+                isTogglingBlock={isBlockingUser || isUnblockingUser}
+                isBlocked={!!selectedContact?.isBlocked}
+                onAudioCall={handleAudioCall}
+                isCalling={isCalling}
+              />
 
-          {/* Messages */}
-          <MessagesList
-            messages={messages}
-            isTyping={isTyping}
-            selectedContact={selectedContact}
-            messagesEndRef={messagesEndRef}
-          />
+              <MessagesList
+                messages={messages}
+                messagesEndRef={messagesEndRef}
+                currentUserId={profileId}
+                isLoading={messagesLoading}
+                onDeleteMessage={handleDeleteMessage}
+                deletingMessageId={deletingMessageId}
+              />
 
-          {/* Input */}
-          <MessageInput
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            handleSendMessage={handleSendMessage}
-          />
+              <MessageInput
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                handleSendMessage={handleSendMessage}
+                selectedFile={selectedImage}
+                onFileChange={setSelectedImage}
+                isSending={isSending || !!selectedContact?.isBlocked}
+                isBlocked={!!selectedContact?.isBlocked}
+              />
+            </>
+          )}
         </Card>
       </div>
     </div>

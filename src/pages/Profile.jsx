@@ -54,7 +54,7 @@ const Profile = () => {
   const countData = useMemo(() => count, [count]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
-    useUserPostList({ id: profileId });
+    useUserPostList(profileId);
 
   const userProfile = useMemo(() => profileData, [profileData]);
 

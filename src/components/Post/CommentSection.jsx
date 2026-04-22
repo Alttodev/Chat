@@ -10,26 +10,25 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash2 } from "lucide-react";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 
 export function CommentSection({ postId, userProfile }) {
-  const { data: activeComments, isFetching } = usePostComments(postId);
+  const { data: activeComments, isLoading } = usePostComments(postId);
   const { mutateAsync: deleteComment } = usePostCommentDelete();
 
   const handleDelete = async ({ postId, commentId }) => {
     try {
-      const res = await deleteComment({ postId: postId, commentId: commentId });
-      toastSuccess(res?.message);
+      await deleteComment({ postId: postId, commentId: commentId });
+      // toastSuccess(res?.message);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return <SkeletonComment />;
   }
 
-  
   return (
     <div className="space-y-3   pt-5">
       <div className="text-sm text-muted-foreground">

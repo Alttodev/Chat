@@ -48,7 +48,7 @@ export const useUserUpdate = () => {
   return useMutation({
     mutationFn: (formData) => userUpdate(formData),
     onSuccess: () => {
-      queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 };

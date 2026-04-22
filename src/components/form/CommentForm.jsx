@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { usePostComment } from "@/hooks/postHooks";
@@ -25,8 +25,7 @@ export function CommentForm({ userProfile, postId }) {
 
   const onSubmit = async (formData) => {
     try {
-      const res = await createComment({ id: postId, formData: formData });
-      toastSuccess(res?.message);
+      await createComment({ id: postId, formData: formData });
       reset();
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

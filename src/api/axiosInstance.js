@@ -28,7 +28,11 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      window.location.href = "/";
+      const onLoginPage = window.location.pathname === "/";
+      localStorage.removeItem("chat-storage");
+      if (!onLoginPage) {
+        window.location.replace("/");
+      }
     }
     return Promise.reject(error);
   }

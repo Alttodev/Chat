@@ -6,27 +6,34 @@ export const OnlineStatus = ({ userId, size }) => {
   const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !userId) {
+      setIsOnline(false);
+      return;
+    }
+
+    const handleUserOnline = (id) => {
+      if (id === userId) setIsOnline(true);
+    };
+
+    const handleUserOffline = (id) => {
+      if (id === userId) setIsOnline(false);
+    };
+
+    const handleUserStatus = ({ id, online }) => {
+      if (id === userId) setIsOnline(online);
+    };
 
     // Ask server for this user's status
     socket.emit("check-user-status", userId);
 
-    socket.on("user-online", (id) => {
-      if (id === userId) setIsOnline(true);
-    });
-
-    socket.on("user-offline", (id) => {
-      if (id === userId) setIsOnline(false);
-    });
-
-    socket.on("user-status", ({ id, online }) => {
-      if (id === userId) setIsOnline(online);
-    });
+    socket.on("user-online", handleUserOnline);
+    socket.on("user-offline", handleUserOffline);
+    socket.on("user-status", handleUserStatus);
 
     return () => {
-      socket.off("user-online");
-      socket.off("user-offline");
-      socket.off("user-status");
+      socket.off("user-online", handleUserOnline);
+      socket.off("user-offline", handleUserOffline);
+      socket.off("user-status", handleUserStatus);
     };
   }, [socket, userId]);
 

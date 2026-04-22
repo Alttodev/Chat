@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export default function ContactsSidebar({
@@ -22,6 +23,11 @@ export default function ContactsSidebar({
       </div>
       <ScrollArea className="h-[calc(100vh-64px)]">
         <div className="p-2">
+          {contacts.length === 0 && (
+            <div className="text-sm text-muted-foreground text-center py-10">
+              No conversations
+            </div>
+          )}
           {contacts.map((contact) => (
             <div
               key={contact.id}
@@ -31,7 +37,7 @@ export default function ContactsSidebar({
               }}
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
-                selectedContact.id === contact.id && "bg-emerald-600 text-white"
+                selectedContact?.id === contact.id && "bg-emerald-600 text-white"
               )}
             >
               <div className="relative">
@@ -52,16 +58,25 @@ export default function ContactsSidebar({
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{contact.name}</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-medium truncate">{contact.name}</p>
+                  {contact.unreadCount > 0 && (
+                    <Badge className="bg-emerald-600 text-white">
+                      {contact.unreadCount}
+                    </Badge>
+                  )}
+                </div>
                 <p
                   className={cn(
                     "text-sm truncate",
-                    selectedContact.id === contact.id
+                    selectedContact?.id === contact.id
                       ? "text-white"
                       : "text-muted-foreground"
                   )}
                 >
-                  {contact.isOnline
+                  {contact.lastMessageText
+                    ? contact.lastMessageText
+                    : contact.isOnline
                     ? "Online"
                     : `Last seen ${contact.lastSeen}`}
                 </p>

@@ -1,3 +1,4 @@
+import { ChatWidget } from "@/components/chatbot/ChatBotify";
 import { SocialHeader } from "@/components/Header";
 import { LeftSidebar } from "@/components/LeftSidebar";
 import { RightSidebar } from "@/components/RightSidebar";
@@ -31,6 +32,7 @@ function HomeLayout() {
         <aside className="hidden lg:block fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-sidebar border-l border-sidebar-border overflow-y-auto">
           <RightSidebar />
         </aside>
+          {/* <ChatWidget /> */}
       </div>
     </div>
   );
