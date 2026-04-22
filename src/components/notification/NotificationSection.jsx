@@ -155,7 +155,7 @@ function NotificationSection() {
         // Navigation should still work even if marking seen fails.
       } finally {
         if (notification?.type === "follow-request") {
-          navigate("/friends");
+          navigate("/friends", { state: { tab: "requests" } });
           // eslint-disable-next-line no-unsafe-finally
           return;
         }

@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useFriendsList } from "@/hooks/postHooks";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
-import { Link} from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin, UsersRound } from "lucide-react";
 
 export const FriendCard = ({ tabValue }) => {
   // const navigate = useNavigate();
@@ -12,10 +12,10 @@ export const FriendCard = ({ tabValue }) => {
   const friendData = useMemo(() => friendsList, [friendsList]);
 
   const friends = friendData?.friends?.filter(
-    (item) => item?.isFriends === true
+    (item) => item?.isFriends === true,
   );
   const onlineFriends = friendData?.friends?.filter(
-    (item) => item?.from?.isOnline === true && item?.isFriends === true
+    (item) => item?.from?.isOnline === true && item?.isFriends === true,
   );
   const friendsData = tabValue === "online" ? onlineFriends : friends;
 
@@ -57,18 +57,7 @@ export const FriendCard = ({ tabValue }) => {
                   </div>
                 </div>
               </Link>
-
-              {/* <span
-                onClick={() => navigate("/messages")}
-                size="sm"
-                className="flex justify-around cursor-pointer"
-              >
-                <img
-                  src="/src/assets/logo.png"
-                  alt="Clix Logo"
-                  className="w-8 h-8"
-                />
-              </span> */}
+              <UsersRound className="size-7  text-green-500 p-1 rounded" />
             </CardContent>
           </Card>
         ))}
