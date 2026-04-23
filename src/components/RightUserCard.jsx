@@ -13,7 +13,7 @@ import { toastError, toastSuccess } from "@/lib/toast";
 function RightUserCard({ user, profileId }) {
   const userId = user?.id;
 
-  const { data: requestStatus } = useRequestListInfo({
+  const { data: requestStatus, refetch } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
   });
@@ -31,6 +31,8 @@ function RightUserCard({ user, profileId }) {
     try {
       const res = await followRequest(userId);
       toastSuccess(res?.message);
+      // Refetch to update UI immediately
+      await refetch();
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -43,6 +45,8 @@ function RightUserCard({ user, profileId }) {
         toId: userId,
       });
       toastSuccess(res?.message);
+      // Refetch to update UI immediately
+      await refetch();
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }

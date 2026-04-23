@@ -1,4 +1,4 @@
-import { MapPin, MessageCircle, Share } from "lucide-react";
+import { MapPin, MessageCircle, Share, Image as ImageIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
@@ -29,7 +29,8 @@ const UsersInfo = () => {
   const params = useParams();
   const id = params?.id;
 
-  const { mutateAsync: followRequest, isPending: isFollowing } = useProfileFollow();
+  const { mutateAsync: followRequest, isPending: isFollowing } =
+    useProfileFollow();
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
 
@@ -49,7 +50,7 @@ const UsersInfo = () => {
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
-    [data]
+    [data],
   );
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
@@ -207,85 +208,117 @@ const UsersInfo = () => {
           </div>
         </CardContent>
       </Card>
-
-      {posts.map((post) => (
-        <Card key={post._id} className="overflow-hidden">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10 text-emerald-600">
-                  <AvatarImage src={post.avatar || "/placeholder.svg"} />
-                  <AvatarFallback>
-                    {user?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium text-sm sm:text-base">
-                    {user?.userName}
-                  </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    {formatRelative(post?.createdAt)}
-                  </p>
+      {friends ? (
+        <>
+          {posts.map((post) => (
+            <Card key={post._id} className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-10 h-10 text-emerald-600">
+                      <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                      <AvatarFallback>
+                        {user?.userName?.charAt(0).toUpperCase() || "-"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-sm sm:text-base">
+                        {user?.userName}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        {formatRelative(post?.createdAt)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
+              </CardHeader>
+
+              <CardContent className="pt-0">
+                <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
+                  {post?.postText}
+                </p>
+
+                {post?.image && (
+                  <img
+                    className="w-full h-auto object-cover rounded-lg"
+                    src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
+                    alt="post"
+                  />
+                )}
+
+                <div className="mb-3 pb-3 border-b border-border" />
+
+                <div className="flex items-center justify-between">
+                  <PostLikeComponent post={post} userId={post?.user?._id} />
+
+                  <div className="flex-1 flex justify-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleComments(post?._id)}
+                      className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-1" /> Comment
+                    </Button>
+                  </div>
+
+                  <div className="flex-1 flex justify-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openShareModal(post?._id)}
+                      className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
+                    >
+                      <Share className="w-4 h-4 mr-1" /> Share
+                    </Button>
+                  </div>
+                </div>
+
+                {openPostId === post._id && (
+                  <div className="border-t border-border mt-3">
+                    <CommentSection
+                      postId={post._id}
+                      userProfile={currentUser}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+
+          <ShareDialog />
+
+          <div ref={loadMoreRef} style={{ height: "20px" }} />
+
+          {isFetchingNextPage && <PostSkeleton />}
+
+          {!hasNextPage && (
+            <div className="flex justify-center">
+              <span className="px-3 text-sm text-muted-foreground">
+                No more posts
+              </span>
+            </div>
+          )}
+        </>
+      ) : (
+        <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+          <CardContent className="pt-12 pb-12">
+            <div className="flex flex-col items-center justify-center gap-4 text-center">
+              <div className="p-4 bg-emerald-100 rounded-full">
+                <ImageIcon className="w-8 h-8 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  Follow to See Posts
+                </h3>
+                <p className="text-muted-foreground mb-6 max-w-sm">
+                  Follow {user?.userName} to view their posts and stay updated
+                  with their latest content.
+                </p>
               </div>
             </div>
-          </CardHeader>
-
-          <CardContent className="pt-0">
-            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
-              {post?.postText}
-            </p>
-            {post?.image && (
-              <img
-                className="w-full h-auto object-cover rounded-lg"
-                src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
-                alt="post"
-              />
-            )}
-
-            <div className="mb-3 pb-3 border-b border-border" />
-
-            <div className="flex items-center justify-between">
-              <PostLikeComponent post={post} userId={post?.user?._id} />
-              <div className="flex-1 flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleComments(post?._id)}
-                  className=" text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 mr-1" /> Comment
-                </Button>
-              </div>
-              <div className="flex-1 flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => openShareModal(post?._id)}
-                  className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent  cursor-pointer"
-                >
-                  <Share className="w-4 h-4 mr-1" /> Share
-                </Button>
-              </div>
-            </div>
-
-            {openPostId === post._id && (
-              <div className="border-t border-border mt-3">
-                <CommentSection postId={post._id} userProfile={currentUser} />
-              </div>
-            )}
           </CardContent>
         </Card>
-      ))}
-      <ShareDialog />
-      <div ref={loadMoreRef} style={{ height: "20px" }} />
-      {isFetchingNextPage && <PostSkeleton />}
-      {!hasNextPage && (
-        <div className="flex justify-center">
-          <span className="px-3 text-sm text-muted-foreground">
-            No more posts
-          </span>
-        </div>
       )}
     </div>
   );

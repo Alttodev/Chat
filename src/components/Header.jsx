@@ -1,4 +1,4 @@
-import { Search, MessageCircle, Users, Home, Menu } from "lucide-react";
+import { Search, MessageCircle, Users, Home, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { OnlineStatus } from "./onlineStatus";
 import NotificationSection from "./notification/NotificationSection";
+import { useSearchUsers } from "@/hooks/searchHooks";
+import { SearchResults } from "./SearchResults";
 
 export function SocialHeader() {
   const { data: profileData } = useUserDetail();
@@ -21,6 +23,19 @@ export function SocialHeader() {
 
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const { data: searchResults, isLoading } = useSearchUsers(debouncedQuery);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
@@ -46,10 +61,25 @@ export function SocialHeader() {
           </Link>
           {/* Search Bar */}
           <div className="relative flex-1 max-w-[200px] sm:max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
             <Input
-              placeholder="Search..."
+              placeholder="Search users..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 bg-muted border-0 focus:bg-background text-sm sm:text-base"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+            <SearchResults
+              data={searchResults}
+              isLoading={isLoading}
+              query={debouncedQuery}
             />
           </div>
         </div>

@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Check, CheckCheck, MoreHorizontal, Trash2 } from "lucide-react";
@@ -81,17 +80,6 @@ export default function MessagesList({
                 isOwnMessage ? "ml-auto flex-row-reverse" : "",
               )}
             >
-              {/* {isOwnMessage ? null : (
-                <Avatar className="w-8 h-8 flex-shrink-0">
-                  <AvatarImage src="/placeholder.svg" alt={senderName} />
-                  <AvatarFallback>
-                    {senderName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-              )} */}
               <div
                 className={cn(
                   "flex flex-col gap-1",
@@ -137,7 +125,7 @@ export default function MessagesList({
                       alt="chat"
                       className={cn(
                         "rounded-md max-h-72 object-cover",
-                        hasOnlyImage ? "" : "mb-2"
+                        hasOnlyImage ? "" : "mb-2",
                       )}
                     />
                   )}
@@ -145,13 +133,15 @@ export default function MessagesList({
                     <p
                       className={cn(
                         "text-sm leading-relaxed",
-                        hasImageAndText && !isDeleted && "mt-2 px-4 py-2 rounded-2xl",
+                        hasImageAndText &&
+                          !isDeleted &&
+                          "mt-2 px-4 py-2 rounded-2xl",
                         hasImageAndText &&
                           !isDeleted &&
                           (isOwnMessage
                             ? "bg-emerald-600 text-white rounded-br-md"
                             : "bg-muted text-muted-foreground rounded-bl-md"),
-                        isDeleted && "italic text-muted-foreground"
+                        isDeleted && "italic text-muted-foreground",
                       )}
                     >
                       {isDeleted ? deletedText : message.text}

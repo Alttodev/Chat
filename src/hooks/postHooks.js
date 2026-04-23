@@ -42,6 +42,8 @@ export const useProfileFollow = () => {
     mutationFn: (id) => userFollowRequest(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["request_info"] });
+      queryClient.invalidateQueries({ queryKey: ["follow_request"] });
+      queryClient.invalidateQueries({ queryKey: ["user-followers"] });
     },
   });
 };
@@ -231,12 +233,15 @@ export const useRequestDelete = () => {
   return useMutation({
     mutationFn: ({ fromId, toId }) => userRequestDelete({ fromId, toId }),
     onSuccess: (_, variables) => {
+      // Refetch specific request info query
+      queryClient.refetchQueries({
+        queryKey: ["request_info", variables.fromId, variables.toId],
+      });
+      
+      // Invalidate other related queries
       queryClient.invalidateQueries({ queryKey: ["follow_request"] });
       queryClient.invalidateQueries({ queryKey: ["friends"] });
       queryClient.invalidateQueries({ queryKey: ["friends-count"] });
-      queryClient.invalidateQueries({
-        queryKey: ["request_info", variables.fromId, variables.toId],
-      });
       queryClient.invalidateQueries({ queryKey: ["request_info"] });
       queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
     },
