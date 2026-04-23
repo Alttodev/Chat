@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Link, useParams } from "react-router-dom";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 
 const UsersInfo = () => {
@@ -70,8 +70,8 @@ const UsersInfo = () => {
 
   const handleFollow = async (userId) => {
     try {
-      const res = await followRequest(userId);
-      toastSuccess(res?.message);
+      await followRequest(userId);
+      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -79,11 +79,11 @@ const UsersInfo = () => {
 
   const handleUnfollow = async () => {
     try {
-      const res = await unfollowRequest({
+      await unfollowRequest({
         fromId: profileId,
         toId: id,
       });
-      toastSuccess(res?.message);
+      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }

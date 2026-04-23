@@ -68,7 +68,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
         <div className="grid grid-cols-1  gap-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
-              <label htmlFor="name" className="flex items-center gap-2">
+              <label htmlFor="name" className="flex !text-sm items-center gap-2">
                 <User className="h-4 w-4" />
                 Full Name
               </label>
@@ -86,7 +86,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="flex items-center gap-2">
+              <label htmlFor="email" className="flex !text-sm items-center gap-2">
                 <Mail className="h-4 w-4" />
                 Email
               </label>
@@ -105,7 +105,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="address" className="flex items-center gap-2">
+              <label htmlFor="address" className="flex !text-sm items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 Address
               </label>

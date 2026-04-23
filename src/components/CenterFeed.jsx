@@ -33,6 +33,7 @@ import { PostImageDialog } from "./modals/postImageModal";
 import { ShareDialog } from "./modals/shareModal";
 import { PostFormSkeleton } from "./skeleton/postFormSkeleton";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
+import { Link } from "react-router-dom";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -50,7 +51,7 @@ export function CenterFeed() {
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
-    [data]
+    [data],
   );
 
   useEffect(() => {
@@ -96,21 +97,26 @@ export function CenterFeed() {
         <Card key={post._id} className="overflow-hidden">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10 text-emerald-600">
-                  <AvatarImage src={post.avatar || "/placeholder.svg"} />
-                  <AvatarFallback>
-                    {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium text-sm sm:text-base">
-                    {post?.user?.userName}
-                  </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    {formatRelative(post?.createdAt)}
-                  </p>
-                </div>
+              <div>
+                <Link
+                  to={`/users/${post?.user?._id}`}
+                  className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+                >
+                  <Avatar className="w-10 h-10 text-emerald-600">
+                    <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                    <AvatarFallback>
+                      {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium text-sm sm:text-base">
+                      {post?.user?.userName}
+                    </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      {formatRelative(post?.createdAt)}
+                    </p>
+                  </div>
+                </Link>
               </div>
               {post?.isOwner && (
                 <DropdownMenu>
@@ -132,9 +138,7 @@ export function CenterFeed() {
                       }
                     >
                       <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
-                      <span className="text-emerald-700 font-medium">
-                        Edit
-                      </span>
+                      <span className="text-emerald-700 font-medium">Edit</span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
@@ -142,9 +146,7 @@ export function CenterFeed() {
                       onClick={() => handleDelete(post._id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
-                      <span className="text-red-500 font-medium">
-                        Delete
-                      </span>
+                      <span className="text-red-500 font-medium">Delete</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -192,7 +194,10 @@ export function CenterFeed() {
 
             {openPostId === post._id && (
               <div className="border-t border-border mt-3">
-                <CommentSection postId={post._id} userProfile={userProfile?.profile} />
+                <CommentSection
+                  postId={post._id}
+                  userProfile={userProfile?.profile}
+                />
               </div>
             )}
           </CardContent>

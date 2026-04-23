@@ -54,7 +54,7 @@ const SignupForm = () => {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block !text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <TextInput
@@ -71,7 +71,7 @@ const SignupForm = () => {
           </div>
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block !text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <PasswordInput

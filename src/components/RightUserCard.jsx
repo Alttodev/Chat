@@ -8,7 +8,7 @@ import {
   useRequestListInfo,
 } from "@/hooks/postHooks";
 
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 
 function RightUserCard({ user, profileId }) {
   const userId = user?.id;
@@ -29,8 +29,8 @@ function RightUserCard({ user, profileId }) {
 
   const handleFollow = async () => {
     try {
-      const res = await followRequest(userId);
-      toastSuccess(res?.message);
+      await followRequest(userId);
+      // toastSuccess(res?.message);
       // Refetch to update UI immediately
       await refetch();
     } catch (err) {
@@ -40,11 +40,11 @@ function RightUserCard({ user, profileId }) {
 
   const handleUnfollow = async () => {
     try {
-      const res = await unfollowRequest({
+      await unfollowRequest({
         fromId: profileId,
         toId: userId,
       });
-      toastSuccess(res?.message);
+      // toastSuccess(res?.message);
       // Refetch to update UI immediately
       await refetch();
     } catch (err) {

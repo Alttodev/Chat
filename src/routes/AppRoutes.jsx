@@ -14,6 +14,7 @@ import SettingsComponent from "@/pages/Setting";
 import Profile from "@/pages/Profile";
 import UsersList from "@/pages/UsersList";
 import UsersFriendsList from "@/pages/UsersFriendsList";
+import Survey from "@/pages/Survey";
 
 function AppRoutes() {
   return (
@@ -32,9 +33,10 @@ function AppRoutes() {
               <Route path="/friends/:id" element={<UsersFriendsList />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
+              <Route path="/survey" element={<Survey />} />
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/users/:id" element={<UsersInfo />} />
-              <Route path="/userslist" element={<UsersList />}/>
+              <Route path="/userslist" element={<UsersList />} />
             </Route>
           </Route>
         </Routes>

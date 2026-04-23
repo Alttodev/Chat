@@ -6,6 +6,7 @@ import {
   Settings,
   User,
   MessageCircle,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -18,13 +19,13 @@ export function LeftSidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
+    { icon: BarChart3, label: "Survey", path: "/survey" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (
     <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-sidebar border-r border-sidebar-border overflow-y-auto">
       <div className="p-4 space-y-2">
-
         {/* Navigation Menu */}
         <nav className="space-y-1">
           {menuItems.map((item) => {
