@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Bell, UserPlus, MessageCircle } from "lucide-react";
+import { Bell, UserPlus, MessageCircle, BellOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarFallback } from "../ui/avatar";
@@ -16,6 +16,7 @@ import {
   useNotificationCounts,
   useMarkNotificationSeen,
   useNotifications,
+  useNotificationSettings,
 } from "@/hooks/notificationHooks";
 
 const formatTime = (value) => {
@@ -49,7 +50,11 @@ function NotificationSection() {
   const { socket } = useSocket();
   const { data: countsData } = useNotificationCounts();
   const { data: notificationsData, isLoading, refetch } = useNotifications(30);
+  const { data: notificationSettingsData } = useNotificationSettings();
   const { mutateAsync: markNotificationSeen } = useMarkNotificationSeen();
+
+  const pushNotificationsEnabled =
+    notificationSettingsData?.settings?.enabled ?? true;
 
   const totalCount = countsData?.counts?.total || 0;
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +113,10 @@ function NotificationSection() {
     if (!socket) return;
 
     const handleNewNotification = () => {
-      playNotificationSound();
+      if (!pushNotificationsEnabled) {
+        playNotificationSound();
+      }
+
       queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
@@ -118,7 +126,7 @@ function NotificationSection() {
     return () => {
       socket.off("new-notification", handleNewNotification);
     };
-  }, [socket, queryClient, playNotificationSound]);
+  }, [socket, queryClient, playNotificationSound, pushNotificationsEnabled]);
 
   const handleOpenChange = useCallback(
     (isOpen) => {
@@ -188,8 +196,13 @@ function NotificationSection() {
           size="icon"
           className="text-muted-foreground hover:text-primary hover:bg-accent/10 cursor-pointer relative"
         >
-          <Bell className="w-5 h-5" />
-          {totalCount > 0 && (
+          {pushNotificationsEnabled ? (
+            <Bell className="w-5 h-5 text-green-500" />
+          ) : (
+            <BellOff className="w-5 h-5" />
+          )}
+
+          {totalCount > 0 && pushNotificationsEnabled && (
             <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
               {badgeText}
             </span>

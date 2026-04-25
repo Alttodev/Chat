@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -11,8 +9,10 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
 } from "recharts";
-import { useUserProfiles } from "@/hooks/authHooks";
+import { useUserAllProfiles } from "@/hooks/authHooks";
 import { UsersListSkeleton } from "@/components/skeleton/userListSkeleton";
 
 const COLORS = ["#10b981", "#059669", "#34d399", "#6ee7b7", "#a7f3d0"];
@@ -49,7 +49,7 @@ const CustomLegend = ({ data }) => (
 );
 
 const Survey = () => {
-  const { data: profileData, isFetching } = useUserProfiles();
+  const { data: profileData, isFetching } = useUserAllProfiles();
 
   /* ------------ Data Transform ------------ */
   const chartData = useMemo(() => {
@@ -77,7 +77,6 @@ const Survey = () => {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-10">
       <div className="grid grid-cols-1 gap-6">
-
         {/* 📈 Line Chart */}
         <Card className="shadow-xl rounded-2xl border border-gray-100">
           <CardHeader>
@@ -87,7 +86,7 @@ const Survey = () => {
           <CardContent>
             <div className="w-full h-[350px]">
               <ResponsiveContainer>
-                <LineChart
+                <BarChart
                   data={chartData}
                   margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
                 >
@@ -95,9 +94,9 @@ const Survey = () => {
 
                   <XAxis
                     dataKey="year"
-                    type="category" 
+                    type="category"
                     interval="preserveStartEnd"
-                    minTickGap={20} 
+                    minTickGap={20}
                     padding={{ left: 10, right: 10 }}
                     tick={{ fill: "#6b7280", fontSize: 13 }}
                     axisLine={false}
@@ -114,20 +113,15 @@ const Survey = () => {
 
                   <Tooltip content={<CustomTooltip />} />
 
-                  <Line
-                    type="monotone"
+                  <Bar
                     dataKey="users"
-                    stroke="#0d9488"
-                    strokeWidth={3}
-                    dot={{
-                      r: 4,
-                      stroke: "#0d9488",
-                      strokeWidth: 2,
-                      fill: "#ffffff",
-                    }}
-                    activeDot={{ r: 6 }}
+                    fill="#0d9488"
+                    radius={[6, 6, 0, 0]}
+                    barSize={30}
+                    isAnimationActive={true}
+                    animationDuration={800}
                   />
-                </LineChart>
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
@@ -158,10 +152,7 @@ const Survey = () => {
                     paddingAngle={4}
                   >
                     {chartData.map((entry, index) => (
-                      <Cell
-                        key={index}
-                        fill={COLORS[index % COLORS.length]}
-                      />
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
 
@@ -179,7 +170,6 @@ const Survey = () => {
             </div>
           </CardContent>
         </Card>
-
       </div>
     </div>
   );

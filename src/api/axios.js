@@ -175,6 +175,11 @@ export const getAllProfiles = async () => {
   return data;
 };
 
+export const getAllUsersProfile = async () => {
+  const { data } = await axiosInstance.get(`/profile/allprofiles`);
+  return data;
+}
+
 export const getUserPost = async ({ pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
     `/post/list?page=${pageParam}&limit=5`

@@ -19,7 +19,7 @@ export function LeftSidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
-    { icon: BarChart3, label: "Survey", path: "/survey" },
+    { icon: BarChart3, label: "Analytics", path: "/survey" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 

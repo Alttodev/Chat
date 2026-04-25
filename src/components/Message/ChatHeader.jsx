@@ -62,9 +62,11 @@ export default function ChatHeader({
                 .join("")}
             </AvatarFallback>
           </Avatar>
-          {contact.isOnline && (
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-600 border-2 border-background rounded-full" />
-          )}
+          <div
+            className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
+              contact?.isOnline ? "bg-green-500" : "bg-yellow-500"
+            }`}
+          />
         </div>
         <div>
           <h3 className="font-semibold text-emerald-600">{contact.name}</h3>
@@ -79,6 +81,7 @@ export default function ChatHeader({
         <Button
           variant="ghost"
           size="icon"
+          className="cursor-pointer"
           onClick={onAudioCall}
           disabled={isCalling}
         >
@@ -89,7 +92,7 @@ export default function ChatHeader({
         </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="cursor-pointer">
               <MoreVertical className="w-4 h-4 text-emerald-600" />
             </Button>
           </DropdownMenuTrigger>

@@ -15,7 +15,7 @@ export default function ContactsSidebar({
     <Card
       className={cn(
         "w-full md:w-80 p-0 overflow-hidden border-r transition-all",
-        showChat ? "hidden md:block" : "block"
+        showChat ? "hidden md:block" : "block",
       )}
     >
       <div className="p-4 border-b bg-card">
@@ -37,7 +37,8 @@ export default function ContactsSidebar({
               }}
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors",
-                selectedContact?.id === contact.id && "bg-emerald-600 text-white"
+                selectedContact?.id === contact.id &&
+                  "bg-emerald-600 text-white",
               )}
             >
               <div className="relative">
@@ -53,9 +54,11 @@ export default function ContactsSidebar({
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
-                {contact.isOnline && (
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-600 border-2 border-background rounded-full" />
-                )}
+                <div
+                  className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
+                    contact?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                  }`}
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
@@ -71,14 +74,14 @@ export default function ContactsSidebar({
                     "text-sm truncate",
                     selectedContact?.id === contact.id
                       ? "text-white"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground",
                   )}
                 >
                   {contact.lastMessageText
                     ? contact.lastMessageText
                     : contact.isOnline
-                    ? "Online"
-                    : `Last seen ${contact.lastSeen}`}
+                      ? "Online"
+                      : `Last seen ${contact.lastSeen}`}
                 </p>
               </div>
             </div>

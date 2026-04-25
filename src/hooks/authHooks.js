@@ -1,5 +1,6 @@
 import {
   getAllProfiles,
+  getAllUsersProfile,
   getProfile,
   userCreate,
   userLogin,
@@ -75,5 +76,16 @@ export const useUserProfiles = () => {
   });
 };
 
+
+
+export const useUserAllProfiles = () => {
+  return useQuery({
+    queryKey: ["alluser_profiles"],
+    queryFn: () => getAllUsersProfile(),
+    cacheTime: 0,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
 
 
