@@ -13,7 +13,6 @@ import {
   Bar,
 } from "recharts";
 import { useUserAllProfiles } from "@/hooks/authHooks";
-import { UsersListSkeleton } from "@/components/skeleton/userListSkeleton";
 
 const COLORS = ["#10b981", "#059669", "#34d399", "#6ee7b7", "#a7f3d0"];
 
@@ -72,7 +71,12 @@ const Survey = () => {
       }));
   }, [profileData]);
 
-  if (isFetching) return <UsersListSkeleton />;
+  if (isFetching)
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-400">
+        Loading chart...
+      </div>
+    );
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-10">
