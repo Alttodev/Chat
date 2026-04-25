@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Phone, Video, MoreVertical, Ban } from "lucide-react";
+import { ArrowLeft, Phone, MoreVertical, Ban } from "lucide-react";
 import dayjs from "dayjs";
 import {
   DropdownMenu,
@@ -34,7 +34,7 @@ export default function ChatHeader({
   setShowChat,
   onToggleBlockUser,
   isTogglingBlock,
-  isBlocked,
+  blockedByMe,
   onAudioCall,
   isCalling,
 }) {
@@ -69,17 +69,24 @@ export default function ChatHeader({
         <div>
           <h3 className="font-semibold text-emerald-600">{contact.name}</h3>
           <p className="text-sm text-muted-foreground">
-            {contact.isOnline ? "Online" : `Last seen ${formatLastSeen(contact.lastSeen)}`}
+            {contact.isOnline
+              ? "Online"
+              : `Last seen ${formatLastSeen(contact.lastSeen)}`}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={onAudioCall} disabled={isCalling}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onAudioCall}
+          disabled={isCalling}
+        >
           <Phone className="w-4 h-4 text-emerald-600" />
         </Button>
-        <Button variant="ghost" size="icon">
+        {/* <Button variant="ghost" size="icon">
           <Video className="w-4 h-4 text-emerald-600" />
-        </Button>
+        </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
@@ -94,7 +101,7 @@ export default function ChatHeader({
             >
               <Ban className="w-4 h-4 mr-2 text-red-500" />
               <span className="text-red-500">
-                {isBlocked ? "Unblock user" : "Block user"}
+                {blockedByMe ? "Unblock user" : "Block user"}
               </span>
             </DropdownMenuItem>
           </DropdownMenuContent>

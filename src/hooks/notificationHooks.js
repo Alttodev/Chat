@@ -2,6 +2,8 @@ import {
   getNotificationCounts,
   getNotifications,
   markNotificationSeen,
+  getNotificationSettings,
+  updateNotificationSettings,
 } from "@/api/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -33,6 +35,25 @@ export const useMarkNotificationSeen = () => {
       if (variables?.type === "chat-message") {
         queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
       }
+    },
+  });
+};
+
+export const useNotificationSettings = () => {
+  return useQuery({
+    queryKey: ["notification_settings"],
+    queryFn: getNotificationSettings,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useUpdateNotificationSettings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (settings) => updateNotificationSettings(settings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notification_settings"] });
     },
   });
 };

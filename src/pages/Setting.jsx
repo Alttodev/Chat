@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,11 +27,16 @@ import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { useUserDetail } from "@/hooks/authHooks";
+import {
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+} from "@/hooks/notificationHooks";
 import dayjs from "dayjs";
 import { formatDate, formatRelative } from "@/lib/dateHelpers";
 import { OnlineStatus } from "@/components/onlineStatus";
 import { useSocket } from "@/lib/socket";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { useQueryClient } from "@tanstack/react-query";
 
 function SettingsComponent() {
   const {
@@ -45,6 +50,8 @@ function SettingsComponent() {
   const { disconnectSocket } = useSocket();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
+
+  const queryClient = useQueryClient();
 
   const { data: profileData, isFetching } = useUserDetail();
 
@@ -61,12 +68,17 @@ function SettingsComponent() {
     ? formatRelative(user.changedPassword)
     : "Never changed";
 
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: false,
-    logout: false,
-    activityStatus: true,
-  });
+  // Notification settings from API
+  const {
+    data: notificationSettingsData,
+  } = useNotificationSettings();
+  const {
+    mutateAsync: updateNotificationSettings,
+    isPending: isUpdatingNotification,
+  } = useUpdateNotificationSettings();
+
+  const pushNotificationsEnabled =
+    notificationSettingsData?.settings?.enabled ?? true;
 
   const recentActivity = [
     { action: "Changed password", time: changedPassword, type: "security" },
@@ -86,10 +98,13 @@ function SettingsComponent() {
 
   const handleLogout = () => {
     try {
+      queryClient.clear();
+      localStorage.clear();
       clearToken();
       closeEditing();
       setProfileId(null);
       disconnectSocket();
+      window.location.href = "/";
       navigate("/");
       toastSuccess("Logout successful!");
     } catch (error) {
@@ -247,7 +262,7 @@ function SettingsComponent() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <Bell className="h-4 w-4" />
-                  <label className="text-base font-medium">
+                  <label className="!text-sm font-medium">
                     Push Notifications
                   </label>
                 </div>
@@ -256,10 +271,24 @@ function SettingsComponent() {
                 </p>
               </div>
               <Switch
-                checked={settings.pushNotifications}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, pushNotifications: checked })
-                }
+                className="data-[state=checked]:bg-emerald-600"
+                checked={pushNotificationsEnabled}
+                onCheckedChange={async (checked) => {
+                  try {
+                    await updateNotificationSettings({ enabled: checked });
+                    toastSuccess(
+                      checked
+                        ? "Push notifications enabled"
+                        : "Push notifications disabled",
+                    );
+                  } catch (error) {
+                    toastError(
+                      error?.response?.data?.message ||
+                        "Failed to update notification settings",
+                    );
+                  }
+                }}
+                disabled={isUpdatingNotification}
               />
             </div>
             <Separator />
@@ -267,7 +296,7 @@ function SettingsComponent() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <LogOut className="h-4 w-4" />
-                  <label className="text-base font-medium">Logout</label>
+                  <label className="!text-sm font-medium">Logout</label>
                 </div>
               </div>
 

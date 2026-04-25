@@ -18,7 +18,17 @@ createRoot(document.getElementById("root")).render(
     <SocketProvider value={userId}>
       <QueryClientProvider client={queryClient}>
         <ZegoCallProvider>
-          <Toaster position="top" richColors expand={true} visibleToasts={3} />
+          <Toaster
+            position="top-center"
+            richColors
+            expand={true}
+            style={{
+              zIndex: 9999,
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+            visibleToasts={3}
+          />
           <NextTopLoader
             color="oklch(59.6% 0.145 163.225)"
             height={3}
@@ -29,5 +39,5 @@ createRoot(document.getElementById("root")).render(
         </ZegoCallProvider>
       </QueryClientProvider>
     </SocketProvider>
-  </StrictMode>
+  </StrictMode>,
 );

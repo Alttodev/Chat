@@ -100,10 +100,13 @@ export default function Message() {
         avatar: "",
         isOnline: !!conversation?.otherParticipant?.isOnline,
         isBlocked:
-          !!conversation?.isBlockedByCurrentUser ||
+          !!conversation?.blockedByMe ||
           !!conversation?.isBlocked ||
           !!conversation?.block?.isBlocked ||
           !!conversation?.otherParticipant?.isBlockedByCurrentUser ||
+          !!blockedUsers[conversation?.otherParticipant?._id],
+        blockedByMe:
+          !!conversation?.blockedByMe ||
           !!blockedUsers[conversation?.otherParticipant?._id],
         lastSeen: conversation?.otherParticipant?.lastSeen || "",
         unreadCount: conversation?.unreadCount || 0,
@@ -147,6 +150,7 @@ export default function Message() {
           avatar: "",
           isOnline: !!friendUser?.isOnline,
           isBlocked: !!blockedUsers[friendUser?._id],
+          blockedByMe: !!blockedUsers[friendUser?._id],
           lastSeen: friendUser?.lastSeen || "",
           unreadCount: 0,
           lastMessageAt: null,
@@ -294,6 +298,9 @@ export default function Message() {
 
   const { data: messageData, isLoading: messagesLoading } = useChatMessages(
     selectedConversationId,
+    {
+      enabled: !!selectedConversationId,
+    },
   );
 
   const messages = useMemo(() => {
@@ -522,8 +529,10 @@ export default function Message() {
           [selectedContact.targetUserId]: false,
         }));
         setSelectedContact((prev) =>
-          prev ? { ...prev, isBlocked: false } : prev,
+          prev ? { ...prev, isBlocked: false, blockedByMe: false } : prev,
         );
+        // Invalidate conversations to refetch and update UI
+        queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
         toastSuccess(res?.message || "User unblocked");
       } else {
         const res = await blockUser(selectedContact.targetUserId);
@@ -532,8 +541,12 @@ export default function Message() {
           [selectedContact.targetUserId]: true,
         }));
         setSelectedContact((prev) =>
-          prev ? { ...prev, isBlocked: true, isOnline: false } : prev,
+          prev
+            ? { ...prev, isBlocked: true, blockedByMe: true, isOnline: false }
+            : prev,
         );
+        // Invalidate conversations to refetch and update UI
+        queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
         toastSuccess(res?.message || "User blocked");
       }
     } catch (error) {
@@ -610,18 +623,25 @@ export default function Message() {
                 onToggleBlockUser={handleToggleBlockUser}
                 isTogglingBlock={isBlockingUser || isUnblockingUser}
                 isBlocked={!!selectedContact?.isBlocked}
+                blockedByMe={!!selectedContact?.blockedByMe}
                 onAudioCall={handleAudioCall}
                 isCalling={isCalling}
               />
 
-              <MessagesList
-                messages={messages}
-                messagesEndRef={messagesEndRef}
-                currentUserId={profileId}
-                isLoading={messagesLoading}
-                onDeleteMessage={handleDeleteMessage}
-                deletingMessageId={deletingMessageId}
-              />
+              {!selectedConversationId ? (
+                <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+                  Send a message to start chatting 💬
+                </div>
+              ) : (
+                <MessagesList
+                  messages={messages}
+                  messagesEndRef={messagesEndRef}
+                  currentUserId={profileId}
+                  isLoading={messagesLoading}
+                  onDeleteMessage={handleDeleteMessage}
+                  deletingMessageId={deletingMessageId}
+                />
+              )}
 
               <MessageInput
                 newMessage={newMessage}
@@ -631,6 +651,7 @@ export default function Message() {
                 onFileChange={setSelectedImage}
                 isSending={isSending || !!selectedContact?.isBlocked}
                 isBlocked={!!selectedContact?.isBlocked}
+                blockedByMe={!!selectedContact?.blockedByMe}
               />
             </>
           )}

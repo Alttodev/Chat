@@ -13,11 +13,19 @@ export default function MessageInput({
   onFileChange,
   isSending,
   isBlocked,
+  blockedByMe,
 }) {
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
   const pickerRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  // Determine placeholder based on block status
+  const placeholder = blockedByMe
+    ? "You blocked this user"
+    : isBlocked
+      ? "User blocked you"
+      : "Type a message...";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -92,7 +100,7 @@ export default function MessageInput({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={isBlocked ? "You blocked this user" : "Type a message..."}
+            placeholder={placeholder}
             className="pr-10 resize-none"
             disabled={isBlocked}
           />
@@ -119,14 +127,18 @@ export default function MessageInput({
         </div>
         <Button
           onClick={handleSendMessage}
-          disabled={isBlocked || (!newMessage.trim() && !selectedFile) || isSending}
+          disabled={
+            isBlocked || (!newMessage.trim() && !selectedFile) || isSending
+          }
           className="flex-shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
         >
           <Send className="w-4 h-4" />
         </Button>
       </div>
       <div className="flex justify-between items-center mt-2">
-        <span className="text-xs text-muted-foreground">{newMessage.length}/1000</span>
+        <span className="text-xs text-muted-foreground">
+          {newMessage.length}/1000
+        </span>
         <Badge variant="secondary" className="text-xs text-emerald-600">
           {selectedFile ? selectedFile.name : "Press Enter to send"}
         </Badge>

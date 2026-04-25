@@ -86,6 +86,16 @@ export const markNotificationSeen = async (payload) => {
   return data;
 };
 
+export const getNotificationSettings = async () => {
+  const { data } = await axiosInstance.get(`/profile/notification-settings`);
+  return data;
+};
+
+export const updateNotificationSettings = async (settings) => {
+  const { data } = await axiosInstance.put(`/profile/notification-settings`, settings);
+  return data;
+};
+
 // chat
 
 export const getChatConversations = async () => {

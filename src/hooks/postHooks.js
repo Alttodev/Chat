@@ -134,7 +134,6 @@ export const useRequestListInfo = ({ fromId, toId }) => {
     queryFn: () => getFollowRequestInfo({ fromId, toId }),
     enabled: !!fromId && !!toId,
     refetchOnWindowFocus: false,
-    
   });
 };
 
@@ -198,6 +197,7 @@ export const usePostUpdate = () => {
   return useMutation({
     mutationFn: ({ id, formData }) => userPostUpdate(id, formData),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
     },
   });
@@ -210,6 +210,7 @@ export const usePostDelete = () => {
   return useMutation({
     mutationFn: (id) => userPostDelete(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
     },
   });
@@ -237,7 +238,7 @@ export const useRequestDelete = () => {
       queryClient.refetchQueries({
         queryKey: ["request_info", variables.fromId, variables.toId],
       });
-      
+
       // Invalidate other related queries
       queryClient.invalidateQueries({ queryKey: ["follow_request"] });
       queryClient.invalidateQueries({ queryKey: ["friends"] });
