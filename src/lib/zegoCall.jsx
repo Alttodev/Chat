@@ -103,7 +103,7 @@ export const ZegoCallProvider = ({ children }) => {
     };
 
     init();
-  }, [user?._id]);
+  }, [appId, user, user._id]);
 
   // ✅ START CALL
   const startAudioCall = useCallback(async ({ targetUserId, targetUserName }) => {
