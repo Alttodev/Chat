@@ -26,6 +26,7 @@ import { OnlineStatus } from "./onlineStatus";
 import NotificationSection from "./notification/NotificationSection";
 import { useSearchUsers } from "@/hooks/searchHooks";
 import { SearchResults } from "./SearchResults";
+import logo from "@/assets/logo.png";
 
 export function SocialHeader() {
   const [open, setOpen] = useState(false);
@@ -65,7 +66,7 @@ export function SocialHeader() {
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-2">
             <img
-              src="/logo.png"
+              src={logo}
               alt="Clix Logo"
               className="hidden sm:block w-8 h-8"
             />
@@ -126,7 +127,7 @@ export function SocialHeader() {
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
                   <img
-                    src="/src/assets/logo.png"
+                    src={logo}
                     alt="Clix Logo"
                     className="w-10 h-10"
                   />

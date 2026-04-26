@@ -12,6 +12,7 @@ import { useUserLogin } from "@/hooks/authHooks";
 import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
+import logo from "@/assets/logo.png";
 
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
@@ -68,7 +69,7 @@ const LoginForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Clix Logo"
             className="w-12 h-12"
           />

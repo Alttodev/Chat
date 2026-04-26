@@ -8,6 +8,7 @@ import { toastError, toastSuccess } from "../../lib/toast";
 import { PasswordInput } from "../form_inputs/PasswordInput";
 import TextInput from "../form_inputs/TextInput";
 import { useUserSignup } from "@/hooks/authHooks";
+import logo from "@/assets/logo.png";
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const SignupForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Clix Logo"
             className="w-12 h-12"
           />

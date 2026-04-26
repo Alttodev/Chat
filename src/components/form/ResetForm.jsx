@@ -7,6 +7,7 @@ import { resetSchema } from "../../lib/validation";
 import { toastError, toastSuccess } from "../../lib/toast";
 import TextInput from "../form_inputs/TextInput";
 import { useUserReset } from "@/hooks/authHooks";
+import logo from "@/assets/logo.png";
 
 const ResetForm = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ResetForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Clix Logo"
             className="w-12 h-12"
           />

@@ -10,6 +10,7 @@ import { useUserCreate } from "@/hooks/authHooks";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/authStore";
+import logo from "@/assets/logo.png";
 
 const ProfileCreateForm = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const ProfileCreateForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Clix Logo"
             className="w-12 h-12"
           />

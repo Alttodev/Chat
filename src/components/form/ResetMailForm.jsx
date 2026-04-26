@@ -7,6 +7,7 @@ import { resetMailSchema } from "../../lib/validation";
 import { toastError, toastSuccess } from "../../lib/toast";
 import { PasswordInput } from "../form_inputs/PasswordInput";
 import { useUserResetPassword } from "@/hooks/authHooks";
+import logo from "@/assets/logo.png";
 
 const ResetMailForm = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const ResetMailForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/logo.png"
+            src={logo}
             alt="Clix Logo"
             className="w-12 h-12"
           />
