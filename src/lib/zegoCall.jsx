@@ -17,93 +17,83 @@ export const ZegoCallProvider = ({ children }) => {
 
   const appId = Number(import.meta.env.VITE_ZEGO_APP_ID);
 
-  useEffect(() => {
-    if (!user || !user._id) return;
+ useEffect(() => {
+  if (!user?._id) return;
 
-    const init = async () => {
-      try {
-        const userId = user._id.toString();
+  const init = async () => {
+    try {
+      const userId = user._id.toString();
 
-        // 🔥 prevent re-init for same user
-        if (currentUserIdRef.current === userId && readyRef.current) return;
+      if (currentUserIdRef.current === userId && readyRef.current) return;
 
-        currentUserIdRef.current = userId;
+      currentUserIdRef.current = userId;
 
-        const res = await getZegoToken();
-        const serverToken = res?.data?.token;
-        const appIdFromServer = Number(res?.data?.appId);
+      const res = await getZegoToken();
+      const serverToken = res?.data?.token;
+      const appIdFromServer = Number(res?.data?.appId);
 
-        const effectiveAppId = appId || appIdFromServer;
+      const effectiveAppId = appId || appIdFromServer;
 
-        if (!serverToken || !effectiveAppId) {
-          throw new Error("Missing Zego config");
-        }
-
-        // ✅ create ZIM once
-        if (!zimRef.current) {
-          zimRef.current = ZIM.create({ appID: effectiveAppId });
-        }
-
-        const zim = zimRef.current;
-
-        // ✅ logout old session (important)
-        try {
-          await zim.logout();
-        } catch {
-          //ignore logout errors
-        }
-
-        // ✅ login with EXACT SAME ID
-        await zim.login(
-          {
-            userID: userId,
-            userName: user.userName || "User",
-          },
-          serverToken
-        );
-
-        console.log("✅ ZIM login success:", userId);
-
-        // ✅ create UI kit
-        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
-          effectiveAppId,
-          serverToken,
-          "",
-          userId
-        );
-
-        const zp = ZegoUIKitPrebuilt.create(kitToken);
-        zp.addPlugins({ ZIM });
-
-        // ✅ handle incoming call (REQUIRED)
-        zp.setCallInvitationConfig({
-          onIncomingCallReceived: (callID, caller) => {
-            console.log("📞 Incoming call from:", caller);
-
-            const accept = window.confirm(
-              `Incoming call from ${caller.userName}`
-            );
-
-            if (accept) {
-              zp.acceptCallInvitation(callID);
-            } else {
-              zp.rejectCallInvitation(callID);
-            }
-          },
-        });
-
-        zegoRef.current = zp;
-        readyRef.current = true;
-
-      } catch (error) {
-        console.log("❌ Zego init error:", error);
-        toastError("Call service initialization failed");
-        readyRef.current = false;
+      if (!serverToken || !effectiveAppId) {
+        throw new Error("Missing Zego config");
       }
-    };
 
-    init();
-  }, [appId, user, user._id]);
+      if (!zimRef.current) {
+        zimRef.current = ZIM.create({ appID: effectiveAppId });
+      }
+
+      const zim = zimRef.current;
+
+      try {
+        await zim.logout();
+      } catch {
+        // Ignore logout errors (e.g. not logged in)
+      }
+
+      await zim.login(
+        {
+          userID: userId,
+          userName: user.userName || "User",
+        },
+        serverToken
+      );
+
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
+        effectiveAppId,
+        serverToken,
+        "",
+        userId
+      );
+
+      const zp = ZegoUIKitPrebuilt.create(kitToken);
+      zp.addPlugins({ ZIM });
+
+      zp.setCallInvitationConfig({
+        onIncomingCallReceived: (callID, caller) => {
+          const accept = window.confirm(
+            `Incoming call from ${caller.userName}`
+          );
+
+          if (accept) {
+            zp.acceptCallInvitation(callID);
+          } else {
+            zp.rejectCallInvitation(callID);
+          }
+        },
+      });
+
+      zegoRef.current = zp;
+      readyRef.current = true;
+
+    } catch (error) {
+      console.log("❌ Zego init error:", error);
+      toastError("Call service initialization failed");
+      readyRef.current = false;
+    }
+  };
+
+  init();
+}, [appId, user]); // ✅ fixed
 
   // ✅ START CALL
   const startAudioCall = useCallback(async ({ targetUserId, targetUserName }) => {
