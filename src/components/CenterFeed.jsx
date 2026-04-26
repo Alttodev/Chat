@@ -25,6 +25,7 @@ import { toastError, toastSuccess } from "@/lib/toast";
 import { PostDialog } from "./modals/postModal";
 import {
   useCommentStore,
+  useImageModalStore,
   useZustandPopup,
   useZustandSharePopup,
 } from "@/lib/zustand";
@@ -34,6 +35,7 @@ import { ShareDialog } from "./modals/shareModal";
 import { PostFormSkeleton } from "./skeleton/postFormSkeleton";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
 import { Link } from "react-router-dom";
+import { ImageViewer } from "./modals/imageViewer";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -48,6 +50,7 @@ export function CenterFeed() {
     usePostList();
 
   const loadMoreRef = useRef(null);
+  const { open } = useImageModalStore();
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
@@ -158,9 +161,17 @@ export function CenterFeed() {
             <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
               {post?.postText}
             </p>
-            {post?.image && (
+            {/* {post?.image && (
               <img
                 className="w-full h-auto object-cover rounded-lg"
+                src={post.image}
+                alt="post"
+              />
+            )} */}
+            {post?.image && (
+              <img
+                onClick={() => open(post.image)}
+                className="w-full h-auto object-cover rounded-lg cursor-pointer hover:scale-[1.01] transition"
                 src={post.image}
                 alt="post"
               />
@@ -207,6 +218,7 @@ export function CenterFeed() {
       <PostDialog />
       <PostImageDialog />
       <ShareDialog />
+      <ImageViewer />
 
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}

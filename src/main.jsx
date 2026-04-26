@@ -21,13 +21,9 @@ createRoot(document.getElementById("root")).render(
           <Toaster
             position="top-center"
             richColors
-            expand={true}
-            style={{
-              zIndex: 9999,
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
+            expand
             visibleToasts={3}
+            className="z-[9999] md:left-1/2 md:-translate-x-1/2"
           />
           <NextTopLoader
             color="oklch(59.6% 0.145 163.225)"

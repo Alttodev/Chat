@@ -69,9 +69,7 @@ function SettingsComponent() {
     : "Never changed";
 
   // Notification settings from API
-  const {
-    data: notificationSettingsData,
-  } = useNotificationSettings();
+  const { data: notificationSettingsData } = useNotificationSettings();
   const {
     mutateAsync: updateNotificationSettings,
     isPending: isUpdatingNotification,
@@ -276,11 +274,6 @@ function SettingsComponent() {
                 onCheckedChange={async (checked) => {
                   try {
                     await updateNotificationSettings({ enabled: checked });
-                    toastSuccess(
-                      checked
-                        ? "Push notifications enabled"
-                        : "Push notifications disabled",
-                    );
                   } catch (error) {
                     toastError(
                       error?.response?.data?.message ||

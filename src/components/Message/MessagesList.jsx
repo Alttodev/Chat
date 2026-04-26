@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ImageViewer } from "../modals/imageViewer";
+import { useImageModalStore } from "@/lib/zustand";
 
 const formatTime = (value) => {
   const date = new Date(value);
@@ -40,6 +42,7 @@ export default function MessagesList({
   onDeleteMessage,
   deletingMessageId,
 }) {
+  const { open } = useImageModalStore();
   if (isLoading) {
     return (
       <ScrollArea className="flex-1 p-4">
@@ -53,8 +56,8 @@ export default function MessagesList({
   }
 
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="space-y-4">
+    <ScrollArea className="flex-1 p-4 ">
+      <div className="space-y-4 ">
         {messages.map((message) => {
           const isOwnMessage =
             message?.sender?._id?.toString() === currentUserId?.toString();
@@ -121,12 +124,15 @@ export default function MessagesList({
                   )}
                   {!isDeleted && message.image && (
                     <img
-                      src={message.image}
-                      alt="chat"
+                      onClick={() => {
+                        open(message.image);
+                      }}
                       className={cn(
-                        "rounded-md max-h-72 object-cover",
+                        "rounded-md max-h-72 object-cover cursor-pointer hover:scale-[1.01] transition",
                         hasOnlyImage ? "" : "mb-2",
                       )}
+                      src={message.image}
+                      alt="post"
                     />
                   )}
                   {(message.text || isDeleted) && (
@@ -158,8 +164,10 @@ export default function MessagesList({
             </div>
           );
         })}
+
         <div ref={messagesEndRef} />
       </div>
+      <ImageViewer />
     </ScrollArea>
   );
 }

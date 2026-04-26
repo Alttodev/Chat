@@ -43,7 +43,7 @@ export function CommentForm({ userProfile, postId }) {
         <div className="flex-1 gap-2">
           <TextInput
             name="comment"
-            className="flex-1"
+            className="flex-1 text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
             control={control}
             placeholder="Write a comment..."
             disabled={isSubmitting}

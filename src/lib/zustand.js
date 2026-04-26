@@ -29,3 +29,11 @@ export const useZustandSharePopup = create((set) => ({
   openShareModal: (data) => set({ isShareOpen: true, modalShareData: data }),
   closeShareModal: () => set({ isShareOpen: false, modalShareData: null }),
 }));
+
+export const useImageModalStore = create((set) => ({
+  image: null,
+  isOpen: false,
+
+  open: (img) => set({ image: img, isOpen: true }),
+  close: () => set({ image: null, isOpen: false }),
+}));

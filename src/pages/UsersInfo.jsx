@@ -1,7 +1,7 @@
 import { MapPin, MessageCircle, Share, Image as ImageIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useCommentStore, useZustandSharePopup } from "@/lib/zustand";
+import { useCommentStore, useImageModalStore, useZustandSharePopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
 import {
   useProfileFollow,
@@ -19,6 +19,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { Link, useParams } from "react-router-dom";
 import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
+import { ImageViewer } from "@/components/modals/imageViewer";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();
@@ -28,6 +29,7 @@ const UsersInfo = () => {
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
+  const { open } = useImageModalStore();
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
     useProfileFollow();
@@ -240,7 +242,8 @@ const UsersInfo = () => {
 
                 {post?.image && (
                   <img
-                    className="w-full h-auto object-cover rounded-lg"
+                    onClick={() => open(post.image)}
+                    className="w-full h-auto object-cover rounded-lg cursor-pointer hover:scale-[1.01] transition"
                     src={post.image}
                     alt="post"
                   />
@@ -287,6 +290,7 @@ const UsersInfo = () => {
           ))}
 
           <ShareDialog />
+          <ImageViewer />
 
           <div ref={loadMoreRef} style={{ height: "20px" }} />
 
