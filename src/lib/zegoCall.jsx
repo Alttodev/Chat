@@ -12,18 +12,22 @@ export const ZegoCallProvider = ({ children }) => {
 
   const zegoRef = useRef(null);
   const zimRef = useRef(null);
-  const isReadyRef = useRef(false);
+  const readyRef = useRef(false);
+  const currentUserIdRef = useRef(null);
 
   const appId = Number(import.meta.env.VITE_ZEGO_APP_ID);
 
   useEffect(() => {
-    if (!user?._id) return;
+    if (!user || !user._id) return;
 
-    let isMounted = true;
-
-    const initZego = async () => {
+    const init = async () => {
       try {
         const userId = user._id.toString();
+
+        // 🔥 prevent re-init for same user
+        if (currentUserIdRef.current === userId && readyRef.current) return;
+
+        currentUserIdRef.current = userId;
 
         const res = await getZegoToken();
         const serverToken = res?.data?.token;
@@ -35,25 +39,32 @@ export const ZegoCallProvider = ({ children }) => {
           throw new Error("Missing Zego config");
         }
 
-        // ✅ prevent multiple instances
+        // ✅ create ZIM once
         if (!zimRef.current) {
           zimRef.current = ZIM.create({ appID: effectiveAppId });
         }
 
         const zim = zimRef.current;
 
-        // ✅ login
+        // ✅ logout old session (important)
+        try {
+          await zim.logout();
+        } catch {
+          //ignore logout errors
+        }
+
+        // ✅ login with EXACT SAME ID
         await zim.login(
           {
             userID: userId,
-            userName: user.userName,
+            userName: user.userName || "User",
           },
           serverToken
         );
 
         console.log("✅ ZIM login success:", userId);
 
-        // ✅ create kit
+        // ✅ create UI kit
         const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
           effectiveAppId,
           serverToken,
@@ -64,10 +75,10 @@ export const ZegoCallProvider = ({ children }) => {
         const zp = ZegoUIKitPrebuilt.create(kitToken);
         zp.addPlugins({ ZIM });
 
-        // ✅ incoming call handler
+        // ✅ handle incoming call (REQUIRED)
         zp.setCallInvitationConfig({
           onIncomingCallReceived: (callID, caller) => {
-            console.log("📞 Incoming call:", caller);
+            console.log("📞 Incoming call from:", caller);
 
             const accept = window.confirm(
               `Incoming call from ${caller.userName}`
@@ -79,60 +90,50 @@ export const ZegoCallProvider = ({ children }) => {
               zp.rejectCallInvitation(callID);
             }
           },
-
-          onIncomingCallTimeout: () => {
-            console.log("⏰ Missed call");
-          },
         });
 
-        if (isMounted) {
-          zegoRef.current = zp;
-          isReadyRef.current = true;
-        }
+        zegoRef.current = zp;
+        readyRef.current = true;
+
       } catch (error) {
         console.log("❌ Zego init error:", error);
-        toastError("Failed to initialize call service");
+        toastError("Call service initialization failed");
+        readyRef.current = false;
       }
     };
 
-    initZego();
+    init();
+  }, [user?._id]);
 
-    // ✅ cleanup
-    return () => {
-      isMounted = false;
-      isReadyRef.current = false;
-    };
-  }, [appId, user._id, user.userName]);
-
-  // ✅ START CALL (no unreliable online check)
+  // ✅ START CALL
   const startAudioCall = useCallback(async ({ targetUserId, targetUserName }) => {
     if (!targetUserId) return;
 
-    if (!zegoRef.current || !isReadyRef.current) {
+    if (!readyRef.current || !zegoRef.current) {
       toastError("Call service not ready");
       return;
     }
+
+    console.log("📞 Calling:", targetUserId);
 
     try {
       await zegoRef.current.sendCallInvitation({
         callees: [
           {
-            userID: targetUserId.toString(),
+            userID: targetUserId.toString(), // MUST match receiver login ID
             userName: targetUserName || "User",
           },
         ],
         callType: ZegoUIKitPrebuilt.InvitationTypeVoiceCall,
         timeout: 60,
       });
-
-      console.log("📞 Calling:", targetUserId);
     } catch (error) {
       console.log("❌ Call error:", error);
 
       if (error?.code === 6000281) {
-        toastError("User not online in call service");
+        toastError("User is not available for calls");
       } else if (error?.code === 6000105) {
-        toastError("User didn’t respond (timeout)");
+        toastError("User did not respond");
       } else {
         toastError("Call failed");
       }

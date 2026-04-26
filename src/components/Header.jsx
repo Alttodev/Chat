@@ -68,7 +68,7 @@ export function SocialHeader() {
             <img
               src={logo}
               alt="Clix Logo"
-              className="hidden sm:block w-8 h-8"
+              className="w-7 h-7"
             />
             <span className="hidden sm:block text-xl md:text-2xl font-bold text-emerald-600">
               Clix
