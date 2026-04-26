@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
@@ -17,8 +17,9 @@ const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
   const { mutateAsync: userLogin } = useUserLogin();
-  const { setToken, setUser,setProfileId} = useAuthStore();
-   const { connectSocket } = useSocket();
+  const { setToken, setUser, setProfileId } = useAuthStore();
+  const { connectSocket } = useSocket();
+  const captchaRef = useRef(null);
 
   const {
     handleSubmit,
@@ -37,7 +38,6 @@ const LoginForm = () => {
   const handleCaptchaChange = (token) => {
     setValue("captcha", token || "", { shouldValidate: true });
   };
- 
 
   const onSubmit = async (data) => {
     try {
@@ -47,9 +47,13 @@ const LoginForm = () => {
       connectSocket(res?.user?._id);
       toastSuccess(res?.message);
       const resp = await getProfile();
-      setProfileId(resp?.profile?.id); 
+      setProfileId(resp?.profile?.id);
       navigate("/home");
+      captchaRef.current?.reset();
+      setValue("captcha", "");
     } catch (error) {
+      captchaRef.current?.reset();
+      setValue("captcha", "");
       if (error?.response?.data?.message === "Profile not found") {
         navigate("/profile/create");
       } else {
@@ -117,6 +121,7 @@ const LoginForm = () => {
           </div>
           <div>
             <ReCAPTCHA
+              ref={captchaRef}
               sitekey={RECAPTCHA_SITE_KEY}
               onChange={handleCaptchaChange}
             />

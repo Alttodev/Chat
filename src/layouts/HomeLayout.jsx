@@ -1,4 +1,3 @@
-import { ChatWidget } from "@/components/chatbot/ChatBotify";
 import { SocialHeader } from "@/components/Header";
 import { LeftSidebar } from "@/components/LeftSidebar";
 import { RightSidebar } from "@/components/RightSidebar";
