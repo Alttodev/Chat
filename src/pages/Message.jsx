@@ -61,6 +61,7 @@ export default function Message() {
     useUnblockChatUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
+  console.log("Conversations:", conversations);
 
   const getZegoUserId = useCallback((userObj) => {
     if (!userObj) return "";
@@ -73,6 +74,7 @@ export default function Message() {
       ""
     );
   }, []);
+
 
   const contacts = useMemo(() => {
     const friendRows = friendsData?.friends || [];
@@ -574,8 +576,7 @@ export default function Message() {
     try {
       setIsCalling(true);
       await startAudioCall({
-        targetUserId:
-          selectedContact.zegoUserId || selectedContact.targetUserId,
+        targetUserId: selectedContact.targetUserId,
         targetUserName: selectedContact.name,
       });
       toastSuccess("Calling...");

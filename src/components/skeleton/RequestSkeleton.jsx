@@ -11,12 +11,6 @@ export function SkeletonRequest() {
           <Skeleton className="h-4 w-[200px] rounded" />
         </div>
       </div>
-
-      {/* Right side: buttons */}
-      <div className="flex gap-2">
-        <Skeleton className="h-8 w-20 rounded-md" />
-        <Skeleton className="h-8 w-20 rounded-md" />
-      </div>
     </div>
   );
 }

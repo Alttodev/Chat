@@ -300,7 +300,7 @@ function NotificationSection() {
                             {formatTime(notification?.createdAt)}
                           </p>
                         </div>
-                        <MessageCircle className="w-4 h-4 text-blue-600 mt-1" />
+                        <MessageCircle className="w-4 h-4 text-green-500 mt-1 " />
                       </button>
                     ))}
                   </div>

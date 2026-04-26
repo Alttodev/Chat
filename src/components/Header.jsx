@@ -138,16 +138,17 @@ export function SocialHeader() {
               </SheetHeader>
 
               {/* Navigation inside drawer */}
-              <nav className="mt-6 space-y-2">
+              <nav className="mt-6 space-y-3">
                 {menuItems.map((item) => (
                   <Link
                     key={item.label}
                     to={item.path}
+                    className="block" 
                     onClick={() => setOpen(false)}
                   >
                     <Button
                       variant="ghost"
-                      className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      className="w-full justify-start gap-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                     >
                       <item.icon className="w-5 h-5" />
                       {item.label}
