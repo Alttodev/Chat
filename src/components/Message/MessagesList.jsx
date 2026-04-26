@@ -121,7 +121,7 @@ export default function MessagesList({
                   )}
                   {!isDeleted && message.image && (
                     <img
-                      src={`${import.meta.env.VITE_APP_API_URL}${message.image}`}
+                      src={message.image}
                       alt="chat"
                       className={cn(
                         "rounded-md max-h-72 object-cover",

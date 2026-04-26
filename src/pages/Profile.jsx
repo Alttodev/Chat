@@ -225,7 +225,7 @@ const Profile = () => {
             {post?.image && (
               <img
                 className="w-full h-auto object-cover rounded-lg"
-                src={`${import.meta.env.VITE_APP_API_URL}${post.image}`}
+                src={post.image}
                 alt="post"
               />
             )}

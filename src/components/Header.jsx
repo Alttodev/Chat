@@ -1,4 +1,14 @@
-import { Search, MessageCircle, Users, Home, Menu, X } from "lucide-react";
+import {
+  Search,
+  MessageCircle,
+  Users,
+  Home,
+  Menu,
+  X,
+  User,
+  BarChart3,
+  Settings,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,6 +28,7 @@ import { useSearchUsers } from "@/hooks/searchHooks";
 import { SearchResults } from "./SearchResults";
 
 export function SocialHeader() {
+  const [open, setOpen] = useState(false);
   const { data: profileData } = useUserDetail();
   const userProfile = useMemo(() => profileData, [profileData]);
 
@@ -39,8 +50,11 @@ export function SocialHeader() {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
+    { icon: User, label: "Profile", path: "/profile" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
+    { icon: BarChart3, label: "Analytics", path: "/survey" },
+    { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (
@@ -53,14 +67,14 @@ export function SocialHeader() {
             <img
               src="/src/assets/logo.png"
               alt="Clix Logo"
-              className="w-10 h-10"
+              className="hidden sm:block w-8 h-8"
             />
             <span className="hidden sm:block text-xl md:text-2xl font-bold text-emerald-600">
               Clix
             </span>
           </Link>
           {/* Search Bar */}
-          <div className="relative flex-1 max-w-[200px] sm:max-w-md">
+          <div className="relative  flex-1 max-w-[600px] sm:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
             <Input
               placeholder="Search users..."
@@ -84,21 +98,6 @@ export function SocialHeader() {
           </div>
         </div>
 
-        {/* Center section */}
-        <div className="hidden sm:flex items-center gap-2">
-          {menuItems.map((item) => (
-            <Link key={item.label} to={item.path}>
-              <Button
-                variant="ghost"
-                size="lg"
-                className="text-muted-foreground hover:text-primary hover:bg-accent/10 cursor-pointer"
-              >
-                <item.icon className="w-6 h-6" />
-              </Button>
-            </Link>
-          ))}
-        </div>
-
         {/* Right section */}
         <div className="flex items-center gap-2 flex-1 justify-end">
           <NotificationSection />
@@ -113,7 +112,7 @@ export function SocialHeader() {
             </div>
           </div>
           {/* Mobile Menu Drawer */}
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -140,7 +139,11 @@ export function SocialHeader() {
               {/* Navigation inside drawer */}
               <nav className="mt-6 space-y-2">
                 {menuItems.map((item) => (
-                  <Link key={item.label} to={item.path}>
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    onClick={() => setOpen(false)}
+                  >
                     <Button
                       variant="ghost"
                       className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
