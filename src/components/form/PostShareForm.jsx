@@ -2,7 +2,7 @@ import React from "react";
 import { FaFacebookF, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
 function PostShareForm() {
-  const shareUrl = "http://localhost:5173/home";
+  const shareUrl = "https://clixapp.netlify.app/home";
   const shareText = encodeURIComponent("Check out this post");
 
   const socialPlatforms = [
