@@ -65,7 +65,7 @@ export function SocialHeader() {
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-2">
             <img
-              src="/src/assets/logo.png"
+              src="/logo.png"
               alt="Clix Logo"
               className="hidden sm:block w-8 h-8"
             />

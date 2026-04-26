@@ -48,7 +48,7 @@ const ResetMailForm = () => {
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img
-            src="/src/assets/logo.png"
+            src="/logo.png"
             alt="Clix Logo"
             className="w-12 h-12"
           />
