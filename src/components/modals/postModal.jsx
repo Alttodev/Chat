@@ -7,13 +7,22 @@ export function PostDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-[600px]  [&_button]:cursor-pointer">
+      <DialogContent
+        className="
+  w-[calc(100%-2rem)] 
+  max-w-[550px] 
+  rounded-lg 
+  p-4
+  sm:rounded-xl
+  [&_button]:cursor-pointer
+"
+      >
         <DialogHeader>
           <DialogTitle className="text-emerald-600 flex justify-center">
             Edit Post
           </DialogTitle>
         </DialogHeader>
-        < PostUpdateForm userProfile={modalData?.userProfile} />
+        <PostUpdateForm userProfile={modalData?.userProfile} />
       </DialogContent>
     </Dialog>
   );
