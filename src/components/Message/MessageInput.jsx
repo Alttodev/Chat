@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Paperclip, Smile, Send } from "lucide-react";
+import { Smile, Send, ImagePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
 
@@ -85,7 +85,8 @@ export default function MessageInput({
           disabled={isBlocked}
           onClick={() => fileInputRef.current?.click()}
         >
-          <Paperclip className="w-4 h-4 text-emerald-600" />
+          
+          <ImagePlus className="w-4 h-4 text-emerald-600" />
         </Button>
         <input
           ref={fileInputRef}
