@@ -57,5 +57,5 @@ export const userSchema = z.object({
     .min(1, { message: "Email is required." })
     .email("Please enter a valid email."),
   address: z.string().min(1, { message: "Address is required" }),
-  profileImage: z.instanceof(File).optional(),
+  profileImage: z.any().optional()
 });
