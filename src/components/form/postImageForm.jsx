@@ -49,7 +49,7 @@ export function PostImageForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-8">
       <div className="space-y-1 relative">
         <Controller
           name="postText"
