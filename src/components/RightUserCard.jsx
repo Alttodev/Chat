@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -11,6 +11,7 @@ import {
 import { toastError } from "@/lib/toast";
 
 function RightUserCard({ user, profileId }) {
+ 
   const userId = user?.id;
 
   const { data: requestStatus, refetch } = useRequestListInfo({
@@ -61,6 +62,10 @@ function RightUserCard({ user, profileId }) {
       >
         <div className="relative">
           <Avatar className="w-10 h-10 text-emerald-600">
+            <AvatarImage
+              className="cursor-pointer"
+              src={user?.profileImage || "/placeholder.svg"}
+            />
             <AvatarFallback>
               {user?.userName?.charAt(0).toUpperCase() || "-"}
             </AvatarFallback>

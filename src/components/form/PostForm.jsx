@@ -7,7 +7,7 @@ import { ImagePlus } from "lucide-react";
 import { useZustandImagePopup } from "@/lib/zustand";
 import { useRef } from "react";
 import EmojiPickerButton from "../EmojiPickerButton";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function PostForm({ userProfile }) {
   const { mutateAsync: createPost } = usePostCreate();
@@ -42,6 +42,7 @@ export function PostForm({ userProfile }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 relative">
       <div className="flex gap-3">
         <Avatar className="w-10 h-10 text-emerald-600">
+           <AvatarImage src={userProfile?.profile?.profileImage || "/placeholder.svg"} />
           <AvatarFallback>
             {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
           </AvatarFallback>

@@ -37,6 +37,8 @@ import { OnlineStatus } from "@/components/onlineStatus";
 import { useSocket } from "@/lib/socket";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useImageModalStore } from "@/lib/zustand";
+import { ImageViewer } from "@/components/modals/imageViewer";
 
 function SettingsComponent() {
   const {
@@ -48,6 +50,7 @@ function SettingsComponent() {
     setProfileId,
   } = useAuthStore();
   const { disconnectSocket } = useSocket();
+  const { open } = useImageModalStore();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
 
@@ -125,12 +128,28 @@ function SettingsComponent() {
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                    "-"}
-                </AvatarFallback>
-              </Avatar>
+              <div
+                onClick={() =>
+                  userProfile?.profile?.profileImage &&
+                  open(userProfile?.profile?.profileImage)
+                }
+                className={
+                  userProfile?.profile?.profileImage ? "cursor-pointer" : ""
+                }
+              >
+                <Avatar className="h-24 w-24">
+                  {userProfile?.profile?.profileImage && (
+                    <AvatarImage
+                      src={userProfile?.profile?.profileImage}
+                      alt={userProfile?.profile?.userName}
+                    />
+                  )}
+                  <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
+                    {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
+                      "-"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
 
               <div className="absolute bottom-2 right-2">
                 <OnlineStatus userId={userId} size="h-3 w-3" />
@@ -304,6 +323,7 @@ function SettingsComponent() {
           </CardContent>
         </Card>
       </div>
+      <ImageViewer />
     </div>
   );
 }

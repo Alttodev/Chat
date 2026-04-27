@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { MapPin } from "lucide-react";
@@ -45,6 +45,9 @@ export function SearchResults({ data, isLoading, query }) {
               <CardContent className="p-3 flex items-center gap-3">
                 <div className="relative">
                   <Avatar className="h-10 w-10 flex-shrink-0">
+                    <AvatarImage
+                      src={user?.profileImage || "/placeholder.svg"}
+                    />
                     <AvatarFallback className="text-sm font-semibold text-emerald-700">
                       {user?.userName?.charAt(0).toUpperCase() || "-"}
                     </AvatarFallback>
@@ -65,7 +68,6 @@ export function SearchResults({ data, isLoading, query }) {
                     <span className="truncate">{user?.address || "-"}</span>
                   </div>
                 </div>
-              
               </CardContent>
             </Card>
           </Link>

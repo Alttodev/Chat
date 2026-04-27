@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { User, Mail, Phone, MapPin } from "lucide-react";
 import TextInput from "../form_inputs/TextInput";
+import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -29,13 +30,24 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       email: "",
       password: "",
       address: "",
+      userName: "",
+      profileImage: null,
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      const res = await userUpdate(data);
+      const formData = new FormData();
+      formData.append("userName", data.userName);
+      formData.append("email", data.email);
+      formData.append("address", data.address);
 
+      // Add profile image as binary if present
+      if (data.profileImage) {
+        formData.append("profileImage", data.profileImage);
+      }
+
+      const res = await userUpdate(formData);
       toastSuccess(res?.message);
       closeEditing(false);
     } catch (error) {
@@ -67,6 +79,16 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1  gap-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {isEditing && (
+              <div className="flex justify-center mb-4">
+                <ProfileImageUpload
+                  name="profileImage"
+                  control={control}
+                  disabled={isSubmitting}
+                />
+              </div>
+            )}
+
             <div className="space-y-2">
               <label htmlFor="name" className="flex !text-sm items-center gap-2">
                 <User className="h-4 w-4" />

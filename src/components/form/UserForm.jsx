@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import TextInput from "../form_inputs/TextInput";
+import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { userSchema } from "@/lib/validation";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
@@ -15,8 +16,8 @@ import logo from "@/assets/logo.png";
 const ProfileCreateForm = () => {
   const navigate = useNavigate();
   const { mutateAsync: userCreate } = useUserCreate();
-  const { user,setProfileId } = useAuthStore();
- 
+  const { user, setProfileId } = useAuthStore();
+
   const { connectSocket } = useSocket();
   const {
     handleSubmit,
@@ -28,12 +29,23 @@ const ProfileCreateForm = () => {
       userName: "",
       address: "",
       email: "",
+      profileImage: null,
     },
   });
 
   const onSubmit = async (data) => {
     try {
-      const res = await userCreate(data);
+      const formData = new FormData();
+      formData.append("userName", data.userName);
+      formData.append("email", data.email);
+      formData.append("address", data.address);
+
+      // Add profile image as binary if present
+      if (data.profileImage) {
+        formData.append("profileImage", data.profileImage);
+      }
+
+      const res = await userCreate(formData);
       connectSocket(user?._id);
       toastSuccess(res?.message);
       const resp = await getProfile();
@@ -49,16 +61,21 @@ const ProfileCreateForm = () => {
       <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
-          <img
-            src={logo}
-            alt="Clix Logo"
-            className="w-12 h-12"
-          />
+          <img src={logo} alt="Clix Logo" className="w-12 h-12" />
         </div>
 
         {/* Heading */}
         <div className="text-center mb-5">
           <p className="text-xl font-bold text-emerald-600">Profile Create</p>
+        </div>
+
+        {/* Profile Image Upload */}
+        <div className="flex justify-center mb-6">
+          <ProfileImageUpload
+            name="profileImage"
+            control={control}
+            disabled={isSubmitting}
+          />
         </div>
 
         {/* Form */}

@@ -11,8 +11,12 @@ import {
 } from "../ui/dropdown-menu";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { toastError } from "@/lib/toast";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 export function CommentSection({ postId, userProfile }) {
+  const { profileId } = useAuthStore();
+  const navigate = useNavigate();
   const { data: activeComments, isLoading } = usePostComments(postId);
   const { mutateAsync: deleteComment } = usePostCommentDelete();
 
@@ -40,6 +44,19 @@ export function CommentSection({ postId, userProfile }) {
       {activeComments?.comments?.map((comment) => (
         <div key={comment._id} className="flex gap-2">
           <Avatar className="w-8 h-8 text-emerald-600">
+            <AvatarImage
+              onClick={
+                profileId !== comment?.user?._id
+                  ? () => navigate(`/users/${comment?.user?._id}`)
+                  : undefined
+              }
+              className={`${
+                profileId !== comment?.user?._id
+                  ? "cursor-pointer"
+                  : "cursor-default"
+              }`}
+              src={comment?.user?.profileImage || "/placeholder.svg"}
+            />
             <AvatarFallback>
               {comment?.user?.userName?.charAt(0).toUpperCase()}
             </AvatarFallback>

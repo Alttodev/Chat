@@ -1,7 +1,11 @@
 import { MapPin, MessageCircle, Share, Image as ImageIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useCommentStore, useImageModalStore, useZustandSharePopup } from "@/lib/zustand";
+import {
+  useCommentStore,
+  useImageModalStore,
+  useZustandSharePopup,
+} from "@/lib/zustand";
 import { useEffect, useMemo, useRef } from "react";
 import {
   useProfileFollow,
@@ -107,11 +111,16 @@ const UsersInfo = () => {
           <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
+                <AvatarImage
+                  onClick={() => open(user?.profileImage)}
+                  className="cursor-pointer"
+                  src={user?.profileImage || "/placeholder.svg"}
+                />
                 <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
                   {user?.userName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
-
+              <ImageViewer />
               <div className="absolute bottom-2 right-2">
                 <div className="flex items-center gap-2">
                   <span
@@ -218,7 +227,11 @@ const UsersInfo = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-10 h-10 text-emerald-600">
-                      <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                      <AvatarImage
+                        onClick={() => open(user?.profileImage)}
+                        className="cursor-pointer"
+                        src={user?.profileImage || "/placeholder.svg"}
+                      />
                       <AvatarFallback>
                         {user?.userName?.charAt(0).toUpperCase() || "-"}
                       </AvatarFallback>

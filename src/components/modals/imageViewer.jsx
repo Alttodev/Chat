@@ -4,11 +4,9 @@ import { useImageModalStore } from "@/lib/zustand";
 export function ImageViewer() {
   const { image, isOpen, close } = useImageModalStore();
 
-  if (!image) return null; 
-
   return (
     <Dialog
-      open={isOpen}
+      open={isOpen && !!image}
       onOpenChange={(open) => {
         if (!open) close();
       }}
@@ -22,11 +20,13 @@ export function ImageViewer() {
             ✕
           </button>
 
-          <img
-            src={image}
-            alt="preview"
-            className="object-contain max-w-[100vw] max-h-[100vh]"
-          />
+          {image && (
+            <img
+              src={image}
+              alt="preview"
+              className="object-contain max-w-[100vw] max-h-[100vh]"
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

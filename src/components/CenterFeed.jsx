@@ -32,7 +32,6 @@ import {
 import { CommentSection } from "./Post/CommentSection";
 import { PostImageDialog } from "./modals/postImageModal";
 import { ShareDialog } from "./modals/shareModal";
-import { PostFormSkeleton } from "./skeleton/postFormSkeleton";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
 import { Link } from "react-router-dom";
 import { ImageViewer } from "./modals/imageViewer";
@@ -100,26 +99,34 @@ export function CenterFeed() {
         <Card key={post._id} className="overflow-hidden">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <div>
-                <Link
-                  to={`/users/${post?.user?._id}`}
-                  className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                >
-                  <Avatar className="w-10 h-10 text-emerald-600">
-                    <AvatarImage src={post.avatar || "/placeholder.svg"} />
-                    <AvatarFallback>
-                      {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-sm sm:text-base">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <Avatar className="w-10 h-10 text-emerald-600">
+                  <AvatarImage
+                    onClick={() => open(post?.user?.profileImage)}
+                    className="cursor-pointer"
+                    src={post?.user?.profileImage || "/placeholder.svg"}
+                  />
+                  <AvatarFallback>
+                    {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  {userProfile?.profile?.id === post?.user?._id ? (
+                    <span className="font-medium text-sm sm:text-base">
                       {post?.user?.userName}
-                    </p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {formatRelative(post?.createdAt)}
-                    </p>
-                  </div>
-                </Link>
+                    </span>
+                  ) : (
+                    <Link
+                      to={`/users/${post?.user?._id}`}
+                      className="font-medium text-sm sm:text-base cursor-pointer"
+                    >
+                      {post?.user?.userName}
+                    </Link>
+                  )}
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    {formatRelative(post?.createdAt)}
+                  </p>
+                </div>
               </div>
               {post?.isOwner && (
                 <DropdownMenu>

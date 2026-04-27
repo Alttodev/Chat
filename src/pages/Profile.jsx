@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   useCommentStore,
+  useImageModalStore,
   useZustandPopup,
   useZustandSharePopup,
 } from "@/lib/zustand";
@@ -36,6 +37,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PostDialog } from "@/components/modals/postModal";
+import { ImageViewer } from "@/components/modals/imageViewer";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
@@ -44,6 +46,7 @@ const Profile = () => {
   const { openShareModal } = useZustandSharePopup();
   const { openPostId, toggleComments } = useCommentStore();
   const loadMoreRef = useRef(null);
+  const { open } = useImageModalStore();
 
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
@@ -60,7 +63,7 @@ const Profile = () => {
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
-    [data]
+    [data],
   );
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
@@ -102,12 +105,27 @@ const Profile = () => {
         <CardContent className="pt-3">
           <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
             <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                  {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                    "-"}
-                </AvatarFallback>
-              </Avatar>
+              <div
+                onClick={() =>
+                  userProfile?.profile?.profileImage &&
+                  open(userProfile?.profile?.profileImage)
+                }
+                className={
+                  userProfile?.profile?.profileImage ? "cursor-pointer" : ""
+                }
+              >
+                <Avatar className="h-24 w-24">
+                  <AvatarImage
+                    src={
+                      userProfile?.profile?.profileImage || "/placeholder.svg"
+                    }
+                  />
+                  <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
+                    {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
+                      "-"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
 
               <div className="absolute bottom-2 right-2">
                 <OnlineStatus userId={userId} size="h-3 w-3" />
@@ -168,7 +186,11 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10 text-emerald-600">
-                  <AvatarImage src={post.avatar || "/placeholder.svg"} />
+                  <AvatarImage
+                    onClick={() => open(user?.profileImage)}
+                    className="cursor-pointer"
+                    src={user?.profileImage || "/placeholder.svg"}
+                  />
                   <AvatarFallback>
                     {user?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
@@ -266,6 +288,7 @@ const Profile = () => {
       ))}
       <ShareDialog />
       <PostDialog />
+      <ImageViewer />
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}
       {!hasNextPage && (

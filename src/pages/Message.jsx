@@ -22,6 +22,7 @@ import { useSocket } from "@/lib/socket";
 import { useZegoCall } from "@/lib/zegoCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
+import Profile from "./Profile";
 
 export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
@@ -61,7 +62,6 @@ export default function Message() {
     useUnblockChatUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
-  console.log("Conversations:", conversations);
 
   const getZegoUserId = useCallback((userObj) => {
     if (!userObj) return "";
@@ -74,7 +74,6 @@ export default function Message() {
       ""
     );
   }, []);
-
 
   const contacts = useMemo(() => {
     const friendRows = friendsData?.friends || [];
@@ -99,6 +98,7 @@ export default function Message() {
         targetUserId: conversation?.otherParticipant?._id,
         zegoUserId: getZegoUserId(conversation?.otherParticipant),
         name: conversation?.otherParticipant?.userName || "Unknown",
+        profileImage: conversation?.otherParticipant?.profileImage || "",
         avatar: "",
         isOnline: !!conversation?.otherParticipant?.isOnline,
         isBlocked:
@@ -149,6 +149,7 @@ export default function Message() {
           targetUserId: friendUser._id,
           zegoUserId: getZegoUserId(friendUser),
           name: friendUser?.userName || "Unknown",
+          ProfileImage: friendUser?.profileImage || "",
           avatar: "",
           isOnline: !!friendUser?.isOnline,
           isBlocked: !!blockedUsers[friendUser?._id],

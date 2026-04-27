@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { toastError } from "@/lib/toast";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePostComment } from "@/hooks/postHooks";
 import TextInput from "../form_inputs/TextInput";
 import { Send } from "lucide-react";
+import { useImageModalStore } from "@/lib/zustand";
 
 export function CommentForm({ userProfile, postId }) {
+  const { open } = useImageModalStore();
   const { mutateAsync: createComment } = usePostComment();
 
   const {
@@ -36,6 +38,11 @@ export function CommentForm({ userProfile, postId }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex gap-3">
         <Avatar className="w-8 h-8 text-emerald-600">
+          <AvatarImage
+            onClick={() => open(userProfile?.profileImage)}
+            className="cursor-pointer"
+            src={userProfile?.profileImage || "/placeholder.svg"}
+          />
           <AvatarFallback>
             {userProfile?.userName?.charAt(0).toUpperCase() || "-"}
           </AvatarFallback>

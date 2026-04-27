@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { Bell, UserPlus, MessageCircle, BellOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -244,6 +244,13 @@ function NotificationSection() {
                         className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors  cursor-pointer text-left"
                       >
                         <Avatar className="w-9 h-9">
+                          <AvatarImage
+                            className="cursor-pointer"
+                            src={
+                              notification?.from?.profileImage ||
+                              "/placeholder.svg"
+                            }
+                          />
                           <AvatarFallback className="bg-emerald-100 text-emerald-700">
                             {getInitial(notification?.from?.userName)}
                           </AvatarFallback>
@@ -281,6 +288,13 @@ function NotificationSection() {
                         className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors  cursor-pointer text-left"
                       >
                         <Avatar className="w-9 h-9">
+                          <AvatarImage
+                            className="cursor-pointer"
+                            src={
+                              notification?.from?.profileImage ||
+                              "/placeholder.svg"
+                            }
+                          />
                           <AvatarFallback className="bg-blue-100 text-blue-700">
                             {getInitial(notification?.from?.userName)}
                           </AvatarFallback>

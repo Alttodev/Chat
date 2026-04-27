@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useFriendsList } from "@/hooks/postHooks";
 import { Fragment, useMemo } from "react";
@@ -35,6 +35,10 @@ export const FriendCard = ({ tabValue }) => {
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        className="cursor-pointer"
+                        src={item?.from?.profileImage || "/placeholder.svg"}
+                      />
                       <AvatarFallback className="text-xl font-semibold  text-emerald-700">
                         {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
                       </AvatarFallback>

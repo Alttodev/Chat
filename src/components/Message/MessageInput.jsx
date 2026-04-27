@@ -80,7 +80,7 @@ export default function MessageInput({
         <Button
           variant="ghost"
           size="icon"
-          className="flex-shrink-0"
+          className="flex-shrink-0 cursor-pointer"
           type="button"
           disabled={isBlocked}
           onClick={() => fileInputRef.current?.click()}

@@ -65,11 +65,7 @@ export function SocialHeader() {
         <div className="flex items-center gap-3 flex-2 sm:flex-1">
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-2">
-            <img
-              src={logo}
-              alt="Clix Logo"
-              className="w-7 h-7"
-            />
+            <img src={logo} alt="Clix Logo" className="w-7 h-7" />
             <span className="hidden sm:block text-xl md:text-2xl font-bold text-emerald-600">
               Clix
             </span>
@@ -104,6 +100,10 @@ export function SocialHeader() {
           <NotificationSection />
           <div className="relative">
             <Avatar className="w-8 h-8">
+              <AvatarImage
+                onClick={() => open(userProfile?.profile?.profileImage)}
+                src={userProfile?.profile?.profileImage || "/placeholder.svg"}
+              />
               <AvatarFallback className="text-emerald-600 font-semibold">
                 {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
               </AvatarFallback>
@@ -126,11 +126,7 @@ export function SocialHeader() {
             <SheetContent side="right" className="w-64">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2">
-                  <img
-                    src={logo}
-                    alt="Clix Logo"
-                    className="w-10 h-10"
-                  />
+                  <img src={logo} alt="Clix Logo" className="w-10 h-10" />
                   <span className="text-lg font-bold text-emerald-600">
                     Clix
                   </span>
@@ -143,7 +139,7 @@ export function SocialHeader() {
                   <Link
                     key={item.label}
                     to={item.path}
-                    className="block" 
+                    className="block"
                     onClick={() => setOpen(false)}
                   >
                     <Button

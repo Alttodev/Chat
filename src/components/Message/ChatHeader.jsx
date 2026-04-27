@@ -52,8 +52,8 @@ export default function ChatHeader({
         <div className="relative">
           <Avatar className="w-10 h-10 text-emerald-600">
             <AvatarImage
-              src={contact.avatar || "/placeholder.svg"}
-              alt={contact.name}
+              className="cursor-pointer"
+              src={contact?.profileImage || "/placeholder.svg"}
             />
             <AvatarFallback>
               {contact.name

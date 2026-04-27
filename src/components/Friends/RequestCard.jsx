@@ -16,7 +16,8 @@ import { useAuthStore } from "@/store/authStore";
 
 export const RequestCard = () => {
   const { profileId } = useAuthStore();
-  const { mutateAsync: requestRespond, isPending: isAccepting } = useFollowRequestUpdate();
+  const { mutateAsync: requestRespond, isPending: isAccepting } =
+    useFollowRequestUpdate();
   const { mutateAsync: rejectRequest, isPending: isRejecting } =
     useRequestDelete();
   const { data: request, isFetching, isError } = useRequestList();
@@ -38,12 +39,12 @@ export const RequestCard = () => {
       const isPending = status === "pending";
       const isAlreadyFriend = item?.isFriends === true;
       const toId = item?.to?._id?.toString?.();
-      const isForCurrentUser = !profileId || !toId || toId === profileId?.toString();
+      const isForCurrentUser =
+        !profileId || !toId || toId === profileId?.toString();
 
       return isPending && !isAlreadyFriend && isForCurrentUser;
     });
   }, [requestItems, profileId]);
-  console.log("Requested Data:", requestedData);
 
   const handleAccept = async ({ id, action }) => {
     try {
@@ -89,7 +90,10 @@ export const RequestCard = () => {
 
           return (
             <Card
-              key={item?._id || `${requesterId || "unknown"}-${item?.createdAt || ""}`}
+              key={
+                item?._id ||
+                `${requesterId || "unknown"}-${item?.createdAt || ""}`
+              }
               className="bg-white shadow-sm hover:shadow-md transition-shadow"
             >
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -98,12 +102,18 @@ export const RequestCard = () => {
                   className="flex items-center gap-4"
                 >
                   <Avatar className="h-12 w-12">
+                    <AvatarImage
+                      className="cursor-pointer"
+                      src={requester?.profileImage || "/placeholder.svg"}
+                    />
                     <AvatarFallback className="text-xl font-semibold  text-emerald-700">
                       {requester?.userName?.charAt(0).toUpperCase() || "-"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold">{requester?.userName || "Unknown User"}</h3>
+                    <h3 className="font-semibold">
+                      {requester?.userName || "Unknown User"}
+                    </h3>
                     <div className="flex gap-1 items-center text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                       <span>{requester?.address || "-"}</span>
