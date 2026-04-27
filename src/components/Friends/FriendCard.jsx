@@ -31,7 +31,7 @@ export const FriendCard = ({ tabValue }) => {
         friendsData?.map((item) => (
           <Link to={`/users/${item?.from?._id}`}>
             <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-4 flex flex-row sm:items-center justify-between gap-4">
+              <CardContent className="p-4 flex flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="relative">
                     <Avatar className="h-12 w-12">
