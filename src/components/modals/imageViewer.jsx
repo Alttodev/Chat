@@ -17,7 +17,7 @@ export function ImageViewer() {
         <div className="relative w-full h-full bg-black flex items-center justify-center overflow-hidden">
           <button
             onClick={close}
-            className="absolute top-7 right-4 z-50 text-white bg-black/50 rounded-full px-3 py-1"
+            className="absolute top-9 right-4 z-50 text-white bg-black/50 rounded-full px-3 py-1"
           >
             ✕
           </button>
