@@ -245,7 +245,7 @@ function NotificationSection() {
                       >
                         <Avatar className="w-9 h-9">
                           <AvatarImage
-                            className="cursor-pointer"
+                            className="w-full h-full object-cover object-top cursor-pointer"
                             src={
                               notification?.from?.profileImage ||
                               "/placeholder.svg"
@@ -289,7 +289,7 @@ function NotificationSection() {
                       >
                         <Avatar className="w-9 h-9">
                           <AvatarImage
-                            className="cursor-pointer"
+                             className="w-full h-full object-cover object-top cursor-pointer"
                             src={
                               notification?.from?.profileImage ||
                               "/placeholder.svg"

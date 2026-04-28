@@ -40,7 +40,7 @@ export function CommentForm({ userProfile, postId }) {
         <Avatar className="w-8 h-8 text-emerald-600">
           <AvatarImage
             onClick={() => open(userProfile?.profileImage)}
-            className="cursor-pointer"
+            className="w-full h-full object-cover object-top cursor-pointer"
             src={userProfile?.profileImage || "/placeholder.svg"}
           />
           <AvatarFallback>

@@ -116,6 +116,7 @@ const Profile = () => {
               >
                 <Avatar className="h-24 w-24">
                   <AvatarImage
+                     className="w-full h-full object-cover object-top"
                     src={
                       userProfile?.profile?.profileImage || "/placeholder.svg"
                     }
@@ -188,7 +189,7 @@ const Profile = () => {
                 <Avatar className="w-10 h-10 text-emerald-600">
                   <AvatarImage
                     onClick={() => open(user?.profileImage)}
-                    className="cursor-pointer"
+                    className="w-full h-full object-cover object-top cursor-pointer"
                     src={user?.profileImage || "/placeholder.svg"}
                   />
                   <AvatarFallback>

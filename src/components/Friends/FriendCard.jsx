@@ -36,7 +36,7 @@ export const FriendCard = ({ tabValue }) => {
                   <div className="relative">
                     <Avatar className="h-12 w-12">
                       <AvatarImage
-                        className="cursor-pointer"
+                        className="w-full h-full object-cover object-top cursor-pointer"
                         src={item?.from?.profileImage || "/placeholder.svg"}
                       />
                       <AvatarFallback className="text-xl font-semibold  text-emerald-700">

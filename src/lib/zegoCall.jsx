@@ -28,14 +28,16 @@ export const ZegoCallProvider = ({ children }) => {
 
       currentUserIdRef.current = userId;
 
-      const res = await getZegoToken();
-      const serverToken = res?.data?.token;
-      const appIdFromServer = Number(res?.data?.appId);
+      const tokenResponse = await getZegoToken();
+      const serverToken = tokenResponse?.token ?? tokenResponse?.data?.token;
+      const appIdFromServer = Number(
+        tokenResponse?.appId ?? tokenResponse?.data?.appId
+      );
 
       const effectiveAppId = appId || appIdFromServer;
 
       if (!serverToken || !effectiveAppId) {
-        throw new Error("Missing Zego config");
+        throw new Error("Missing Zego config or token");
       }
 
       if (!zimRef.current) {

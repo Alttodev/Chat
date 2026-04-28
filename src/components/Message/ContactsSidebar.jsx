@@ -44,7 +44,7 @@ export default function ContactsSidebar({
               <div className="relative">
                 <Avatar className="text-sm text-emerald-600 w-12 h-12">
                   <AvatarImage
-                    className="cursor-pointer"
+                    className="w-full h-full object-cover object-top cursor-pointer"
                     src={contact?.profileImage || "/placeholder.svg"}
                   />
                   <AvatarFallback>

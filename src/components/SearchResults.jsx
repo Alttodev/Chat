@@ -46,6 +46,7 @@ export function SearchResults({ data, isLoading, query }) {
                 <div className="relative">
                   <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage
+                      className="w-full h-full object-cover object-top "
                       src={user?.profileImage || "/placeholder.svg"}
                     />
                     <AvatarFallback className="text-sm font-semibold text-emerald-700">

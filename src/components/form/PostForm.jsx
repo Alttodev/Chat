@@ -42,7 +42,7 @@ export function PostForm({ userProfile }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 relative">
       <div className="flex gap-3">
         <Avatar className="w-10 h-10 text-emerald-600">
-           <AvatarImage src={userProfile?.profile?.profileImage || "/placeholder.svg"} />
+           <AvatarImage  className="w-full h-full object-cover object-top" src={userProfile?.profile?.profileImage || "/placeholder.svg"} />
           <AvatarFallback>
             {userProfile?.profile?.userName?.charAt(0).toUpperCase() || "-"}
           </AvatarFallback>

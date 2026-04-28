@@ -50,10 +50,11 @@ export function CommentSection({ postId, userProfile }) {
                   ? () => navigate(`/users/${comment?.user?._id}`)
                   : undefined
               }
+               
               className={`${
                 profileId !== comment?.user?._id
-                  ? "cursor-pointer"
-                  : "cursor-default"
+                  ? "w-full h-full object-cover object-top cursor-pointer"
+                  : "w-full h-full object-cover object-top cursor-default"
               }`}
               src={comment?.user?.profileImage || "/placeholder.svg"}
             />

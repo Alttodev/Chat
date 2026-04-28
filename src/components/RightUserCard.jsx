@@ -63,7 +63,7 @@ function RightUserCard({ user, profileId }) {
         <div className="relative">
           <Avatar className="w-10 h-10 text-emerald-600">
             <AvatarImage
-              className="cursor-pointer"
+               className="w-full h-full object-cover object-top cursor-pointer"
               src={user?.profileImage || "/placeholder.svg"}
             />
             <AvatarFallback>

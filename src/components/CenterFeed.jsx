@@ -103,7 +103,7 @@ export function CenterFeed() {
                 <Avatar className="w-10 h-10 text-emerald-600">
                   <AvatarImage
                     onClick={() => open(post?.user?.profileImage)}
-                    className="cursor-pointer"
+                     className="w-full h-full object-cover object-top cursor-pointer"
                     src={post?.user?.profileImage || "/placeholder.svg"}
                   />
                   <AvatarFallback>

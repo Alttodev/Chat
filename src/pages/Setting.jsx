@@ -140,6 +140,7 @@ function SettingsComponent() {
                 <Avatar className="h-24 w-24">
                   {userProfile?.profile?.profileImage && (
                     <AvatarImage
+                      className="w-full h-full object-cover object-top"
                       src={userProfile?.profile?.profileImage}
                       alt={userProfile?.profile?.userName}
                     />

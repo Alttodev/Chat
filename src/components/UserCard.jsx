@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
@@ -13,7 +13,7 @@ import {
 import { toastError, toastSuccess } from "@/lib/toast";
 
 function UserCard({ user, profileId }) {
-  const userId = user?.id 
+  const userId = user?.id;
   const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
@@ -59,13 +59,17 @@ function UserCard({ user, profileId }) {
           >
             <div className="relative">
               <Avatar className="h-18 w-18">
+                <AvatarImage
+                  className="w-full h-full object-cover object-top"
+                  src={user?.profileImage || "/placeholder.svg"}
+                />
                 <AvatarFallback className="text-2xl font-semibold text-emerald-700">
                   {user?.userName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
 
               {/* Online Status */}
-              <div className="absolute bottom-2 right-2">
+              <div className="absolute bottom-2 right-1">
                 <div className="flex items-center gap-2">
                   <span
                     className={`h-3 w-3 rounded-full ${
