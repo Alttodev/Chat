@@ -1,16 +1,28 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { FaFacebookF, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
-function PostShareForm() {
-  const shareUrl = "https://clixapp.netlify.app/home";
-  const shareText = encodeURIComponent("Check out this post");
+function PostShareForm({ postId }) {
+  const location = useLocation();
+  const shareText = "Check out this post";
+
+  const shareUrl = React.useMemo(() => {
+    const url = new URL(window.location.origin);
+    url.pathname = location.pathname || "/home";
+
+    if (postId) {
+      url.searchParams.set("postId", postId);
+    }
+
+    return url.toString();
+  }, [location.pathname, postId]);
 
   const socialPlatforms = [
     {
       name: "Facebook",
       icon: <FaFacebookF size={20} />,
       url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        shareUrl
+        shareUrl,
       )}`,
       bg: "bg-blue-600",
     },
@@ -18,37 +30,37 @@ function PostShareForm() {
       name: "Twitter",
       icon: <span style={{ fontSize: 20 }}>𝕏</span>,
       url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-        shareUrl
-      )}&text=${shareText}`,
+        shareUrl,
+      )}&text=${encodeURIComponent(shareText)}`,
       bg: "bg-black",
     },
     {
       name: "LinkedIn",
       icon: <FaLinkedinIn size={20} />,
       url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-        shareUrl
+        shareUrl,
       )}`,
       bg: "bg-blue-700",
     },
     {
       name: "WhatsApp",
       icon: <FaWhatsapp size={20} />,
-      url: `https://api.whatsapp.com/send?text=${shareText}%20${encodeURIComponent(
-        shareUrl
+      url: `https://api.whatsapp.com/send?text=${encodeURIComponent(
+        `${shareText}: ${shareUrl}`,
       )}`,
       bg: "bg-green-500",
     },
   ];
 
   return (
-    <div className="flex justify-center mt-4 gap-3">
+    <div className="mt-4 flex justify-center gap-3">
       {socialPlatforms.map((platform) => (
         <a
           key={platform.name}
           href={platform.url}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex items-center justify-center w-10 h-10 rounded-full text-white ${platform.bg} hover:opacity-80 transition`}
+          className={`flex h-10 w-10 items-center justify-center rounded-full text-white ${platform.bg} transition hover:opacity-80`}
           title={`Share on ${platform.name}`}
         >
           {platform.icon}
