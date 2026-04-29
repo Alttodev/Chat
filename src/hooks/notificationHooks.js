@@ -11,7 +11,9 @@ export const useNotifications = (limit = 30) => {
   return useQuery({
     queryKey: ["notifications", limit],
     queryFn: () => getNotifications({ limit }),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 };
 
@@ -19,7 +21,9 @@ export const useNotificationCounts = () => {
   return useQuery({
     queryKey: ["notification_counts"],
     queryFn: getNotificationCounts,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 10000,
+    refetchIntervalInBackground: true,
   });
 };
 

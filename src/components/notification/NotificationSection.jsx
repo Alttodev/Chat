@@ -13,6 +13,10 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { useSocket } from "../../lib/socket";
 import {
+  playNotificationSound,
+  primeNotificationSound,
+} from "@/lib/notificationSound";
+import {
   useNotificationCounts,
   useMarkNotificationSeen,
   useNotifications,
@@ -76,44 +80,25 @@ function NotificationSection() {
     [notifications],
   );
 
-  const playNotificationSound = useCallback(() => {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
+  useEffect(() => {
+    const handleUnlock = () => {
+      primeNotificationSound();
+    };
 
-    try {
-      const audioContext = new AudioContextClass();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+    window.addEventListener("pointerdown", handleUnlock, { once: true });
+    window.addEventListener("keydown", handleUnlock, { once: true });
 
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.001, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.08,
-        audioContext.currentTime + 0.01,
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        audioContext.currentTime + 0.2,
-      );
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.2);
-      oscillator.onended = () => {
-        audioContext.close().catch(() => {});
-      };
-    } catch {
-      // Ignore sound errors (autoplay/device restrictions).
-    }
+    return () => {
+      window.removeEventListener("pointerdown", handleUnlock);
+      window.removeEventListener("keydown", handleUnlock);
+    };
   }, []);
 
   useEffect(() => {
     if (!socket) return;
 
     const handleNewNotification = () => {
-      if (!pushNotificationsEnabled) {
+      if (pushNotificationsEnabled) {
         playNotificationSound();
       }
 
@@ -126,11 +111,12 @@ function NotificationSection() {
     return () => {
       socket.off("new-notification", handleNewNotification);
     };
-  }, [socket, queryClient, playNotificationSound, pushNotificationsEnabled]);
+  }, [socket, queryClient, pushNotificationsEnabled]);
 
   const handleOpenChange = useCallback(
     (isOpen) => {
       if (!isOpen) return;
+      primeNotificationSound();
       queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
       refetch();
     },

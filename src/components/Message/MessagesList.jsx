@@ -41,8 +41,30 @@ export default function MessagesList({
   isLoading,
   onDeleteMessage,
   deletingMessageId,
+  isOtherTyping,
+  typingUserName,
 }) {
   const { open } = useImageModalStore();
+
+  const TypingBubble = () => (
+    <div className="flex gap-3 max-w-[80%]">
+      <div className="flex flex-col gap-1 items-start">
+        <div className="rounded-2xl rounded-bl-md bg-muted px-4 py-2 text-muted-foreground shadow-sm">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-medium">
+              {typingUserName || "Typing"}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.2s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500 [animation-delay:-0.1s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <ScrollArea className="flex-1 p-4">
@@ -164,6 +186,8 @@ export default function MessagesList({
             </div>
           );
         })}
+
+        {isOtherTyping ? <TypingBubble /> : null}
 
         <div ref={messagesEndRef} />
       </div>

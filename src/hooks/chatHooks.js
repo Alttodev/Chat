@@ -13,7 +13,9 @@ export const useChatConversations = () => {
   return useQuery({
     queryKey: ["chat_conversations"],
     queryFn: getChatConversations,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 };
 
@@ -22,7 +24,9 @@ export const useChatMessages = (conversationId) => {
     queryKey: ["chat_messages", conversationId],
     queryFn: () => getChatMessages({ conversationId }),
     enabled: !!conversationId,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
   });
 };
 

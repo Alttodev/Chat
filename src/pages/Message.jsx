@@ -34,6 +34,7 @@ export default function Message() {
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState(() => {
     try {
       const raw = localStorage.getItem(BLOCKED_USERS_STORAGE_KEY);
@@ -46,6 +47,8 @@ export default function Message() {
   const [isCalling, setIsCalling] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const messagesEndRef = useRef(null);
+  const typingStopTimeoutRef = useRef(null);
+  const typingResetTimeoutRef = useRef(null);
   const targetUserIdFromUrl = searchParams.get("userId");
   const targetUserNameFromUrl = searchParams.get("name");
 
@@ -287,6 +290,15 @@ export default function Message() {
   useEffect(() => {
     setNewMessage("");
     setSelectedImage(null);
+    setIsOtherTyping(false);
+    if (typingStopTimeoutRef.current) {
+      window.clearTimeout(typingStopTimeoutRef.current);
+      typingStopTimeoutRef.current = null;
+    }
+    if (typingResetTimeoutRef.current) {
+      window.clearTimeout(typingResetTimeoutRef.current);
+      typingResetTimeoutRef.current = null;
+    }
   }, [selectedContact?.targetUserId]);
 
   const selectedConversationId = useMemo(() => {
@@ -355,6 +367,65 @@ export default function Message() {
   }, [messages]);
 
   useEffect(() => {
+    if (!socket || !selectedConversationId || !selectedContact?.targetUserId) {
+      return undefined;
+    }
+
+    const emitTyping = (isTyping) => {
+      socket.emit("chat:typing", {
+        conversationId: selectedConversationId,
+        fromUserId: profileId,
+        toUserId: selectedContact.targetUserId,
+        isTyping,
+      });
+    };
+
+    const hasTypingContent = !!newMessage.trim() || !!selectedImage;
+
+    if (typingStopTimeoutRef.current) {
+      window.clearTimeout(typingStopTimeoutRef.current);
+      typingStopTimeoutRef.current = null;
+    }
+
+    emitTyping(hasTypingContent);
+
+    if (hasTypingContent) {
+      typingStopTimeoutRef.current = window.setTimeout(() => {
+        emitTyping(false);
+      }, 1200);
+    }
+
+    return () => {
+      if (typingStopTimeoutRef.current) {
+        window.clearTimeout(typingStopTimeoutRef.current);
+        typingStopTimeoutRef.current = null;
+      }
+    };
+  }, [
+    newMessage,
+    selectedImage,
+    selectedConversationId,
+    selectedContact?.targetUserId,
+    socket,
+    profileId,
+  ]);
+
+  useEffect(() => {
+    if (!socket || !selectedConversationId || !selectedContact?.targetUserId) {
+      return undefined;
+    }
+
+    return () => {
+      socket.emit("chat:typing", {
+        conversationId: selectedConversationId,
+        fromUserId: profileId,
+        toUserId: selectedContact.targetUserId,
+        isTyping: false,
+      });
+    };
+  }, [socket, selectedConversationId, selectedContact?.targetUserId, profileId]);
+
+  useEffect(() => {
     if (!selectedConversationId) return;
     clearUnreadCount(selectedConversationId);
     markSeen(selectedConversationId)
@@ -368,6 +439,44 @@ export default function Message() {
     clearUnreadCount,
     refreshNotificationQueries,
   ]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTyping = (payload = {}) => {
+      const conversationId =
+        payload?.conversationId || payload?.conversation?._id;
+      const fromUserId = payload?.fromUserId || payload?.userId;
+      const isTyping = !!payload?.isTyping;
+
+      if (
+        !selectedConversationId ||
+        conversationId?.toString() !== selectedConversationId?.toString()
+      ) {
+        return;
+      }
+
+      if (fromUserId?.toString() === profileId?.toString()) return;
+
+      setIsOtherTyping(isTyping);
+
+      if (typingResetTimeoutRef.current) {
+        window.clearTimeout(typingResetTimeoutRef.current);
+      }
+
+      if (isTyping) {
+        typingResetTimeoutRef.current = window.setTimeout(() => {
+          setIsOtherTyping(false);
+        }, 3000);
+      }
+    };
+
+    socket.on("chat:typing", handleTyping);
+
+    return () => {
+      socket.off("chat:typing", handleTyping);
+    };
+  }, [socket, selectedConversationId, profileId]);
 
   useEffect(() => {
     if (!socket) return;
@@ -505,6 +614,15 @@ export default function Message() {
       }
       setNewMessage("");
       setSelectedImage(null);
+      setIsOtherTyping(false);
+      if (socket && selectedConversationId) {
+        socket.emit("chat:typing", {
+          conversationId: selectedConversationId,
+          fromUserId: profileId,
+          toUserId: selectedContact.targetUserId,
+          isTyping: false,
+        });
+      }
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -657,6 +775,8 @@ export default function Message() {
                   isLoading={messagesLoading}
                   onDeleteMessage={handleDeleteMessage}
                   deletingMessageId={deletingMessageId}
+                  typingUserName={selectedContact?.name}
+                  isOtherTyping={isOtherTyping}
                 />
               )}
 
