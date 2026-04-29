@@ -24,7 +24,7 @@ const JITSI_DOMAIN = "meet.jit.si";
 
 const getJitsiToken = async (roomName, userName, userEmail) => {
   try {
-    const response = await axiosInstance.get("/get-jitsi-token", {
+    const response = await axiosInstance.get("/jitsi/get-jitsi-token", {
       params: {
         roomName,
         name: userName,
