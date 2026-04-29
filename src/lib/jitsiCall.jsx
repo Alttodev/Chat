@@ -171,6 +171,8 @@ export const JitsiCallProvider = ({ children }) => {
                   startWithVideoMuted: true,
                   disableDeepLinking: true,
                   enableWelcomePage: false,
+                  enableUserRolesBasedOnToken: false,
+                  enableLobby: false,
                 }}
                 interfaceConfigOverwrite={{
                   DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
