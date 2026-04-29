@@ -66,10 +66,12 @@ export default function Message() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
 
-  const getZegoUserId = useCallback((userObj) => {
+  const getCallUserId = useCallback((userObj) => {
     if (!userObj) return "";
 
     return (
+      userObj?.zegoUserId?.toString?.() ||
+      userObj?._id?.toString?.() ||
       userObj?.userId?.toString?.() ||
       userObj?.authUserId?.toString?.() ||
       userObj?.accountId?.toString?.() ||
@@ -98,7 +100,7 @@ export default function Message() {
         id: conversation?._id,
         conversationId: conversation?._id,
         targetUserId: conversation?.otherParticipant?._id,
-        zegoUserId: getZegoUserId(conversation?.otherParticipant),
+        zegoUserId: getCallUserId(conversation?.otherParticipant),
         name: conversation?.otherParticipant?.userName || "Unknown",
         profileImage: conversation?.otherParticipant?.profileImage || "",
         avatar: "",
@@ -149,7 +151,7 @@ export default function Message() {
           id: `friend-${friendUser._id}`,
           conversationId: null,
           targetUserId: friendUser._id,
-          zegoUserId: getZegoUserId(friendUser),
+          zegoUserId: getCallUserId(friendUser),
           name: friendUser?.userName || "Unknown",
           ProfileImage: friendUser?.profileImage || "",
           avatar: "",
@@ -174,7 +176,7 @@ export default function Message() {
       );
 
     return [...conversationContacts, ...extraFriendContacts];
-  }, [conversations, blockedUsers, profileId, friendsData, getZegoUserId]);
+  }, [conversations, blockedUsers, profileId, friendsData, getCallUserId]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -230,7 +232,7 @@ export default function Message() {
         id: targetUserIdFromUrl,
         conversationId: null,
         targetUserId: targetUserIdFromUrl,
-        zegoUserId: getZegoUserId(matchedFriendUser),
+        zegoUserId: getCallUserId(matchedFriendUser),
         name: targetUserNameFromUrl || "User",
         avatar: "",
         isOnline: false,
@@ -242,7 +244,7 @@ export default function Message() {
       },
       ...contacts,
     ];
-  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getZegoUserId, targetUserNameFromUrl, blockedUsers]);
+  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getCallUserId, targetUserNameFromUrl, blockedUsers]);
 
   useEffect(() => {
     if (!contactsWithTarget.length) return;
@@ -698,19 +700,20 @@ export default function Message() {
       return;
     }
 
-    const zegoUserId =
+    const callUserId =
+      selectedContact?.targetUserId?.toString?.() ||
       selectedContact?.zegoUserId?.toString?.() ||
-      getZegoUserId(selectedContact);
+      getCallUserId(selectedContact);
 
-    if (!zegoUserId) {
-      toastError("This user is not ready for ZEGO calls");
+    if (!callUserId) {
+      toastError("This user is not available for calls");
       return;
     }
 
     try {
       setIsCalling(true);
       await startAudioCall({
-        targetUserId: zegoUserId,
+        targetUserId: callUserId,
         targetUserName: selectedContact.name,
       });
       toastSuccess("Calling...");
