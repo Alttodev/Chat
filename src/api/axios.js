@@ -76,16 +76,6 @@ export const userFollowRequest = async (id) => {
   return data;
 };
 
-
-
-// zego
-
-export const getZegoToken = async (payload = {}) => {
-  const endpoint = import.meta.env.VITE_ZEGO_TOKEN_ENDPOINT || "/zego/token";
-  const { data } = await axiosInstance.post(endpoint, payload);
-  return data;
-};
-
 // notifications
 
 export const getNotifications = async ({ limit = 30 } = {}) => {

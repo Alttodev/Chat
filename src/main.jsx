@@ -6,7 +6,7 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./lib/socket";
-import { ZegoCallProvider } from "./lib/zegoCall";
+import { JitsiCallProvider } from "./lib/jitsiCall";
 
 const queryClient = new QueryClient();
 
@@ -17,7 +17,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <SocketProvider value={userId}>
       <QueryClientProvider client={queryClient}>
-        <ZegoCallProvider>
+        <JitsiCallProvider>
           <Toaster
             position="top-center"
             richColors
@@ -32,7 +32,7 @@ createRoot(document.getElementById("root")).render(
           />
 
           <App />
-        </ZegoCallProvider>
+        </JitsiCallProvider>
       </QueryClientProvider>
     </SocketProvider>
   </StrictMode>,

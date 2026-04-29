@@ -19,7 +19,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useSocket } from "@/lib/socket";
-import { useZegoCall } from "@/lib/zegoCall";
+import { useJitsiCall } from "@/lib/jitsiCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import Profile from "./Profile";
@@ -28,7 +28,7 @@ export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
   const queryClient = useQueryClient();
   const { socket } = useSocket();
-  const { startAudioCall } = useZegoCall();
+  const { startAudioCall } = useJitsiCall();
   const { profileId } = useAuthStore();
   const [searchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
@@ -66,11 +66,11 @@ export default function Message() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
 
-  const getCallUserId = useCallback((userObj) => {
+
+  const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
 
     return (
-      userObj?.zegoUserId?.toString?.() ||
       userObj?._id?.toString?.() ||
       userObj?.userId?.toString?.() ||
       userObj?.authUserId?.toString?.() ||
@@ -81,6 +81,7 @@ export default function Message() {
 
   const contacts = useMemo(() => {
     const friendRows = friendsData?.friends || [];
+ 
     const acceptedFriends = friendRows.filter(
       (item) => item?.isFriends === true,
     );
@@ -100,7 +101,7 @@ export default function Message() {
         id: conversation?._id,
         conversationId: conversation?._id,
         targetUserId: conversation?.otherParticipant?._id,
-        zegoUserId: getCallUserId(conversation?.otherParticipant),
+        callUserId: getUserCallId(conversation?.otherParticipant),
         name: conversation?.otherParticipant?.userName || "Unknown",
         profileImage: conversation?.otherParticipant?.profileImage || "",
         avatar: "",
@@ -151,7 +152,7 @@ export default function Message() {
           id: `friend-${friendUser._id}`,
           conversationId: null,
           targetUserId: friendUser._id,
-          zegoUserId: getCallUserId(friendUser),
+          callUserId: getUserCallId(friendUser),
           name: friendUser?.userName || "Unknown",
           ProfileImage: friendUser?.profileImage || "",
           avatar: "",
@@ -176,7 +177,7 @@ export default function Message() {
       );
 
     return [...conversationContacts, ...extraFriendContacts];
-  }, [conversations, blockedUsers, profileId, friendsData, getCallUserId]);
+  }, [conversations, blockedUsers, profileId, friendsData, getUserCallId]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -232,7 +233,7 @@ export default function Message() {
         id: targetUserIdFromUrl,
         conversationId: null,
         targetUserId: targetUserIdFromUrl,
-        zegoUserId: getCallUserId(matchedFriendUser),
+        callUserId: getUserCallId(matchedFriendUser),
         name: targetUserNameFromUrl || "User",
         avatar: "",
         isOnline: false,
@@ -244,7 +245,7 @@ export default function Message() {
       },
       ...contacts,
     ];
-  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getCallUserId, targetUserNameFromUrl, blockedUsers]);
+  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getUserCallId, targetUserNameFromUrl, blockedUsers]);
 
   useEffect(() => {
     if (!contactsWithTarget.length) return;
@@ -702,8 +703,8 @@ export default function Message() {
 
     const callUserId =
       selectedContact?.targetUserId?.toString?.() ||
-      selectedContact?.zegoUserId?.toString?.() ||
-      getCallUserId(selectedContact);
+      selectedContact?.callUserId?.toString?.() ||
+      getUserCallId(selectedContact);
 
     if (!callUserId) {
       toastError("This user is not available for calls");
@@ -712,11 +713,25 @@ export default function Message() {
 
     try {
       setIsCalling(true);
-      await startAudioCall({
+      const callInfo = await startAudioCall({
         targetUserId: callUserId,
         targetUserName: selectedContact.name,
       });
-      toastSuccess("Calling...");
+
+      if (callInfo?.inviteLink) {
+        const formData = new FormData();
+        formData.append(
+          "text",
+          `Join my call: ${callInfo.inviteLink}`,
+        );
+
+        await sendMessage({
+          targetUserId: selectedContact.targetUserId,
+          formData,
+        });
+      }
+
+      toastSuccess("Call started");
     } catch (error) {
       toastError(error?.message || "call");
     } finally {
