@@ -39,6 +39,7 @@ import {
 import { PostDialog } from "@/components/modals/postModal";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { Link, useSearchParams } from "react-router-dom";
+import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 
 const Profile = () => {
@@ -69,7 +70,14 @@ const Profile = () => {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
-  const setPostRef = useScrollToPost(targetPostId, [posts]);
+  const { data: targetPostData } = usePostInfo(targetPostId);
+  const targetPost = targetPostData?.post;
+  const displayPosts = useMemo(() => {
+    if (!targetPostId || !targetPost) return posts;
+    if (posts.some((post) => post._id === targetPostId)) return posts;
+    return [targetPost, ...posts];
+  }, [posts, targetPost, targetPostId]);
+  useScrollToPost(targetPostId, [displayPosts]);
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
@@ -192,12 +200,11 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      {posts.map((post) => (
+      {displayPosts.map((post) => (
         <Card
           key={post._id}
-          ref={setPostRef(post._id)}
           id={`post-${post._id}`}
-          className="overflow-hidden"
+          className="overflow-hidden scroll-mt-28"
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">

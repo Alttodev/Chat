@@ -105,6 +105,7 @@ export const usePostInfo = (id) => {
   return useQuery({
     queryKey: ["user_post_info", id],
     queryFn: () => getUserPostInfo(id),
+    enabled: !!id,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });

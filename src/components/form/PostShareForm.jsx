@@ -1,21 +1,18 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
 import { FaFacebookF, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
 function PostShareForm({ postId }) {
-  const location = useLocation();
   const shareText = "Check out this post";
 
   const shareUrl = React.useMemo(() => {
-    const url = new URL(window.location.origin);
-    url.pathname = location.pathname || "/home";
+    const url = new URL("/home", window.location.origin);
 
     if (postId) {
       url.searchParams.set("postId", postId);
     }
 
     return url.toString();
-  }, [location.pathname, postId]);
+  }, [postId]);
 
   const socialPlatforms = [
     {

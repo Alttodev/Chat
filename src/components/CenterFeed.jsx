@@ -36,6 +36,7 @@ import { PostSkeleton } from "./skeleton/postListSkeleton";
 import { Link, useSearchParams } from "react-router-dom";
 import { ImageViewer } from "./modals/imageViewer";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
+import { usePostInfo } from "@/hooks/postHooks";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -60,7 +61,15 @@ export function CenterFeed() {
     [data],
   );
 
-  const setPostRef = useScrollToPost(targetPostId, [posts]);
+  const { data: targetPostData } = usePostInfo(targetPostId);
+  const targetPost = targetPostData?.post;
+  const displayPosts = useMemo(() => {
+    if (!targetPostId || !targetPost) return posts;
+    if (posts.some((post) => post._id === targetPostId)) return posts;
+    return [targetPost, ...posts];
+  }, [posts, targetPost, targetPostId]);
+
+  useScrollToPost(targetPostId, [displayPosts]);
 
   useEffect(() => {
     if (targetPostId) {
@@ -107,12 +116,11 @@ export function CenterFeed() {
       </Card>
 
       {/* Posts Feed */}
-      {posts.map((post) => (
+      {displayPosts.map((post) => (
         <Card
           key={post._id}
-          ref={setPostRef(post._id)}
           id={`post-${post._id}`}
-          className="overflow-hidden"
+          className="overflow-hidden scroll-mt-28"
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
