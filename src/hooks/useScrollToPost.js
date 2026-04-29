@@ -17,6 +17,7 @@ export function useScrollToPost(targetPostId, dependencies = []) {
     });
 
     return () => cancelAnimationFrame(rafId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetPostId, ...dependencies]);
 
   const setPostRef = (postId) => (element) => {
