@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -15,29 +16,14 @@ import {
 } from "@/components/ui/dialog";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
-import axiosInstance from "@/api/axiosInstance";
+import { useSocket } from "@/lib/socket";
+import { useIncomingCallStore } from "@/lib/zustand";
+import { IncomingCallModal } from "@/components/modals/incomingCallModal";
 import { Copy, PhoneOff } from "lucide-react";
 
 const JitsiCallContext = createContext(null);
 
 const JITSI_DOMAIN = "meet.jit.si";
-
-const getJitsiToken = async (roomName, userName, userEmail) => {
-  try {
-    const response = await axiosInstance.get("/jitsi/get-jitsi-token", {
-      params: {
-        roomName,
-        name: userName,
-        email: userEmail,
-      },
-    });
-    return response.data.token;
-  } catch (error) {
-    console.error("Error fetching Jitsi token:", error);
-    toastError("Failed to generate meeting token");
-    return null;
-  }
-};
 
 const createRoomName = (currentUserId, targetUserId) => {
   return `clix-${[currentUserId, targetUserId].map(String).sort().join("-")}`;
@@ -46,12 +32,42 @@ const createRoomName = (currentUserId, targetUserId) => {
 export const JitsiCallProvider = ({ children }) => {
   const userId = useAuthStore((state) => state.user?._id);
   const userName = useAuthStore((state) => state.user?.userName);
-  const userEmail = useAuthStore((state) => state.user?.email);
+  const { socket } = useSocket();
+  const { openIncomingCall } = useIncomingCallStore();
   const [meeting, setMeeting] = useState(null);
 
   const closeCall = useCallback(() => {
     setMeeting(null);
   }, []);
+
+  // Listen for incoming calls
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("call:incoming", (data) => {
+      openIncomingCall({
+        callerId: data.callerId,
+        callerName: data.callerName,
+      });
+      toastSuccess(`Incoming call from ${data.callerName}`);
+    });
+
+    socket.on("call:rejected", () => {
+      closeCall();
+      toastError("Call was rejected");
+    });
+
+    socket.on("call:missed", () => {
+      closeCall();
+      toastError("Call was missed");
+    });
+
+    return () => {
+      socket.off("call:incoming");
+      socket.off("call:rejected");
+      socket.off("call:missed");
+    };
+  }, [socket, openIncomingCall, closeCall]);
 
   const startAudioCall = useCallback(
     async ({ targetUserId, targetUserName }) => {
@@ -61,24 +77,25 @@ export const JitsiCallProvider = ({ children }) => {
       }
 
       const roomName = createRoomName(userId, targetUserId);
-      const token = await getJitsiToken(roomName, userName, userEmail);
-
-      if (!token) {
-        return null;
-      }
-
       const inviteLink = `https://${JITSI_DOMAIN}/${encodeURIComponent(roomName)}`;
+
+      // Emit socket event to notify the other user of incoming call
+      socket?.emit("call:initiate", {
+        callerId: userId,
+        callerName: userName,
+        receiverId: targetUserId,
+        roomName,
+      });
 
       setMeeting({
         roomName,
-        token,
         inviteLink,
         targetUserName: targetUserName || "User",
       });
 
       return { roomName, inviteLink };
     },
-    [userId, userName, userEmail],
+    [userId, userName, socket],
   );
 
   const copyInviteLink = useCallback(async () => {
@@ -102,6 +119,8 @@ export const JitsiCallProvider = ({ children }) => {
   return (
     <JitsiCallContext.Provider value={{ startAudioCall, closeCall }}>
       {children}
+
+      <IncomingCallModal />
 
       <Dialog open={!!meeting} onOpenChange={(open) => !open && closeCall()}>
         <DialogContent className="w-[calc(100%-1rem)] max-w-6xl overflow-hidden p-0 [&_button]:cursor-pointer">
@@ -145,7 +164,6 @@ export const JitsiCallProvider = ({ children }) => {
               <JitsiMeeting
                 domain={JITSI_DOMAIN}
                 roomName={meeting.roomName}
-                jwt={meeting.token}
                 userInfo={meetingUserInfo}
                 configOverwrite={{
                   prejoinPageEnabled: false,

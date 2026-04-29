@@ -23,7 +23,6 @@ export const useCommentStore = create((set) => ({
   setOpenPostId: (postId) => set({ openPostId: postId }),
 }));
 
-
 export const useZustandSharePopup = create((set) => ({
   isShareOpen: false,
   modalShareData: null,
@@ -45,4 +44,12 @@ export const useStatusViewerStore = create((set) => ({
 
   openStatus: (status) => set({ isOpen: true, status }),
   closeStatus: () => set({ isOpen: false, status: null }),
+}));
+
+export const useIncomingCallStore = create((set) => ({
+  isOpen: false,
+  incomingCall: null,
+
+  openIncomingCall: (callData) => set({ isOpen: true, incomingCall: callData }),
+  closeIncomingCall: () => set({ isOpen: false, incomingCall: null }),
 }));

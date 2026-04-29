@@ -61,17 +61,17 @@ export default function ContactsSidebar({
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 min-w-0">
                   <p className="font-medium truncate">{contact.name}</p>
                   {contact.unreadCount > 0 && (
-                    <Badge className="bg-emerald-600 text-white">
+                    <Badge className="bg-emerald-600 text-white flex-shrink-0">
                       {contact.unreadCount}
                     </Badge>
                   )}
                 </div>
                 <p
                   className={cn(
-                    "text-sm truncate",
+                    "text-sm line-clamp-1",
                     selectedContact?.id === contact.id
                       ? "text-white"
                       : "text-muted-foreground",

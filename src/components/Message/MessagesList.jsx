@@ -34,6 +34,31 @@ const getStatusIcon = (status) => {
   }
 };
 
+const parseMessageLinks = (text) => {
+  if (!text) return text;
+
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, idx) => {
+    if (part && part.match(/^https?:\/\//)) {
+      return (
+        <a
+          key={idx}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:underline break-all"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {part}
+        </a>
+      );
+    }
+    return <span key={idx}>{part}</span>;
+  });
+};
+
 export default function MessagesList({
   messages,
   messagesEndRef,
@@ -172,7 +197,9 @@ export default function MessagesList({
                         isDeleted && "italic text-muted-foreground",
                       )}
                     >
-                      {isDeleted ? deletedText : message.text}
+                      {isDeleted
+                        ? deletedText
+                        : parseMessageLinks(message.text)}
                     </p>
                   )}
                 </div>
