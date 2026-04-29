@@ -24,6 +24,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { ImageViewer } from "@/components/modals/imageViewer";
+import { useScrollToPost } from "@/hooks/useScrollToPost";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();
@@ -61,6 +62,7 @@ const UsersInfo = () => {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+  const setPostRef = useScrollToPost(targetPostId, [posts]);
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
@@ -231,7 +233,12 @@ const UsersInfo = () => {
       {friends ? (
         <>
           {posts.map((post) => (
-            <Card key={post._id} className="overflow-hidden">
+            <Card
+              key={post._id}
+              ref={setPostRef(post._id)}
+              id={`post-${post._id}`}
+              className="overflow-hidden"
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">

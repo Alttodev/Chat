@@ -35,6 +35,7 @@ import { ShareDialog } from "./modals/shareModal";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
 import { Link, useSearchParams } from "react-router-dom";
 import { ImageViewer } from "./modals/imageViewer";
+import { useScrollToPost } from "@/hooks/useScrollToPost";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -58,6 +59,8 @@ export function CenterFeed() {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+
+  const setPostRef = useScrollToPost(targetPostId, [posts]);
 
   useEffect(() => {
     if (targetPostId) {
@@ -105,7 +108,12 @@ export function CenterFeed() {
 
       {/* Posts Feed */}
       {posts.map((post) => (
-        <Card key={post._id} className="overflow-hidden">
+        <Card
+          key={post._id}
+          ref={setPostRef(post._id)}
+          id={`post-${post._id}`}
+          className="overflow-hidden"
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 min-w-0 flex-1">

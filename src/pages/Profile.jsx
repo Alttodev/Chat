@@ -39,6 +39,7 @@ import {
 import { PostDialog } from "@/components/modals/postModal";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { Link, useSearchParams } from "react-router-dom";
+import { useScrollToPost } from "@/hooks/useScrollToPost";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -68,6 +69,7 @@ const Profile = () => {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+  const setPostRef = useScrollToPost(targetPostId, [posts]);
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
@@ -191,7 +193,12 @@ const Profile = () => {
       </Card>
 
       {posts.map((post) => (
-        <Card key={post._id} className="overflow-hidden">
+        <Card
+          key={post._id}
+          ref={setPostRef(post._id)}
+          id={`post-${post._id}`}
+          className="overflow-hidden"
+        >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

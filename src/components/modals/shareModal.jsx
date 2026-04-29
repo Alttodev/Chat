@@ -11,7 +11,11 @@ export function ShareDialog() {
       open={isShareOpen}
       onOpenChange={(open) => !open && closeShareModal()}
     >
-      <DialogContent className="w-[calc(100%-2rem)] max-w-[500px]  [&_button]:cursor-pointer">
+      <DialogContent
+        className="w-[calc(100%-2rem)] max-w-[500px]  rounded-lg 
+  p-4
+  sm:rounded-xl  [&_button]:cursor-pointer"
+      >
         <DialogHeader>
           <DialogTitle className="text-emerald-600 flex justify-center">
             Share Post
