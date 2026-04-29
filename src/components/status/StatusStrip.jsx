@@ -66,7 +66,7 @@ function StatusBubble({
           </button>
         ) : (
           <div
-            className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
+            className={`absolute -bottom-0 -right-0 w-4 h-4 rounded-full border-2 border-background ${
               online ? "bg-green-500" : "bg-yellow-500"
             }`}
           />
