@@ -70,7 +70,6 @@ export default function Message() {
       userObj?.userId?.toString?.() ||
       userObj?.authUserId?.toString?.() ||
       userObj?.accountId?.toString?.() ||
-      userObj?._id?.toString?.() ||
       ""
     );
   }, []);
@@ -209,12 +208,26 @@ export default function Message() {
       return contacts;
     }
 
+    const matchedFriendRow = friendRows.find((item) => {
+      const friendUser =
+        item?.from?._id?.toString() === profileId?.toString()
+          ? item?.to
+          : item?.from;
+
+      return friendUser?._id?.toString() === targetUserIdFromUrl;
+    });
+
+    const matchedFriendUser =
+      matchedFriendRow?.from?._id?.toString() === profileId?.toString()
+        ? matchedFriendRow?.to
+        : matchedFriendRow?.from;
+
     return [
       {
         id: targetUserIdFromUrl,
         conversationId: null,
         targetUserId: targetUserIdFromUrl,
-        zegoUserId: "",
+        zegoUserId: getZegoUserId(matchedFriendUser),
         name: targetUserNameFromUrl || "User",
         avatar: "",
         isOnline: false,
@@ -226,14 +239,7 @@ export default function Message() {
       },
       ...contacts,
     ];
-  }, [
-    contacts,
-    targetUserIdFromUrl,
-    targetUserNameFromUrl,
-    profileId,
-    blockedUsers,
-    friendsData,
-  ]);
+  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getZegoUserId, targetUserNameFromUrl, blockedUsers]);
 
   useEffect(() => {
     if (!contactsWithTarget.length) return;
@@ -574,10 +580,19 @@ export default function Message() {
       return;
     }
 
+    const zegoUserId =
+      selectedContact?.zegoUserId?.toString?.() ||
+      getZegoUserId(selectedContact);
+
+    if (!zegoUserId) {
+      toastError("This user is not ready for ZEGO calls");
+      return;
+    }
+
     try {
       setIsCalling(true);
       await startAudioCall({
-        targetUserId: selectedContact.targetUserId,
+        targetUserId: zegoUserId,
         targetUserName: selectedContact.name,
       });
       toastSuccess("Calling...");

@@ -46,6 +46,31 @@ export const userPostComment = async (id, formData) => {
   return data;
 };
 
+// status
+
+export const uploadUserStatus = async (formData) => {
+  const { data } = await axiosInstance.post(`/status/upload`, formData);
+  return data;
+};
+
+export const getMyStatus = async () => {
+  try {
+    const { data } = await axiosInstance.get(`/status/me`);
+    return data;
+  } catch (error) {
+    if (error?.response?.status === 404) {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+export const getStatusFeed = async () => {
+  const { data } = await axiosInstance.get(`/status/feed`);
+  return data;
+};
+
 export const userFollowRequest = async (id) => {
   const { data } = await axiosInstance.post(`/follow/send/${id}`);
   return data;

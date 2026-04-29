@@ -16,7 +16,7 @@ const Friends = () => {
   return (
     <div className="w-full max-w-5xl mx-auto px-4  space-y-8">
       {/* Header */}
-      <div className="bg-emerald-600 text-white p-6 rounded-lg">
+      <div className="bg-emerald-600 text-white p-6 rounded-lg hidden sm:block">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold">Friends</h1>
@@ -28,11 +28,13 @@ const Friends = () => {
       </div>
 
       {/* Stats */}
+      <div className="hidden sm:block">
       <StatsCards
         total={countData?.totalFriends}
         online={countData?.totalOnline}
         requests={countData?.totalRequests}
-      />
+        />
+        </div>
 
       {/* Tabs */}
       <Tabs

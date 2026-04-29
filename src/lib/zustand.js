@@ -37,3 +37,11 @@ export const useImageModalStore = create((set) => ({
   open: (img) => set({ image: img, isOpen: true }),
   close: () => set({ image: null, isOpen: false }),
 }));
+
+export const useStatusViewerStore = create((set) => ({
+  isOpen: false,
+  status: null,
+
+  openStatus: (status) => set({ isOpen: true, status }),
+  closeStatus: () => set({ isOpen: false, status: null }),
+}));

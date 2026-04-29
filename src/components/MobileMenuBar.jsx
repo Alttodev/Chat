@@ -12,7 +12,7 @@ export function MobileMenuBar() {
   ];
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 sm:hidden bg-background border-b border-border shadow-sm">
+    <div className="fixed top-46 left-0 right-0 z-40 sm:hidden bg-background border-b border-border shadow-sm">
       <nav className="grid grid-cols-3 gap-1 px-3 py-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
