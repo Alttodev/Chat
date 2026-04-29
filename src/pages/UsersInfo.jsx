@@ -20,7 +20,7 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { ImageViewer } from "@/components/modals/imageViewer";
@@ -29,11 +29,14 @@ const UsersInfo = () => {
   // const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
-  const { openPostId, toggleComments } = useCommentStore();
+  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
   const { open } = useImageModalStore();
+  const [searchParams] = useSearchParams();
+  const targetPostId = searchParams.get("postId");
+  const targetCommentId = searchParams.get("commentId");
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
     useProfileFollow();
@@ -61,6 +64,12 @@ const UsersInfo = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
+
+  useEffect(() => {
+    if (targetPostId) {
+      setOpenPostId(targetPostId);
+    }
+  }, [setOpenPostId, targetPostId]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -295,6 +304,9 @@ const UsersInfo = () => {
                     <CommentSection
                       postId={post._id}
                       userProfile={currentUser}
+                      highlightCommentId={
+                        targetPostId === post._id ? targetCommentId : undefined
+                      }
                     />
                   </div>
                 )}

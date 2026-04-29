@@ -12,13 +12,31 @@ import {
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import { toastError } from "@/lib/toast";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/authStore";
 
-export function CommentSection({ postId, userProfile }) {
+export function CommentSection({ postId, userProfile, highlightCommentId }) {
   const { profileId } = useAuthStore();
   const navigate = useNavigate();
   const { data: activeComments, isLoading } = usePostComments(postId);
   const { mutateAsync: deleteComment } = usePostCommentDelete();
+  const lastHighlightedCommentIdRef = useRef(null);
+
+  useEffect(() => {
+    if (!highlightCommentId) return;
+
+    if (lastHighlightedCommentIdRef.current === highlightCommentId) return;
+
+    const commentElement = document.getElementById(
+      `comment-${highlightCommentId}`,
+    );
+
+    if (!commentElement) return;
+
+    lastHighlightedCommentIdRef.current = highlightCommentId;
+
+    commentElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeComments?.comments, highlightCommentId]);
 
   const handleDelete = async ({ postId, commentId }) => {
     try {
@@ -42,7 +60,12 @@ export function CommentSection({ postId, userProfile }) {
 
       {/* Comments List */}
       {activeComments?.comments?.map((comment) => (
-        <div key={comment._id} className="flex gap-2">
+        <div
+          key={comment._id}
+          id={`comment-${comment._id}`}
+          className={`flex gap-2 scroll-mt-24 rounded-lg transition-colors 
+          }`}
+        >
           <Avatar className="w-8 h-8 text-emerald-600">
             <AvatarImage
               onClick={
@@ -50,7 +73,6 @@ export function CommentSection({ postId, userProfile }) {
                   ? () => navigate(`/users/${comment?.user?._id}`)
                   : undefined
               }
-               
               className={`${
                 profileId !== comment?.user?._id
                   ? "w-full h-full object-cover object-top cursor-pointer"

@@ -33,17 +33,20 @@ import { CommentSection } from "./Post/CommentSection";
 import { PostImageDialog } from "./modals/postImageModal";
 import { ShareDialog } from "./modals/shareModal";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ImageViewer } from "./modals/imageViewer";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
   const { openShareModal } = useZustandSharePopup();
-  const { openPostId, toggleComments } = useCommentStore();
+  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
   const { data: profileData } = useUserDetail();
   const { mutateAsync: deletePost } = usePostDelete();
+  const [searchParams] = useSearchParams();
 
   const userProfile = useMemo(() => profileData, [profileData]);
+  const targetPostId = searchParams.get("postId");
+  const targetCommentId = searchParams.get("commentId");
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     usePostList();
@@ -55,6 +58,12 @@ export function CenterFeed() {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+
+  useEffect(() => {
+    if (targetPostId) {
+      setOpenPostId(targetPostId);
+    }
+  }, [setOpenPostId, targetPostId]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -215,6 +224,9 @@ export function CenterFeed() {
                 <CommentSection
                   postId={post._id}
                   userProfile={userProfile?.profile}
+                  highlightCommentId={
+                    targetPostId === post._id ? targetCommentId : undefined
+                  }
                 />
               </div>
             )}

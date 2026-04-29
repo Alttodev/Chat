@@ -16,6 +16,7 @@ import {
   playNotificationSound,
   primeNotificationSound,
 } from "@/lib/notificationSound";
+import { useAuthStore } from "@/store/authStore";
 import {
   useNotificationCounts,
   useMarkNotificationSeen,
@@ -52,6 +53,7 @@ function NotificationSection() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { socket } = useSocket();
+  const { profileId } = useAuthStore();
   const { data: countsData } = useNotificationCounts();
   const { data: notificationsData, isLoading, refetch } = useNotifications(30);
   const { data: notificationSettingsData } = useNotificationSettings();
@@ -76,6 +78,14 @@ function NotificationSection() {
     () =>
       notifications.filter(
         (notification) => notification?.type === "chat-message",
+      ),
+    [notifications],
+  );
+
+  const commentMentionNotifications = useMemo(
+    () =>
+      notifications.filter(
+        (notification) => notification?.type === "comment-mention",
       ),
     [notifications],
   );
@@ -125,6 +135,27 @@ function NotificationSection() {
 
   const handleNotificationClick = useCallback(
     async (notification) => {
+      let targetPath = null;
+
+      if (notification?.type === "follow-request") {
+        targetPath = "/friends";
+      } else if (notification?.type === "chat-message") {
+        const targetId =
+          notification?.from?._id || notification?.otherParticipantIds?.[0];
+        const targetName = notification?.from?.userName || "User";
+
+        targetPath = targetId
+          ? `/messages?userId=${targetId}&name=${encodeURIComponent(targetName)}`
+          : "/messages";
+      } else if (notification?.type === "comment-mention") {
+        const postOwnerId = notification?.post?.user?._id || notification?.post?.user;
+        targetPath = postOwnerId
+          ? postOwnerId?.toString?.() === profileId?.toString?.()
+            ? `/profile?postId=${notification?.postId}&commentId=${notification?.commentId}`
+            : `/users/${postOwnerId}?postId=${notification?.postId}&commentId=${notification?.commentId}`
+          : `/home?postId=${notification?.postId}&commentId=${notification?.commentId}`;
+      }
+
       try {
         if (
           notification?.type === "follow-request" &&
@@ -145,31 +176,33 @@ function NotificationSection() {
             conversationId: notification.conversationId,
           });
         }
+
+        if (
+          notification?.type === "comment-mention" &&
+          notification?.commentId &&
+          notification?.postId
+        ) {
+          await markNotificationSeen({
+            type: "comment-mention",
+            commentId: notification.commentId,
+            postId: notification.postId,
+            notificationId: notification.notificationId,
+          });
+        }
       } catch {
         // Navigation should still work even if marking seen fails.
-      } finally {
-        if (notification?.type === "follow-request") {
-          navigate("/friends", { state: { tab: "requests" } });
-          // eslint-disable-next-line no-unsafe-finally
-          return;
-        }
-
-        if (notification?.type === "chat-message") {
-          const targetId =
-            notification?.from?._id || notification?.otherParticipantIds?.[0];
-          const targetName = notification?.from?.userName || "User";
-
-          if (targetId) {
-            navigate(
-              `/messages?userId=${targetId}&name=${encodeURIComponent(targetName)}`,
-            );
-          } else {
-            navigate("/messages");
-          }
-        }
       }
+
+      if (!targetPath) return;
+
+      if (notification?.type === "follow-request") {
+        navigate("/friends", { state: { tab: "requests" } });
+        return;
+      }
+
+      navigate(targetPath);
     },
-    [navigate, markNotificationSeen],
+    [navigate, markNotificationSeen, profileId],
   );
 
   const badgeText = totalCount > 99 ? "99+" : totalCount;
@@ -259,7 +292,10 @@ function NotificationSection() {
                 )}
 
                 {followNotifications.length > 0 &&
-                  chatNotifications.length > 0 && <DropdownMenuSeparator />}
+                  (chatNotifications.length > 0 ||
+                    commentMentionNotifications.length > 0) && (
+                    <DropdownMenuSeparator />
+                  )}
 
                 {chatNotifications.length > 0 && (
                   <div className="mt-2">
@@ -301,6 +337,55 @@ function NotificationSection() {
                           </p>
                         </div>
                         <MessageCircle className="w-4 h-4 text-green-500 mt-1 " />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {chatNotifications.length > 0 &&
+                  commentMentionNotifications.length > 0 && (
+                    <DropdownMenuSeparator />
+                  )}
+
+                {commentMentionNotifications.length > 0 && (
+                  <div className="mt-2">
+                    <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Comment Mentions
+                    </p>
+                    {commentMentionNotifications.map((notification) => (
+                      <button
+                        key={notification.notificationId}
+                        type="button"
+                        onClick={() => handleNotificationClick(notification)}
+                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
+                      >
+                        <Avatar className="w-9 h-9">
+                          <AvatarImage
+                            className="w-full h-full object-cover object-top cursor-pointer"
+                            src={
+                              notification?.from?.profileImage ||
+                              "/placeholder.svg"
+                            }
+                          />
+                          <AvatarFallback className="bg-indigo-100 text-indigo-700">
+                            {getInitial(notification?.from?.userName)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground leading-snug">
+                            <span className="font-semibold">
+                              {notification?.from?.userName || "Someone"}
+                            </span>{" "}
+                            mentioned you in a comment
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate mt-1">
+                            {notification?.comment || notification?.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formatTime(notification?.createdAt)}
+                          </p>
+                        </div>
+                        <MessageCircle className="w-4 h-4 text-indigo-600 mt-1" />
                       </button>
                     ))}
                   </div>

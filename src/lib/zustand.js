@@ -20,6 +20,7 @@ export const useCommentStore = create((set) => ({
     set((state) => ({
       openPostId: state.openPostId === postId ? null : postId,
     })),
+  setOpenPostId: (postId) => set({ openPostId: postId }),
 }));
 
 

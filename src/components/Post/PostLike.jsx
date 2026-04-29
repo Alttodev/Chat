@@ -32,6 +32,7 @@ function PostLikeComponent({ post, userId }) {
         className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
       >
         <Heart
+           className={isLiked ? "heart-animate" : ""}
           style={{
             width: 16,
             height: 16,

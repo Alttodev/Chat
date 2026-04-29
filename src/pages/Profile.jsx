@@ -38,15 +38,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PostDialog } from "@/components/modals/postModal";
 import { ImageViewer } from "@/components/modals/imageViewer";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
   const { profileId } = useAuthStore();
   const { openShareModal } = useZustandSharePopup();
-  const { openPostId, toggleComments } = useCommentStore();
+  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
   const loadMoreRef = useRef(null);
   const { open } = useImageModalStore();
+  const [searchParams] = useSearchParams();
+  const targetPostId = searchParams.get("postId");
+  const targetCommentId = searchParams.get("commentId");
 
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
@@ -68,6 +71,12 @@ const Profile = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
+
+  useEffect(() => {
+    if (targetPostId) {
+      setOpenPostId(targetPostId);
+    }
+  }, [setOpenPostId, targetPostId]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -281,7 +290,13 @@ const Profile = () => {
 
             {openPostId === post._id && (
               <div className="border-t border-border mt-3">
-                <CommentSection postId={post._id} userProfile={currentUser} />
+                <CommentSection
+                  postId={post._id}
+                  userProfile={currentUser}
+                  highlightCommentId={
+                    targetPostId === post._id ? targetCommentId : undefined
+                  }
+                />
               </div>
             )}
           </CardContent>

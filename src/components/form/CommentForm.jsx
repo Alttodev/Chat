@@ -3,9 +3,9 @@ import { toastError } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePostComment } from "@/hooks/postHooks";
-import TextInput from "../form_inputs/TextInput";
 import { Send } from "lucide-react";
 import { useImageModalStore } from "@/lib/zustand";
+import MentionTextarea from "../form_inputs/MentionTextarea";
 
 export function CommentForm({ userProfile, postId }) {
   const { open } = useImageModalStore();
@@ -48,7 +48,7 @@ export function CommentForm({ userProfile, postId }) {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 gap-2">
-          <TextInput
+          <MentionTextarea
             name="comment"
             className="flex-1 text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
             control={control}
