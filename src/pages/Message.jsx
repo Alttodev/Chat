@@ -22,14 +22,14 @@ import { useSocket } from "@/lib/socket";
 import { useJitsiCall } from "@/lib/jitsiCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-
+import { useUserProfiles } from "@/hooks/authHooks";
 
 export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
   const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { startAudioCall } = useJitsiCall();
-  const { profileId} = useAuthStore();
+  const { profileId } = useAuthStore();
   const [searchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
@@ -65,7 +65,9 @@ export default function Message() {
     useUnblockChatUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
-  
+
+  const { data: profile } = useUserProfiles();
+  const profileData = useMemo(() => profile, [profile]);
 
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
@@ -228,7 +230,7 @@ export default function Message() {
       matchedFriendRow?.from?._id?.toString() === profileId?.toString()
         ? matchedFriendRow?.to
         : matchedFriendRow?.from;
-      console.log(matchedFriendUser, "matchedFriendUser"  )
+    console.log(matchedFriendUser, "matchedFriendUser");
 
     return [
       {
@@ -257,12 +259,10 @@ export default function Message() {
     blockedUsers,
   ]);
 
-
-
   useEffect(() => {
     if (!contactsWithTarget.length) return;
-    console.log(contactsWithTarget, "fuck")
-    console.log(targetUserIdFromUrl, "targetUserIdFromUrl" )
+    console.log(contactsWithTarget, "fuck");
+    console.log(targetUserIdFromUrl, "targetUserIdFromUrl");
     if (targetUserIdFromUrl) {
       const matched = contactsWithTarget.find(
         (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
@@ -704,51 +704,61 @@ export default function Message() {
     }
   };
 
- const handleAudioCall = async () => {
-  console.log("🔥 handleAudioCall triggered");
+  const handleAudioCall = async () => {
+    console.log("🔥 handleAudioCall triggered");
 
-  if (!selectedContact?.targetUserId) {
-    console.log("❌ No targetUserId");
-    return;
-  }
+    if (!selectedContact?.targetUserId) {
+      console.log("❌ No targetUserId");
+      return;
+    }
 
-  console.log("Selected contact:", selectedContact);
+    console.log("Selected contact:", selectedContact);
 
-  if (selectedContact.targetUserId.toString() === profileId?.toString()) {
-    toastError("You cannot call yourself");
-    return;
-  }
+    if (selectedContact.targetUserId.toString() === profileId?.toString()) {
+      toastError("You cannot call yourself");
+      return;
+    }
 
-  if (!selectedContact?.isFriend) {
-    toastError("Only accepted friends can call");
-    return;
-  }
+    if (!selectedContact?.isFriend) {
+      toastError("Only accepted friends can call");
+      return;
+    }
 
-  if (selectedContact?.isBlocked) {
-    toastError("User is blocked");
-    return;
-  }
+    if (selectedContact?.isBlocked) {
+      toastError("User is blocked");
+      return;
+    }
 
-  const callUserId = selectedContact.callUserId; // ✅ FIXED
+    const matchedProfile = profileData?.profiles?.find(
+      (item) =>
+        item?.id?.toString() === selectedContact?.targetUserId?.toString(),
+    );
 
-  try {
-    setIsCalling(true);
+    // decide correct userId
+    const callUserId =
+      selectedContact?.callUserId || // already correct if exists
+      selectedContact?.userId || // if stored directly
+      matchedProfile?.userId || // ✅ FIX: map _id → userId
+      selectedContact?.targetUserId;
 
-    console.log("Starting call with userId:", callUserId);
-    console.log("Caller:", profileId);
-    console.log("Receiver:", callUserId);
+    try {
+      setIsCalling(true);
 
-    startAudioCall({
-      targetUserId: callUserId,
-    });
+      console.log("Starting call with userId:", callUserId);
+      console.log("Caller:", profileId);
+      console.log("Receiver:", callUserId);
 
-    toastSuccess("Calling...");
-  } catch (error) {
-    toastError(error?.message || "Call failed");
-  } finally {
-    setIsCalling(false);
-  }
-};
+      startAudioCall({
+        targetUserId: callUserId,
+      });
+
+      toastSuccess("Calling...");
+    } catch (error) {
+      toastError(error?.message || "Call failed");
+    } finally {
+      setIsCalling(false);
+    }
+  };
   if (conversationsLoading || friendsLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">

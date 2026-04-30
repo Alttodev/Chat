@@ -8,6 +8,7 @@ export function RightSidebar() {
   const { data: profile, isLoading } = useUserProfiles();
   const data = useMemo(() => profile, [profile]);
 
+
   if (isLoading) {
     return <ContactSkeleton />;
   }
