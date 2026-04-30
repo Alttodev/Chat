@@ -2,29 +2,27 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Phone, PhoneOff } from "lucide-react";
 import { useIncomingCallStore } from "@/lib/zustand";
-import { useJitsiCall } from "@/lib/jitsiCall";
 import { useSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/authStore";
 
+const createRoomName = (currentUserId, targetUserId) => {
+  return `clix-${[currentUserId, targetUserId].map(String).sort().join("-")}`;
+};
+
 export function IncomingCallModal() {
   const { isOpen, incomingCall, closeIncomingCall } = useIncomingCallStore();
-  const { startAudioCall } = useJitsiCall();
   const { socket } = useSocket();
   const userId = useAuthStore((state) => state.user?._id);
 
-  const handleAccept = async () => {
+  const handleAccept = () => {
     if (!incomingCall) return;
 
-    // Notify caller that call was accepted
-    socket?.emit("call:accepted", {
-      callerId: incomingCall.callerId,
-      receiverId: userId,
-    });
+    const roomName = createRoomName(userId, incomingCall.callerId);
 
-    // Start the Jitsi call
-    await startAudioCall({
-      targetUserId: incomingCall.callerId,
-      targetUserName: incomingCall.callerName,
+    // ✅ Accept call
+    socket?.emit("call:accept", {
+      callerId: incomingCall.callerId,
+      roomName,
     });
 
     closeIncomingCall();
@@ -33,10 +31,9 @@ export function IncomingCallModal() {
   const handleReject = () => {
     if (!incomingCall) return;
 
-    // Notify caller that call was rejected
-    socket?.emit("call:rejected", {
+    // ❌ Reject call
+    socket?.emit("call:reject", {
       callerId: incomingCall.callerId,
-      receiverId: userId,
     });
 
     closeIncomingCall();

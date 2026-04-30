@@ -14,12 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { useSocket } from "@/lib/socket";
 import { useIncomingCallStore } from "@/lib/zustand";
 import { IncomingCallModal } from "@/components/modals/incomingCallModal";
-import { Copy, PhoneOff } from "lucide-react";
+import { PhoneOff } from "lucide-react";
 
 const JitsiCallContext = createContext(null);
 
@@ -40,44 +40,43 @@ export const JitsiCallProvider = ({ children }) => {
     setMeeting(null);
   }, []);
 
-  // Listen for incoming calls
+  // Listen for socket events
   useEffect(() => {
     if (!socket) return;
 
+    // 📞 Incoming call
     socket.on("call:incoming", (data) => {
-      openIncomingCall({
-        callerId: data.callerId,
-        callerName: data.callerName,
+      openIncomingCall(data); // show modal
+    });
+
+    // ✅ Call accepted → open Jitsi
+    socket.on("call:accepted", ({ roomName, fromUserName }) => {
+      setMeeting({
+        roomName,
+        targetUserName: fromUserName,
       });
-      toastSuccess(`Incoming call from ${data.callerName}`);
     });
 
+    // ❌ Call rejected
     socket.on("call:rejected", () => {
-      closeCall();
-      toastError("Call was rejected");
-    });
-
-    socket.on("call:missed", () => {
-      closeCall();
-      toastError("Call was missed");
+      toastError("Call rejected");
     });
 
     return () => {
       socket.off("call:incoming");
+      socket.off("call:accepted");
       socket.off("call:rejected");
-      socket.off("call:missed");
     };
-  }, [socket, openIncomingCall, closeCall]);
+  }, [socket, openIncomingCall]);
 
   const startAudioCall = useCallback(
-    async ({ targetUserId, targetUserName }) => {
+    ({ targetUserId }) => {
       if (!userId || !targetUserId) {
         toastError("Call cannot be started");
-        return null;
+        return;
       }
 
       const roomName = createRoomName(userId, targetUserId);
-      const inviteLink = `https://${JITSI_DOMAIN}/${encodeURIComponent(roomName)}`;
 
       // Emit socket event to notify the other user of incoming call
       socket?.emit("call:initiate", {
@@ -87,27 +86,10 @@ export const JitsiCallProvider = ({ children }) => {
         roomName,
       });
 
-      setMeeting({
-        roomName,
-        inviteLink,
-        targetUserName: targetUserName || "User",
-      });
-
-      return { roomName, inviteLink };
+      // ❌ DO NOT OPEN JITSI HERE - wait for call:accepted event
     },
     [userId, userName, socket],
   );
-
-  const copyInviteLink = useCallback(async () => {
-    if (!meeting?.inviteLink) return;
-
-    try {
-      await navigator.clipboard.writeText(meeting.inviteLink);
-      toastSuccess("Invite link copied");
-    } catch {
-      toastError("Could not copy invite link");
-    }
-  }, [meeting]);
 
   const meetingUserInfo = useMemo(
     () => ({
@@ -135,16 +117,6 @@ export const JitsiCallProvider = ({ children }) => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={copyInviteLink}
-                  className="cursor-pointer"
-                >
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy Link
-                </Button>
                 <Button
                   type="button"
                   variant="destructive"
