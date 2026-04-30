@@ -30,8 +30,10 @@ const createRoomName = (currentUserId, targetUserId) => {
 };
 
 export const JitsiCallProvider = ({ children }) => {
-  const userId = useAuthStore((state) => state.user?._id);
-  console.log("Current userId for calls:", userId);
+  // const userId = useAuthStore((state) => state.user?._id);
+  const  userId = useAuthStore((state) => state.profileId);
+  // console.log("Current profileId for calls:", profileId);
+  // console.log("Current userId for calls:", userId);
   const userName = useAuthStore((state) => state.user?.userName);
   const { socket } = useSocket();
   const { openIncomingCall } = useIncomingCallStore();

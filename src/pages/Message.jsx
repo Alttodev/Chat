@@ -22,14 +22,14 @@ import { useSocket } from "@/lib/socket";
 import { useJitsiCall } from "@/lib/jitsiCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import Profile from "./Profile";
+
 
 export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
   const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { startAudioCall } = useJitsiCall();
-  const { profileId ,user} = useAuthStore();
+  const { profileId} = useAuthStore();
   const [searchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
@@ -65,7 +65,7 @@ export default function Message() {
     useUnblockChatUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
-  console.log(user?._id);
+  
 
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
@@ -228,6 +228,7 @@ export default function Message() {
       matchedFriendRow?.from?._id?.toString() === profileId?.toString()
         ? matchedFriendRow?.to
         : matchedFriendRow?.from;
+      console.log(matchedFriendUser, "matchedFriendUser"  )
 
     return [
       {
@@ -256,9 +257,12 @@ export default function Message() {
     blockedUsers,
   ]);
 
+
+
   useEffect(() => {
     if (!contactsWithTarget.length) return;
-
+    console.log(contactsWithTarget, "fuck")
+    console.log(targetUserIdFromUrl, "targetUserIdFromUrl" )
     if (targetUserIdFromUrl) {
       const matched = contactsWithTarget.find(
         (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
