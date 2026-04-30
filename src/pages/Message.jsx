@@ -70,7 +70,7 @@ export default function Message() {
     if (!userObj) return "";
 
     return (
-      userObj?._id?.toString?.() ||
+      // userObj?._id?.toString?.() ||
       userObj?.userId?.toString?.() ||
       userObj?.authUserId?.toString?.() ||
       userObj?.accountId?.toString?.() ||
@@ -700,6 +700,7 @@ export default function Message() {
 
   const handleAudioCall = async () => {
     if (!selectedContact?.targetUserId) return;
+
     if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
       toastError("You cannot call yourself");
       return;
@@ -714,7 +715,7 @@ export default function Message() {
     }
 
     const callUserId =
-      selectedContact?.targetUserId?.toString?.() ||
+      // selectedContact?.targetUserId?.toString?.() ||
       selectedContact?.callUserId?.toString?.() ||
       getUserCallId(selectedContact);
 
