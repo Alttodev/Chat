@@ -31,7 +31,7 @@ const createRoomName = (currentUserId, targetUserId) => {
 
 export const JitsiCallProvider = ({ children }) => {
   const userId = useAuthStore((state) => state.user?._id);
-  const userName = useAuthStore((state) => state.user?.userName);
+  const user = useAuthStore((state) => state.user);
 
   const { socket } = useSocket();
   const { openIncomingCall } = useIncomingCallStore();
@@ -46,7 +46,7 @@ export const JitsiCallProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("call:incoming", (data) => {
-        console.log("📞 Incoming call data:", data);
+      console.log("📞 Incoming call data:", data);
       openIncomingCall(data); // show modal
     });
 
@@ -83,7 +83,7 @@ export const JitsiCallProvider = ({ children }) => {
 
       socket.emit("call:initiate", {
         callerId: userId,
-        callerName: userName,
+        callerName: user?.userName || "User",
         receiverId: targetUserId,
         roomName,
       });
@@ -99,15 +99,15 @@ export const JitsiCallProvider = ({ children }) => {
         targetUserName: "Calling...",
       });
     },
-    [userId, userName, socket],
+    [userId, user, socket],
   );
-  const meetingUserInfo = useMemo(
-    () => ({
-      displayName: userName || "User",
-    }),
-    [userName],
-  );
-
+  
+ const meetingUserInfo = useMemo(
+  () => ({
+    displayName: user?.userName || "User",
+  }),
+  [user],
+);
   return (
     <JitsiCallContext.Provider value={{ startAudioCall, closeCall }}>
       {children}
