@@ -23,7 +23,7 @@ import { PhoneOff } from "lucide-react";
 
 const JitsiCallContext = createContext(null);
 
-const JITSI_DOMAIN = "meet.jit.si";
+const JITSI_DOMAIN = "8x8.vc";
 
 const createRoomName = (currentUserId, targetUserId) => {
   return `clix-${[currentUserId, targetUserId].map(String).sort().join("-")}`;
@@ -54,7 +54,6 @@ export const JitsiCallProvider = ({ children }) => {
 
     // ✅ Call accepted → open Jitsi
     socket.on("call:accepted", ({ roomName, fromUserName }) => {
-    
       setMeeting({
         roomName,
         targetUserName: fromUserName,
@@ -75,14 +74,13 @@ export const JitsiCallProvider = ({ children }) => {
 
   // const startAudioCall = useCallback(
   //   ({ targetUserId }) => {
-  
+
   //     if (!userId || !targetUserId) {
   //       toastError("Call cannot be started");
   //       return;
   //     }
 
   //     const roomName = createRoomName(userId, targetUserId);
-      
 
   //     // Emit socket event to notify the other user of incoming call
   //     socket?.emit("call:initiate", {
@@ -95,40 +93,41 @@ export const JitsiCallProvider = ({ children }) => {
   //   },
   //   [userId, userName, socket],
   // );
-const startAudioCall = useCallback(
-  ({ targetUserId }) => {
-    console.log("📞 Call button clicked");
-  
+  const startAudioCall = useCallback(
+    ({ targetUserId }) => {
+      console.log("📞 Call button clicked");
 
-    console.log("Caller (userId):", userId);
-    console.log("Receiver (targetUserId):", targetUserId);
-    console.log("Socket:", socket);
-    console.log("Socket connected:", socket?.connected);
+      console.log("Caller (userId):", userId);
+      console.log("Receiver (targetUserId):", targetUserId);
+      console.log("Socket:", socket);
+      console.log("Socket connected:", socket?.connected);
 
-    if (!socket || !socket.connected) {
-      console.log("❌ Socket not ready");
-      return;
-    }
+      if (!socket || !socket.connected) {
+        console.log("❌ Socket not ready");
+        return;
+      }
 
-  
-   
-    const roomName = createRoomName(userId, targetUserId);
+      const roomName = createRoomName(userId, targetUserId);
 
-    console.log("📡 Emitting call:initiate", {
-      callerId: userId,
-      receiverId: targetUserId,
-      roomName,
-    });
+      console.log("📡 Emitting call:initiate", {
+        callerId: userId,
+        receiverId: targetUserId,
+        roomName,
+      });
 
-    socket.emit("call:initiate", {
-      callerId: userId,
-      callerName: userName,
-      receiverId: targetUserId,
-      roomName,
-    });
-  },
-  [userId, userName, socket]
-);
+      socket.emit("call:initiate", {
+        callerId: userId,
+        callerName: userName,
+        receiverId: targetUserId,
+        roomName,
+      });
+      setMeeting({
+        roomName,
+        targetUserName: "Calling...",
+      });
+    },
+    [userId, userName, socket],
+  );
   const meetingUserInfo = useMemo(
     () => ({
       displayName: userName || "User",
@@ -183,6 +182,9 @@ const startAudioCall = useCallback(
                   enableWelcomePage: false,
                   enableUserRolesBasedOnToken: false,
                   enableLobby: false,
+                  disableModeratorIndicator: true,
+                  enableNoAudioDetection: false,
+                  enableNoisyMicDetection: false,
                 }}
                 interfaceConfigOverwrite={{
                   DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
