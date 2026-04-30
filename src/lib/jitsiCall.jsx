@@ -31,6 +31,7 @@ const createRoomName = (currentUserId, targetUserId) => {
 
 export const JitsiCallProvider = ({ children }) => {
   const userId = useAuthStore((state) => state.user?._id);
+  console.log("Current userId for calls:", userId);
   const userName = useAuthStore((state) => state.user?.userName);
   const { socket } = useSocket();
   const { openIncomingCall } = useIncomingCallStore();
@@ -69,28 +70,59 @@ export const JitsiCallProvider = ({ children }) => {
     };
   }, [socket, openIncomingCall]);
 
-  const startAudioCall = useCallback(
-    ({ targetUserId }) => {
-      if (!userId || !targetUserId) {
-        toastError("Call cannot be started");
-        return;
-      }
+  // const startAudioCall = useCallback(
+  //   ({ targetUserId }) => {
+  
+  //     if (!userId || !targetUserId) {
+  //       toastError("Call cannot be started");
+  //       return;
+  //     }
 
-      const roomName = createRoomName(userId, targetUserId);
+  //     const roomName = createRoomName(userId, targetUserId);
+      
 
-      // Emit socket event to notify the other user of incoming call
-      socket?.emit("call:initiate", {
-        callerId: userId,
-        callerName: userName,
-        receiverId: targetUserId,
-        roomName,
-      });
+  //     // Emit socket event to notify the other user of incoming call
+  //     socket?.emit("call:initiate", {
+  //       callerId: userId,
+  //       callerName: userName,
+  //       receiverId: targetUserId,
+  //       roomName,
+  //     });
 
-      // ❌ DO NOT OPEN JITSI HERE - wait for call:accepted event
-    },
-    [userId, userName, socket],
-  );
+  //   },
+  //   [userId, userName, socket],
+  // );
+const startAudioCall = useCallback(
+  ({ targetUserId }) => {
+    console.log("📞 Call button clicked");
 
+    console.log("Caller (userId):", userId);
+    console.log("Receiver (targetUserId):", targetUserId);
+    console.log("Socket:", socket);
+    console.log("Socket connected:", socket?.connected);
+
+    if (!socket || !socket.connected) {
+      console.log("❌ Socket not ready");
+      return;
+    }
+
+    const roomName = createRoomName(userId, targetUserId);
+
+    console.log("📡 Emitting call:initiate", {
+      callerId: userId,
+      receiverId: targetUserId,
+      roomName,
+    });
+
+    socket.emit("call:initiate", {
+      callerId: userId,
+      callerName: userName,
+      receiverId: targetUserId,
+      roomName,
+    });
+  },
+  [userId, userName, socket]
+);
   const meetingUserInfo = useMemo(
     () => ({
       displayName: userName || "User",

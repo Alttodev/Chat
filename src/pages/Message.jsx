@@ -68,6 +68,7 @@ export default function Message() {
 
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
+    console.log("userObj in getUserCallId:", userObj);
 
     return (
       // userObj?._id?.toString?.() ||
@@ -699,6 +700,14 @@ export default function Message() {
   };
 
   const handleAudioCall = async () => {
+    console.log("🔥 handleAudioCall triggered");
+
+    if (!selectedContact?.targetUserId) {
+      console.log("❌ No targetUserId");
+      return;
+    }
+
+    console.log("Selected contact:", selectedContact);
     if (!selectedContact?.targetUserId) return;
 
     if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
@@ -713,10 +722,12 @@ export default function Message() {
       toastError("User is blocked");
       return;
     }
+    console.log("Starting call with userId:", selectedContact);
 
     const callUserId =
       // selectedContact?.targetUserId?.toString?.() ||
-      selectedContact?.callUserId?.toString?.() ||
+     // eslint-disable-next-line no-constant-binary-expression
+     "69ef13ef5bb8e13db1de0c27" ||
       getUserCallId(selectedContact);
 
     if (!callUserId) {

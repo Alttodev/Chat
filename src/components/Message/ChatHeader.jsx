@@ -87,6 +87,7 @@ export default function ChatHeader({
         >
           <Phone className="w-4 h-4 text-emerald-600" />
         </Button>
+
         {/* <Button variant="ghost" size="icon">
           <Video className="w-4 h-4 text-emerald-600" />
         </Button> */}
