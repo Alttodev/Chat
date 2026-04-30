@@ -71,7 +71,6 @@ export default function Message() {
 
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
-    console.log("userObj in getUserCallId:", userObj);
 
     return (
       // userObj?._id?.toString?.() ||
@@ -230,7 +229,7 @@ export default function Message() {
       matchedFriendRow?.from?._id?.toString() === profileId?.toString()
         ? matchedFriendRow?.to
         : matchedFriendRow?.from;
-    console.log(matchedFriendUser, "matchedFriendUser");
+  
 
     return [
       {
@@ -261,8 +260,6 @@ export default function Message() {
 
   useEffect(() => {
     if (!contactsWithTarget.length) return;
-    console.log(contactsWithTarget, "fuck");
-    console.log(targetUserIdFromUrl, "targetUserIdFromUrl");
     if (targetUserIdFromUrl) {
       const matched = contactsWithTarget.find(
         (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
@@ -705,14 +702,13 @@ export default function Message() {
   };
 
   const handleAudioCall = async () => {
-    console.log("🔥 handleAudioCall triggered");
 
     if (!selectedContact?.targetUserId) {
-      console.log("❌ No targetUserId");
       return;
     }
 
-    console.log("Selected contact:", selectedContact);
+
+    
 
     if (selectedContact.targetUserId.toString() === profileId?.toString()) {
       toastError("You cannot call yourself");
@@ -736,18 +732,13 @@ export default function Message() {
 
     // decide correct userId
     const callUserId =
-      selectedContact?.callUserId || // already correct if exists
-      selectedContact?.userId || // if stored directly
-      matchedProfile?.userId || // ✅ FIX: map _id → userId
+      selectedContact?.callUserId || 
+      selectedContact?.userId || 
+      matchedProfile?.userId ||
       selectedContact?.targetUserId;
 
     try {
       setIsCalling(true);
-
-      console.log("Starting call with userId:", callUserId);
-      console.log("Caller:", profileId);
-      console.log("Receiver:", callUserId);
-
       startAudioCall({
         targetUserId: callUserId,
       });

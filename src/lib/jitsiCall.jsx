@@ -31,10 +31,8 @@ const createRoomName = (currentUserId, targetUserId) => {
 
 export const JitsiCallProvider = ({ children }) => {
   const userId = useAuthStore((state) => state.user?._id);
-  // const  userId = useAuthStore((state) => state.profileId);
-  // console.log("Current profileId for calls:", profileId);
-  // console.log("Current userId for calls:", userId);
   const userName = useAuthStore((state) => state.user?.userName);
+
   const { socket } = useSocket();
   const { openIncomingCall } = useIncomingCallStore();
   const [meeting, setMeeting] = useState(null);
@@ -47,30 +45,24 @@ export const JitsiCallProvider = ({ children }) => {
   // Listen for socket events
   useEffect(() => {
     if (!socket) return;
-
-    // 📞 Incoming call
     socket.on("call:incoming", (data) => {
-      console.log("Received incoming call data:", data);
       openIncomingCall(data); // show modal
     });
 
-    // ✅ Call accepted → open Jitsi
     socket.on("call:accepted", ({ roomName, fromUserName }) => {
       if (isMobile()) {
         window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
         return;
       }
 
-      // desktop
       setTimeout(() => {
         setMeeting({
           roomName,
           targetUserName: fromUserName,
         });
-      }, 1500); // keep delay for moderator fix
+      }, 1500);
     });
 
-    // ❌ Call rejected
     socket.on("call:rejected", () => {
       toastError("Call rejected");
     });
@@ -82,27 +74,6 @@ export const JitsiCallProvider = ({ children }) => {
     };
   }, [socket, openIncomingCall]);
 
-  // const startAudioCall = useCallback(
-  //   ({ targetUserId }) => {
-
-  //     if (!userId || !targetUserId) {
-  //       toastError("Call cannot be started");
-  //       return;
-  //     }
-
-  //     const roomName = createRoomName(userId, targetUserId);
-
-  //     // Emit socket event to notify the other user of incoming call
-  //     socket?.emit("call:initiate", {
-  //       callerId: userId,
-  //       callerName: userName,
-  //       receiverId: targetUserId,
-  //       roomName,
-  //     });
-
-  //   },
-  //   [userId, userName, socket],
-  // );
   const startAudioCall = useCallback(
     ({ targetUserId }) => {
       if (!socket || !socket.connected) return;
@@ -116,7 +87,6 @@ export const JitsiCallProvider = ({ children }) => {
         roomName,
       });
 
-      // 🔥 MOBILE FIX
       if (isMobile()) {
         window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
         return;

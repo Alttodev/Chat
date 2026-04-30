@@ -13,16 +13,12 @@ export function IncomingCallModal() {
   const { isOpen, incomingCall, closeIncomingCall } = useIncomingCallStore();
   const { socket } = useSocket();
   const userId = useAuthStore((state) => state.user?._id);
- console.log(userId, incomingCall);
-  // const userId = useAuthStore((state) => state.profileId);
-  // console.log(profileId, incomingCall);
+
 
   const handleAccept = () => {
     if (!incomingCall) return;
 
     const roomName = createRoomName(userId, incomingCall.callerId);
-
-    // ✅ Accept call
     socket?.emit("call:accept", {
       callerId: incomingCall.callerId,
       roomName,
@@ -33,8 +29,6 @@ export function IncomingCallModal() {
 
   const handleReject = () => {
     if (!incomingCall) return;
-
-    // ❌ Reject call
     socket?.emit("call:reject", {
       callerId: incomingCall.callerId,
     });
