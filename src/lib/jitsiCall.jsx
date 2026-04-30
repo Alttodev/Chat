@@ -23,7 +23,7 @@ import { PhoneOff } from "lucide-react";
 
 const JitsiCallContext = createContext(null);
 
-const JITSI_DOMAIN = "8x8.vc";
+const JITSI_DOMAIN = "meet.jit.si";
 
 const createRoomName = (currentUserId, targetUserId) => {
   return `clix-${[currentUserId, targetUserId].map(String).sort().join("-")}`;
@@ -50,6 +50,7 @@ export const JitsiCallProvider = ({ children }) => {
 
     // 📞 Incoming call
     socket.on("call:incoming", (data) => {
+      console.log("Received incoming call data:", data);
       openIncomingCall(data); // show modal
     });
 

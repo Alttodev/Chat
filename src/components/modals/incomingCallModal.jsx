@@ -13,6 +13,7 @@ export function IncomingCallModal() {
   const { isOpen, incomingCall, closeIncomingCall } = useIncomingCallStore();
   const { socket } = useSocket();
   const userId = useAuthStore((state) => state.user?._id);
+ console.log(userId, incomingCall);
   // const userId = useAuthStore((state) => state.profileId);
   // console.log(profileId, incomingCall);
 
