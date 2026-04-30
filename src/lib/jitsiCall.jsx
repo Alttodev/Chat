@@ -54,6 +54,7 @@ export const JitsiCallProvider = ({ children }) => {
 
     // ✅ Call accepted → open Jitsi
     socket.on("call:accepted", ({ roomName, fromUserName }) => {
+    
       setMeeting({
         roomName,
         targetUserName: fromUserName,
@@ -97,6 +98,7 @@ export const JitsiCallProvider = ({ children }) => {
 const startAudioCall = useCallback(
   ({ targetUserId }) => {
     console.log("📞 Call button clicked");
+  
 
     console.log("Caller (userId):", userId);
     console.log("Receiver (targetUserId):", targetUserId);
@@ -110,7 +112,7 @@ const startAudioCall = useCallback(
 
   
    
-      const roomName = createRoomName(userId, targetUserId);
+    const roomName = createRoomName(userId, targetUserId);
 
     console.log("📡 Emitting call:initiate", {
       callerId: userId,
