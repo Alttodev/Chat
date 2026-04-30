@@ -12,9 +12,8 @@ const createRoomName = (currentUserId, targetUserId) => {
 export function IncomingCallModal() {
   const { isOpen, incomingCall, closeIncomingCall } = useIncomingCallStore();
   const { socket } = useSocket();
-  // const userId = useAuthStore((state) => state.user?._id);
-  const userId = useAuthStore((state) => state.profileId);
-  console.log(userId, incomingCall);
+  const userId = useAuthStore((state) => state.user?._id);
+  // const userId = useAuthStore((state) => state.profileId);
   // console.log(profileId, incomingCall);
 
   const handleAccept = () => {
