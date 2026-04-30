@@ -66,7 +66,6 @@ export default function Message() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
 
-
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
 
@@ -81,7 +80,7 @@ export default function Message() {
 
   const contacts = useMemo(() => {
     const friendRows = friendsData?.friends || [];
- 
+
     const acceptedFriends = friendRows.filter(
       (item) => item?.isFriends === true,
     );
@@ -245,7 +244,15 @@ export default function Message() {
       },
       ...contacts,
     ];
-  }, [targetUserIdFromUrl, profileId, contacts, friendsData, getUserCallId, targetUserNameFromUrl, blockedUsers]);
+  }, [
+    targetUserIdFromUrl,
+    profileId,
+    contacts,
+    friendsData,
+    getUserCallId,
+    targetUserNameFromUrl,
+    blockedUsers,
+  ]);
 
   useEffect(() => {
     if (!contactsWithTarget.length) return;
@@ -426,7 +433,12 @@ export default function Message() {
         isTyping: false,
       });
     };
-  }, [socket, selectedConversationId, selectedContact?.targetUserId, profileId]);
+  }, [
+    socket,
+    selectedConversationId,
+    selectedContact?.targetUserId,
+    profileId,
+  ]);
 
   useEffect(() => {
     if (!selectedConversationId) return;
@@ -713,25 +725,12 @@ export default function Message() {
 
     try {
       setIsCalling(true);
-      const callInfo = await startAudioCall({
+      startAudioCall({
         targetUserId: callUserId,
         targetUserName: selectedContact.name,
       });
 
-      if (callInfo?.inviteLink) {
-        const formData = new FormData();
-        formData.append(
-          "text",
-          `Join my call: ${callInfo.inviteLink}`,
-        );
-
-        await sendMessage({
-          targetUserId: selectedContact.targetUserId,
-          formData,
-        });
-      }
-
-      toastSuccess("Call started");
+      toastSuccess("Calling...");
     } catch (error) {
       toastError(error?.message || "call");
     } finally {
