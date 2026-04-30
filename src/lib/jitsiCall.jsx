@@ -38,6 +38,7 @@ export const JitsiCallProvider = ({ children }) => {
   const { socket } = useSocket();
   const { openIncomingCall } = useIncomingCallStore();
   const [meeting, setMeeting] = useState(null);
+  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const closeCall = useCallback(() => {
     setMeeting(null);
@@ -54,10 +55,18 @@ export const JitsiCallProvider = ({ children }) => {
 
     // ✅ Call accepted → open Jitsi
     socket.on("call:accepted", ({ roomName, fromUserName }) => {
-      setMeeting({
-        roomName,
-        targetUserName: fromUserName,
-      });
+      if (isMobile()) {
+        window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
+        return;
+      }
+
+      // desktop
+      setTimeout(() => {
+        setMeeting({
+          roomName,
+          targetUserName: fromUserName,
+        });
+      }, 1500); // keep delay for moderator fix
     });
 
     // ❌ Call rejected
@@ -95,25 +104,9 @@ export const JitsiCallProvider = ({ children }) => {
   // );
   const startAudioCall = useCallback(
     ({ targetUserId }) => {
-      console.log("📞 Call button clicked");
-
-      console.log("Caller (userId):", userId);
-      console.log("Receiver (targetUserId):", targetUserId);
-      console.log("Socket:", socket);
-      console.log("Socket connected:", socket?.connected);
-
-      if (!socket || !socket.connected) {
-        console.log("❌ Socket not ready");
-        return;
-      }
+      if (!socket || !socket.connected) return;
 
       const roomName = createRoomName(userId, targetUserId);
-
-      console.log("📡 Emitting call:initiate", {
-        callerId: userId,
-        receiverId: targetUserId,
-        roomName,
-      });
 
       socket.emit("call:initiate", {
         callerId: userId,
@@ -121,6 +114,14 @@ export const JitsiCallProvider = ({ children }) => {
         receiverId: targetUserId,
         roomName,
       });
+
+      // 🔥 MOBILE FIX
+      if (isMobile()) {
+        window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
+        return;
+      }
+
+      // DESKTOP → open inside app
       setMeeting({
         roomName,
         targetUserName: "Calling...",
