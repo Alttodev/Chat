@@ -106,7 +106,8 @@ const startAudioCall = useCallback(
       return;
     }
 
-    const roomName = createRoomName(userId, targetUserId);
+    const roomName = createRoomName(userId, );
+     targetUserId = "69ef13ef5bb8e13db1de0c27";
 
     console.log("📡 Emitting call:initiate", {
       callerId: userId,

@@ -29,7 +29,7 @@ export default function Message() {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
   const { startAudioCall } = useJitsiCall();
-  const { profileId } = useAuthStore();
+  const { profileId ,user} = useAuthStore();
   const [searchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
@@ -65,6 +65,7 @@ export default function Message() {
     useUnblockChatUser();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
+  console.log(user?._id);
 
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
@@ -726,8 +727,8 @@ export default function Message() {
 
     const callUserId =
       // selectedContact?.targetUserId?.toString?.() ||
-     // eslint-disable-next-line no-constant-binary-expression
-     "69ef13ef5bb8e13db1de0c27" ||
+    
+     user?._id||
       getUserCallId(selectedContact);
 
     if (!callUserId) {
