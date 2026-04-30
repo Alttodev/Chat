@@ -700,59 +700,51 @@ export default function Message() {
     }
   };
 
-  const handleAudioCall = async () => {
-    console.log("🔥 handleAudioCall triggered");
+ const handleAudioCall = async () => {
+  console.log("🔥 handleAudioCall triggered");
 
-    if (!selectedContact?.targetUserId) {
-      console.log("❌ No targetUserId");
-      return;
-    }
+  if (!selectedContact?.targetUserId) {
+    console.log("❌ No targetUserId");
+    return;
+  }
 
-    console.log("Selected contact:", selectedContact);
-    if (!selectedContact?.targetUserId) return;
+  console.log("Selected contact:", selectedContact);
 
-    if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
-      toastError("You cannot call yourself");
-      return;
-    }
-    if (!selectedContact?.isFriend) {
-      toastError("Only accepted friends can call");
-      return;
-    }
-    if (selectedContact?.isBlocked) {
-      toastError("User is blocked");
-      return;
-    }
-    console.log("Starting call with userId:", selectedContact);
+  if (selectedContact.targetUserId.toString() === profileId?.toString()) {
+    toastError("You cannot call yourself");
+    return;
+  }
 
-    const callUserId =
-      // selectedContact?.targetUserId?.toString?.() ||
-    
-     user?._id||
-      getUserCallId(selectedContact);
+  if (!selectedContact?.isFriend) {
+    toastError("Only accepted friends can call");
+    return;
+  }
 
-    if (!callUserId) {
-      toastError("This user is not available for calls");
-      return;
-    }
+  if (selectedContact?.isBlocked) {
+    toastError("User is blocked");
+    return;
+  }
 
-    try {
-      setIsCalling(true);
-      console.log("Starting call with userId:", callUserId);
-      console.log("Selected contact:", selectedContact.name);
-      startAudioCall({
-        targetUserId: callUserId,
-        targetUserName: selectedContact.name,
-      });
+  const callUserId = selectedContact.targetUserId; // ✅ FIXED
 
-      toastSuccess("Calling...");
-    } catch (error) {
-      toastError(error?.message || "call");
-    } finally {
-      setIsCalling(false);
-    }
-  };
+  try {
+    setIsCalling(true);
 
+    console.log("Starting call with userId:", callUserId);
+    console.log("Caller:", profileId);
+    console.log("Receiver:", callUserId);
+
+    startAudioCall({
+      targetUserId: callUserId,
+    });
+
+    toastSuccess("Calling...");
+  } catch (error) {
+    toastError(error?.message || "Call failed");
+  } finally {
+    setIsCalling(false);
+  }
+};
   if (conversationsLoading || friendsLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
