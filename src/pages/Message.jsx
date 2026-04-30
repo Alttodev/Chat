@@ -729,7 +729,7 @@ export default function Message() {
     return;
   }
 
-  const callUserId = selectedContact.targetUserId; // ✅ FIXED
+  const callUserId = selectedContact.callUserId; // ✅ FIXED
 
   try {
     setIsCalling(true);
