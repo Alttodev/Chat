@@ -726,6 +726,8 @@ export default function Message() {
 
     try {
       setIsCalling(true);
+      console.log("Starting call with userId:", callUserId);
+      console.log("Selected contact:", selectedContact.name);
       startAudioCall({
         targetUserId: callUserId,
         targetUserName: selectedContact.name,
