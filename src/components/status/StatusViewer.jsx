@@ -5,8 +5,6 @@ import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
 
-// ✅ NEW
-
 import StatusSeenList from "./StatusSeenList";
 import { useMarkStatusSeen } from "@/hooks/statusHooks";
 
@@ -26,11 +24,9 @@ export function StatusViewer() {
   const accumulatedProgressRef = useRef(0);
   const statusKeyRef = useRef("");
 
-  // ✅ Seen logic
   const { mutate: markSeen } = useMarkStatusSeen();
   const hasMarkedSeenRef = useRef(false);
 
-  // ✅ Data
   const image = status?.status?.image || status?.image || "";
   const caption = status?.status?.caption || status?.caption || "";
   const user = status?.status?.user || status?.user || {};
@@ -44,7 +40,7 @@ export function StatusViewer() {
       status?.status?.updatedAt ||
         status?.status?.createdAt ||
         status?.updatedAt ||
-        status?.createdAt
+        status?.createdAt,
     ) || "";
 
   const fallback = useMemo(() => {
@@ -58,7 +54,6 @@ export function StatusViewer() {
     status?.id ||
     `${userName}-${image}-${caption}`;
 
-  // ✅ Mark as seen (only once)
   useEffect(() => {
     if (isOpen && statusId && !hasMarkedSeenRef.current) {
       markSeen(statusId);
@@ -111,7 +106,7 @@ export function StatusViewer() {
 
       const nextProgress = Math.min(
         accumulatedProgressRef.current + (elapsed / STATUS_DURATION) * 100,
-        100
+        100,
       );
 
       setProgress(nextProgress);
@@ -184,7 +179,7 @@ export function StatusViewer() {
               src={image}
               className={cn(
                 "w-full h-full object-contain rounded-3xl transition",
-                isLoaded ? "opacity-100" : "opacity-0"
+                isLoaded ? "opacity-100" : "opacity-0",
               )}
               onLoad={() => setIsLoaded(true)}
             />
@@ -225,7 +220,6 @@ export function StatusViewer() {
           </div>
         </button>
 
-        {/* ✅ Seen List Component */}
         <StatusSeenList
           seenBy={seenBy}
           show={showViewers}

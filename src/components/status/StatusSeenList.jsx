@@ -3,6 +3,7 @@ import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 
 const StatusSeenList = ({ seenBy = [], show, onClose }) => {
+    console.log("SeenBy List:", seenBy); // Debugging log
   return (
     <>
       {/* Overlay */}
