@@ -48,6 +48,11 @@ export const userPostComment = async (id, formData) => {
 
 // status
 
+export const markStatusSeen = async (statusId) => {
+  const res = await axiosInstance.post(`/status/seen/${statusId}`);
+  return res.data;
+};
+
 export const uploadUserStatus = async (formData) => {
   const { data } = await axiosInstance.post(`/status/upload`, formData);
   return data;
