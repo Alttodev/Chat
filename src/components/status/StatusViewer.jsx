@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { Eye, X, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
 
 import StatusSeenList from "./StatusSeenList";
-import { useMarkStatusSeen } from "@/hooks/statusHooks";
+import { useMarkStatusSeen, useDeleteStatus } from "@/hooks/statusHooks";
+import { useAuthStore } from "@/store/authStore";
+import { toastError, toastSuccess } from "@/lib/toast";
 
 const STATUS_DURATION = 5000;
 
@@ -25,15 +27,21 @@ export function StatusViewer() {
   const statusKeyRef = useRef("");
 
   const { mutate: markSeen } = useMarkStatusSeen();
+  const { mutate: deleteStatus } = useDeleteStatus();
   const hasMarkedSeenRef = useRef(false);
+
+  const currentUserId = useAuthStore((state) => state.profileId);
 
   const image = status?.status?.image || status?.image || "";
   const caption = status?.status?.caption || status?.caption || "";
   const user = status?.status?.user || status?.user || {};
+
   const userName = user?.userName || "Status";
 
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
   const statusId = status?.status?.id || status?.id;
+
+  const isOwner = user?.id === currentUserId;
 
   const statusTime =
     formatRelative(
@@ -61,7 +69,16 @@ export function StatusViewer() {
     }
   }, [isOpen, statusId, markSeen]);
 
-  // ⏱ Progress logic
+  const handleDelete = async () => {
+    try {
+      const res = await deleteStatus();
+      closeStatus();
+      toastSuccess(res?.message || "Status deleted");
+    } catch (err) {
+      toastError(err?.response?.data?.message || "Something went wrong");
+    }
+  };
+
   useEffect(() => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
@@ -129,7 +146,6 @@ export function StatusViewer() {
     };
   }, [isOpen, isPaused, statusKey, closeStatus]);
 
-  // ESC close
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") closeStatus();
@@ -164,9 +180,20 @@ export function StatusViewer() {
             </div>
           </div>
 
-          <button onClick={closeStatus}>
-            <X />
-          </button>
+          <div className="flex items-center gap-7">
+            {isOwner && (
+              <button
+                onClick={handleDelete}
+                className="h-10 w-10 flex items-center  justify-center  text-red-400  cursor-pointer"
+              >
+                <Trash2 className="h-5 w-5" />
+              </button>
+            )}
+
+            <button onClick={closeStatus} className="cursor-pointer">
+              <X />
+            </button>
+          </div>
         </header>
 
         {/* Image */}
@@ -184,34 +211,28 @@ export function StatusViewer() {
               onLoad={() => setIsLoaded(true)}
             />
 
-            {/* Loader */}
             {!isLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/5 rounded-3xl">
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white" />
               </div>
             )}
 
-            {/* Caption */}
             {caption && (
               <div className="absolute bottom-4 left-4 right-4 bg-black/50 text-white text-sm p-3 rounded-xl">
                 {caption}
               </div>
             )}
 
-            {/* 👁 Seen Button */}
-            {seenBy.length > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowViewers(true);
-                }}
-                className="absolute bottom-4 right-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full"
-              >
-                👁 {seenBy.length}
-              </button>
-            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowViewers(true);
+              }}
+              className="absolute bottom-2 left-40 flex items-center gap-2 bg-black/60 text-white text-[14px] px-3 py-1 rounded-full cursor-pointer"
+            >
+              <Eye className="w-5 h-5" /> {seenBy.length}
+            </button>
 
-            {/* Paused */}
             {isPaused && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
                 Paused

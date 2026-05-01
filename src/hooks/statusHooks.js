@@ -1,4 +1,5 @@
 import {
+  deleteMyStatus,
   getMyStatus,
   getStatusFeed,
   markStatusSeen,
@@ -43,6 +44,21 @@ export const useMarkStatusSeen = () => {
     mutationFn: markStatusSeen,
 
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["status_feed"] });
+    },
+  });
+};
+
+export const useDeleteStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteMyStatus,
+    
+
+    onSuccess: () => {
+  
+      queryClient.invalidateQueries({ queryKey: ["my_status"] });
       queryClient.invalidateQueries({ queryKey: ["status_feed"] });
     },
   });

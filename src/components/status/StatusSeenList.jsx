@@ -3,7 +3,7 @@ import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 
 const StatusSeenList = ({ seenBy = [], show, onClose }) => {
-    console.log("SeenBy List:", seenBy); // Debugging log
+  console.log("SeenBy List:", seenBy); // Debugging log
   return (
     <>
       {/* Overlay */}
@@ -24,37 +24,38 @@ const StatusSeenList = ({ seenBy = [], show, onClose }) => {
             <p className="text-sm font-semibold text-white">
               Seen by {seenBy.length}
             </p>
-
-            <button
-              onClick={onClose}
-              className="text-white/70 hover:text-white"
-            >
-              Close
-            </button>
           </div>
 
           {/* List */}
-          {seenBy.map((viewer) => (
-            <div
-              key={viewer.user?._id}
-              className="flex items-center gap-3 py-2 border-b border-white/10 last:border-none"
-            >
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={viewer.user?.profileImage} />
-                <AvatarFallback>
-                  {viewer.user?.userName?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+          {seenBy.length === 0 ? (
+            <p className="text-center text-white/60 text-sm py-6">
+              No views yet
+            </p>
+          ) : (
+            seenBy.map((viewer) => (
+              <div
+                key={viewer._id || viewer.user?._id}
+                className="flex items-center gap-3 py-2 border-b border-white/10 last:border-none"
+              >
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={viewer.user?.profileImage} />
+                  <AvatarFallback>
+                    {viewer.user?.userName?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="flex flex-col">
-                <p className="text-sm text-white">{viewer.user?.userName}</p>
+                <div className="flex flex-col">
+                  <p className="text-sm text-white">
+                    {viewer.user?.userName || "Unknown"}
+                  </p>
 
-                <p className="text-xs text-white/60">
-                  {formatRelative(viewer.seenAt)}
-                </p>
+                  <p className="text-xs text-white/60">
+                    {formatRelative(viewer.seenAt)}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </>

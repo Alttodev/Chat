@@ -18,7 +18,7 @@ export const userCreate = async (formData) => {
 export const userReset = async (formData) => {
   const { data } = await axiosInstance.post(
     `/auth/requestPasswordReset`,
-    formData
+    formData,
   );
   return data;
 };
@@ -26,7 +26,7 @@ export const userReset = async (formData) => {
 export const userResetPassword = async ({ id, token, password }) => {
   const { data } = await axiosInstance.post(
     `/auth/resetpassword/${id}/${token}`,
-    { password }
+    { password },
   );
   return data;
 };
@@ -80,6 +80,10 @@ export const userFollowRequest = async (id) => {
   const { data } = await axiosInstance.post(`/follow/send/${id}`);
   return data;
 };
+export const deleteMyStatus = async () => {
+  const res = await axiosInstance.delete("/status/delete");
+  return res.data;
+};
 
 // notifications
 
@@ -104,7 +108,10 @@ export const getNotificationSettings = async () => {
 };
 
 export const updateNotificationSettings = async (settings) => {
-  const { data } = await axiosInstance.put(`/profile/notification-settings`, settings);
+  const { data } = await axiosInstance.put(
+    `/profile/notification-settings`,
+    settings,
+  );
   return data;
 };
 
@@ -121,7 +128,7 @@ export const getChatMessages = async ({
   limit = 30,
 }) => {
   const { data } = await axiosInstance.get(
-    `/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`
+    `/chat/conversations/${conversationId}/messages?page=${page}&limit=${limit}`,
   );
   return data;
 };
@@ -130,14 +137,14 @@ export const sendChatMessage = async ({ targetUserId, formData }) => {
   const { data } = await axiosInstance.post(
     `/chat/conversations/${targetUserId}/messages`,
     formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return data;
 };
 
 export const markConversationSeen = async (conversationId) => {
   const { data } = await axiosInstance.put(
-    `/chat/conversations/${conversationId}/seen`
+    `/chat/conversations/${conversationId}/seen`,
   );
   return data;
 };
@@ -156,7 +163,6 @@ export const unblockChatUser = async (targetUserId) => {
   const { data } = await axiosInstance.delete(`/chat/blocks/${targetUserId}`);
   return data;
 };
-
 
 //update
 
@@ -190,18 +196,18 @@ export const getAllProfiles = async () => {
 export const getAllUsersProfile = async () => {
   const { data } = await axiosInstance.get(`/profile/allprofiles`);
   return data;
-}
+};
 
 export const getUserPost = async ({ pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
-    `/post/list?page=${pageParam}&limit=5`
+    `/post/list?page=${pageParam}&limit=5`,
   );
   return data;
 };
 
 export const getUserInfoPost = async ({ id, pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
-    `/post/list/${id}?page=${pageParam}&limit=5`
+    `/post/list/${id}?page=${pageParam}&limit=5`,
   );
   return data;
 };
@@ -223,7 +229,7 @@ export const getRequestList = async () => {
 
 export const getFollowRequestInfo = async ({ fromId, toId }) => {
   const { data } = await axiosInstance.get(
-    `/follow/requests/${fromId}/${toId}`
+    `/follow/requests/${fromId}/${toId}`,
   );
   return data;
 };
@@ -257,14 +263,14 @@ export const userPostDelete = async (id) => {
 
 export const userCommentDelete = async ({ postId, commentId }) => {
   const { data } = await axiosInstance.delete(
-    `/posts/${postId}/comment/${commentId}`
+    `/posts/${postId}/comment/${commentId}`,
   );
   return data;
 };
 
 export const userRequestDelete = async ({ fromId, toId }) => {
   const { data } = await axiosInstance.delete(
-    `/follow/delete/requests/${fromId}/${toId}`
+    `/follow/delete/requests/${fromId}/${toId}`,
   );
   return data;
 };
