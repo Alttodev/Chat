@@ -123,7 +123,7 @@ const UsersInfo = () => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 space-y-8">
+    <div className="w-full max-w-3xl mx-auto px-4 space-y-8 pb-20">
       {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">

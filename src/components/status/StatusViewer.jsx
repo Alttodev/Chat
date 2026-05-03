@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, X, Trash2 } from "lucide-react";
+import { Eye, X, Trash2, MoreVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ export function StatusViewer() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   const animationFrameRef = useRef(null);
   const startTimeRef = useRef(0);
@@ -180,19 +181,36 @@ export function StatusViewer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-7">
+          <div className="flex items-center gap-4 relative">
             {isOwner && (
-              <button
-                onClick={handleDelete}
-                className="h-10 w-10 flex items-center  justify-center  text-red-400  cursor-pointer"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu((prev) => !prev)}
+                  className="h-10 w-10 flex items-center justify-center cursor-pointer"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </button>
+
+                {showMenu && (
+                  <div className="absolute right-0 mt-2 w-32 bg-white shadow-md rounded-md border z-50">
+                    <button
+                      onClick={() => {
+                        handleDelete();
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 w-full text-sm text-red-500 hover:bg-gray-100"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
 
-            <button onClick={closeStatus} className="cursor-pointer">
+            {/* <button onClick={closeStatus} className="cursor-pointer">
               <X />
-            </button>
+            </button> */}
           </div>
         </header>
 

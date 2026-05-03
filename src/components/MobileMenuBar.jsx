@@ -12,7 +12,7 @@ export function MobileMenuBar() {
   ];
 
   return (
-    <div className="fixed top-46 left-0 right-0 z-40 sm:hidden bg-background border-b border-border shadow-sm">
+    <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-background border-t border-border shadow-sm">
       <nav className="grid grid-cols-3 gap-1 px-3 py-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
@@ -29,7 +29,7 @@ export function MobileMenuBar() {
                 aria-label={item.label}
               >
                 <item.icon className="w-5 h-5" />
-                <span className="text-sm font-medium">{item.label}</span>
+                {/* <span className="text-sm font-medium">{item.label}</span> */}
               </Button>
             </Link>
           );
@@ -38,4 +38,3 @@ export function MobileMenuBar() {
     </div>
   );
 }
-

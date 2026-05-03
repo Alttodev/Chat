@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Smile, Send, ImagePlus } from "lucide-react";
+import { Smile, Send, ImagePlus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
 
@@ -43,6 +43,13 @@ export default function MessageInput({
     };
   }, [showEmojiPicker]);
 
+  const handleRemoveFile = () => {
+    onFileChange(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; 
+    }
+  };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -75,7 +82,7 @@ export default function MessageInput({
   };
 
   return (
-    <div className="p-4 border-t bg-card">
+    <div className="p-4 border-t bg-card pb-10">
       <div className="flex items-end gap-2">
         <Button
           variant="ghost"
@@ -85,7 +92,6 @@ export default function MessageInput({
           disabled={isBlocked}
           onClick={() => fileInputRef.current?.click()}
         >
-          
           <ImagePlus className="w-4 h-4 text-emerald-600" />
         </Button>
         <input
@@ -140,8 +146,26 @@ export default function MessageInput({
         <span className="text-xs text-muted-foreground">
           {newMessage.length}/1000
         </span>
-        <Badge variant="secondary" className="text-xs text-emerald-600">
-          {selectedFile ? selectedFile.name : "Press Enter to send"}
+        <Badge
+          variant="secondary"
+          className="text-xs text-emerald-600 flex items-center gap-1"
+        >
+          {selectedFile ? (
+            <>
+              <span className="max-w-[120px] truncate">
+                {selectedFile.name}
+              </span>
+              <button
+                type="button"
+                onClick={handleRemoveFile}
+                className="hover:text-red-500"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </>
+          ) : (
+            "Press Enter to send"
+          )}
         </Badge>
       </div>
     </div>

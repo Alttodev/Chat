@@ -16,7 +16,9 @@ function HomeLayout() {
     <div className="min-h-screen bg-background flex flex-col">
       <SocialHeader />
       <StatusStrip className="md:hidden" />
-      {pathname === "/home" ? <StatusStrip className="hidden md:block" /> : null}
+      {pathname === "/home" ? (
+        <StatusStrip className="hidden md:block" />
+      ) : null}
       <StatusViewer />
       <MobileMenuBar />
       <div className="flex flex-1">
@@ -28,8 +30,8 @@ function HomeLayout() {
         {/* Main Content */}
         <main
           className={cn(
-            "flex-1 pb-8 px-4 md:ml-64 md:mr-80",
-            isHome ? "pt-65 sm:pt-60" : "pt-65 sm:pt-20",
+            " flex-1 pb-8 px-4 md:ml-64 md:mr-80",
+            isHome ? "pt-50 sm:pt-60" : "pt-50 sm:pt-20",
           )}
         >
           <Outlet />

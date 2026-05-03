@@ -1,6 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Check, CheckCheck, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  Check,
+  CheckCheck,
+  MoreVertical,
+  Trash2,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -138,7 +143,7 @@ export default function MessagesList({
               >
                 <div
                   className={cn(
-                    "rounded-2xl max-w-md break-words relative",
+                    "rounded-lg max-w-md break-words break-all whitespace-pre-wrap overflow-hidden relative",
                     hasOnlyImage || hasImageAndText
                       ? "bg-transparent p-0"
                       : isOwnMessage
@@ -149,8 +154,8 @@ export default function MessagesList({
                   {isOwnMessage && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <span className="absolute -top-2 -right-2 cursor-pointer bg-background rounded-full p-1 border">
-                          <MoreHorizontal className="w-3 h-3 text-muted-foreground" />
+                        <span className="absolute -top-0 -right-0 cursor-pointer  pt-1 ">
+                          <MoreVertical className="w-3 h-3 text-white-foreground" />
                         </span>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Phone, MoreVertical, Ban } from "lucide-react";
-import dayjs from "dayjs";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,21 +12,27 @@ import {
 const formatLastSeen = (value) => {
   if (!value) return "";
 
-  const date = dayjs(value);
-  if (!date.isValid()) return value;
+  const date = new Date(value);
+  const now = new Date();
 
-  const now = dayjs();
-  const time = date.format("h:mm A");
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
 
-  if (date.isSame(now, "day")) {
-    return `Today ${time}`;
+  if (isToday) {
+    return date.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true, // AM/PM
+    });
   }
 
-  if (date.isSame(now.subtract(1, "day"), "day")) {
-    return `Yesterday ${time}`;
-  }
-
-  return date.format("MMM D, YYYY h:mm A");
+  return date.toLocaleDateString("en-US", {
+    month: "short", // May
+    day: "numeric", // 1
+    year: "numeric", // 2025
+  });
 };
 
 export default function ChatHeader({
