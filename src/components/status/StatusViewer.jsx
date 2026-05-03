@@ -240,7 +240,7 @@ export function StatusViewer() {
                 {caption}
               </div>
             )}
-            {seenBy.length === 0 ? (
+            {isOwner && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -250,7 +250,7 @@ export function StatusViewer() {
               >
                 <Eye className="w-5 h-5" /> {seenBy.length}
               </button>
-            ) : null}
+            )}
             {isPaused && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
                 Paused
