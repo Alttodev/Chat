@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { usePostInfo, usePostLikedUsers } from "@/hooks/postHooks";
+import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 
 const getDisplayName = (user) =>
@@ -19,7 +20,8 @@ function PostLikes() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: postData, isLoading: isPostLoading } = usePostInfo(id);
-  const { data: likedUsersData, isLoading: isLikesLoading } = usePostLikedUsers(id);
+  const { data: likedUsersData, isLoading: isLikesLoading } =
+    usePostLikedUsers(id);
 
   const post = postData?.post;
   const likers = likedUsersData?.likedUsers || [];
@@ -73,7 +75,7 @@ function PostLikes() {
         {post && (
           <CardContent className="border-b bg-muted/20 p-4">
             <div className="flex items-start gap-3">
-              <Avatar className="h-11 w-11">
+              <Avatar className="h-11 w-11 text-emerald-600">
                 <AvatarImage
                   className="h-full w-full object-cover object-top"
                   src={post?.user?.profileImage || "/placeholder.svg"}
@@ -135,7 +137,9 @@ function PostLikes() {
                         {displayName}
                       </div>
                       <div className="truncate text-sm text-muted-foreground">
-                        {user?.email || user?.username || "Tap to view profile"}
+                        {user?.likedAt
+                          ? `Liked ${formatRelative(user.likedAt)}`
+                          : "Tap to view profile"}
                       </div>
                     </div>
                   </button>
