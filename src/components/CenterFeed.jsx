@@ -37,6 +37,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ImageViewer } from "./modals/imageViewer";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { usePostInfo } from "@/hooks/postHooks";
+import { PostImageWithLikes } from "./Post/PostImageWithLikes";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -200,14 +201,10 @@ export function CenterFeed() {
                 alt="post"
               />
             )} */}
-            {post?.image && (
-              <img
-                onClick={() => open(post.image)}
-                className="w-full h-auto object-cover rounded-lg cursor-pointer hover:scale-[1.01] transition"
-                src={post.image}
-                alt="post"
-              />
-            )}
+            <PostImageWithLikes
+              post={post}
+              onImageClick={() => open(post.image)}
+            />
 
             <div className="mb-3 pb-3 border-b border-border" />
 

@@ -47,15 +47,25 @@ const LoginForm = () => {
       setUser(res?.user);
       connectSocket(res?.user?._id);
       toastSuccess(res?.message);
+
       const resp = await getProfile();
-      setProfileId(resp?.profile?.id);
-      navigate("/home");
+      const profileId = resp?.profile?.id;
+
+      if (profileId) {
+        setProfileId(profileId);
+        navigate("/home");
+      } else {
+        setProfileId(null);
+        navigate("/profile/create");
+      }
+
       captchaRef.current?.reset();
       setValue("captcha", "");
     } catch (error) {
       captchaRef.current?.reset();
       setValue("captcha", "");
       if (error?.response?.data?.message === "Profile not found") {
+        setProfileId(null);
         navigate("/profile/create");
       } else {
         toastError(error?.response?.data?.message || "Something went wrong");

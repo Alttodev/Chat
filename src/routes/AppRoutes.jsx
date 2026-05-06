@@ -16,6 +16,7 @@ import Profile from "@/pages/Profile";
 import UsersList from "@/pages/UsersList";
 import UsersFriendsList from "@/pages/UsersFriendsList";
 import Survey from "@/pages/Survey";
+import PostLikes from "@/pages/PostLikes";
 
 function AppRoutes() {
   return (
@@ -40,6 +41,8 @@ function AppRoutes() {
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/users/:id" element={<UsersInfo />} />
               <Route path="/userslist" element={<UsersList />} />
+              <Route path="/posts/:id/likes" element={<PostLikes />} />
+              <Route path="/posts/:id/liked-users" element={<PostLikes />} />
             </Route>
           </Route>
         </Routes>

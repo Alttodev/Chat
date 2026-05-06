@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PostDialog } from "@/components/modals/postModal";
 import { ImageViewer } from "@/components/modals/imageViewer";
+import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
 import { Link, useSearchParams } from "react-router-dom";
 import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
@@ -268,13 +269,10 @@ const Profile = () => {
             <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
               {post?.postText}
             </p>
-            {post?.image && (
-              <img
-                className="w-full h-auto object-cover rounded-lg"
-                src={post.image}
-                alt="post"
-              />
-            )}
+            <PostImageWithLikes
+              post={post}
+              onImageClick={() => open(post.image)}
+            />
 
             <div className="mb-3 pb-3 border-b border-border" />
 

@@ -122,7 +122,7 @@ function SettingsComponent() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4  space-y-8">
+    <div className="w-full max-w-4xl mx-auto px-4  space-y-8 pb-20">
       {/* Header Section */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-6">

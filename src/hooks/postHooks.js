@@ -2,6 +2,7 @@ import {
   getFollowRequestInfo,
   getFriendsCount,
   getFriendsList,
+  getPostLikedUsers,
   getRequestList,
   getUserFollowers,
   getUserInfoCount,
@@ -105,6 +106,16 @@ export const usePostInfo = (id) => {
   return useQuery({
     queryKey: ["user_post_info", id],
     queryFn: () => getUserPostInfo(id),
+    enabled: !!id,
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const usePostLikedUsers = (id) => {
+  return useQuery({
+    queryKey: ["post_liked_users", id],
+    queryFn: () => getPostLikedUsers(id),
     enabled: !!id,
     keepPreviousData: true,
     refetchOnWindowFocus: false,

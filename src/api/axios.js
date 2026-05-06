@@ -217,6 +217,11 @@ export const getUserPostInfo = async (id) => {
   return data;
 };
 
+export const getPostLikedUsers = async (id) => {
+  const { data } = await axiosInstance.get(`/post/${id}/liked-users`);
+  return data;
+};
+
 export const getUserPostComments = async (id) => {
   const { data } = await axiosInstance.get(`/posts/${id}/comments`);
   return data;

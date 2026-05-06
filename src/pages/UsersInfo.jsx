@@ -1,4 +1,4 @@
-import { MapPin, MessageCircle, Share, Image as ImageIcon } from "lucide-react";
+import { MapPin, MessageCircle, Share } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -26,6 +26,7 @@ import { useAuthStore } from "@/store/authStore";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
+import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();
@@ -276,14 +277,10 @@ const UsersInfo = () => {
                   {post?.postText}
                 </p>
 
-                {post?.image && (
-                  <img
-                    onClick={() => open(post.image)}
-                    className="w-full h-auto object-cover rounded-lg cursor-pointer hover:scale-[1.01] transition"
-                    src={post.image}
-                    alt="post"
-                  />
-                )}
+                <PostImageWithLikes
+                  post={post}
+                  onImageClick={() => open(post.image)}
+                />
 
                 <div className="mb-3 pb-3 border-b border-border" />
 
