@@ -203,6 +203,7 @@ export function CenterFeed() {
             )} */}
             <PostImageWithLikes
               post={post}
+              likedUsers={post?.likedByUsers}
               onImageClick={() => open(post.image)}
             />
 

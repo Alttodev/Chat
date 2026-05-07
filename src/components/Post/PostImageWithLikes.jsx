@@ -1,10 +1,18 @@
 import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export function PostImageWithLikes({ post, onImageClick, className }) {
+export function PostImageWithLikes({
+  post,
+  onImageClick,
+  className,
+  likedUsers,
+}) {
   const navigate = useNavigate();
   const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+  const hasLiked = likedUsers?.[0]?.profileImage;
+
   const canOpenLikes = Boolean(post?._id);
 
   if (!post?.image) {
@@ -31,19 +39,29 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
       />
 
       {likeCount > 0 && (
-        <button
-          type="button"
-          onClick={handleOpenLikes}
-          className="absolute left-3 bottom-3 z-10 flex items-center gap-2 rounded-full border border-white/80 bg-white/90 px-2 py-2 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] like-fly cursor-pointer"
-          aria-label="Open liked users"
-        >
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 via-green-500 to-teal-400 text-white shadow-md">
-            <Heart className="h-5 w-5 fill-white text-white" />
-            <span className="absolute -bottom-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-white bg-emerald-600 px-1 text-[10px] font-bold leading-none text-white shadow">
-              {likeCount > 99 ? "99+" : likeCount}
-            </span>
-          </div>
-        </button>
+        <>
+          <Avatar
+            onClick={handleOpenLikes}
+            className="absolute left-3 bottom-3 z-10 w-13 h-13 text-emerald-600 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] like-fly cursor-pointer"
+          >
+            <AvatarImage
+              className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"
+              src={hasLiked || "/placeholder.svg"}
+            />
+
+            <Heart
+              className="absolute bottom-1 right-1 h-4 w-4"
+              style={{
+                fill: "#10b981",
+                stroke: "#10b981",
+              }}
+            />
+
+            <AvatarFallback className="absolute inset-0 flex items-center justify-center">
+              {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+            </AvatarFallback>
+          </Avatar>
+        </>
       )}
     </div>
   );

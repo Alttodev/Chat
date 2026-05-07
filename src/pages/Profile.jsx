@@ -136,7 +136,7 @@ const Profile = () => {
               >
                 <Avatar className="h-24 w-24">
                   <AvatarImage
-                     className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-top"
                     src={
                       userProfile?.profile?.profileImage || "/placeholder.svg"
                     }
@@ -270,6 +270,7 @@ const Profile = () => {
               {post?.postText}
             </p>
             <PostImageWithLikes
+              likedUsers={post?.likedByUsers}
               post={post}
               onImageClick={() => open(post.image)}
             />
