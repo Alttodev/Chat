@@ -17,6 +17,7 @@ import UsersList from "@/pages/UsersList";
 import UsersFriendsList from "@/pages/UsersFriendsList";
 import Survey from "@/pages/Survey";
 import PostLikes from "@/pages/PostLikes";
+import NotFound from "@/pages/NotFound";
 
 function AppRoutes() {
   return (
@@ -45,6 +46,7 @@ function AppRoutes() {
               <Route path="/posts/:id/liked-users" element={<PostLikes />} />
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </div>

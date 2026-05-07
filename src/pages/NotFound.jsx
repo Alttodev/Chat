@@ -1,0 +1,85 @@
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, Home, SearchX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export default function NotFound() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.16),_transparent_28%),linear-gradient(180deg,_#F8FAFF_0%,_#EEF2FF_100%)]">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-10 top-16 h-56 w-56 rounded-full bg-emerald-300/20 blur-3xl" />
+        <div className="absolute right-10 top-24 h-72 w-72 rounded-full bg-sky-300/20 blur-3xl" />
+        <div className="absolute bottom-10 left-1/3 h-64 w-64 rounded-full bg-lime-200/30 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
+        <div className="w-full max-w-2xl rounded-3xl border border-white/70 bg-white/70 p-8 text-center shadow-[0_20px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl md:p-12">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-green-500 to-teal-400 text-white shadow-lg">
+            <SearchX className="h-8 w-8" />
+          </div>
+
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.35em] text-emerald-600">
+            Page not found
+          </p>
+
+          <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 md:text-7xl">
+            404
+          </h1>
+
+          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 md:text-lg">
+            The page you&apos;re looking for wandered off somewhere else. Let&apos;s get
+            you back to a place that actually exists.
+          </p>
+
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button asChild className="h-12 rounded-full px-6 shadow-lg">
+              <Link to="/home">
+                <Home className="mr-2 h-4 w-4" />
+                Back to Home
+              </Link>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-12 rounded-full border-slate-200 bg-white/80 px-6"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Go Back
+            </Button>
+          </div>
+
+          <div className="mt-10 grid gap-3 text-left sm:grid-cols-3">
+            {[
+              {
+                title: "Home",
+                desc: "Return to your feed and pick up where you left off.",
+              },
+              {
+                title: "Friends",
+                desc: "See the people you already know in one place.",
+              },
+              {
+                title: "Messages",
+                desc: "Jump back into a conversation without the detour.",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm"
+              >
+                <h2 className="text-sm font-semibold text-slate-900">
+                  {item.title}
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {item.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
