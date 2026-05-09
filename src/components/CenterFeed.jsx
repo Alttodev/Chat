@@ -52,7 +52,7 @@ export function CenterFeed() {
   const targetPostId = searchParams.get("postId");
   const targetCommentId = searchParams.get("commentId");
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     usePostList();
 
   const loadMoreRef = useRef(null);
@@ -100,7 +100,7 @@ export function CenterFeed() {
     }
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />

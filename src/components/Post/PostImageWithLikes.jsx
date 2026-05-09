@@ -2,6 +2,9 @@ import { Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useAuthStore } from "@/store/authStore";
+
+const getUserId = (user) => user?._id || user?.id || user?.userId;
 
 export function PostImageWithLikes({
   post,
@@ -10,8 +13,13 @@ export function PostImageWithLikes({
   likedUsers,
 }) {
   const navigate = useNavigate();
+  const { profileId, user } = useAuthStore();
   const likeCount = typeof post?.likes === "number" ? post.likes : 0;
-  const hasLiked = likedUsers?.[0]?.profileImage;
+  const currentUserId = profileId || user?._id;
+  const visibleLiker = likedUsers?.find(
+    (likedUser) => String(getUserId(likedUser)) !== String(currentUserId),
+  );
+  const hasLiked = visibleLiker?.profileImage;
 
   const canOpenLikes = Boolean(post?._id);
 
@@ -38,7 +46,7 @@ export function PostImageWithLikes({
         alt="post"
       />
 
-      {likeCount > 0 && (
+      {likeCount > 0 && visibleLiker && (
         <>
           <Avatar
             onClick={handleOpenLikes}

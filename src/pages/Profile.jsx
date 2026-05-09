@@ -63,7 +63,7 @@ const Profile = () => {
   const { data: count } = useFriendsCount();
   const countData = useMemo(() => count, [count]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(profileId);
 
   const userProfile = useMemo(() => profileData, [profileData]);
@@ -111,7 +111,7 @@ const Profile = () => {
     }
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
