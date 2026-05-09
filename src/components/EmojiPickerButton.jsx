@@ -7,6 +7,10 @@ export default function EmojiPickerButton({
   setValue,
   name,
   getValues,
+  wrapperClassName = "",
+  buttonClassName = "",
+  pickerClassName = "",
+  pickerPlacement = "up",
 }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const pickerRef = useRef(null);
@@ -47,18 +51,24 @@ export default function EmojiPickerButton({
   };
 
   return (
-    <div className="relative">
-      <span
+    <div className={`relative inline-flex ${wrapperClassName}`}>
+      <button
+        type="button"
         onClick={() => setShowEmojiPicker((prev) => !prev)}
-        className="absolute bottom-5 right-3 text-emerald-600 cursor-pointer"
+        className={`flex h-10 w-10 items-center justify-center text-emerald-600 transition hover:bg-emerald-50 ${buttonClassName}`}
+        aria-label="Add emoji"
       >
-        <Smile className="w-6 h-6" />
-      </span>
+        <Smile className="w-5 h-5" />
+      </button>
 
       {showEmojiPicker && (
         <div
           ref={pickerRef}
-          className="absolute top-0 right-0 z-50 scale-75 origin-top-right"
+          className={
+            pickerPlacement === "down"
+              ? `absolute left-0 top-full z-50 mt-2 origin-top-left scale-[0.65] sm:scale-75 max-w-[calc(100vw-1rem)] ${pickerClassName}`
+              : `absolute bottom-full left-0 z-50 mb-2 origin-bottom-left scale-[0.65] sm:scale-75 max-w-[calc(100vw-1rem)] ${pickerClassName}`
+          }
         >
           <Picker
             onEmojiClick={(emojiData) => handleEmojiSelect(emojiData.emoji)}

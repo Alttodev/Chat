@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { usePostInfo, usePostLikedUsers } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
+import PostContent from "@/components/Post/PostContent";
 
 const getDisplayName = (user) =>
   user?.userName || user?.name || user?.fullName || user?.email || "User";
@@ -90,9 +91,7 @@ function PostLikes() {
                 <div className="font-semibold text-foreground">
                   {post?.user?.userName || "Post"}
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {post?.postText}
-                </p>
+                <PostContent text={post?.postText} className="mt-1" />
               </div>
             </div>
           </CardContent>

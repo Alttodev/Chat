@@ -38,6 +38,7 @@ import { ImageViewer } from "./modals/imageViewer";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { usePostInfo } from "@/hooks/postHooks";
 import { PostImageWithLikes } from "./Post/PostImageWithLikes";
+import PostContent from "./Post/PostContent";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -191,9 +192,7 @@ export function CenterFeed() {
           </CardHeader>
 
           <CardContent className="pt-0">
-            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
-              {post?.postText}
-            </p>
+            <PostContent text={post?.postText} className="mb-4" />
             {/* {post?.image && (
               <img
                 className="w-full h-auto object-cover rounded-lg"

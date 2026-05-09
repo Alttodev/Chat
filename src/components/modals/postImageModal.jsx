@@ -16,6 +16,7 @@ export function PostImageDialog() {
   max-w-[550px] 
   rounded-lg 
   p-4
+  overflow-visible
   sm:rounded-xl
   [&_button]:cursor-pointer
 "

@@ -42,6 +42,7 @@ import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
 import { Link, useSearchParams } from "react-router-dom";
 import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
+import PostContent from "@/components/Post/PostContent";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -266,9 +267,7 @@ const Profile = () => {
           </CardHeader>
 
           <CardContent className="pt-0">
-            <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
-              {post?.postText}
-            </p>
+            <PostContent text={post?.postText} className="mb-4" />
             <PostImageWithLikes
               likedUsers={post?.likedByUsers}
               post={post}

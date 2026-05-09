@@ -27,6 +27,7 @@ import { ImageViewer } from "@/components/modals/imageViewer";
 import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
+import PostContent from "@/components/Post/PostContent";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();
@@ -273,9 +274,7 @@ const UsersInfo = () => {
               </CardHeader>
 
               <CardContent className="pt-0">
-                <p className="text-foreground mb-4 leading-relaxed text-sm sm:text-base">
-                  {post?.postText}
-                </p>
+                <PostContent text={post?.postText} className="mb-4" />
 
                 <PostImageWithLikes
                   post={post}
