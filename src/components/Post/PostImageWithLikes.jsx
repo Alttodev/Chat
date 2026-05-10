@@ -56,18 +56,17 @@ export function PostImageWithLikes({
               className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"
               src={hasLiked || "/placeholder.svg"}
             />
+            <AvatarFallback className="absolute inset-0 z-10 flex items-center justify-center">
+              {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+            </AvatarFallback>
 
             <Heart
-              className="absolute bottom-1 right-1 h-4 w-4"
+              className="absolute bottom-1 right-1 z-20 h-4 w-4"
               style={{
                 fill: "#10b981",
                 stroke: "#10b981",
               }}
             />
-
-            <AvatarFallback className="absolute inset-0 flex items-center justify-center">
-              {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
-            </AvatarFallback>
           </Avatar>
         </>
       )}
