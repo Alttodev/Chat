@@ -35,10 +35,11 @@ export function PostImageForm() {
   const textValue = watch("postText");
   const imageValue = watch("image");
   const textareaRef = useRef(null);
+  const hasText = textValue?.trim().length > 0;
 
   const submitDisabled = useMemo(
-    () => (!textValue && !imageValue) || isSubmitting,
-    [imageValue, isSubmitting, textValue],
+    () => (!hasText && !imageValue) || isSubmitting,
+    [hasText, imageValue, isSubmitting],
   );
 
   const handleLocationSelect = (location) => {
@@ -52,8 +53,9 @@ export function PostImageForm() {
   const onSubmit = async (formData) => {
     try {
       const data = new FormData();
+      const trimmedText = formData.postText.trim();
       const postText = appendLocationMarker(
-        formData.postText,
+        trimmedText,
         selectedLocation,
       );
 

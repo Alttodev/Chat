@@ -31,10 +31,11 @@ export function PostForm({ userProfile }) {
 
   const textValue = watch("postText");
   const textareaRef = useRef(null);
+  const hasText = textValue?.trim().length > 0;
 
   const submitDisabled = useMemo(
-    () => (!textValue && !selectedLocation) || isSubmitting,
-    [isSubmitting, selectedLocation, textValue],
+    () => (!hasText && !selectedLocation) || isSubmitting,
+    [hasText, isSubmitting, selectedLocation],
   );
 
   const handleLocationSelect = (location) => {
@@ -47,8 +48,9 @@ export function PostForm({ userProfile }) {
 
   const onSubmit = async (formData) => {
     try {
+      const trimmedText = formData.postText.trim();
       const postText = appendLocationMarker(
-        formData.postText,
+        trimmedText,
         selectedLocation,
       );
       const res = await createPost({ ...formData, postText });

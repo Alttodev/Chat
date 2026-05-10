@@ -39,7 +39,8 @@ export function PostUpdateForm({ userProfile }) {
 
   const textValue = watch("postText");
   const textareaRef = useRef(null);
-  const submitDisabled = (!textValue && !selectedLocation) || isSubmitting;
+  const hasText = textValue?.trim().length > 0;
+  const submitDisabled = (!hasText && !selectedLocation) || isSubmitting;
 
   const handleLocationClear = () => {
     setSelectedLocation(null);
@@ -47,7 +48,10 @@ export function PostUpdateForm({ userProfile }) {
 
   const onSubmit = async (formData) => {
     try {
-      const postText = appendLocationMarker(formData.postText, selectedLocation);
+      const postText = appendLocationMarker(
+        formData.postText.trim(),
+        selectedLocation,
+      );
       const res = await updatePost({
         id: postId,
         formData: { ...formData, postText },
@@ -82,7 +86,10 @@ export function PostUpdateForm({ userProfile }) {
           <Controller
             name="postText"
             control={control}
-            rules={{ required: "Post text is required" }}
+            rules={{
+              validate: (value) =>
+                value?.trim().length > 0 || "Post text is required",
+            }}
             render={({ field }) => (
               <div className="relative">
                 <Textarea
