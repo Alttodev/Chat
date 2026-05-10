@@ -32,8 +32,8 @@ function PostLikeComponent({ post, userId }) {
       <Heart
         className={isLiked ? "heart-animate" : ""}
         style={{
-          width: 16,
-          height: 16,
+          width: 18,
+          height: 18,
           fill: isLiked ? "#10b981" : "none",
           stroke: isLiked ? "#10b981" : "currentColor",
         }}

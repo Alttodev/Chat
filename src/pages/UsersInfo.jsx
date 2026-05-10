@@ -291,7 +291,12 @@ const UsersInfo = () => {
                     className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
                     aria-label="Comment on post"
                   >
-                    <MessageCircle className="w-4 h-4" />
+                    <MessageCircle
+                      style={{
+                        width: 18,
+                        height: 18,
+                      }}
+                    />
                   </Button>
 
                   <Button
@@ -301,7 +306,12 @@ const UsersInfo = () => {
                     className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
                     aria-label="Share post"
                   >
-                    <Send className="w-4 h-4" />
+                    <Send
+                      style={{
+                        width: 18,
+                        height: 18,
+                      }}
+                    />
                   </Button>
                 </div>
 
