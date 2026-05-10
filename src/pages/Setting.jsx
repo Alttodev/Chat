@@ -101,6 +101,9 @@ function SettingsComponent() {
     try {
       queryClient.clear();
       localStorage.clear();
+      sessionStorage.removeItem("login-at");
+      sessionStorage.removeItem("welcome-post-pending");
+      sessionStorage.removeItem("profile-image-reminder-shown");
       clearToken();
       closeEditing();
       setProfileId(null);

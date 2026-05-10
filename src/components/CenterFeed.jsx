@@ -1,6 +1,6 @@
 import {
   MessageCircle,
-  Share,
+  Send,
   MoreHorizontal,
   Trash2,
   SquarePen,
@@ -111,7 +111,7 @@ export function CenterFeed() {
   return (
     <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 space-y-4 pb-20">
       {/* Create Post */}
-      <Card>
+      <Card id="create-post">
         <CardContent className="p-3">
           <PostForm userProfile={userProfile} />
         </CardContent>
@@ -206,34 +206,30 @@ export function CenterFeed() {
               onImageClick={() => open(post.image)}
             />
 
-            <div className="mb-3 pb-3 border-b border-border" />
-
-            <div className="flex items-center justify-between">
+            <div className="flex items-center mt-3 justify-start ">
               <PostLikeComponent post={post} userId={post?.user?._id} />
-              <div className="flex-1 flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleComments(post._id)}
-                  className=" text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 mr-1" /> Comment
-                </Button>
-              </div>
-              <div className="flex-1 flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => openShareModal(post._id)}
-                  className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent  cursor-pointer"
-                >
-                  <Share className="w-4 h-4 mr-1" /> Share
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleComments(post._id)}
+                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                aria-label="Comment on post"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => openShareModal(post._id)}
+                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                aria-label="Share post"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
 
             {openPostId === post._id && (
-              <div className="border-t border-border mt-3">
+              <div className="mt-3">
                 <CommentSection
                   postId={post._id}
                   userProfile={userProfile?.profile}

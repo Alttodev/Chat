@@ -49,7 +49,25 @@ const ProfileCreateForm = () => {
       connectSocket(user?._id);
       toastSuccess(res?.message);
       const resp = await getProfile();
-      setProfileId(resp?.profile?.id);
+      const profileId = resp?.profile?.id;
+
+      if (profileId) {
+        setProfileId(profileId);
+        sessionStorage.setItem("login-at", String(Date.now()));
+        sessionStorage.removeItem("profile-image-reminder-shown");
+        sessionStorage.setItem(
+          "welcome-post-pending",
+          JSON.stringify({
+            profileId,
+            userName:
+              resp?.profile?.userName ||
+              user?.userName ||
+              data?.userName ||
+              "there",
+          }),
+        );
+      }
+
       navigate("/home");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");

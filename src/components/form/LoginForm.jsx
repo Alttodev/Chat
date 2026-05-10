@@ -53,6 +53,15 @@ const LoginForm = () => {
 
       if (profileId) {
         setProfileId(profileId);
+        sessionStorage.setItem("login-at", String(Date.now()));
+        sessionStorage.removeItem("profile-image-reminder-shown");
+        sessionStorage.setItem(
+          "welcome-post-pending",
+          JSON.stringify({
+            profileId,
+            userName: resp?.profile?.userName || res?.user?.userName || "there",
+          }),
+        );
         navigate("/home");
       } else {
         setProfileId(null);

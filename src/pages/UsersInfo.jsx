@@ -1,4 +1,4 @@
-import { MapPin, MessageCircle, Share } from "lucide-react";
+import { ImageIcon, MapPin, MessageCircle, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -282,36 +282,31 @@ const UsersInfo = () => {
                   onImageClick={() => open(post.image)}
                 />
 
-                <div className="mb-3 pb-3 border-b border-border" />
-
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-start mt-3">
                   <PostLikeComponent post={post} userId={post?.user?._id} />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleComments(post?._id)}
+                    className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                    aria-label="Comment on post"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                  </Button>
 
-                  <div className="flex-1 flex justify-center">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleComments(post?._id)}
-                      className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-1" /> Comment
-                    </Button>
-                  </div>
-
-                  <div className="flex-1 flex justify-center">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openShareModal(post?._id)}
-                      className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
-                    >
-                      <Share className="w-4 h-4 mr-1" /> Share
-                    </Button>
-                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openShareModal(post?._id)}
+                    className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                    aria-label="Share post"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
 
                 {openPostId === post._id && (
-                  <div className="border-t border-border mt-3">
+                  <div className="mt-3">
                     <CommentSection
                       postId={post._id}
                       userProfile={currentUser}

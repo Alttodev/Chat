@@ -8,15 +8,13 @@ function PostLikeComponent({ post, userId }) {
   const { mutateAsync: postLike } = usePostLike(userId);
 
   const [isLiked, setIsLiked] = useState(post.likedByMe);
-  const [likes, setLikes] = useState(post?.likes || 0);
 
   const handleLike = async () => {
     const newLiked = !isLiked;
     setIsLiked(newLiked);
 
     try {
-      const res = await postLike(post._id);
-      setLikes(res.likes);
+      await postLike(post._id);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
       setIsLiked(!newLiked);
@@ -24,25 +22,23 @@ function PostLikeComponent({ post, userId }) {
   };
 
   return (
-    <div className="flex-1 flex justify-center">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleLike}
-        className="text-xs sm:text-sm text-muted-foreground hover:bg-transparent cursor-pointer"
-      >
-        <Heart
-           className={isLiked ? "heart-animate" : ""}
-          style={{
-            width: 16,
-            height: 16,
-            fill: isLiked ? "#10b981" : "none",
-            stroke: isLiked ? "#10b981" : "currentColor",
-          }}
-        />
-        {likes}
-      </Button>
-    </div>
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleLike}
+      className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+      aria-label={`${isLiked ? "Unlike" : "Like"} post`}
+    >
+      <Heart
+        className={isLiked ? "heart-animate" : ""}
+        style={{
+          width: 16,
+          height: 16,
+          fill: isLiked ? "#10b981" : "none",
+          stroke: isLiked ? "#10b981" : "currentColor",
+        }}
+      />
+    </Button>
   );
 }
 
