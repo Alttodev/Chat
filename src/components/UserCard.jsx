@@ -14,6 +14,7 @@ import { toastError, toastSuccess } from "@/lib/toast";
 
 function UserCard({ user, profileId }) {
   const userId = user?.id;
+  const canOpenProfile = profileId !== userId;
   const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
@@ -53,46 +54,86 @@ function UserCard({ user, profileId }) {
     <Card className="border-border shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <Link
-            to={`/users/${userId}`}
-            className="flex flex-col md:flex-row items-start md:items-center gap-6 cursor-pointer flex-1"
-          >
-            <div className="relative">
-              <Avatar className="h-18 w-18">
-                <AvatarImage
-                  className="w-full h-full object-cover object-top"
-                  src={user?.profileImage || "/placeholder.svg"}
-                />
-                <AvatarFallback className="text-2xl font-semibold text-emerald-700">
-                  {user?.userName?.charAt(0).toUpperCase() || "-"}
-                </AvatarFallback>
-              </Avatar>
+          {canOpenProfile ? (
+            <Link
+              to={`/users/${userId}`}
+              className="flex flex-col md:flex-row items-start md:items-center gap-6 cursor-pointer flex-1"
+            >
+              <div className="relative">
+                <Avatar className="h-18 w-18">
+                  <AvatarImage
+                    className="w-full h-full object-cover object-top"
+                    src={user?.profileImage || "/placeholder.svg"}
+                  />
+                  <AvatarFallback className="text-2xl font-semibold text-emerald-700">
+                    {user?.userName?.charAt(0).toUpperCase() || "-"}
+                  </AvatarFallback>
+                </Avatar>
 
-              {/* Online Status */}
-              <div className="absolute bottom-2 right-1">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-3 w-3 rounded-full ${
-                      user?.isOnline ? "bg-green-500" : "bg-yellow-500"
-                    }`}
-                  ></span>
+                {/* Online Status */}
+                <div className="absolute bottom-2 right-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-3 w-3 rounded-full ${
+                        user?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                      }`}
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <div>
+                  <div className="text-xl font-bold text-foreground">
+                    {user?.userName || "-"}
+                  </div>
+
+                  <div className="flex gap-2 items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{user?.address || "-"}</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ) : (
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 flex-1">
+              <div className="relative">
+                <Avatar className="h-18 w-18">
+                  <AvatarImage
+                    className="w-full h-full object-cover object-top"
+                    src={user?.profileImage || "/placeholder.svg"}
+                  />
+                  <AvatarFallback className="text-2xl font-semibold text-emerald-700">
+                    {user?.userName?.charAt(0).toUpperCase() || "-"}
+                  </AvatarFallback>
+                </Avatar>
+
+                {/* Online Status */}
+                <div className="absolute bottom-2 right-1">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-3 w-3 rounded-full ${
+                        user?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                      }`}
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <div>
+                  <div className="text-xl font-bold text-foreground">
+                    {user?.userName || "-"}
+                  </div>
+
+                  <div className="flex gap-2 items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{user?.address || "-"}</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className="flex-1 space-y-2">
-              <div>
-                <div className="text-xl font-bold text-foreground">
-                  {user?.userName || "-"}
-                </div>
-
-                <div className="flex gap-2 items-center text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{user?.address || "-"}</span>
-                </div>
-              </div>
-            </div>
-          </Link>
+          )}
 
           <div className="flex flex-col gap-2">
             {reqStatus === "pending" ? (
