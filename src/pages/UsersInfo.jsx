@@ -201,6 +201,24 @@ const UsersInfo = () => {
                           : "Followers"}
                       </span>
                     </div>
+                    <div className="flex flex-col  mt-1">
+                      {countData?.totalFollowing > 0 ? (
+                        <Link
+                          to={`/following/${user?._id}`}
+                          className="text-lg font-semibold text-foreground"
+                        >
+                          {countData?.totalFollowing}
+                        </Link>
+                      ) : (
+                        <span className="text-lg font-semibold text-foreground">
+                          {countData?.totalFollowing}
+                        </span>
+                      )}
+
+                      <span className="text-sm text-muted-foreground">
+                        Following
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

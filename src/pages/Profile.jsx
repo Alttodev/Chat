@@ -44,7 +44,6 @@ import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
 
-
 const Profile = () => {
   const { openModal } = useZustandPopup();
   const { profileId } = useAuthStore();
@@ -60,7 +59,7 @@ const Profile = () => {
   const userId = storedData?.state?.user?._id;
 
   const { mutateAsync: deletePost } = usePostDelete();
- 
+
   const { data: profileData } = useUserDetail();
   const { data: count } = useFriendsCount();
   const countData = useMemo(() => count, [count]);
@@ -85,8 +84,6 @@ const Profile = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
-
- 
 
   useEffect(() => {
     if (targetPostId) {
@@ -196,6 +193,24 @@ const Profile = () => {
                         {countData?.totalFriends <= 1
                           ? "Follower"
                           : "Followers"}
+                      </span>
+                    </div>
+                    <div className="flex flex-col   mt-1">
+                      {countData?.totalFriends > 0 ? (
+                        <Link
+                          to={`/following/${userProfile?.profile?.id}`}
+                          className="text-lg font-semibold text-foreground"
+                        >
+                          {countData?.totalFollowing}
+                        </Link>
+                      ) : (
+                        <span className="text-lg font-semibold text-foreground">
+                          {countData?.totalFollowing}
+                        </span>
+                      )}
+
+                      <span className="text-sm text-muted-foreground">
+                        Following
                       </span>
                     </div>
                   </div>
