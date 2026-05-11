@@ -85,6 +85,18 @@ export const deleteMyStatus = async () => {
   return res.data;
 };
 
+//profileViews
+export const markProfileViewSeen = async (statusId) => {
+  const res = await axiosInstance.post(`/profileviews/seen/${statusId}`);
+  return res.data;
+};
+
+export const getProfileViewSeen = async () => {
+  const { data } = await axiosInstance.get(`/profileviews/seens`);
+  return data;
+};
+
+
 // notifications
 
 export const getNotifications = async ({ limit = 30 } = {}) => {

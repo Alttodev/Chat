@@ -28,12 +28,14 @@ import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
 import PostContent from "@/components/Post/PostContent";
+import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
+  const { mutateAsync: markProfileViewSeen } = useMarkProfileViewSeen();
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
@@ -76,6 +78,12 @@ const UsersInfo = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
+
+  useEffect(() => {
+    if (id && id !== profileId) {
+      markProfileViewSeen(id);
+    }
+  }, [id, profileId, markProfileViewSeen]);
 
   useEffect(() => {
     if (targetPostId) {

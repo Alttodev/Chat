@@ -1,12 +1,11 @@
 import {
   Home,
   Users,
-  Bookmark,
-  Calendar,
   Settings,
   User,
   MessageCircle,
   BarChart3,
+  UserRoundSearch,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -17,6 +16,7 @@ export function LeftSidebar() {
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
     { icon: User, label: "Profile", path: "/profile" },
+    { icon:UserRoundSearch, label: "Visitors", path: "/profileViews" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
     { icon: BarChart3, label: "Analytics", path: "/survey" },

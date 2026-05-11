@@ -44,6 +44,7 @@ import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
 
+
 const Profile = () => {
   const { openModal } = useZustandPopup();
   const { profileId } = useAuthStore();
@@ -59,6 +60,7 @@ const Profile = () => {
   const userId = storedData?.state?.user?._id;
 
   const { mutateAsync: deletePost } = usePostDelete();
+ 
   const { data: profileData } = useUserDetail();
   const { data: count } = useFriendsCount();
   const countData = useMemo(() => count, [count]);
@@ -83,6 +85,8 @@ const Profile = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
+
+ 
 
   useEffect(() => {
     if (targetPostId) {

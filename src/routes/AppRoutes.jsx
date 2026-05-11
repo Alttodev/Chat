@@ -19,6 +19,7 @@ import Survey from "@/pages/Survey";
 import PostLikes from "@/pages/PostLikes";
 import NotFound from "@/pages/NotFound";
 import InProgress from "@/pages/InProgress";
+import ProfileViews from "@/pages/ProfileViews";
 
 function AppRoutes() {
   return (
@@ -37,6 +38,7 @@ function AppRoutes() {
               <Route path="/home" element={<CenterFeed />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />
+              <Route path="/profileViews" element={<ProfileViews />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/survey" element={<Survey />} />
