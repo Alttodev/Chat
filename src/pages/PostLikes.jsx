@@ -45,19 +45,19 @@ function PostLikes() {
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:py-8">
       <Card className="overflow-hidden border-border shadow-sm">
-        <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white">
+        <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-500/10 dark:to-background">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(-1)}
-                className="rounded-full hover:bg-emerald-100 cursor-pointer"
+                className="rounded-full text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <CardTitle className="text-lg">Liked by</CardTitle>
+                <CardTitle className="text-lg text-foreground">Liked by</CardTitle>
                 <p className="text-sm text-muted-foreground">
                   {totalLikes === 1
                     ? "1 person likes this"
