@@ -79,7 +79,7 @@ const Survey = () => {
     );
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 py-10">
+    <div className="w-full max-w-6xl mx-auto px-4 pb-20">
       <div className="grid grid-cols-1 gap-6">
         {/* 📈 Line Chart */}
         <Card className="shadow-xl rounded-2xl border border-gray-100">

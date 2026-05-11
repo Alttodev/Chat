@@ -45,7 +45,7 @@ function PostLikes() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-6 sm:py-8">
+    <div className="mx-auto w-full max-w-2xl px-4  pb-20">
       <Card className="overflow-hidden border-border shadow-sm">
         <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-500/10 dark:to-background">
           <div className="flex items-center justify-between gap-3">
