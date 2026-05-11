@@ -38,7 +38,7 @@ export default function InProgress() {
 
             <Button
               variant="outline"
-              className="h-12 rounded-full border-slate-200 bg-white/80 px-6"
+              className="h-12 rounded-full text-foreground hover:bg-accent hover:text-accent-foreground px-6"
               onClick={() => navigate(-1)}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
