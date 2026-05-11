@@ -8,6 +8,7 @@ import { usePostInfo, usePostLikedUsers } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import PostContent from "@/components/Post/PostContent";
+import { useAuthStore } from "@/store/authStore";
 
 const getDisplayName = (user) =>
   user?.userName || user?.name || user?.fullName || user?.email || "User";
@@ -19,6 +20,7 @@ const getUserId = (user) => user?._id || user?.id || user?.userId;
 
 function PostLikes() {
   const navigate = useNavigate();
+  const { profileId: authId } = useAuthStore();
   const { id } = useParams();
   const { data: postData, isLoading: isPostLoading } = usePostInfo(id);
   const { data: likedUsersData, isLoading: isLikesLoading } =
@@ -57,7 +59,9 @@ function PostLikes() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <CardTitle className="text-lg text-foreground">Liked by</CardTitle>
+                <CardTitle className="text-lg text-foreground">
+                  Liked by
+                </CardTitle>
                 <p className="text-sm text-muted-foreground">
                   {totalLikes === 1
                     ? "1 person likes this"
@@ -96,7 +100,6 @@ function PostLikes() {
             </div>
           </CardContent>
         )}
-
         <CardContent className="p-0">
           {hasLikerList ? (
             <div className="divide-y">
@@ -106,7 +109,37 @@ function PostLikes() {
                 const avatarSrc = getAvatarSrc(user);
                 const profileId = getUserId(user);
 
-                return (
+                const isOwnProfile = profileId === authId;
+
+                return isOwnProfile ? (
+                  <div
+                    key={userId}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left "
+                  >
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        className="h-full w-full object-cover object-top"
+                        src={avatarSrc}
+                        alt={displayName}
+                      />
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                        {displayName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-medium text-foreground">
+                        {displayName}
+                      </div>
+
+                      <div className="truncate text-sm text-muted-foreground">
+                        {user?.likedAt
+                          ? `Liked ${formatRelative(user.likedAt)}`
+                          : "Your profile"}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   <button
                     key={userId}
                     type="button"
@@ -126,6 +159,7 @@ function PostLikes() {
                         src={avatarSrc}
                         alt={displayName}
                       />
+
                       <AvatarFallback className="bg-emerald-100 text-emerald-700">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
@@ -135,6 +169,7 @@ function PostLikes() {
                       <div className="truncate font-medium text-foreground">
                         {displayName}
                       </div>
+
                       <div className="truncate text-sm text-muted-foreground">
                         {user?.likedAt
                           ? `Liked ${formatRelative(user.likedAt)}`
@@ -150,10 +185,12 @@ function PostLikes() {
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
                 <Heart className="h-6 w-6" />
               </div>
+
               <div>
                 <p className="text-base font-semibold">
                   {totalLikes > 0 ? "Like list unavailable" : "No likes yet"}
                 </p>
+
                 <p className="text-sm text-muted-foreground">
                   {totalLikes > 0
                     ? "The post has likes, but the API is not returning the liker list yet."
