@@ -70,14 +70,16 @@ export const RequestCard = () => {
   }
   if (isError) {
     return (
-      <div className="text-center py-10 text-gray-500">
+      <div className="text-center py-10 text-muted-foreground">
         Could not load requests
       </div>
     );
   }
   if (!requestedData || requestedData.length === 0) {
     return (
-      <div className="text-center py-10 text-gray-500">No requests found</div>
+      <div className="text-center py-10 text-muted-foreground">
+        No requests found
+      </div>
     );
   }
 
@@ -94,7 +96,7 @@ export const RequestCard = () => {
                 item?._id ||
                 `${requesterId || "unknown"}-${item?.createdAt || ""}`
               }
-              className="bg-white shadow-sm hover:shadow-md transition-shadow"
+              className="bg-card shadow-sm hover:shadow-md transition-shadow"
             >
               <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <Link
@@ -106,22 +108,22 @@ export const RequestCard = () => {
                       className="w-full h-full object-cover object-top cursor-pointer"
                       src={requester?.profileImage || "/placeholder.svg"}
                     />
-                    <AvatarFallback className="text-xl font-semibold  text-emerald-700">
-                      {requester?.userName?.charAt(0).toUpperCase() || "-"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h3 className="font-semibold">
-                      {requester?.userName || "Unknown User"}
-                    </h3>
-                    <div className="flex gap-1 items-center text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{requester?.address || "-"}</span>
-                    </div>
-                    <span className="text-xs text-gray-400">
-                      Requested {formatRelative(item?.createdAt)}
-                    </span>
+                  <AvatarFallback className="text-xl font-semibold  text-emerald-700">
+                    {requester?.userName?.charAt(0).toUpperCase() || "-"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-semibold text-foreground">
+                    {requester?.userName || "Unknown User"}
+                  </h3>
+                  <div className="flex gap-1 items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{requester?.address || "-"}</span>
                   </div>
+                    <span className="text-xs text-muted-foreground">
+                    Requested {formatRelative(item?.createdAt)}
+                  </span>
+                </div>
                 </Link>
 
                 <div className="flex gap-2">

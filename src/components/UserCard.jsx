@@ -82,7 +82,9 @@ function UserCard({ user, profileId }) {
 
             <div className="flex-1 space-y-2">
               <div>
-                <div className="text-xl font-bold">{user?.userName || "-"}</div>
+                <div className="text-xl font-bold text-foreground">
+                  {user?.userName || "-"}
+                </div>
 
                 <div className="flex gap-2 items-center text-muted-foreground">
                   <MapPin className="h-4 w-4" />

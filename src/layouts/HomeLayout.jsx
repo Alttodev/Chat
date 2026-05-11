@@ -6,6 +6,7 @@ import StatusStrip from "@/components/status/StatusStrip";
 import StatusViewer from "@/components/status/StatusViewer";
 import { WelcomePostDialog } from "@/components/modals/welcomePostModal";
 import { ProfileImageReminderDialog } from "@/components/modals/profileImageReminderModal";
+import { ThemeModeDialog } from "@/components/modals/themeModeModal";
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -24,6 +25,7 @@ function HomeLayout() {
       <StatusViewer />
       <WelcomePostDialog />
       <ProfileImageReminderDialog />
+      <ThemeModeDialog />
       <MobileMenuBar />
       <div className="flex flex-1">
         {/* Left Sidebar */}

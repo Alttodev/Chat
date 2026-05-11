@@ -116,15 +116,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    color-scheme: light;
+    background: var(--background);
+  }
   body {
-    @apply bg-[#F3F4FD];
-      font-family: "Poppins", sans-serif;
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 }
 
 .thin-scrollbar {
   scrollbar-width: thin;           
-  scrollbar-color: #9ca3af transparent; 
+  scrollbar-color: var(--muted-foreground) transparent; 
 
 }
 .thin-scrollbar::-webkit-scrollbar {
@@ -134,7 +142,7 @@
   background: transparent;
 }
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #9ca3af;
+  background-color: color-mix(in oklch, var(--muted-foreground) 75%, transparent);
   border-radius: 9999px;
 }
 /* Hide scrollbar but allow scroll */

@@ -20,7 +20,7 @@ const renderHighlightedText = (value, placeholder) => {
   return safeValue.replace(
     mentionPattern,
     (_match, prefix, mention) =>
-      `${prefix}<span class="text-blue-600 font-medium">${mention}</span>`,
+      `${prefix}<span class="font-medium text-blue-600 dark:text-blue-300">${mention}</span>`,
   );
 };
 
@@ -60,7 +60,7 @@ function MentionTextarea({
             aria-hidden="true"
             className={cn(
               sharedClassName,
-              "pointer-events-none absolute inset-0 overflow-auto whitespace-pre-wrap break-words bg-white",
+              "pointer-events-none absolute inset-0 overflow-auto whitespace-pre-wrap break-words bg-background text-foreground",
             )}
           >
             <div

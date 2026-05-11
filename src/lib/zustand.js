@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 export const useZustandPopup = create((set) => ({
   isOpen: false,
@@ -53,3 +54,21 @@ export const useIncomingCallStore = create((set) => ({
   openIncomingCall: (callData) => set({ isOpen: true, incomingCall: callData }),
   closeIncomingCall: () => set({ isOpen: false, incomingCall: null }),
 }));
+
+export const useThemeStore = create(
+  persist(
+    (set) => ({
+      theme: "light",
+      setTheme: (theme) => set({ theme }),
+      toggleTheme: () =>
+        set((state) => ({
+          theme: state.theme === "dark" ? "light" : "dark",
+        })),
+    }),
+    {
+      name: "chat-theme",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ theme: state.theme }),
+    },
+  ),
+);

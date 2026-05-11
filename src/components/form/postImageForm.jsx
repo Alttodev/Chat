@@ -36,10 +36,11 @@ export function PostImageForm() {
   const imageValue = watch("image");
   const textareaRef = useRef(null);
   const hasText = textValue?.trim().length > 0;
+  const hasImage = !!imageValue;
 
   const submitDisabled = useMemo(
-    () => (!hasText && !imageValue) || isSubmitting,
-    [hasText, imageValue, isSubmitting],
+    () => (!hasText || !hasImage) || isSubmitting,
+    [hasText, hasImage, isSubmitting],
   );
 
   const handleLocationSelect = (location) => {

@@ -19,7 +19,11 @@ export const FriendCard = ({ tabValue }) => {
   const friendsData = tabValue === "online" ? onlineFriends : friends;
 
   if (!friendsData || friendsData.length === 0) {
-    return <div className="text-center py-10 text-gray-500">No data found</div>;
+    return (
+      <div className="text-center py-10 text-muted-foreground">
+        No data found
+      </div>
+    );
   }
 
   if (isFetching) {
@@ -30,7 +34,7 @@ export const FriendCard = ({ tabValue }) => {
       {friendsData &&
         friendsData?.map((item) => (
           <Link to={`/users/${item?.from?._id}`}>
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
+            <Card className="bg-card shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-4 flex flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="relative">
@@ -51,7 +55,9 @@ export const FriendCard = ({ tabValue }) => {
                     ></div>
                   </div>
                   <div>
-                    <h3 className="font-semibold">{item?.from?.userName}</h3>
+                    <h3 className="font-semibold text-foreground">
+                      {item?.from?.userName}
+                    </h3>
                     <div className="flex gap-1 items-center text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                       <span>{item?.from?.address || "-"}</span>

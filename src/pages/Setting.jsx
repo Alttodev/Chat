@@ -21,6 +21,7 @@ import {
   User,
   Mail,
   MapPin,
+  MoonStar,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +39,9 @@ import { useSocket } from "@/lib/socket";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useImageModalStore } from "@/lib/zustand";
+import { useThemeStore } from "@/lib/zustand";
 import { ImageViewer } from "@/components/modals/imageViewer";
+import { SunMedium } from "lucide-react";
 
 function SettingsComponent() {
   const {
@@ -51,6 +54,7 @@ function SettingsComponent() {
   } = useAuthStore();
   const { disconnectSocket } = useSocket();
   const { open } = useImageModalStore();
+  const { theme, toggleTheme } = useThemeStore();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
 
@@ -277,6 +281,33 @@ function SettingsComponent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <Separator />
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  {theme === "dark" ? (
+                    <MoonStar className="h-4 w-4 text-slate-500" />
+                  ) : (
+                    <SunMedium className="h-5 w-5 text-slate-500" />
+                  )}
+
+                  <label className="!text-sm font-medium">Appearance</label>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Switch between light and dark mode
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={theme === "dark"}
+                  onCheckedChange={toggleTheme}
+                  className="data-[state=checked]:bg-emerald-600"
+                  aria-label="Toggle dark mode"
+                />
+              </div>
+            </div>
+
             <Separator />
 
             <div className="flex items-center justify-between">

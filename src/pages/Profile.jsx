@@ -167,7 +167,7 @@ const Profile = () => {
                   </div>
                   <div className="flex gap-4">
                     <div className="flex flex-col   mt-1">
-                      <span className="text-lg font-semibold text-black">
+                      <span className="text-lg font-semibold text-foreground">
                         {totalPosts}
                       </span>
                       <span className="text-sm text-muted-foreground">
@@ -178,12 +178,12 @@ const Profile = () => {
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to="/friends"
-                          className="text-lg font-semibold text-black"
+                          className="text-lg font-semibold text-foreground"
                         >
                           {countData?.totalFriends}
                         </Link>
                       ) : (
-                        <span className="text-lg font-semibold text-black">
+                        <span className="text-lg font-semibold text-foreground">
                           {countData?.totalFriends}
                         </span>
                       )}
@@ -233,14 +233,14 @@ const Profile = () => {
               {post?.isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
+                    <span className="relative cursor-pointer border-0 rounded-full p-1 transition-colors duration-200 hover:bg-accent">
                       <MoreHorizontal className="w-4 h-4" />
                       <span className="sr-only">Toggle user menu</span>
                     </span>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className="w-full mt-1 border-slate-200 shadow-lg"
+                    className="w-full mt-1 border-border shadow-lg"
                     sideOffset={8}
                   >
                     <DropdownMenuItem
@@ -249,7 +249,7 @@ const Profile = () => {
                         openModal({ userProfile, postId: post._id })
                       }
                     >
-                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
+                      <SquarePen className="mr-1 h-4 w-4 text-muted-foreground group-hover:text-emerald-600 transition-colors duration-200" />
                       <span className="text-emerald-700 font-medium">Edit</span>
                     </DropdownMenuItem>
 
@@ -257,7 +257,7 @@ const Profile = () => {
                       className="cursor-pointer transition-colors duration-200 mt-1"
                       onClick={() => handleDelete(post._id)}
                     >
-                      <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
+                      <Trash2 className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200" />
                       <span className="text-red-500 font-medium">Delete</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

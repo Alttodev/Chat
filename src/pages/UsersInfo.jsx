@@ -166,7 +166,7 @@ const UsersInfo = () => {
                   </div>
                   <div className="flex gap-4">
                     <div className="flex flex-col   mt-1">
-                      <span className="text-lg font-semibold text-black">
+                      <span className="text-lg font-semibold text-foreground">
                         {totalPosts}
                       </span>
                       <span className="text-sm text-muted-foreground">
@@ -177,12 +177,12 @@ const UsersInfo = () => {
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to={`/friends/${user?._id}`}
-                          className="text-lg font-semibold text-black"
+                          className="text-lg font-semibold text-foreground"
                         >
                           {countData?.totalFriends}
                         </Link>
                       ) : (
-                        <span className="text-lg font-semibold text-black">
+                        <span className="text-lg font-semibold text-foreground">
                           {countData?.totalFriends}
                         </span>
                       )}

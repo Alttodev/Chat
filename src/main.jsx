@@ -10,6 +10,13 @@ import { JitsiCallProvider } from "./lib/jitsiCall";
 
 const queryClient = new QueryClient();
 
+const themeStorage = JSON.parse(localStorage.getItem("chat-theme") || "{}");
+const initialTheme = themeStorage?.state?.theme || "light";
+
+document.documentElement.classList.toggle("dark", initialTheme === "dark");
+document.documentElement.style.colorScheme =
+  initialTheme === "dark" ? "dark" : "light";
+
 const userId = JSON.parse(localStorage.getItem("chat-storage"))?.state?.user
   ?._id;
 
