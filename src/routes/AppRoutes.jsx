@@ -18,6 +18,7 @@ import UsersFriendsList from "@/pages/UsersFriendsList";
 import Survey from "@/pages/Survey";
 import PostLikes from "@/pages/PostLikes";
 import NotFound from "@/pages/NotFound";
+import InProgress from "@/pages/InProgress";
 
 function AppRoutes() {
   return (
@@ -47,6 +48,7 @@ function AppRoutes() {
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
+          <Route path="/inprogress" element={<InProgress />} />
         </Routes>
       </Router>
     </div>

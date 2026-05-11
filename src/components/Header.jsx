@@ -1,4 +1,4 @@
-import { Search, X, User, Settings } from "lucide-react";
+import { Search, X, User, Settings, EyeIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -143,6 +143,10 @@ export function SocialHeader() {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="w-4 h-4" />
                   Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/inprogress")}>
+                  <EyeIcon className="w-4 h-4" />
+                  Profile Views
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
                   <Settings className="w-4 h-4" />
