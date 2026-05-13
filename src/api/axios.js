@@ -206,7 +206,7 @@ export const getAllProfiles = async () => {
 };
 
 export const getAllUsersProfile = async () => {
-  const { data } = await axiosInstance.get(`/profile/allprofiles`);
+  const { data } = await axiosInstance.get(`/profile/chart`);
   return data;
 };
 
