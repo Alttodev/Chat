@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ImageViewer } from "../modals/imageViewer";
 import { useImageModalStore } from "@/lib/zustand";
+import { isVideoMediaUrl } from "@/lib/media";
 
 const formatTime = (value) => {
   const date = new Date(value);
@@ -148,6 +149,10 @@ export default function MessagesList({
             : null;
           const hasOnlyImage = !!message.image && !message.text;
           const hasImageAndText = !!message.image && !!message.text;
+          const isVideoMessage = isVideoMediaUrl(
+            message?.image || "",
+            message?.mimeType || message?.mimetype || message?.type || "",
+          );
           const isDeleted =
             !!message?.isDeleted ||
             !!message?.deleted ||
@@ -212,7 +217,7 @@ export default function MessagesList({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}
-                    {!isDeleted && message.image && (
+                    {!isDeleted && message.image && !isVideoMessage && (
                       <img
                         onClick={() => {
                           open(message.image);
@@ -222,7 +227,19 @@ export default function MessagesList({
                           hasOnlyImage ? "" : "mb-2",
                         )}
                         src={message.image}
-                        alt="post"
+                        alt="message media"
+                      />
+                    )}
+                    {!isDeleted && message.image && isVideoMessage && (
+                      <video
+                        src={message.image}
+                        controls
+                        playsInline
+                        preload="metadata"
+                        className={cn(
+                          "rounded-md max-h-72 w-full bg-black object-contain",
+                          hasOnlyImage ? "" : "mb-2",
+                        )}
                       />
                     )}
                     {(message.text || isDeleted) && (

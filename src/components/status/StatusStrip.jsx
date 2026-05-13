@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Plus } from "lucide-react";
+import { Play, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -8,9 +8,23 @@ import {
   useStatusFeed,
   useUploadStatus,
 } from "@/hooks/statusHooks";
+import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
+import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
+
+const STATUS_UPLOAD_ACCEPT = "image/*,video/mp4";
+
+const isVideoMedia = (value) => {
+  const fileName = value?.name?.toLowerCase?.() || "";
+  return value?.type === "video/mp4" || fileName.endsWith(".mp4");
+};
+
+const isSupportedStatusFile = (file) => {
+  if (!file) return false;
+  return file.type?.startsWith("image/") || isVideoMedia(file);
+};
 
 function StatusBubble({
   label,
@@ -23,6 +37,10 @@ function StatusBubble({
   caption,
   onAddClick,
 }) {
+  const poster =
+    image && isVideoMediaUrl(image) ? getVideoPosterUrl(image) : "";
+  const isVideoPreview = image && isVideoMediaUrl(image);
+
   return (
     <div className="group flex shrink-0 snap-center flex-col items-center gap-2 text-center">
       <div className="relative">
@@ -41,14 +59,26 @@ function StatusBubble({
             <span className="absolute inset-0 rounded-full bg-white/20 blur-md" />
           ) : null}
           <Avatar className="h-full w-full border-2 border-background">
-            <AvatarImage
-              className="h-full w-full object-cover object-top"
-              src={image || "/placeholder.svg"}
-              alt={label}
-            />
-            <AvatarFallback className="bg-emerald-50 text-emerald-700 font-semibold">
-              {fallback}
-            </AvatarFallback>
+            {isVideoPreview ? (
+              <div className="h-full w-full overflow-hidden rounded-full">
+                <img
+                  className="h-full w-full object-cover object-top"
+                  src={poster || image || "/placeholder.svg"}
+                  alt={label}
+                />
+              </div>
+            ) : (
+              <>
+                <AvatarImage
+                  className="h-full w-full object-cover object-top"
+                  src={image || "/placeholder.svg"}
+                  alt={label}
+                />
+                <AvatarFallback className="bg-emerald-50 text-emerald-700 font-semibold">
+                  {fallback}
+                </AvatarFallback>
+              </>
+            )}
           </Avatar>
         </button>
 
@@ -130,6 +160,11 @@ export function StatusStrip({ compact = false, className }) {
 
     if (!file) return;
 
+    if (!isSupportedStatusFile(file)) {
+      toastError("Only image and MP4 files are allowed");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("image", file);
     formData.append("caption", "");
@@ -145,6 +180,8 @@ export function StatusStrip({ compact = false, className }) {
     })
     .slice(0, compact ? 6 : 10);
 
+  const myStatusImage = myStatus?.image || currentUser?.profileImage;
+
   return (
     <section
       className={cn(
@@ -155,7 +192,7 @@ export function StatusStrip({ compact = false, className }) {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*"
+        accept={STATUS_UPLOAD_ACCEPT}
         className="hidden"
         onChange={handleUpload}
       />
@@ -165,7 +202,7 @@ export function StatusStrip({ compact = false, className }) {
           <StatusBubble
             highlight
             label={isUploading ? "Uploading..." : "Your status"}
-            image={myStatus?.image || currentUser?.profileImage}
+            image={myStatusImage}
             fallback={currentUser?.userName?.charAt(0).toUpperCase() || "Y"}
             compact={compact}
             onClick={() => {
@@ -188,10 +225,12 @@ export function StatusStrip({ compact = false, className }) {
                 />
               ))
             : visibleStatuses.map((entry) => {
-                const friend = entry?.status?.user ;
+                const friend = entry?.status?.user;
                 const userId = friend?._id || friend?.id;
                 const statusId =
                   entry?.status?.id || entry?.status?._id || userId;
+                const statusImage =
+                  entry?.status?.image || friend?.profileImage;
 
                 if (!friend || !userId) return null;
 
@@ -200,7 +239,7 @@ export function StatusStrip({ compact = false, className }) {
                     key={statusId}
                     label={friend.userName}
                     online={friend.isOnline}
-                    image={entry?.status?.image}
+                    image={statusImage}
                     fallback={friend.userName?.charAt(0).toUpperCase() || "-"}
                     compact={compact}
                     caption={entry?.status?.caption}

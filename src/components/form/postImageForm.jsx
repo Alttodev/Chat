@@ -43,6 +43,14 @@ export function PostImageForm() {
     [hasText, hasImage, isSubmitting],
   );
 
+  const getSuccessMessage = (message, fallback) => {
+    if (typeof message === "string" && !/server error/i.test(message)) {
+      return message;
+    }
+
+    return fallback;
+  };
+
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
   };
@@ -66,7 +74,9 @@ export function PostImageForm() {
       }
 
       const res = await createPost(data);
-      toastSuccess(res?.message);
+      toastSuccess(
+        getSuccessMessage(res?.message, "Media uploaded successfully"),
+      );
       reset();
       setSelectedLocation(null);
       closeImageModal(null);

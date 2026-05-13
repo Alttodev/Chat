@@ -38,7 +38,10 @@ export const useSendChatMessage = () => {
       sendChatMessage({ targetUserId, formData }),
     onSuccess: (res) => {
       const conversationId = res?.conversationId || res?.conversation?._id;
-      const chatMessage = res?.chatMessage || res?.message;
+      const chatMessage =
+        res?.chatMessage ||
+        res?.data?.chatMessage ||
+        (res?.message && typeof res.message === "object" ? res.message : null);
 
       if (conversationId && chatMessage) {
         queryClient.setQueryData(

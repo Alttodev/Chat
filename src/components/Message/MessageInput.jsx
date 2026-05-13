@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Smile, Send, ImagePlus, X } from "lucide-react";
+import { Smile, Send, Video, X, ImagePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
 
@@ -97,7 +97,7 @@ export default function MessageInput({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/mp4"
           className="hidden"
           onChange={(e) => onFileChange(e.target.files?.[0] || null)}
         />

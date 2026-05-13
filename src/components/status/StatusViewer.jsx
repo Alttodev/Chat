@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Eye, X, Trash2, MoreVertical } from "lucide-react";
+import { ArrowLeft, Eye, Trash2, MoreVertical } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
+import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
 
@@ -11,6 +12,7 @@ import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
 
 const STATUS_DURATION = 5000;
+const MAX_VIDEO_DURATION = 60000;
 
 export function StatusViewer() {
   const { isOpen, status, closeStatus } = useStatusViewerStore();
@@ -20,12 +22,14 @@ export function StatusViewer() {
   const [isPaused, setIsPaused] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [mediaDuration, setMediaDuration] = useState(STATUS_DURATION);
 
   const animationFrameRef = useRef(null);
   const startTimeRef = useRef(0);
   const progressRef = useRef(0);
   const accumulatedProgressRef = useRef(0);
   const statusKeyRef = useRef("");
+  const videoRef = useRef(null);
 
   const { mutate: markSeen } = useMarkStatusSeen();
   const { mutate: deleteStatus } = useDeleteStatus();
@@ -33,7 +37,17 @@ export function StatusViewer() {
 
   const currentUserId = useAuthStore((state) => state.profileId);
 
-  const image = status?.status?.image || status?.image || "";
+  const mediaUrl = status?.status?.image || status?.image || "";
+  const mediaType =
+    status?.status?.resourceType ||
+    status?.resourceType ||
+    status?.status?.mimeType ||
+    status?.mimeType ||
+    status?.status?.mimetype ||
+    status?.mimetype ||
+    "";
+  const isVideo = isVideoMediaUrl(mediaUrl, mediaType);
+  const videoPoster = getVideoPosterUrl(mediaUrl);
   const caption = status?.status?.caption || status?.caption || "";
   const user = status?.status?.user || status?.user || {};
 
@@ -61,7 +75,13 @@ export function StatusViewer() {
     status?.status?.id ||
     status?._id ||
     status?.id ||
-    `${userName}-${image}-${caption}`;
+    `${userName}-${mediaUrl}-${caption}`;
+
+  const activeDuration = isVideo
+    ? isLoaded
+      ? mediaDuration
+      : MAX_VIDEO_DURATION
+    : STATUS_DURATION;
 
   useEffect(() => {
     if (isOpen && statusId && !hasMarkedSeenRef.current) {
@@ -91,6 +111,7 @@ export function StatusViewer() {
       setIsLoaded(false);
       setIsPaused(false);
       setShowViewers(false);
+      setMediaDuration(STATUS_DURATION);
       progressRef.current = 0;
       accumulatedProgressRef.current = 0;
       statusKeyRef.current = "";
@@ -105,6 +126,7 @@ export function StatusViewer() {
       setIsLoaded(false);
       setIsPaused(false);
       setShowViewers(false);
+      setMediaDuration(STATUS_DURATION);
 
       progressRef.current = 0;
       accumulatedProgressRef.current = 0;
@@ -123,7 +145,7 @@ export function StatusViewer() {
       const elapsed = now - startTimeRef.current;
 
       const nextProgress = Math.min(
-        accumulatedProgressRef.current + (elapsed / STATUS_DURATION) * 100,
+        accumulatedProgressRef.current + (elapsed / activeDuration) * 100,
         100,
       );
 
@@ -145,7 +167,18 @@ export function StatusViewer() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isOpen, isPaused, statusKey, closeStatus]);
+  }, [activeDuration, isOpen, isPaused, statusKey, closeStatus]);
+
+  useEffect(() => {
+    if (!isVideo || !videoRef.current) return;
+
+    if (isPaused) {
+      videoRef.current.pause();
+      return;
+    }
+
+    videoRef.current.play().catch(() => {});
+  }, [isVideo, isPaused, mediaUrl]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -159,19 +192,42 @@ export function StatusViewer() {
 
   if (!isOpen || !status) return null;
 
+  const handleVideoMetadata = () => {
+    const duration = videoRef.current?.duration;
+
+    if (Number.isFinite(duration) && duration > 0) {
+      setMediaDuration(Math.min(duration * 1000, MAX_VIDEO_DURATION));
+    }
+
+    setIsLoaded(true);
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/95">
       {/* Progress */}
       <div className="absolute top-0 left-0 w-full h-1 bg-white/20">
-        <div className="h-[7px] bg-emerald-600" style={{ width: `${progress}%` }} />
+        <div
+          className="h-[7px] bg-emerald-600"
+          style={{ width: `${progress}%` }}
+        />
       </div>
 
       <div className="flex h-full flex-col">
+        <button
+          type="button"
+          onClick={closeStatus}
+          className="absolute top-4 left-4 z-50 flex h-10 w-5 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 cursor-pointer"
+          aria-label="Back"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
         {/* Header */}
-        <header className="flex items-center justify-between px-4 pt-4 pb-3 text-white">
+        <header className="flex items-center justify-between px-2 pl-12 pt-4 pb-3 text-white">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.profileImage || image} />
+              <AvatarImage
+                src={user?.profileImage || videoPoster || mediaUrl}
+              />
               <AvatarFallback>{fallback}</AvatarFallback>
             </Avatar>
 
@@ -207,10 +263,6 @@ export function StatusViewer() {
                 )}
               </div>
             )}
-
-            {/* <button onClick={closeStatus} className="cursor-pointer">
-              <X />
-            </button> */}
           </div>
         </header>
 
@@ -220,14 +272,31 @@ export function StatusViewer() {
           className="flex flex-1 items-center justify-center px-4 pb-8"
         >
           <div className="relative w-full max-w-[420px] h-full">
-            <img
-              src={image}
-              className={cn(
-                "w-full h-full object-contain rounded-3xl transition",
-                isLoaded ? "opacity-100" : "opacity-0",
-              )}
-              onLoad={() => setIsLoaded(true)}
-            />
+            {isVideo ? (
+              <video
+                ref={videoRef}
+                src={mediaUrl}
+                poster={videoPoster || undefined}
+                autoPlay
+                playsInline
+                preload="metadata"
+                className={cn(
+                  "w-full h-full object-contain rounded-3xl transition pointer-events-none",
+                  isLoaded ? "opacity-100" : "opacity-0",
+                )}
+                onLoadedMetadata={handleVideoMetadata}
+              />
+            ) : (
+              <img
+                src={mediaUrl}
+                className={cn(
+                  "w-full h-full object-contain rounded-3xl transition",
+                  isLoaded ? "opacity-100" : "opacity-0",
+                )}
+                onLoad={() => setIsLoaded(true)}
+                alt={caption || userName}
+              />
+            )}
 
             {!isLoaded && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/5 rounded-3xl">

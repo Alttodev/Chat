@@ -18,10 +18,10 @@ export default function PostContent({ text, className }) {
           href={location.url}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex max-w-full items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/20"
+          className="inline-flex max-w-full items-center gap-1 text-xs font-medium text-blue-600 transition-colors hover:text-blue-700 hover:underline sm:text-sm dark:text-blue-400 dark:hover:text-blue-300"
         >
-          <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-          <span>{location.name}</span>
+          <MapPin className="h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5" />
+          <span className="min-w-0 break-words">{location.name}</span>
         </a>
       ) : null}
     </div>

@@ -38,6 +38,14 @@ export function PostForm({ userProfile }) {
     [hasText, isSubmitting, selectedLocation],
   );
 
+  const getSuccessMessage = (message, fallback) => {
+    if (typeof message === "string" && !/server error/i.test(message)) {
+      return message;
+    }
+
+    return fallback;
+  };
+
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
   };
@@ -54,7 +62,9 @@ export function PostForm({ userProfile }) {
         selectedLocation,
       );
       const res = await createPost({ ...formData, postText });
-      toastSuccess(res?.message);
+      toastSuccess(
+        getSuccessMessage(res?.message, "Post uploaded successfully"),
+      );
       reset();
       setSelectedLocation(null);
     } catch (error) {

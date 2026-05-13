@@ -43,6 +43,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
+import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();

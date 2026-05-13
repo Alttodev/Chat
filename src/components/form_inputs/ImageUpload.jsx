@@ -1,25 +1,31 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { Upload, X, ImageIcon, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
 
 export function ImageUpload({ name, control, rules }) {
-  const [imagePreview, setImagePreview] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState("");
   const fileInputRef = useRef(null);
 
   const handleImageSelect = (file, onChange) => {
     if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    setPreviewType(file.type || "");
     onChange(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setImagePreview(e.target?.result);
-    reader.readAsDataURL(file);
   };
 
   const handleImageRemove = (onChange) => {
     onChange(null);
-    setImagePreview(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    setPreviewType("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -28,12 +34,23 @@ export function ImageUpload({ name, control, rules }) {
   const handleDrop = (e, onChange) => {
     e.preventDefault();
     const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith("image/")) {
+    if (
+      files.length > 0 &&
+      (files[0].type.startsWith("image/") || files[0].type === "video/mp4")
+    ) {
       handleImageSelect(files[0], onChange);
     }
   };
 
   const handleDragOver = (e) => e.preventDefault();
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   return (
     <Controller
@@ -47,7 +64,7 @@ export function ImageUpload({ name, control, rules }) {
             className={cn(
               "border-2 border-dashed rounded-lg w-32 h-32 flex flex-col items-center justify-center text-center p-2",
               "hover:border-primary/50 hover:bg-muted/50",
-              "focus-within:border-primary focus-within:bg-muted/50"
+              "focus-within:border-primary focus-within:bg-muted/50",
             )}
             onDrop={(e) => handleDrop(e, onChange)}
             onDragOver={handleDragOver}
@@ -55,7 +72,7 @@ export function ImageUpload({ name, control, rules }) {
             <Input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/mp4"
               onChange={(e) => handleImageSelect(e.target.files?.[0], onChange)}
               className="hidden"
             />
@@ -76,7 +93,11 @@ export function ImageUpload({ name, control, rules }) {
               </div>
             ) : (
               <div className="flex flex-col items-center text-xs">
-                <ImageIcon className="w-4 h-4 text-green-600 mb-1" />
+                {previewType.startsWith("video/") ? (
+                  <Video className="w-4 h-4 text-emerald-600 mb-1" />
+                ) : (
+                  <ImageIcon className="w-4 h-4 text-green-600 mb-1" />
+                )}
                 <span className="truncate max-w-[90px]">{value.name}</span>
                 <Button
                   type="button"
@@ -93,12 +114,24 @@ export function ImageUpload({ name, control, rules }) {
 
           {/* Preview Box */}
           <div className="w-32 h-32 border rounded-lg flex items-center justify-center relative overflow-hidden">
-            {imagePreview ? (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
+            {previewUrl ? (
+              previewType.startsWith("video/") ? (
+                <video
+                  src={previewUrl}
+                  className="w-full h-full object-cover"
+                 
+                  muted
+                  loop
+                  playsInline
+                  controls={false}
+                />
+              ) : (
+                <img
+                  src={previewUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              )
             ) : (
               <div className="flex flex-col items-center text-muted-foreground text-xs">
                 <ImageIcon className="w-5 h-5 mb-1" />
@@ -106,7 +139,7 @@ export function ImageUpload({ name, control, rules }) {
               </div>
             )}
 
-            {imagePreview && (
+            {previewUrl && (
               <Button
                 type="button"
                 variant="secondary"
