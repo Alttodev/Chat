@@ -21,6 +21,7 @@ import NotFound from "@/pages/NotFound";
 import InProgress from "@/pages/InProgress";
 import ProfileViews from "@/pages/ProfileViews";
 import UsersFollowingList from "@/pages/UsersFollowingList";
+import Reels from "@/pages/Reels";
 
 function AppRoutes() {
   return (
@@ -44,6 +45,7 @@ function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/survey" element={<Survey />} />
+              <Route path="/reels" element={<Reels />} />
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/users/:id" element={<UsersInfo />} />
               <Route path="/userslist" element={<UsersList />} />

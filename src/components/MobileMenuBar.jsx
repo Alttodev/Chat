@@ -1,4 +1,4 @@
-import { Home, MessageCircle, Users } from "lucide-react";
+import { Clapperboard, Home, MessageCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 
@@ -7,13 +7,14 @@ export function MobileMenuBar() {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
+    { icon: Clapperboard, label: "Reels", path: "/reels" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-background border-t border-border shadow-sm">
-      <nav className="grid grid-cols-3 gap-1 px-3 py-2">
+      <nav className="grid grid-cols-4 gap-1 px-3 py-2">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
 

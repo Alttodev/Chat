@@ -14,11 +14,12 @@ import { Outlet, useLocation } from "react-router-dom";
 function HomeLayout() {
   const { pathname } = useLocation();
   const isHome = pathname === "/home";
+  const isReels = pathname === "/reels";
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
       <SocialHeader />
-      <StatusStrip className="md:hidden" />
+      {!isReels ? <StatusStrip className="md:hidden" /> : null}
       {pathname === "/home" ? (
         <StatusStrip className="hidden md:block" />
       ) : null}
@@ -37,7 +38,7 @@ function HomeLayout() {
         <main
           className={cn(
             " flex-1 pb-8 px-4 md:ml-64 md:mr-80",
-            isHome ? "pt-50 sm:pt-60" : "pt-50 sm:pt-20",
+            isReels ? "pt-20 sm:pt-24 px-2 sm:px-4" : isHome ? "pt-50 sm:pt-60" : "pt-50 sm:pt-20",
           )}
         >
           <Outlet />
