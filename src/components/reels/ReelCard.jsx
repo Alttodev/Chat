@@ -1,17 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Bookmark,
-  Heart,
-  MessageCircle,
-  Pause,
-  Play,
-  Send,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getVideoPosterUrl } from "@/lib/media";
+import { usePostLike } from "@/hooks/postHooks";
+import { toastError } from "@/lib/toast";
 
 function ActionButton({ icon, label, active = false, onClick }) {
   const Icon = icon;
@@ -23,14 +16,14 @@ function ActionButton({ icon, label, active = false, onClick }) {
         event.stopPropagation();
         onClick?.(event);
       }}
-      className="flex flex-col items-center gap-1 text-white/95 transition hover:scale-105"
+      className="flex flex-col items-center gap-1 text-white/95 transition hover:scale-105 cursor-pointer"
       aria-label={label}
     >
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10">
         <Icon
           className={cn(
             "h-5 w-5",
-            active ? "fill-current text-rose-500" : "text-white",
+            active ? "fill-current text-emerald-500" : "text-white",
           )}
         />
       </span>
@@ -38,32 +31,30 @@ function ActionButton({ icon, label, active = false, onClick }) {
   );
 }
 
-export function ReelCard({
-  post,
-  index,
-  isActive,
-  onLike,
-  onComment,
-  onShare,
-}) {
+export function ReelCard({ post, isActive, onComment, onShare }) {
   const videoRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const [showCaption, setShowCaption] = useState(true);
 
-  const hasLiked = !!post?.likedByMe;
+  const [showCaption, setShowCaption] = useState(true);
+  const { mutateAsync: postLike } = usePostLike();
+  const [isLiked, setIsLiked] = useState(!!post?.likedByMe);
+  const [likeCount, setLikeCount] = useState(
+    typeof post?.likes === "number" ? post.likes : 0,
+  );
+
   const userInfo = post?.user || {};
   const videoPoster = getVideoPosterUrl(post?.image || "");
-  const likeCount = typeof post?.likes === "number" ? post.likes : 0;
   const commentCount = post?.commentCount || post?.commentsCount || 0;
 
   useEffect(() => {
     setIsPlaying(true);
-    setIsMuted(true);
+
     setIsReady(false);
     setShowCaption(true);
-  }, [post?.image]);
+    setIsLiked(!!post?.likedByMe);
+    setLikeCount(typeof post?.likes === "number" ? post.likes : 0);
+  }, [post?._id, post?.image, post?.likedByMe, post?.likes]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -92,9 +83,22 @@ export function ReelCard({
     setShowCaption(false);
   };
 
-  const handleToggleMute = (event) => {
+  const handleLike = async (event) => {
     event.stopPropagation();
-    setIsMuted((prev) => !prev);
+
+    const nextLiked = !isLiked;
+    const nextLikeCount = Math.max(0, likeCount + (nextLiked ? 1 : -1));
+
+    setIsLiked(nextLiked);
+    setLikeCount(nextLikeCount);
+
+    try {
+      await postLike(post._id);
+    } catch (error) {
+      setIsLiked(!nextLiked);
+      setLikeCount(likeCount);
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
   const handleVideoEnded = () => {
@@ -126,7 +130,7 @@ export function ReelCard({
           src={post?.image}
           poster={videoPoster || undefined}
           autoPlay
-          muted={isMuted}
+          // muted={isMuted}
           loop
           playsInline
           preload="metadata"
@@ -162,9 +166,6 @@ export function ReelCard({
                     <span className="truncate font-semibold">
                       {userInfo?.userName || "User"}
                     </span>
-                    <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-white/80">
-                      Reel {index + 1}
-                    </span>
                   </div>
                   {post?.caption ? (
                     <p
@@ -190,51 +191,22 @@ export function ReelCard({
               <ActionButton
                 icon={Heart}
                 label="Like reel"
-                active={hasLiked}
-                onClick={onLike}
+                active={isLiked}
+                onClick={handleLike}
               />
               <ActionButton
                 icon={MessageCircle}
                 label="Comment on reel"
                 onClick={onComment}
               />
-              <ActionButton
-                icon={Send}
-                label="Share reel"
-                onClick={onShare}
-              />
-              <ActionButton
+              <ActionButton icon={Send} label="Share reel" onClick={onShare} />
+              {/* <ActionButton
                 icon={Bookmark}
                 label="Save reel"
                 onClick={() => {}}
-              />
+              /> */}
             </div>
           </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={handleToggleMute}
-          className="absolute right-4 top-4 z-20 rounded-full bg-black/45 p-2 text-white backdrop-blur-md transition hover:bg-black/70"
-          aria-label={isMuted ? "Unmute reel" : "Mute reel"}
-        >
-          {isMuted ? (
-            <VolumeX className="h-4 w-4" />
-          ) : (
-            <Volume2 className="h-4 w-4" />
-          )}
-        </button>
-
-        <div className="absolute left-4 top-4 z-20 rounded-full bg-black/35 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur-md">
-          {isPlaying ? (
-            <span className="inline-flex items-center gap-2">
-              <Pause className="h-3.5 w-3.5" /> Playing
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-2">
-              <Play className="h-3.5 w-3.5" /> Paused
-            </span>
-          )}
         </div>
       </div>
     </section>

@@ -173,7 +173,7 @@ export function PostImageWithLikes({
         <>
           <Avatar
             onClick={handleOpenLikes}
-            className="absolute left-3 bottom-3 z-10 w-13 h-13 text-emerald-600 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] like-fly cursor-pointer"
+            className="absolute left-3 bottom-3 z-10 w-10 h-10 text-emerald-600 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] like-fly cursor-pointer"
           >
             <AvatarImage
               className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"

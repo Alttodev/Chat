@@ -266,22 +266,26 @@ export default function Message() {
       );
 
       if (matched) {
-        const currentTargetId = selectedContact?.targetUserId?.toString();
-        const nextTargetId = matched?.targetUserId?.toString();
+        setSelectedContact((prev) => {
+          const currentTargetId = prev?.targetUserId?.toString();
+          const nextTargetId = matched?.targetUserId?.toString();
 
-        if (currentTargetId !== nextTargetId) {
-          setSelectedContact(matched);
-        }
+          if (currentTargetId === nextTargetId) {
+            return prev;
+          }
+
+          return matched;
+        });
       } else if (!selectedContact) {
-        setSelectedContact(contactsWithTarget[0]);
+        setSelectedContact((prev) => prev || contactsWithTarget[0]);
       }
 
-      setShowChat(true);
+      setShowChat((prev) => (prev ? prev : true));
       return;
     }
 
     if (!selectedContact) {
-      setSelectedContact(contactsWithTarget[0]);
+      setSelectedContact((prev) => prev || contactsWithTarget[0]);
     }
   }, [contactsWithTarget, selectedContact, targetUserIdFromUrl]);
 
@@ -296,9 +300,27 @@ export default function Message() {
     );
 
     if (matched) {
-      setSelectedContact(matched);
+      setSelectedContact((prev) => {
+        const prevTargetId = prev?.targetUserId?.toString();
+        const nextTargetId = matched?.targetUserId?.toString();
+        const prevConversationId = prev?.conversationId?.toString?.() || null;
+        const nextConversationId = matched?.conversationId?.toString?.() || null;
+
+        if (
+          prevTargetId === nextTargetId &&
+          prevConversationId === nextConversationId
+        ) {
+          return prev;
+        }
+
+        return matched;
+      });
     }
-  }, [contacts, selectedContact]);
+  }, [
+    contacts,
+    selectedContact?.targetUserId,
+    selectedContact?.conversationId,
+  ]);
 
   useEffect(() => {
     setNewMessage("");

@@ -11,19 +11,16 @@ import { usePostList } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
 import { useZustandSharePopup } from "@/lib/zustand";
-import { useNavigate } from "react-router-dom";
-import { toastError } from "@/lib/toast";
-import { usePostLike } from "@/hooks/postHooks";
+import { ReelCommentsDialog } from "./ReelCommentsDialog";
 
 export function ReelsFeed() {
-  const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
-  const { mutateAsync: postLike } = usePostLike();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     usePostList();
   const scrollRef = useRef(null);
   const itemRefs = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedCommentPost, setSelectedCommentPost] = useState(null);
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
@@ -73,14 +70,6 @@ export function ReelsFeed() {
     }
   };
 
-  const handleLike = async (post) => {
-    try {
-      await postLike(post._id);
-    } catch (error) {
-      toastError(error?.response?.data?.message || "Something went wrong");
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
@@ -94,15 +83,13 @@ export function ReelsFeed() {
 
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
-      <div className="flex items-center justify-between px-1 pt-1">
+      <div className="flex items-center justify-between px-1 ">
         <div>
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600">
-            <Clapperboard className="h-4 w-4" />
+          <p className="inline-flex items-center gap-2 text-xl font-semibold uppercase tracking-[0.22em] text-emerald-600">
+            <Clapperboard className="h-6 w-6" />
             Reels
           </p>
-          <h1 className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">
-            Discover short video stories
-          </h1>
+         
         </div>
 
         <div className="hidden items-center gap-2 sm:flex">
@@ -146,8 +133,7 @@ export function ReelsFeed() {
                 post={post}
                 index={index}
                 isActive={index === activeIndex}
-                onLike={() => handleLike(post)}
-                onComment={() => navigate(`/home?postId=${post._id}`)}
+                onComment={() => setSelectedCommentPost(post)}
                 onShare={() => openShareModal(post?._id)}
               />
             </div>
@@ -172,6 +158,16 @@ export function ReelsFeed() {
           ) : null}
         </div>
       </div>
+
+      <ReelCommentsDialog
+        post={selectedCommentPost}
+        open={Boolean(selectedCommentPost)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedCommentPost(null);
+          }
+        }}
+      />
     </div>
   );
 }

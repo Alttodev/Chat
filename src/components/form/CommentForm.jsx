@@ -6,8 +6,21 @@ import { usePostComment } from "@/hooks/postHooks";
 import { Send } from "lucide-react";
 import { useImageModalStore } from "@/lib/zustand";
 import MentionTextarea from "../form_inputs/MentionTextarea";
+import { cn } from "@/lib/utils";
 
-export function CommentForm({ userProfile, postId }) {
+export function CommentForm({
+  userProfile,
+  postId,
+  className,
+  avatarClassName,
+  textareaClassName,
+  mirrorClassName,
+  mirrorTextClassName,
+  placeholderClassName,
+  highlightClassName,
+  buttonClassName,
+  placeholder = "Write a comment...",
+}) {
   const { open } = useImageModalStore();
   const { mutateAsync: createComment } = usePostComment();
 
@@ -35,9 +48,9 @@ export function CommentForm({ userProfile, postId }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className={cn("w-full", className)}>
       <div className="flex gap-3">
-        <Avatar className="w-8 h-8 text-emerald-600">
+        <Avatar className={cn("h-8 w-8 text-emerald-600", avatarClassName)}>
           <AvatarImage
             onClick={() => open(userProfile?.profileImage)}
             className="w-full h-full object-cover object-top cursor-pointer"
@@ -50,9 +63,16 @@ export function CommentForm({ userProfile, postId }) {
         <div className="flex-1 gap-2">
           <MentionTextarea
             name="comment"
-            className="flex-1 text-sm sm:text-base placeholder:text-xs sm:placeholder:text-sm"
+            className={cn(
+              "flex-1 text-sm placeholder:text-xs sm:text-base sm:placeholder:text-sm",
+              textareaClassName,
+            )}
+            mirrorClassName={mirrorClassName}
+            mirrorTextClassName={mirrorTextClassName}
+            placeholderClassName={placeholderClassName}
+            highlightClassName={highlightClassName}
             control={control}
-            placeholder="Write a comment..."
+            placeholder={placeholder}
             disabled={isSubmitting}
           />
         </div>
@@ -60,7 +80,10 @@ export function CommentForm({ userProfile, postId }) {
         <Button
           type="submit"
           disabled={!commentValue || isSubmitting}
-          className="w-12 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+          className={cn(
+            "h-12 w-12 rounded-lg bg-emerald-600 py-3 text-base text-white shadow-sm transition hover:bg-emerald-700",
+            buttonClassName,
+          )}
         >
           <Send className="w-4 h-4" />
         </Button>

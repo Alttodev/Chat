@@ -11,16 +11,20 @@ const escapeHtml = (value) =>
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 
-const renderHighlightedText = (value, placeholder) => {
+const renderHighlightedText = (
+  value,
+  placeholder,
+  { placeholderClassName, highlightClassName },
+) => {
   if (!value) {
-    return `<span class="text-muted-foreground">${escapeHtml(placeholder || "")}</span>`;
+    return `<span class="${placeholderClassName}">${escapeHtml(placeholder || "")}</span>`;
   }
 
   const safeValue = escapeHtml(value);
   return safeValue.replace(
     mentionPattern,
     (_match, prefix, mention) =>
-      `${prefix}<span class="font-medium text-blue-600 dark:text-blue-300">${mention}</span>`,
+      `${prefix}<span class="${highlightClassName}">${mention}</span>`,
   );
 };
 
@@ -31,6 +35,10 @@ function MentionTextarea({
   disabled,
   rules,
   className,
+  mirrorClassName,
+  mirrorTextClassName,
+  placeholderClassName = "text-muted-foreground",
+  highlightClassName = "font-medium text-blue-600 dark:text-blue-300",
 }) {
   const mirrorRef = useRef(null);
 
@@ -62,15 +70,20 @@ function MentionTextarea({
             className={cn(
               sharedClassName,
               "pointer-events-none absolute inset-0 overflow-auto whitespace-pre-wrap break-words bg-background text-foreground",
+              mirrorClassName,
             )}
           >
             <div
               className={cn(
                 "whitespace-pre-wrap break-words text-foreground",
+                mirrorTextClassName,
                 textMetricsClass,
               )}
               dangerouslySetInnerHTML={{
-                __html: renderHighlightedText(field.value, placeholder),
+                __html: renderHighlightedText(field.value, placeholder, {
+                  placeholderClassName,
+                  highlightClassName,
+                }),
               }}
             />
           </div>

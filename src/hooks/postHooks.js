@@ -127,6 +127,7 @@ export const usePostComments = (id) => {
   return useQuery({
     queryKey: ["comment", id],
     queryFn: () => getUserPostComments(id),
+    enabled: !!id,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
   });
