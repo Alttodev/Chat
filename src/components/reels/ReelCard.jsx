@@ -19,10 +19,10 @@ function ActionButton({ icon, label, active = false, onClick }) {
       className="flex cursor-pointer flex-col items-center gap-1 text-white/95 transition hover:scale-105"
       aria-label={label}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10">
+      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10 sm:h-11 sm:w-11">
         <Icon
           className={cn(
-            "h-5 w-5",
+            "h-4 w-4 sm:h-5 sm:w-5",
             active ? "fill-current text-emerald-500" : "text-white",
           )}
         />
@@ -151,7 +151,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
         <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-none space-y-2 text-left text-white sm:max-w-[65%] sm:space-y-3">
+            <div className="max-w-none space-y-2 pr-20 text-left text-white sm:max-w-[65%] sm:space-y-3 sm:pr-0">
               <div className="flex items-start gap-3 sm:items-center">
                 <Avatar className="h-10 w-10 border border-white/20">
                   <AvatarImage
@@ -184,12 +184,12 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/75 sm:text-xs">
                 <span>{likeCount} likes</span>
-                <span>{"•"}</span>
+              
                 <span>{commentCount} comments</span>
               </div>
             </div>
 
-            <div className="flex flex-row items-center gap-3 self-end pb-0 sm:flex-col sm:items-center sm:gap-4 sm:pb-1">
+            <div className="absolute bottom-4 right-3 z-20 flex flex-col items-center gap-2 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
               <ActionButton
                 icon={Heart}
                 label="Like reel"
