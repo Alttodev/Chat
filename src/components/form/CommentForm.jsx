@@ -1,11 +1,11 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toastError } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePostComment } from "@/hooks/postHooks";
 import { Send } from "lucide-react";
 import { useImageModalStore } from "@/lib/zustand";
-import MentionTextarea from "../form_inputs/MentionTextarea";
+import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 
 export function CommentForm({
@@ -14,10 +14,6 @@ export function CommentForm({
   className,
   avatarClassName,
   textareaClassName,
-  mirrorClassName,
-  mirrorTextClassName,
-  placeholderClassName,
-  highlightClassName,
   buttonClassName,
   placeholder = "Write a comment...",
 }) {
@@ -61,19 +57,21 @@ export function CommentForm({
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 gap-2">
-          <MentionTextarea
+          <Controller
             name="comment"
-            className={cn(
-              "flex-1 text-sm placeholder:text-xs sm:text-base sm:placeholder:text-sm",
-              textareaClassName,
-            )}
-            mirrorClassName={mirrorClassName}
-            mirrorTextClassName={mirrorTextClassName}
-            placeholderClassName={placeholderClassName}
-            highlightClassName={highlightClassName}
             control={control}
-            placeholder={placeholder}
-            disabled={isSubmitting}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                placeholder={placeholder}
+                disabled={isSubmitting}
+                className={cn(
+                  "min-h-[60px] resize-none text-sm placeholder:text-xs sm:text-base sm:placeholder:text-sm",
+                  "border-input bg-background text-foreground caret-foreground",
+                  textareaClassName,
+                )}
+              />
+            )}
           />
         </div>
 

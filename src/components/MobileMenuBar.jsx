@@ -22,7 +22,7 @@ export function MobileMenuBar() {
             <Link key={item.label} to={item.path}>
               <Button
                 variant="ghost"
-                className={`w-full justify-center gap-2 h-11 rounded-xl ${
+                className={`flex h-10 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 ${
                   isActive
                     ? "bg-emerald-600/10 text-emerald-600"
                     : "text-muted-foreground hover:text-emerald-600 hover:bg-emerald-600/10"
@@ -30,7 +30,9 @@ export function MobileMenuBar() {
                 aria-label={item.label}
               >
                 <item.icon className="w-5 h-5" />
-                {/* <span className="text-sm font-medium">{item.label}</span> */}
+                <span className="text-[10px] font-medium leading-none tracking-tight">
+                  {item.label}
+                </span>
               </Button>
             </Link>
           );

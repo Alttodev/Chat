@@ -197,10 +197,6 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
               textareaClassName="min-h-[56px] border-white/10 bg-white/5 text-white placeholder:text-white/35 caret-white focus-visible:ring-emerald-400/50"
               buttonClassName="shrink-0 bg-emerald-500 hover:bg-emerald-600"
               placeholder="Write a comment for this reel..."
-              mirrorClassName="border-white/10 bg-white/5 text-white/90"
-              mirrorTextClassName="text-white/90"
-              placeholderClassName="text-white/35"
-              highlightClassName="font-medium text-cyan-300"
             />
           </div>
         </div>
