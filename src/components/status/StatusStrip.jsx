@@ -148,7 +148,7 @@ export function StatusStrip({ compact = false, className }) {
   return (
     <section
       className={cn(
-        "fixed top-16 left-0 right-0 z-40 mx-auto w-full border-emerald-100/80 bg-background/95 from-emerald-50 via-background to-cyan-50 p-3 sm:p-4 md:left-64 md:right-80 md:top-16 md:mx-4 md:w-auto rounded-sm md:border md:border-emerald-100/70 md:bg-white/80 md:backdrop-blur-xl md:shadow-[0_14px_40px_rgba(15,23,42,0.08)] md:p-4 lg:p-5",
+        "fixed top-16 left-0 right-0 z-40 mx-auto w-full border-emerald-100/80 bg-background/95 from-emerald-50 via-background to-cyan-50 p-3 sm:p-4 md:left-64 md:right-80 md:top-16 md:mx-4 md:w-auto rounded-sm md:border md:border-emerald-100/70 md:bg-white/80 md:backdrop-blur-xl md:shadow-[0_14px_40px_rgba(15,23,42,0.08)] md:p-4 lg:p-5 dark:border-white/10 dark:bg-black/95 dark:md:bg-black/90 dark:md:shadow-[0_14px_40px_rgba(0,0,0,0.55)]",
         className,
       )}
     >

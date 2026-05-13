@@ -18,7 +18,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-2xl border border-emerald-100 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur dark:border-emerald-500/20 dark:bg-slate-900/95">
+    <div className="rounded-2xl border border-emerald-100 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur dark:border-emerald-500/20 dark:bg-black/95">
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-500 dark:text-emerald-300">
         Year
       </p>
@@ -39,7 +39,7 @@ const StatCard = ({ title, value, subtitle, icon }) => {
   const Icon = icon;
 
   return (
-    <Card className="group overflow-hidden rounded-3xl border border-emerald-100 bg-white/90 shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-emerald-500/20 dark:bg-slate-900/90">
+    <Card className="group overflow-hidden rounded-3xl border border-emerald-100 bg-white/90 shadow-sm backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:border-emerald-500/20 dark:bg-black/90">
       <CardContent className="relative p-5">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-50/80 via-transparent to-transparent opacity-70 dark:from-emerald-500/10 dark:opacity-60" />
         <div className="relative flex items-start justify-between gap-4">
@@ -115,7 +115,7 @@ const Survey = () => {
 
   return (
     <div className="relative w-full overflow-hidden px-4 pb-20 sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[380px] bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(15,23,42,0.08),transparent_35%),linear-gradient(to_bottom,rgba(240,253,244,0.95),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.18),transparent_38%),radial-gradient(circle_at_top_right,rgba(148,163,184,0.12),transparent_35%),linear-gradient(to_bottom,rgba(2,6,23,0.94),rgba(15,23,42,0))]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[380px] bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(15,23,42,0.08),transparent_35%),linear-gradient(to_bottom,rgba(240,253,244,0.95),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.18),transparent_38%),radial-gradient(circle_at_top_right,rgba(148,163,184,0.12),transparent_35%),linear-gradient(to_bottom,rgba(0,0,0,0.98),rgba(0,0,0,0.92))]" />
       <div className="pointer-events-none absolute left-8 top-24 -z-10 h-28 w-28 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-400/10" />
       <div className="pointer-events-none absolute right-12 top-40 -z-10 h-32 w-32 rounded-full bg-slate-300/20 blur-3xl dark:bg-slate-500/10" />
 
@@ -124,13 +124,13 @@ const Survey = () => {
           <StatCard
             title="Total Users"
             value={totalUsers}
-            subtitle="All users in selected range"
+            subtitle="Users"
             icon={Users}
           />
           <StatCard
             title="Total Posts"
             value={totalPosts ?? 0}
-            subtitle="All posts across profiles"
+            subtitle="Posts"
             icon={FileText}
           />
           <StatCard
@@ -145,8 +145,8 @@ const Survey = () => {
           />
         </div>
 
-        <Card className="overflow-hidden rounded-[2rem] border border-emerald-100 bg-white/90 shadow-[0_22px_70px_-28px_rgba(15,23,42,0.28)] backdrop-blur dark:border-emerald-500/20 dark:bg-slate-900/90 dark:shadow-[0_22px_70px_-28px_rgba(2,6,23,0.65)]">
-          <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-white via-emerald-50/60 to-white pb-4 dark:border-slate-800 dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-900">
+        <Card className="overflow-hidden rounded-[2rem] border border-emerald-100 bg-white/90 shadow-[0_22px_70px_-28px_rgba(15,23,42,0.28)] backdrop-blur dark:border-emerald-500/20 dark:bg-black/90 dark:shadow-[0_22px_70px_-28px_rgba(0,0,0,0.85)]">
+          <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-white via-emerald-50/60 to-white pb-4 dark:border-slate-800 dark:from-black dark:via-zinc-950 dark:to-black">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle className="text-lg font-black tracking-tight text-slate-900 sm:text-xl dark:text-slate-100">
@@ -249,7 +249,7 @@ const Survey = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-emerald-200 bg-emerald-50/40 px-6 text-center dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-emerald-200 bg-emerald-50/40 px-6 text-center dark:border-emerald-500/20 dark:bg-black/80">
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                     No chart data available.
                   </p>

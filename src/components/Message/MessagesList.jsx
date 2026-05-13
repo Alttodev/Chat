@@ -26,6 +26,29 @@ const formatTime = (value) => {
   });
 };
 
+const getDayLabel = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isSameDay = (a, b) =>
+    a.getDate() === b.getDate() &&
+    a.getMonth() === b.getMonth() &&
+    a.getFullYear() === b.getFullYear();
+
+  if (isSameDay(date, today)) return "Today";
+  if (isSameDay(date, yesterday)) return "Yesterday";
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 const getStatusIcon = (status) => {
   switch (status) {
     case "sent":
@@ -75,6 +98,7 @@ export default function MessagesList({
   typingUserName,
 }) {
   const { open } = useImageModalStore();
+  let previousDayLabel = "";
 
   const TypingBubble = () => (
     <div className="flex gap-3 max-w-[80%]">
@@ -111,6 +135,10 @@ export default function MessagesList({
     <ScrollArea className="flex-1 p-4 ">
       <div className="space-y-4 ">
         {messages.map((message) => {
+          const dayLabel = getDayLabel(message.createdAt || message.timestamp);
+          const showDaySeparator = dayLabel && dayLabel !== previousDayLabel;
+          previousDayLabel = dayLabel;
+
           const isOwnMessage =
             message?.sender?._id?.toString() === currentUserId?.toString();
           const status = isOwnMessage
@@ -128,91 +156,102 @@ export default function MessagesList({
           const deletedText = message?.deletedText || "Message deleted";
 
           return (
-            <div
-              key={message._id || message.id}
-              className={cn(
-                "flex gap-3 max-w-[80%]",
-                isOwnMessage ? "ml-auto flex-row-reverse" : "",
-              )}
-            >
+            <div key={message._id || message.id}>
+              {showDaySeparator ? (
+                <div className="flex items-center gap-3 py-3">
+                  <span className="h-px flex-1 bg-border/70 dark:bg-white/10" />
+                  <span className="inline-flex items-center rounded-full border border-border bg-background/90 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/90 dark:text-slate-300">
+                    {dayLabel}
+                  </span>
+                  <span className="h-px flex-1 bg-border/70 dark:bg-white/10" />
+                </div>
+              ) : null}
+
               <div
                 className={cn(
-                  "flex flex-col gap-1",
-                  isOwnMessage ? "items-end" : "items-start",
+                  "flex gap-3 max-w-[80%]",
+                  isOwnMessage ? "ml-auto flex-row-reverse" : "",
                 )}
               >
                 <div
                   className={cn(
-                    "rounded-lg max-w-md break-words break-all whitespace-pre-wrap overflow-hidden relative",
-                    hasOnlyImage || hasImageAndText
-                      ? "bg-transparent p-0"
-                      : isOwnMessage
-                        ? "px-4 py-2 bg-emerald-600 text-white rounded-br-md"
-                        : "px-4 py-2 bg-muted text-muted-foreground rounded-bl-md",
+                    "flex flex-col gap-1",
+                    isOwnMessage ? "items-end" : "items-start",
                   )}
                 >
-                  {isOwnMessage && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <span className="absolute -top-0 -right-0 cursor-pointer  pt-1 ">
-                          <MoreVertical className="w-3 h-3 text-white-foreground" />
-                        </span>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => onDeleteMessage?.(message)}
-                          disabled={
-                            deletingMessageId === message?._id ||
-                            !message?._id ||
-                            isDeleted
-                          }
-                          className="cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
-                          <span className="text-red-500">Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                  {!isDeleted && message.image && (
-                    <img
-                      onClick={() => {
-                        open(message.image);
-                      }}
-                      className={cn(
-                        "rounded-md max-h-72 object-cover cursor-pointer hover:scale-[1.01] transition",
-                        hasOnlyImage ? "" : "mb-2",
-                      )}
-                      src={message.image}
-                      alt="post"
-                    />
-                  )}
-                  {(message.text || isDeleted) && (
-                    <p
-                      className={cn(
-                        "text-sm leading-relaxed",
-                        hasImageAndText &&
-                          !isDeleted &&
-                          "mt-2 px-4 py-2 rounded-2xl",
-                        hasImageAndText &&
-                          !isDeleted &&
-                          (isOwnMessage
-                            ? "bg-emerald-600 text-white rounded-br-md"
-                            : "bg-muted text-muted-foreground rounded-bl-md"),
-                        isDeleted && "italic text-muted-foreground",
-                      )}
-                    >
-                      {isDeleted
-                        ? deletedText
-                        : parseMessageLinks(message.text)}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted-foreground">
-                    {formatTime(message.createdAt || message.timestamp)}
-                  </span>
-                  {isOwnMessage && getStatusIcon(status)}
+                  <div
+                    className={cn(
+                      "rounded-lg max-w-md break-words break-all whitespace-pre-wrap overflow-hidden relative",
+                      hasOnlyImage || hasImageAndText
+                        ? "bg-transparent p-0"
+                        : isOwnMessage
+                          ? "px-4 py-2 bg-emerald-600 text-white rounded-br-md"
+                          : "px-4 py-2 bg-muted text-muted-foreground rounded-bl-md",
+                    )}
+                  >
+                    {isOwnMessage && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <span className="absolute -top-0 -right-0 cursor-pointer  pt-1 ">
+                            <MoreVertical className="w-3 h-3 text-white-foreground" />
+                          </span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => onDeleteMessage?.(message)}
+                            disabled={
+                              deletingMessageId === message?._id ||
+                              !message?._id ||
+                              isDeleted
+                            }
+                            className="cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2 text-red-500" />
+                            <span className="text-red-500">Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    {!isDeleted && message.image && (
+                      <img
+                        onClick={() => {
+                          open(message.image);
+                        }}
+                        className={cn(
+                          "rounded-md max-h-72 object-cover cursor-pointer hover:scale-[1.01] transition",
+                          hasOnlyImage ? "" : "mb-2",
+                        )}
+                        src={message.image}
+                        alt="post"
+                      />
+                    )}
+                    {(message.text || isDeleted) && (
+                      <p
+                        className={cn(
+                          "text-sm leading-relaxed",
+                          hasImageAndText &&
+                            !isDeleted &&
+                            "mt-2 px-4 py-2 rounded-2xl",
+                          hasImageAndText &&
+                            !isDeleted &&
+                            (isOwnMessage
+                              ? "bg-emerald-600 text-white rounded-br-md"
+                              : "bg-muted text-muted-foreground rounded-bl-md"),
+                          isDeleted && "italic text-muted-foreground",
+                        )}
+                      >
+                        {isDeleted
+                          ? deletedText
+                          : parseMessageLinks(message.text)}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-muted-foreground">
+                      {formatTime(message.createdAt || message.timestamp)}
+                    </span>
+                    {isOwnMessage && getStatusIcon(status)}
+                  </div>
                 </div>
               </div>
             </div>
