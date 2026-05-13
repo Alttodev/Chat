@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Play, Plus } from "lucide-react";
+import { Play, Plus, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -137,7 +137,12 @@ function StatusBubbleSkeleton({ compact = false }) {
   );
 }
 
-export function StatusStrip({ compact = false, className }) {
+export function StatusStrip({
+  compact = false,
+  className,
+  showDismissButton = false,
+  onDismiss,
+}) {
   const { data: profileData } = useUserDetail();
   const { data: myStatusData } = useMyStatus();
   const { data: feedData, isLoading, isFetching } = useStatusFeed();
@@ -189,6 +194,17 @@ export function StatusStrip({ compact = false, className }) {
         className,
       )}
     >
+      {showDismissButton ? (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="absolute right-3 top-1 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-emerald-100 bg-background/90 text-muted-foreground shadow-sm transition hover:bg-emerald-50 hover:text-foreground md:right-4 md:top-4 dark:border-white/10 dark:bg-black/80 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white cursor-pointer"
+          aria-label="Hide status section"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      ) : null}
+
       <input
         ref={fileInputRef}
         type="file"
@@ -197,7 +213,7 @@ export function StatusStrip({ compact = false, className }) {
         onChange={handleUpload}
       />
 
-      <div className="overflow-x-auto overflow-y-hidden pb-2 no-scrollbar md:pb-1">
+      <div className={cn("overflow-x-auto overflow-y-hidden pb-2 no-scrollbar md:pb-1", showDismissButton ? "pr-10" : "")}>
         <div className="flex w-max min-w-max snap-x snap-mandatory gap-3 pr-6 md:gap-4">
           <StatusBubble
             highlight

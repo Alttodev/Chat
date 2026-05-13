@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { useUserAllProfiles } from "@/hooks/authHooks";
-import { Users, CalendarDays, FileText } from "lucide-react";
+import { Users, CalendarDays } from "lucide-react";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -96,10 +96,6 @@ const Survey = () => {
   }, [profileData]);
 
   const totalUsers = chartData.reduce((sum, item) => sum + item.users, 0);
-  const totalPosts = profileData?.profiles?.reduce(
-    (sum, profile) => sum + (profile.totalPosts || 0),
-    0,
-  );
   const latestActiveYear =
     [...chartData].reverse().find((item) => item.users > 0) ?? null;
 
@@ -115,29 +111,28 @@ const Survey = () => {
 
   return (
     <div className="relative w-full overflow-hidden px-4 pb-20 sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[380px] bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_38%),radial-gradient(circle_at_top_right,rgba(15,23,42,0.08),transparent_35%),linear-gradient(to_bottom,rgba(240,253,244,0.95),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.18),transparent_38%),radial-gradient(circle_at_top_right,rgba(148,163,184,0.12),transparent_35%),linear-gradient(to_bottom,rgba(0,0,0,0.98),rgba(0,0,0,0.92))]" />
-      <div className="pointer-events-none absolute left-8 top-24 -z-10 h-28 w-28 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-400/10" />
-      <div className="pointer-events-none absolute right-12 top-40 -z-10 h-32 w-32 rounded-full bg-slate-300/20 blur-3xl dark:bg-slate-500/10" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[320px] bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.12),transparent_36%),radial-gradient(circle_at_top_right,rgba(15,23,42,0.06),transparent_32%),linear-gradient(to_bottom,rgba(240,253,244,0.9),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.16),transparent_36%),radial-gradient(circle_at_top_right,rgba(148,163,184,0.1),transparent_32%),linear-gradient(to_bottom,rgba(0,0,0,0.98),rgba(0,0,0,0.92))] sm:h-[380px]" />
+      <div className="pointer-events-none absolute left-8 top-24 -z-10 hidden h-28 w-28 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-400/10 sm:block" />
+      <div className="pointer-events-none absolute right-12 top-40 -z-10 hidden h-32 w-32 rounded-full bg-slate-300/20 blur-3xl dark:bg-slate-500/10 sm:block" />
 
       <div className="mx-auto w-full max-w-7xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
-            Users Analytics
-          </h1>
+        <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
+              Overview
+            </p>
+            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+              Analytics
+            </h1>
+          </div>
         </div>
 
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mb-6 grid gap-4 sm:grid-cols-2">
           <StatCard
             title="Total Users"
             value={totalUsers}
             subtitle="Users"
             icon={Users}
-          />
-          <StatCard
-            title="Total Posts"
-            value={totalPosts ?? 0}
-            subtitle="Posts"
-            icon={FileText}
           />
           <StatCard
             title="Latest Active Year"
@@ -162,19 +157,19 @@ const Survey = () => {
                   A smooth year-by-year view of registrations from 2025 onward.
                 </p>
               </div>
-              <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+              <div className="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300 sm:inline-flex">
                 2025 start
               </div>
             </div>
           </CardHeader>
 
           <CardContent className="p-4 sm:p-5 lg:p-6">
-            <div className="h-[320px] w-full sm:h-[380px] lg:h-[460px]">
+            <div className="h-[260px] w-full sm:h-[340px] lg:h-[420px]">
               {chartData.length ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={chartData}
-                    margin={{ top: 16, right: 12, left: 0, bottom: 0 }}
+                    margin={{ top: 12, right: 8, left: 0, bottom: 0 }}
                   >
                     <defs>
                       <linearGradient
@@ -211,7 +206,7 @@ const Survey = () => {
                       dataKey="year"
                       tick={{
                         fill: "var(--chart-text, #64748b)",
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: 500,
                       }}
                       axisLine={false}
@@ -222,12 +217,12 @@ const Survey = () => {
                     <YAxis
                       tick={{
                         fill: "var(--chart-text, #64748b)",
-                        fontSize: 12,
+                        fontSize: 11,
                       }}
                       axisLine={false}
                       tickLine={false}
                       allowDecimals={false}
-                      width={36}
+                      width={30}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Area

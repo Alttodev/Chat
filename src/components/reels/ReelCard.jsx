@@ -43,6 +43,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   );
 
   const userInfo = post?.user || {};
+  console.log(post, "fuck");
   const videoPoster = getVideoPosterUrl(post?.image || "");
   const commentCount =
     post?.commentCount ||
@@ -169,26 +170,26 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
                       {userInfo?.userName || "User"}
                     </span>
                   </div>
-                  {post?.caption ? (
+                  {post?.postText ? (
                     <p
                       className={cn(
                         "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
                         showCaption ? "opacity-100" : "opacity-0",
                       )}
                     >
-                      {post.caption}
+                      {post.postText}
                     </p>
                   ) : null}
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/75 sm:text-xs">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-white/75 sm:text-xs">
                 <span>{likeCount} likes</span>
                 <span>{commentCount} comments</span>
               </div>
             </div>
 
-            <div className="absolute bottom-5 right-3 z-20 flex flex-col items-center gap-2 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
+            <div className="absolute bottom-5 right-3 z-20 flex flex-col items-center gap-3 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
               <ActionButton
                 icon={Heart}
                 label="Like reel"

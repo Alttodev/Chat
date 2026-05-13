@@ -8,20 +8,39 @@ import { WelcomePostDialog } from "@/components/modals/welcomePostModal";
 import { ProfileImageReminderDialog } from "@/components/modals/profileImageReminderModal";
 import { ThemeModeDialog } from "@/components/modals/themeModeModal";
 import { cn } from "@/lib/utils";
-import React from "react";
+import { Eye } from "lucide-react";
+import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
 function HomeLayout() {
   const { pathname } = useLocation();
   const isHome = pathname === "/home";
   const isReels = pathname === "/reels";
+  const [showDesktopStatusStrip, setShowDesktopStatusStrip] = useState(true);
 
   return (
-      <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <SocialHeader />
       {!isReels ? <StatusStrip className="md:hidden" /> : null}
-      {pathname === "/home" ? (
-        <StatusStrip className="hidden md:block" />
+      {pathname === "/home" && showDesktopStatusStrip ? (
+        <StatusStrip
+          className="hidden md:block"
+          showDismissButton
+          onDismiss={() => setShowDesktopStatusStrip(false)}
+        />
+      ) : null}
+      {pathname === "/home" && !showDesktopStatusStrip ? (
+        <div className="hidden md:fixed md:top-17 md:left-64 md:right-80 md:z-40 md:flex md:justify-end md:px-4">
+          <button
+            type="button"
+            onClick={() => setShowDesktopStatusStrip(true)}
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-4 py-2 text-sm font-medium text-emerald-700 shadow-lg backdrop-blur-md transition hover:bg-emerald-50 dark:border-white/10 dark:bg-black/80 dark:text-white dark:hover:bg-white/10 cursor-pointer"
+            aria-label="Show status section"
+          >
+            <Eye className="h-4 w-4" />
+            Show status
+          </button>
+        </div>
       ) : null}
       <StatusViewer />
       <WelcomePostDialog />
@@ -38,7 +57,13 @@ function HomeLayout() {
         <main
           className={cn(
             " flex-1 pb-8 px-4 md:ml-64 md:mr-80",
-            isReels ? "pt-20 sm:pt-24 px-2 sm:px-4" : isHome ? "pt-50 sm:pt-60" : "pt-50 sm:pt-20",
+            isReels
+              ? "pt-20 sm:pt-24 px-2 sm:px-4"
+              : isHome
+                ? showDesktopStatusStrip
+                  ? "pt-50 sm:pt-60"
+                  : "pt-24 sm:pt-28"
+                : "pt-50 sm:pt-20",
           )}
         >
           <Outlet />
