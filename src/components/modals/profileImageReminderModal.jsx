@@ -102,7 +102,7 @@ export function ProfileImageReminderDialog() {
                 type="button"
                 variant="outline"
                 onClick={() => handleClose(false)}
-                className="flex-1 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                className="flex-1 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-700"
               >
                 Maybe later
               </Button>

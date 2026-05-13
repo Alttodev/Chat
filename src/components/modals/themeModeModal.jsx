@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { useUserDetail } from "@/hooks/authHooks";
+import { useThemeStore } from "@/lib/zustand";
 
 const LOGIN_AT_KEY = "login-at";
 const THEME_PROMPT_KEY = "theme-mode-reminder-shown";
@@ -19,9 +20,12 @@ export function ThemeModeDialog() {
   const navigate = useNavigate();
   const { data: profileData } = useUserDetail();
   const user = useAuthStore((state) => state.user);
+  const theme = useThemeStore((state) => state.theme);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    if (theme === "dark") return undefined;
+
     const alreadyShown = localStorage.getItem(THEME_PROMPT_KEY) === "1";
     if (alreadyShown) return undefined;
 
@@ -51,7 +55,11 @@ export function ThemeModeDialog() {
     }, THEME_PROMPT_DELAY_MS);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [theme]);
+
+  if (theme === "dark") {
+    return null;
+  }
 
   const handleClose = (open) => {
     setIsOpen(open);
