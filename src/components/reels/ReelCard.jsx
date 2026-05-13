@@ -189,7 +189,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
               </div>
             </div>
 
-            <div className="absolute bottom-5 right-3 z-20 flex flex-col items-center gap-3 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
+            <div className="absolute bottom-8 right-3 z-20 flex flex-col items-center gap-3 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
               <ActionButton
                 icon={Heart}
                 label="Like reel"

@@ -147,19 +147,32 @@ export function SocialHeader() {
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <DropdownMenuItem
+                  onClick={() => navigate("/profile")}
+                  className="mb-1"
+                >
                   <User className="w-4 h-4" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/profileViews")}>
+                <DropdownMenuItem
+                  onClick={() => navigate("/profileViews")}
+                  className="mb-1"
+                >
                   <UserRoundSearch className="w-4 h-4" />
                   Visitors
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/survey")}>
+
+                <DropdownMenuItem
+                  onClick={() => navigate("/survey")}
+                  className="mb-1"
+                >
                   <BarChart3 className="w-4 h-4" />
                   Analytics
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <DropdownMenuItem
+                  onClick={() => navigate("/settings")}
+                  className="mb-1"
+                >
                   <Settings className="w-4 h-4" />
                   Settings
                 </DropdownMenuItem>
