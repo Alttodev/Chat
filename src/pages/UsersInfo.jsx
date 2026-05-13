@@ -372,17 +372,17 @@ const UsersInfo = () => {
           )}
         </>
       ) : (
-        <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white">
+        <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white dark:border-zinc-800 dark:from-black dark:to-zinc-950">
           <CardContent className="pt-12 pb-12">
             <div className="flex flex-col items-center justify-center gap-4 text-center">
-              <div className="p-4 bg-emerald-100 rounded-full">
-                <ImageIcon className="w-8 h-8 text-emerald-600" />
+              <div className="rounded-full bg-emerald-100 p-4 dark:bg-zinc-900">
+                <ImageIcon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <h3 className="mb-2 text-xl font-semibold text-foreground dark:text-zinc-100">
                   Follow to See Posts
                 </h3>
-                <p className="text-muted-foreground mb-6 max-w-sm">
+                <p className="mb-6 max-w-sm text-muted-foreground dark:text-zinc-400">
                   Follow {user?.userName} to view their posts and stay updated
                   with their latest content.
                 </p>
