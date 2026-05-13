@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getVideoPosterUrl } from "@/lib/media";
@@ -16,7 +16,7 @@ function ActionButton({ icon, label, active = false, onClick }) {
         event.stopPropagation();
         onClick?.(event);
       }}
-      className="flex flex-col items-center gap-1 text-white/95 transition hover:scale-105 cursor-pointer"
+      className="flex cursor-pointer flex-col items-center gap-1 text-white/95 transition hover:scale-105"
       aria-label={label}
     >
       <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10">
@@ -35,7 +35,6 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   const videoRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
-
   const [showCaption, setShowCaption] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
   const [isLiked, setIsLiked] = useState(!!post?.likedByMe);
@@ -45,11 +44,15 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
   const userInfo = post?.user || {};
   const videoPoster = getVideoPosterUrl(post?.image || "");
-  const commentCount = post?.commentCount || post?.commentsCount || 0;
+  const commentCount =
+    post?.commentCount ||
+    post?.commentsCount ||
+    post?.totalComments ||
+    post?.comments?.length ||
+    0;
 
   useEffect(() => {
     setIsPlaying(true);
-
     setIsReady(false);
     setShowCaption(true);
     setIsLiked(!!post?.likedByMe);
@@ -107,7 +110,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   };
 
   return (
-    <section className="relative h-[calc(100vh-9.5rem)] min-h-[32rem] w-full overflow-hidden rounded-[28px] border border-white/10 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:h-[calc(100vh-8.5rem)]">
+    <section className="relative h-[calc(100dvh-13rem)] min-h-[26rem] w-full overflow-hidden rounded-[28px] border border-white/10 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:h-[calc(100vh-8.5rem)] sm:min-h-[32rem]">
       <div
         role="button"
         tabIndex={0}
@@ -130,7 +133,6 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
           src={post?.image}
           poster={videoPoster || undefined}
           autoPlay
-          // muted={isMuted}
           loop
           playsInline
           preload="metadata"
@@ -147,10 +149,10 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/10" />
 
-        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
-          <div className="flex items-end justify-between gap-3">
-            <div className="max-w-[72%] space-y-3 text-left text-white sm:max-w-[65%]">
-              <div className="flex items-center gap-3">
+        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-none space-y-2 text-left text-white sm:max-w-[65%] sm:space-y-3">
+              <div className="flex items-start gap-3 sm:items-center">
                 <Avatar className="h-10 w-10 border border-white/20">
                   <AvatarImage
                     className="h-full w-full object-cover object-top"
@@ -161,16 +163,16 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
                     {userInfo?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate font-semibold">
+                    <span className="truncate text-sm font-semibold sm:text-base">
                       {userInfo?.userName || "User"}
                     </span>
                   </div>
                   {post?.caption ? (
                     <p
                       className={cn(
-                        "mt-1 line-clamp-3 text-sm leading-relaxed text-white/85 transition-opacity duration-200",
+                        "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
                         showCaption ? "opacity-100" : "opacity-0",
                       )}
                     >
@@ -180,14 +182,14 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-white/70">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/75 sm:text-xs">
                 <span>{likeCount} likes</span>
                 <span>{"•"}</span>
                 <span>{commentCount} comments</span>
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 pb-1">
+            <div className="flex flex-row items-center gap-3 self-end pb-0 sm:flex-col sm:items-center sm:gap-4 sm:pb-1">
               <ActionButton
                 icon={Heart}
                 label="Like reel"
@@ -200,11 +202,6 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
                 onClick={onComment}
               />
               <ActionButton icon={Send} label="Share reel" onClick={onShare} />
-              {/* <ActionButton
-                icon={Bookmark}
-                label="Save reel"
-                onClick={() => {}}
-              /> */}
             </div>
           </div>
         </div>
