@@ -133,7 +133,7 @@ export const RequestCard = () => {
                     onClick={() =>
                       handleAccept({ id: item._id, action: "accept" })
                     }
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer transition-transform duration-150 active:scale-95"
                   >
                     <Check className="h-4 w-4 mr-2" />
                     Accept
@@ -143,7 +143,7 @@ export const RequestCard = () => {
                     disabled={isRejecting || !requesterId}
                     onClick={() => handleDecline({ id: requesterId })}
                     variant="outline"
-                    className="text-red-600 border-red-600 hover:bg-red-50 cursor-pointer"
+                    className="text-red-600 border-red-600 hover:bg-red-50 cursor-pointer transition-transform duration-150 active:scale-95"
                   >
                     <X className="h-4 w-4 mr-2" />
                     Reject

@@ -52,7 +52,7 @@ export function IncomingCallModal() {
           <div className="flex gap-4">
             <Button
               onClick={handleAccept}
-              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700"
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 transition-transform duration-150 active:scale-95"
             >
               <Phone className="h-4 w-4" />
               Accept
@@ -60,7 +60,7 @@ export function IncomingCallModal() {
             <Button
               onClick={handleReject}
               variant="destructive"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 transition-transform duration-150 active:scale-95"
             >
               <PhoneOff className="h-4 w-4" />
               Reject

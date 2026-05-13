@@ -56,6 +56,7 @@ export function PostImageWithLikes({
               className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"
               src={hasLiked || "/placeholder.svg"}
             />
+
             <AvatarFallback className="absolute inset-0 z-10 flex items-center justify-center">
               {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
             </AvatarFallback>

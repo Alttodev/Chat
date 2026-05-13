@@ -120,6 +120,12 @@ const Survey = () => {
       <div className="pointer-events-none absolute right-12 top-40 -z-10 h-32 w-32 rounded-full bg-slate-300/20 blur-3xl dark:bg-slate-500/10" />
 
       <div className="mx-auto w-full max-w-7xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+            Users Analytics
+          </h1>
+        </div>
+
         <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <StatCard
             title="Total Users"

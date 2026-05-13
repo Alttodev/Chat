@@ -138,7 +138,7 @@ function UserFriendCard({ user, profileId }) {
               <Button
                 onClick={friends ? handleUnfollow : handleFollow}
                 disabled={isFollowing || isUnfollowing}
-                 className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer "
+                className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer transition-transform duration-150 active:scale-95"
               >
                 {friends ? "Unfollow" : "Follow"}
               </Button>
