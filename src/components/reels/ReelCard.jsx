@@ -22,7 +22,7 @@ function ActionButton({ icon, label, active = false, onClick }) {
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10 sm:h-11 sm:w-11">
         <Icon
           className={cn(
-            "h-4 w-4 sm:h-5 sm:w-5",
+            "h-5 w-5",
             active ? "fill-current text-emerald-500" : "text-white",
           )}
         />
@@ -184,12 +184,11 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-white/75 sm:text-xs">
                 <span>{likeCount} likes</span>
-              
                 <span>{commentCount} comments</span>
               </div>
             </div>
 
-            <div className="absolute bottom-4 right-3 z-20 flex flex-col items-center gap-2 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
+            <div className="absolute bottom-5 right-3 z-20 flex flex-col items-center gap-2 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
               <ActionButton
                 icon={Heart}
                 label="Like reel"
