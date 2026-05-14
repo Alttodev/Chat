@@ -35,15 +35,10 @@ self.addEventListener("notificationclick", function (event) {
   event.notification.close();
 
   const data = event.notification.data || {};
-
-  let url = "/";
-
-  if (data.type === "chat-message") {
-    url = "/messages";
-  }
+  let url = new URL("/messages", self.location.origin).href;
 
   if (data.type === "comment-mention") {
-    url = "/home";
+    url = new URL("/home", self.location.origin).href;
   }
 
   event.waitUntil(

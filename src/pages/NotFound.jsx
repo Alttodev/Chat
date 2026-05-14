@@ -1,10 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Home, SearchX } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Home, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
-  const navigate = useNavigate();
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.16),_transparent_28%),linear-gradient(180deg,_#F8FAFF_0%,_#EEF2FF_100%)]">
       <div className="pointer-events-none absolute inset-0">
@@ -28,8 +26,8 @@ export default function NotFound() {
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 md:text-lg">
-            The page you&apos;re looking for wandered off somewhere else. Let&apos;s get
-            you back to a place that actually exists.
+            The page you&apos;re looking for wandered off somewhere else.
+            Let&apos;s get you back to a place that actually exists.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -38,15 +36,6 @@ export default function NotFound() {
                 <Home className="mr-2 h-4 w-4" />
                 Back to Home
               </Link>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="h-12 rounded-full border-slate-200 bg-white/80 px-6"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Go Back
             </Button>
           </div>
 
