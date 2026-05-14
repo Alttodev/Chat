@@ -6,11 +6,7 @@ import { usePostInfo, usePostUpdate } from "@/hooks/postHooks";
 import { useZustandPopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PostFormSkeleton } from "../skeleton/postFormSkeleton";
-import EmojiPickerButton from "../EmojiPickerButton";
-import {
-  appendLocationMarker,
-  extractLocationMarker,
-} from "@/lib/location";
+import { appendLocationMarker, extractLocationMarker } from "@/lib/location";
 import { MapPin, X } from "lucide-react";
 
 export function PostUpdateForm({ userProfile }) {
@@ -28,8 +24,7 @@ export function PostUpdateForm({ userProfile }) {
     control,
     reset,
     watch,
-    setValue,
-    getValues,
+
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
@@ -128,12 +123,6 @@ export function PostUpdateForm({ userProfile }) {
                 ) : null}
               </div>
             )}
-          />
-          <EmojiPickerButton
-            textareaRef={textareaRef}
-            setValue={setValue}
-            getValues={getValues}
-            name="postText"
           />
         </div>
       </div>

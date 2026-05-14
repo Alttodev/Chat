@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Smile, Send, Video, X, ImagePlus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Send, X, ImagePlus } from "lucide-react";
+import { useRef } from "react";
 import Picker from "emoji-picker-react";
 
 export default function MessageInput({
@@ -17,8 +17,6 @@ export default function MessageInput({
 }) {
   const fileInputRef = useRef(null);
   const inputRef = useRef(null);
-  const pickerRef = useRef(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   // Determine placeholder based on block status
   const placeholder = blockedByMe
@@ -27,26 +25,10 @@ export default function MessageInput({
       ? "User blocked you"
       : "Type a message...";
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
-        setShowEmojiPicker(false);
-      }
-    };
-
-    if (showEmojiPicker) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showEmojiPicker]);
-
   const handleRemoveFile = () => {
     onFileChange(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; 
+      fileInputRef.current.value = "";
     }
   };
 
@@ -56,29 +38,6 @@ export default function MessageInput({
       if (isBlocked) return;
       handleSendMessage();
     }
-  };
-
-  const handleEmojiSelect = (emoji) => {
-    const input = inputRef.current;
-    if (!input) {
-      setNewMessage((prev) => `${prev}${emoji}`);
-      setShowEmojiPicker(false);
-      return;
-    }
-
-    const start = input.selectionStart ?? newMessage.length;
-    const end = input.selectionEnd ?? newMessage.length;
-    const updated =
-      newMessage.substring(0, start) + emoji + newMessage.substring(end);
-
-    setNewMessage(updated);
-
-    setTimeout(() => {
-      input.focus();
-      input.selectionStart = input.selectionEnd = start + emoji.length;
-    }, 0);
-
-    setShowEmojiPicker(false);
   };
 
   return (
@@ -111,26 +70,6 @@ export default function MessageInput({
             className="pr-10 resize-none"
             disabled={isBlocked}
           />
-          <Button
-            variant="ghost"
-            size="icon"
-            type="button"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-            disabled={isBlocked}
-            onClick={() => setShowEmojiPicker((prev) => !prev)}
-          >
-            <Smile className="w-4 h-4 text-emerald-600" />
-          </Button>
-          {showEmojiPicker && (
-            <div
-              ref={pickerRef}
-              className="absolute bottom-11 right-0 z-50 scale-90 origin-bottom-right"
-            >
-              <Picker
-                onEmojiClick={(emojiData) => handleEmojiSelect(emojiData.emoji)}
-              />
-            </div>
-          )}
         </div>
         <Button
           onClick={handleSendMessage}

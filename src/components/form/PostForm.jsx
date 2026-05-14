@@ -6,7 +6,6 @@ import { usePostCreate } from "@/hooks/postHooks";
 import { ImagePlus, MapPin, X } from "lucide-react";
 import { useZustandImagePopup } from "@/lib/zustand";
 import { useMemo, useRef, useState } from "react";
-import EmojiPickerButton from "../EmojiPickerButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import LocationPickerDialog from "../form_inputs/LocationPickerDialog";
 import { appendLocationMarker } from "@/lib/location";
@@ -22,8 +21,7 @@ export function PostForm({ userProfile }) {
     control,
     reset,
     watch,
-    setValue,
-    getValues,
+
     formState: { isSubmitting },
   } = useForm({
     defaultValues: { postText: "" },
@@ -57,10 +55,7 @@ export function PostForm({ userProfile }) {
   const onSubmit = async (formData) => {
     try {
       const trimmedText = formData.postText.trim();
-      const postText = appendLocationMarker(
-        trimmedText,
-        selectedLocation,
-      );
+      const postText = appendLocationMarker(trimmedText, selectedLocation);
       const res = await createPost({ ...formData, postText });
       toastSuccess(
         getSuccessMessage(res?.message, "Post uploaded successfully"),
@@ -100,6 +95,11 @@ export function PostForm({ userProfile }) {
                 {...field}
                 ref={textareaRef}
                 placeholder={`What's on your mind, ${userProfile?.profile?.userName}?`}
+                autoComplete="on"
+                autoCorrect="on"
+                spellCheck={true}
+                autoCapitalize="sentences"
+                inputMode="text"
                 className={`min-h-[100px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
                   selectedLocation?.name ? "pb-14" : ""
                 }`}
@@ -143,13 +143,7 @@ export function PostForm({ userProfile }) {
           >
             <MapPin className="w-5 h-5" />
           </span>
-          <EmojiPickerButton
-            textareaRef={textareaRef}
-            setValue={setValue}
-            getValues={getValues}
-            name="postText"
-            buttonClassName="rounded-md"
-          />
+
           <span
             onClick={openImageModal}
             className="flex h-10 w-10 items-center justify-center text-emerald-600 transition hover:bg-emerald-50"

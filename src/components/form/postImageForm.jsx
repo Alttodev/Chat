@@ -7,7 +7,6 @@ import { usePostCreate } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useMemo, useRef, useState } from "react";
 import { MapPin, X } from "lucide-react";
-import EmojiPickerButton from "../EmojiPickerButton";
 import LocationPickerDialog from "../form_inputs/LocationPickerDialog";
 import { appendLocationMarker } from "@/lib/location";
 
@@ -22,8 +21,6 @@ export function PostImageForm() {
     control,
     reset,
     watch,
-    setValue,
-    getValues,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
@@ -32,15 +29,14 @@ export function PostImageForm() {
     },
   });
 
-  const textValue = watch("postText");
   const imageValue = watch("image");
   const textareaRef = useRef(null);
-  const hasText = textValue?.trim().length > 0;
+
   const hasImage = !!imageValue;
 
   const submitDisabled = useMemo(
-    () => (!hasText || !hasImage) || isSubmitting,
-    [hasText, hasImage, isSubmitting],
+    () => !hasImage || isSubmitting,
+    [hasImage, isSubmitting],
   );
 
   const getSuccessMessage = (message, fallback) => {
@@ -63,10 +59,7 @@ export function PostImageForm() {
     try {
       const data = new FormData();
       const trimmedText = formData.postText.trim();
-      const postText = appendLocationMarker(
-        trimmedText,
-        selectedLocation,
-      );
+      const postText = appendLocationMarker(trimmedText, selectedLocation);
 
       data.append("postText", postText);
       if (formData.image) {
@@ -91,15 +84,28 @@ export function PostImageForm() {
         <Controller
           name="postText"
           control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              ref={textareaRef}
-              placeholder="Enter description....."
-              className={`min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
-                selectedLocation?.name ? "pb-14" : ""
-              }`}
-            />
+          rules={{
+            required: "Post description is required",
+            validate: (value) =>
+              value.trim().length > 0 || "Post description is required",
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <Textarea
+                {...field}
+                ref={textareaRef}
+                placeholder="Enter description....."
+                className={`min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
+                  selectedLocation?.name ? "pb-14" : ""
+                } `}
+              />
+
+              {fieldState.error && (
+                <p className="mt-1 text-sm text-red-500">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </>
           )}
         />
 
@@ -137,14 +143,6 @@ export function PostImageForm() {
         >
           <MapPin className="h-5 w-5 " />
         </span>
-        <EmojiPickerButton
-          textareaRef={textareaRef}
-          setValue={setValue}
-          getValues={getValues}
-          name="postText"
-          buttonClassName="rounded-md"
-          pickerPlacement="down"
-        />
       </div>
 
       <ImageUpload name="image" control={control} />
