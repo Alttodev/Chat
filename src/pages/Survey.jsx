@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { useUserAllProfiles } from "@/hooks/authHooks";
-import { Users, CalendarDays } from "lucide-react";
+import { Users, CalendarDays, BarChart3 } from "lucide-react";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -47,7 +47,7 @@ const StatCard = ({ title, value, subtitle, icon }) => {
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               {title}
             </p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {value}
             </h2>
             {subtitle ? (
@@ -116,14 +116,13 @@ const Survey = () => {
       <div className="pointer-events-none absolute right-12 top-40 -z-10 hidden h-32 w-32 rounded-full bg-slate-300/20 blur-3xl dark:bg-slate-500/10 sm:block" />
 
       <div className="mx-auto w-full max-w-7xl">
-        <div className="mb-6 flex flex-col gap-2 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-4 flex flex-col gap-2 sm:mb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
-              Overview
-            </p>
-            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl">
+            <p className="inline-flex items-center gap-2 text-lg font-semibold uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
+               <BarChart3 className="h-6 w-6" />
               Analytics
-            </h1>
+            </p>
+            
           </div>
         </div>
 

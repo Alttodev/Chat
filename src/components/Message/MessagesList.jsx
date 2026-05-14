@@ -1,11 +1,6 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import {
-  Check,
-  CheckCheck,
-  MoreVertical,
-  Trash2,
-} from "lucide-react";
+import { Check, CheckCheck, MoreVertical, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -102,7 +97,7 @@ export default function MessagesList({
   let previousDayLabel = "";
 
   const TypingBubble = () => (
-    <div className="flex gap-3 max-w-[80%]">
+    <div className="flex gap-3 max-w-[80%] ">
       <div className="flex flex-col gap-1 items-start">
         <div className="rounded-2xl rounded-bl-md bg-muted px-4 py-2 text-muted-foreground shadow-sm">
           <div className="flex items-center gap-1.5">
@@ -133,7 +128,7 @@ export default function MessagesList({
   }
 
   return (
-    <ScrollArea className="flex-1 p-4 ">
+    <ScrollArea className="flex-1 p-4 pb-15 sm:pb-0">
       <div className="space-y-4 ">
         {messages.map((message) => {
           const dayLabel = getDayLabel(message.createdAt || message.timestamp);
@@ -163,7 +158,7 @@ export default function MessagesList({
           return (
             <div key={message._id || message.id}>
               {showDaySeparator ? (
-                <div className="flex items-center gap-3 py-3">
+                <div className="flex items-center gap-3 py-3 ">
                   <span className="h-px flex-1 bg-border/70 dark:bg-white/10" />
                   <span className="inline-flex items-center rounded-full border border-border bg-background/90 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/90 dark:text-slate-300">
                     {dayLabel}
