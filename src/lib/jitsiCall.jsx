@@ -46,7 +46,6 @@ export const JitsiCallProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
     socket.on("call:incoming", (data) => {
-      console.log("📞 Incoming call data:", data);
       openIncomingCall(data); // show modal
     });
 

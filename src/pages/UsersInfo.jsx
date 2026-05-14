@@ -29,6 +29,7 @@ import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
 import PostContent from "@/components/Post/PostContent";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
+import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 
 const UsersInfo = () => {
   // const navigate = useNavigate();

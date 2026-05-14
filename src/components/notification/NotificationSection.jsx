@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Bell, UserPlus, MessageCircle, BellOff, MessageCircleMore } from "lucide-react";
+import {
+  Bell,
+  UserPlus,
+  MessageCircle,
+  BellOff,
+  MessageCircleMore,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -82,8 +88,6 @@ function NotificationSection() {
     [notifications],
   );
 
-  console.log(chatNotifications,"chatNotifications")
-
   const commentMentionNotifications = useMemo(
     () =>
       notifications.filter(
@@ -135,6 +139,50 @@ function NotificationSection() {
     [queryClient, refetch],
   );
 
+  const buildSeenPayload = useCallback((notification) => {
+    if (
+      notification?.type === "follow-request" &&
+      notification?.followRequestId
+    ) {
+      return {
+        type: "follow-request",
+        followRequestId: notification.followRequestId,
+      };
+    }
+
+    if (notification?.type === "chat-message" && notification?.conversationId) {
+      return {
+        type: "chat-message",
+        conversationId: notification.conversationId,
+      };
+    }
+
+    if (
+      notification?.type === "comment-mention" &&
+      notification?.commentId &&
+      notification?.postId
+    ) {
+      return {
+        type: "comment-mention",
+        commentId: notification.commentId,
+        postId: notification.postId,
+        notificationId: notification.notificationId,
+      };
+    }
+
+    return null;
+  }, []);
+
+  const markAsSeen = useCallback(
+    async (notification) => {
+      const payload = buildSeenPayload(notification);
+      if (!payload) return;
+
+      await markNotificationSeen(payload);
+    },
+    [buildSeenPayload, markNotificationSeen],
+  );
+
   const handleNotificationClick = useCallback(
     async (notification) => {
       let targetPath = null;
@@ -150,7 +198,9 @@ function NotificationSection() {
           ? `/messages?userId=${targetId}&name=${encodeURIComponent(targetName)}`
           : "/messages";
       } else if (notification?.type === "comment-mention") {
-        const postOwnerId = notification?.post?.user?._id || notification?.post?.user;
+        const postOwnerId =
+          notification?.post?.user?._id || notification?.post?.user;
+
         targetPath = postOwnerId
           ? postOwnerId?.toString?.() === profileId?.toString?.()
             ? `/profile?postId=${notification?.postId}&commentId=${notification?.commentId}`
@@ -159,38 +209,7 @@ function NotificationSection() {
       }
 
       try {
-        if (
-          notification?.type === "follow-request" &&
-          notification?.followRequestId
-        ) {
-          await markNotificationSeen({
-            type: "follow-request",
-            followRequestId: notification.followRequestId,
-          });
-        }
-
-        if (
-          notification?.type === "chat-message" &&
-          notification?.conversationId
-        ) {
-          await markNotificationSeen({
-            type: "chat-message",
-            conversationId: notification.conversationId,
-          });
-        }
-
-        if (
-          notification?.type === "comment-mention" &&
-          notification?.commentId &&
-          notification?.postId
-        ) {
-          await markNotificationSeen({
-            type: "comment-mention",
-            commentId: notification.commentId,
-            postId: notification.postId,
-            notificationId: notification.notificationId,
-          });
-        }
+        await markAsSeen(notification);
       } catch {
         // Navigation should still work even if marking seen fails.
       }
@@ -204,13 +223,35 @@ function NotificationSection() {
 
       navigate(targetPath);
     },
-    [navigate, markNotificationSeen, profileId],
+    [navigate, markAsSeen, profileId],
   );
+
+  const handleClearAllNotifications = useCallback(async () => {
+    if (!notifications.length) return;
+
+    try {
+      await Promise.all(
+        notifications.map(async (notification) => {
+          try {
+            await markAsSeen(notification);
+          } catch (error) {
+            console.error("Failed to mark notification seen:", error);
+          }
+        }),
+      );
+
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
+      refetch();
+    } catch (error) {
+      console.error("Failed to clear notifications:", error);
+    }
+  }, [notifications, markAsSeen, queryClient, refetch]);
 
   const badgeText = totalCount > 99 ? "99+" : totalCount;
 
   return (
-    <DropdownMenu onOpenChange={handleOpenChange} >
+    <DropdownMenu onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -230,21 +271,36 @@ function NotificationSection() {
           )}
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent
         align="center"
         sideOffset={8}
-        className="w-[calc(100vw-1rem)] max-w-[360px] p-0   sm:w-[360px]"
+        className="w-[calc(100vw-1rem)] max-w-[360px] p-0 sm:w-[360px]"
       >
-        <div className="p-4 border-b bg-muted/40">
-          <p className="text-sm font-semibold text-foreground">Notifications</p>
-          <p className="text-xs text-muted-foreground">
-            {totalCount > 0
-              ? `${totalCount} unread updates`
-              : "You're all caught up"}
-          </p>
+        <div className="p-4 border-b bg-muted/40 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Notifications
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {totalCount > 0
+                ? `${totalCount} unread updates`
+                : "You're all caught up"}
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-8 px-3 flex items-center gap-2  dark:hover:bg-red-900/20 cursor-pointer"
+            onClick={handleClearAllNotifications}
+            disabled={notifications.length === 0}
+          >
+            <span className="text-sm font-medium">Clear all</span>
+          </Button>
         </div>
 
-        <ScrollArea className="max-h-[420px]">
+        <ScrollArea className="h-[420px]">
           <div className="p-2">
             {isLoading ? (
               <div className="py-8 text-center text-sm text-muted-foreground">
@@ -261,12 +317,13 @@ function NotificationSection() {
                     <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                       Follow Requests
                     </p>
+
                     {followNotifications.map((notification) => (
                       <button
                         key={notification.notificationId}
                         type="button"
                         onClick={() => handleNotificationClick(notification)}
-                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors  cursor-pointer text-left"
+                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
                       >
                         <Avatar className="w-9 h-9">
                           <AvatarImage
@@ -280,6 +337,7 @@ function NotificationSection() {
                             {getInitial(notification?.from?.userName)}
                           </AvatarFallback>
                         </Avatar>
+
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground leading-snug">
                             <span className="font-semibold">
@@ -291,6 +349,7 @@ function NotificationSection() {
                             {formatTime(notification?.createdAt)}
                           </p>
                         </div>
+
                         <UserPlus className="w-4 h-4 text-emerald-600 mt-1" />
                       </button>
                     ))}
@@ -308,16 +367,17 @@ function NotificationSection() {
                     <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                       Messages
                     </p>
+
                     {chatNotifications.map((notification) => (
                       <button
                         key={notification.notificationId}
                         type="button"
                         onClick={() => handleNotificationClick(notification)}
-                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors  cursor-pointer text-left"
+                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
                       >
                         <Avatar className="w-9 h-9">
                           <AvatarImage
-                             className="w-full h-full object-cover object-top cursor-pointer"
+                            className="w-full h-full object-cover object-top cursor-pointer"
                             src={
                               notification?.from?.profileImage ||
                               "/placeholder.svg"
@@ -327,6 +387,7 @@ function NotificationSection() {
                             {getInitial(notification?.from?.userName)}
                           </AvatarFallback>
                         </Avatar>
+
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground leading-snug">
                             <span className="font-semibold">
@@ -342,7 +403,8 @@ function NotificationSection() {
                             {formatTime(notification?.createdAt)}
                           </p>
                         </div>
-                        <MessageCircle className="w-4 h-4 text-green-500 mt-1 " />
+
+                        <MessageCircle className="w-4 h-4 text-green-500 mt-1" />
                       </button>
                     ))}
                   </div>
@@ -358,6 +420,7 @@ function NotificationSection() {
                     <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                       Comment Mentions
                     </p>
+
                     {commentMentionNotifications.map((notification) => (
                       <button
                         key={notification.notificationId}
@@ -377,6 +440,7 @@ function NotificationSection() {
                             {getInitial(notification?.from?.userName)}
                           </AvatarFallback>
                         </Avatar>
+
                         <div className="flex-1 min-w-0">
                           <p className="text-sm text-foreground leading-snug">
                             <span className="font-semibold">
@@ -391,7 +455,8 @@ function NotificationSection() {
                             {formatTime(notification?.createdAt)}
                           </p>
                         </div>
-                        <MessageCircleMore className="w-4 h-4 text-green-500  mt-1" />
+
+                        <MessageCircleMore className="w-4 h-4 text-green-500 mt-1" />
                       </button>
                     ))}
                   </div>

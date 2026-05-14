@@ -6,7 +6,7 @@ importScripts(
 importScripts(
   "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js",
 );
-import logo from "@/assets/logo.png";
+
 
 firebase.initializeApp({
   apiKey: "YOUR_API_KEY",
@@ -24,7 +24,7 @@ messaging.onBackgroundMessage((payload) => {
 
   const options = {
     body: payload?.notification?.body || "",
-    icon: logo,
+    icon: "/logo.png",
     data: payload?.data || {},
   };
 
