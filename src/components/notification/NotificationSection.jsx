@@ -208,7 +208,7 @@ function NotificationSection() {
   const badgeText = totalCount > 99 ? "99+" : totalCount;
 
   return (
-    <DropdownMenu onOpenChange={handleOpenChange}>
+    <DropdownMenu onOpenChange={handleOpenChange} >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -228,7 +228,11 @@ function NotificationSection() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[360px] p-0 ">
+      <DropdownMenuContent
+        align="center"
+        sideOffset={8}
+        className="w-[calc(100vw-1rem)] max-w-[360px] p-0   sm:w-[360px]"
+      >
         <div className="p-4 border-b bg-muted/40">
           <p className="text-sm font-semibold text-foreground">Notifications</p>
           <p className="text-xs text-muted-foreground">

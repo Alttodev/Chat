@@ -16,6 +16,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useUserDetail } from "@/hooks/authHooks";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { renderMentionText } from "@/lib/mentionText";
 
 export function ReelCommentsDialog({ post, open, onOpenChange }) {
   const { profileId } = useAuthStore();
@@ -163,9 +164,12 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
                             ) : null}
                           </div>
 
-                          <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white/85">
-                            {comment?.comment}
-                          </p>
+                          <p
+                            className="mt-2 whitespace-pre-wrap text-sm leading-6 text-white/85 break-words"
+                            dangerouslySetInnerHTML={{
+                              __html: renderMentionText(comment?.comment),
+                            }}
+                          />
                         </div>
                       </div>
                     </div>

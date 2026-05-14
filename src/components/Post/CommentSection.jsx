@@ -14,6 +14,7 @@ import { toastError } from "@/lib/toast";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { renderMentionText } from "@/lib/mentionText";
 
 export function CommentSection({ postId, userProfile, highlightCommentId }) {
   const { profileId } = useAuthStore();
@@ -125,7 +126,12 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                 </DropdownMenu>
               )}
             </div>
-            <p className="text-sm">{comment?.comment}</p>
+            <p
+              className="text-sm whitespace-pre-wrap break-words"
+              dangerouslySetInnerHTML={{
+                __html: renderMentionText(comment?.comment),
+              }}
+            />
           </div>
         </div>
       ))}

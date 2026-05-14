@@ -7,6 +7,7 @@ import NextTopLoader from "nextjs-toploader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./lib/socket";
 import { JitsiCallProvider } from "./lib/jitsiCall";
+import PushNotificationBootstrap from "./components/PushNotificationBootstrap";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ createRoot(document.getElementById("root")).render(
             showSpinner={false}
           />
 
+          <PushNotificationBootstrap />
           <App />
         </JitsiCallProvider>
       </QueryClientProvider>
