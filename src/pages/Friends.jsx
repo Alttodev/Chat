@@ -40,7 +40,7 @@ const Friends = () => {
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="space-y-6"
+        className="space-y-6 pb-20"
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="all" className="cursor-pointer">

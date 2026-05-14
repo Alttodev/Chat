@@ -21,15 +21,21 @@ function HomeLayout() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SocialHeader />
-      {!isReels ? <StatusStrip className="md:hidden" /> : null}
-      {pathname === "/home" && showDesktopStatusStrip ? (
+
+      {/* Mobile status strip only on home */}
+      {isHome && !isReels ? <StatusStrip className="md:hidden" /> : null}
+
+      {/* Desktop status strip only on home */}
+      {isHome && showDesktopStatusStrip ? (
         <StatusStrip
           className="hidden md:block"
           showDismissButton
           onDismiss={() => setShowDesktopStatusStrip(false)}
         />
       ) : null}
-      {pathname === "/home" && !showDesktopStatusStrip ? (
+
+      {/* Show button only on home when strip is hidden */}
+      {isHome && !showDesktopStatusStrip ? (
         <div className="hidden md:fixed md:top-17 md:left-64 md:right-80 md:z-40 md:flex md:justify-end md:px-4">
           <button
             type="button"
@@ -42,28 +48,30 @@ function HomeLayout() {
           </button>
         </div>
       ) : null}
+
       <StatusViewer />
       <WelcomePostDialog />
       <ProfileImageReminderDialog />
       <ThemeModeDialog />
       <MobileMenuBar />
+
       <div className="flex flex-1">
         {/* Left Sidebar */}
-        <aside className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-sidebar border-r border-sidebar-border overflow-y-auto ">
+        <aside className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-sidebar border-r border-sidebar-border overflow-y-auto">
           <LeftSidebar />
         </aside>
 
         {/* Main Content */}
         <main
           className={cn(
-            " flex-1 pb-8 px-4 md:ml-64 md:mr-80",
+            "flex-1 pb-8 px-4 md:ml-64 md:mr-80",
             isReels
               ? "pt-20 sm:pt-24 px-2 sm:px-4"
               : isHome
                 ? showDesktopStatusStrip
                   ? "pt-50 sm:pt-60"
                   : "pt-24 sm:pt-28"
-                : "pt-50 sm:pt-20",
+                : "pt-20 sm:pt-24"
           )}
         >
           <Outlet />
