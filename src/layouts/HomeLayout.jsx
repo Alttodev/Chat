@@ -70,8 +70,8 @@ function HomeLayout() {
               : isHome
                 ? showDesktopStatusStrip
                   ? "pt-50 sm:pt-60"
-                  : "pt-24 sm:pt-28"
-                : "pt-20 sm:pt-24"
+                  : "pt-50 sm:pt-28"
+                : "pt-20 sm:pt-24",
           )}
         >
           <Outlet />
