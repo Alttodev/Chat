@@ -7,14 +7,13 @@ importScripts(
   "https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js",
 );
 
-
 firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyANwOW-5vk_yvMWKLa15CUCHV346VGW8FQ",
+  authDomain: "chat-app-bc969.firebaseapp.com",
+  projectId: "chat-app-bc969",
+  storageBucket: "chat-app-bc969.firebasestorage.app",
+  messagingSenderId: "437527172776",
+  appId: "1:437527172776:web:99934872ffed1ef123949d",
 });
 
 const messaging = firebase.messaging();
