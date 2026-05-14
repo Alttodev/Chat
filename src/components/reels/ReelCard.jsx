@@ -43,7 +43,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   );
 
   const userInfo = post?.user || {};
-  console.log(post, "fuck");
+ 
   const videoPoster = getVideoPosterUrl(post?.image || "");
   const commentCount =
     post?.commentCount ||

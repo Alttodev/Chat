@@ -17,10 +17,7 @@ export const registerPushToken = async (authToken) => {
     return null;
   }
 
-  if (
-    registrationState.authToken === authToken &&
-    registrationState.promise
-  ) {
+  if (registrationState.authToken === authToken && registrationState.promise) {
     return registrationState.promise;
   }
 
@@ -29,11 +26,11 @@ export const registerPushToken = async (authToken) => {
     const permission = await Notification.requestPermission();
     if (permission !== "granted") return null;
 
-    const swRegistration = await navigator.serviceWorker.register(
-      FIREBASE_SW_PATH,
-    );
+    const swRegistration =
+      await navigator.serviceWorker.register(FIREBASE_SW_PATH);
 
     const vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+
     if (!vapidKey) {
       throw new Error("VITE_FIREBASE_VAPID_KEY is missing");
     }
