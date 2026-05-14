@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Bell, UserPlus, MessageCircle, BellOff } from "lucide-react";
+import { Bell, UserPlus, MessageCircle, BellOff, MessageCircleMore } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -81,6 +81,8 @@ function NotificationSection() {
       ),
     [notifications],
   );
+
+  console.log(chatNotifications,"chatNotifications")
 
   const commentMentionNotifications = useMemo(
     () =>
@@ -389,7 +391,7 @@ function NotificationSection() {
                             {formatTime(notification?.createdAt)}
                           </p>
                         </div>
-                        <MessageCircle className="w-4 h-4 text-indigo-600 mt-1" />
+                        <MessageCircleMore className="w-4 h-4 text-green-500  mt-1" />
                       </button>
                     ))}
                   </div>
