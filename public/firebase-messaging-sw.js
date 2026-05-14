@@ -39,11 +39,11 @@ self.addEventListener("notificationclick", function (event) {
   let url = "/";
 
   if (data.type === "chat-message") {
-    url = `/messages/${data.conversationId}`;
+    url = "/messages";
   }
 
   if (data.type === "comment-mention") {
-    url = `/post/${data.postId}`;
+    url = "/home";
   }
 
   event.waitUntil(
