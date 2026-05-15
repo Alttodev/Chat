@@ -22,6 +22,7 @@ import {
   Mail,
   MapPin,
   MoonStar,
+  BadgeCheck,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
@@ -167,8 +168,11 @@ function SettingsComponent() {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <div className="text-xl font-bold text-balance">
+                  <div className="text-xl font-bold text-balance flex items-center gap-1">
                     {userProfile?.profile?.userName}
+                    {userProfile?.profile?.isVerified && (
+                      <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                    )}
                   </div>
                   <div className="flex gap-2 items-center text-muted-foreground">
                     <Mail className="h-4 w-4" />

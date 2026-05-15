@@ -14,8 +14,6 @@ export const useMarkProfileViewSeen = () => {
 };
 
 
-
-
 export const useProfileViewSeen = () => {
   return useQuery({
     queryKey: ["profileviews"],

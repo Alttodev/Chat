@@ -96,6 +96,13 @@ export const getProfileViewSeen = async () => {
   return data;
 };
 
+//verified badge
+
+export const requestVerifiedBadge = async () => {
+  const { data } = await axiosInstance.post(`/verification/request`);
+  return data;
+};
+
 
 // notifications
 
@@ -275,9 +282,6 @@ export const getUserFollowing = async (id) => {
   const { data } = await axiosInstance.get(`/follow/friends/following/${id}`);
   return data;
 };
-
-
-
 
 //delete
 

@@ -5,7 +5,9 @@ const PublicRoute = () => {
   const { token, profileId } = useAuthStore();
   const location = useLocation();
 
-  if (token && profileId && location.pathname !== "/profile/create") {
+  const allowedPublicPaths = ["/profile/create", "/verify-account", "/reset-password", "/reset"];
+
+  if (token && profileId && !allowedPublicPaths.includes(location.pathname)) {
     return <Navigate to="/home" replace />;
   }
 

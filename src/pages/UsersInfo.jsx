@@ -1,4 +1,10 @@
-import { ImageIcon, MapPin, MessageCircle, Send } from "lucide-react";
+import {
+  BadgeCheck,
+  ImageIcon,
+  MapPin,
+  MessageCircle,
+  Send,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -165,8 +171,11 @@ const UsersInfo = () => {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <div className="text-xl font-bold text-balance">
+                  <div className="text-xl font-bold text-balance flex items-center gap-1">
                     {user?.userName || "-"}
+                    {user?.isVerified && (
+                      <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                    )}
                   </div>
 
                   <div className="flex gap-2 items-center text-muted-foreground">

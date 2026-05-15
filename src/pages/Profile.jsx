@@ -1,4 +1,7 @@
 import {
+  BadgeCheck,
+  CheckCircle2,
+  Loader2,
   MapPin,
   MessageCircle,
   MoreHorizontal,
@@ -44,6 +47,7 @@ import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
+import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -60,6 +64,8 @@ const Profile = () => {
   const userId = storedData?.state?.user?._id;
 
   const { mutateAsync: deletePost } = usePostDelete();
+  const { mutateAsync: requestVerifiedBadge, isPending: verificationLoading } =
+    useRequestVerifiedBadge();
 
   const { data: profileData } = useUserDetail();
   const { data: count } = useFriendsCount();
@@ -103,6 +109,17 @@ const Profile = () => {
 
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleVerificationRequest = async () => {
+    try {
+      const res = await requestVerifiedBadge();
+      toastSuccess(res?.message || "Verification email sent");
+    } catch (error) {
+      toastError(
+        error?.response?.data?.message || "Failed to send verification email",
+      );
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -159,8 +176,49 @@ const Profile = () => {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <div className="text-xl font-bold text-balance">
-                    {userProfile?.profile?.userName}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="text-xl font-bold text-balance flex items-center gap-1">
+                      {userProfile?.profile?.userName}
+
+                      {userProfile?.profile?.isVerified && (
+                        <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                      )}
+                    </div>
+
+                    {!userProfile?.profile?.isVerified && (
+                      <button
+                        onClick={handleVerificationRequest}
+                        disabled={verificationLoading}
+                        className="
+        inline-flex
+        items-center
+        gap-1
+        rounded-full
+        bg-[#1DA1F2]
+        px-3
+        py-1
+        text-xs
+        font-medium
+        text-white
+        transition
+        hover:bg-[#1a8cd8]
+        disabled:opacity-50
+        cursor-pointer
+      "
+                      >
+                        {verificationLoading ? (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            verifying...
+                          </>
+                        ) : (
+                          <>
+                            <BadgeCheck className="h-3 w-3" />
+                            Get Verified
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   <div className="flex gap-2 items-center text-muted-foreground">
