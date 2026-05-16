@@ -130,9 +130,27 @@ export function PostUpdateForm({ userProfile }) {
         <Button
           type="submit"
           disabled={submitDisabled}
-          className="w-25 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+          className="
+    min-w-[100px]
+    h-10
+    rounded-full
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    px-5
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    disabled:opacity-70
+    disabled:cursor-not-allowed
+  "
         >
-          {isSubmitting ? "Update..." : "Update"}
+          {isSubmitting ? "Updating..." : "Update"}
         </Button>
       </div>
     </form>

@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function SkeletonRequest() {
   return (
-    <div className="flex justify-between items-center p-4  border-gray-200">
+    <div className="flex justify-between items-center   border-gray-200">
       {/* Left side: Avatar and text */}
       <div className="flex items-center space-x-4">
         <Skeleton className="h-12 w-12 rounded-full" />

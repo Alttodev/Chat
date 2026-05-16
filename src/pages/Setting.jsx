@@ -171,7 +171,7 @@ function SettingsComponent() {
                   <div className="text-xl font-bold text-balance flex items-center gap-1">
                     {userProfile?.profile?.userName}
                     {userProfile?.profile?.isVerified && (
-                      <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
                     )}
                   </div>
                   <div className="flex gap-2 items-center text-muted-foreground">
@@ -185,11 +185,29 @@ function SettingsComponent() {
                   </div>
                 </div>
                 <Button
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white w-fit cursor-pointer"
+                  className="
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    rounded-full
+    px-5
+    h-10
+    cursor-pointer
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    flex
+    items-center
+    gap-2
+  "
                   onClick={() => (isEditing ? handleSave() : openEditing(true))}
                 >
-                  <Edit3 className="mr-2 h-4 w-4" />
-                  Edit Profile
+                  <Edit3 className="h-4 w-4" />
+                  {isEditing ? "Save Changes" : "Edit Profile"}
                 </Button>
               </div>
             </div>
@@ -352,9 +370,29 @@ function SettingsComponent() {
               </div>
 
               <Button
-                variant="destructive"
+                variant="ghost"
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+                className="
+    bg-rose-500/10
+    hover:bg-rose-500/20
+    text-rose-600
+    border
+    border-rose-500/20
+    rounded-full
+    px-5
+    h-10
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    flex
+    items-center
+    gap-2
+  "
               >
                 Logout
               </Button>

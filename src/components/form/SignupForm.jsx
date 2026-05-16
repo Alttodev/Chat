@@ -40,11 +40,7 @@ const SignupForm = () => {
       <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
-          <img
-            src={logo}
-            alt="Clix Logo"
-            className="w-12 h-12"
-          />
+          <img src={logo} alt="Clix Logo" className="w-12 h-12" />
         </div>
 
         {/* Heading */}
@@ -100,9 +96,26 @@ const SignupForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+            className="
+    w-full
+    h-11
+    rounded-full
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-[0.98]
+    cursor-pointer
+    disabled:opacity-70
+    disabled:cursor-not-allowed
+  "
           >
-            Sign up
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
 

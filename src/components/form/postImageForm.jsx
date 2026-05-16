@@ -151,7 +151,24 @@ export function PostImageForm() {
         <Button
           type="submit"
           disabled={submitDisabled}
-          className="w-20 rounded-lg bg-emerald-600 py-3 text-base text-white shadow-sm transition hover:bg-emerald-700 cursor-pointer"
+          className="
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    rounded-full
+    px-5
+    h-10
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    disabled:opacity-70
+    disabled:cursor-not-allowed
+  "
         >
           Post
         </Button>

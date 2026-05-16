@@ -181,7 +181,7 @@ const Profile = () => {
                       {userProfile?.profile?.userName}
 
                       {userProfile?.profile?.isVerified && (
-                        <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                        <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
                       )}
                     </div>
 
@@ -328,7 +328,7 @@ const Profile = () => {
                       }
                     >
                       <SquarePen className="mr-1 h-4 w-4 text-muted-foreground group-hover:text-emerald-600 transition-colors duration-200" />
-                      <span className="text-emerald-700 font-medium">Edit</span>
+                      <span className="text-emerald-700 font-medium">Edit Post</span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
@@ -336,7 +336,7 @@ const Profile = () => {
                       onClick={() => handleDelete(post._id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200" />
-                      <span className="text-red-500 font-medium">Delete</span>
+                      <span className="text-red-500 font-medium">Delete Post</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

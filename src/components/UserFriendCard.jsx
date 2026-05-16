@@ -131,7 +131,7 @@ function UserFriendCard({ user, profileId }) {
 
           {reqStatus === "pending" ? (
             <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none">
-              Requested
+              Pending
             </Button>
           ) : (
             profileId !== userId && (

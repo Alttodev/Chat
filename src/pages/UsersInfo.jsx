@@ -174,7 +174,7 @@ const UsersInfo = () => {
                   <div className="text-xl font-bold text-balance flex items-center gap-1">
                     {user?.userName || "-"}
                     {user?.isVerified && (
-                      <BadgeCheck className="w-5 h-5 text-[#1DA1F2] " />
+                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
                     )}
                   </div>
 
@@ -236,8 +236,26 @@ const UsersInfo = () => {
 
             <div className="flex flex-col gap-2">
               {reqStatus === "pending" ? (
-                <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none">
-                  Requested
+                <Button
+                  className="
+    bg-rose-500/10
+    hover:bg-rose-500/15
+    text-rose-600
+    border
+    border-rose-500/20
+    rounded-full
+    px-4
+    h-8
+    text-xs
+    font-medium
+    flex
+    items-center
+    gap-1.5
+    cursor-default
+    shadow-sm
+  "
+                >
+                  Pending
                 </Button>
               ) : (
                 profileId !== id && (
@@ -246,7 +264,33 @@ const UsersInfo = () => {
                       friends ? handleUnfollow() : handleFollow(user?._id)
                     }
                     disabled={isFollowing || isUnfollowing}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer transition-transform duration-150 active:scale-95"
+                    className={`
+    rounded-full
+    px-4
+    h-8
+    text-xs
+    font-medium
+    cursor-pointer
+    transition-all
+    duration-200
+    active:scale-95
+    shadow-sm
+    ${
+      friends
+        ? `
+          bg-zinc-100
+          hover:bg-zinc-200
+          text-zinc-700
+          border
+          border-zinc-200
+        `
+        : `
+          bg-emerald-600
+          hover:bg-emerald-700
+          text-white
+        `
+    }
+  `}
                   >
                     {friends ? "Unfollow" : "Follow"}
                   </Button>

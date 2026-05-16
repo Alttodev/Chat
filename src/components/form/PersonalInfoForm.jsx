@@ -90,7 +90,10 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="name" className="flex !text-sm items-center gap-2">
+              <label
+                htmlFor="name"
+                className="flex !text-sm items-center gap-2"
+              >
                 <User className="h-4 w-4" />
                 Full Name
               </label>
@@ -108,7 +111,10 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="email" className="flex !text-sm items-center gap-2">
+              <label
+                htmlFor="email"
+                className="flex !text-sm items-center gap-2"
+              >
                 <Mail className="h-4 w-4" />
                 Email
               </label>
@@ -127,7 +133,10 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="address" className="flex !text-sm items-center gap-2">
+              <label
+                htmlFor="address"
+                className="flex !text-sm items-center gap-2"
+              >
                 <MapPin className="h-4 w-4" />
                 Address
               </label>
@@ -148,9 +157,26 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+                  className="
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    rounded-full
+    px-5
+    h-10
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    disabled:opacity-70
+    disabled:cursor-not-allowed
+  "
                 >
-                   Save
+                  {isSubmitting ? "Saving..." : "Save"}
                 </Button>
               </div>
             ) : null}

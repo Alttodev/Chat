@@ -155,7 +155,24 @@ export function PostForm({ userProfile }) {
         <Button
           type="submit"
           disabled={submitDisabled}
-          className="w-20 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg shadow-sm transition cursor-pointer text-base"
+          className="
+    bg-emerald-600
+    hover:bg-emerald-700
+    text-white
+    rounded-full
+    px-5
+    h-10
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    disabled:opacity-70
+    disabled:cursor-not-allowed
+  "
         >
           Post
         </Button>

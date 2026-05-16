@@ -79,7 +79,25 @@ export function CommentForm({
           type="submit"
           disabled={!commentValue || isSubmitting}
           className={cn(
-            "h-12 w-12 rounded-lg bg-emerald-600 py-3 text-base text-white shadow-sm transition hover:bg-emerald-700",
+            `
+      h-11
+      w-11
+      rounded-full
+      bg-emerald-600
+      hover:bg-emerald-700
+      text-white
+      shadow-sm
+      hover:shadow-md
+      transition-all
+      duration-200
+      active:scale-95
+      cursor-pointer
+      disabled:opacity-70
+      disabled:cursor-not-allowed
+      flex
+      items-center
+      justify-center
+    `,
             buttonClassName,
           )}
         >

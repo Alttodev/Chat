@@ -121,7 +121,7 @@ export const RequestCard = () => {
                     <span>{requester?.address || "-"}</span>
                   </div>
                     <span className="text-xs text-muted-foreground">
-                    Requested {formatRelative(item?.createdAt)}
+                    Pending {formatRelative(item?.createdAt)}
                   </span>
                 </div>
                 </Link>
