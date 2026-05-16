@@ -81,7 +81,7 @@ function UserFollowingCard({ user, profileId }) {
                 </div>
               </div>
 
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 ">
                 <div className="text-xl font-bold text-foreground">
                   {target?.userName || "-"}
                 </div>
@@ -116,7 +116,7 @@ function UserFollowingCard({ user, profileId }) {
                 </div>
               </div>
 
-              <div className="flex-1 space-y-2">
+              <div className="flex-1">
                 <div className="text-xl font-bold text-foreground">
                   {target?.userName || "-"}
                 </div>
@@ -130,7 +130,25 @@ function UserFollowingCard({ user, profileId }) {
           )}
 
           {reqStatus === "pending" ? (
-            <Button className="bg-emerald-600 hover:bg-emerald-600 text-white cursor-pointer-none">
+            <Button
+              className="
+    bg-rose-500/10
+    hover:bg-rose-500/15
+    text-rose-600
+    border
+    border-rose-500/20
+    rounded-full
+    px-4
+    h-8
+    text-xs
+    font-medium
+    flex
+    items-center
+    gap-1.5
+    cursor-default
+    shadow-sm
+  "
+            >
               Pending
             </Button>
           ) : (
@@ -138,7 +156,33 @@ function UserFollowingCard({ user, profileId }) {
               <Button
                 onClick={friends ? handleUnfollow : handleFollow}
                 disabled={isFollowing || isUnfollowing}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer transition-transform duration-150 active:scale-95"
+                className={`
+    rounded-full
+    px-4
+    h-8
+    text-xs
+    font-medium
+    cursor-pointer
+    transition-all
+    duration-200
+    active:scale-95
+    shadow-sm
+    ${
+      friends
+        ? `
+          bg-zinc-100
+          hover:bg-zinc-200
+          text-zinc-700
+          border
+          border-zinc-200
+        `
+        : `
+          bg-emerald-600
+          hover:bg-emerald-700
+          text-white
+        `
+    }
+  `}
               >
                 {friends ? "Unfollow" : "Follow"}
               </Button>
