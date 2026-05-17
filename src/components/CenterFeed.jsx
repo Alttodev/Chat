@@ -4,6 +4,7 @@ import {
   MoreHorizontal,
   Trash2,
   SquarePen,
+  BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -126,46 +127,63 @@ export function CenterFeed() {
         >
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
                 <Avatar className="w-10 h-10 text-emerald-600">
                   <AvatarImage
                     onClick={() => open(post?.user?.profileImage)}
-                    className="w-full h-full object-cover object-top cursor-pointer"
+                    className="h-full w-full cursor-pointer object-cover object-top"
                     src={post?.user?.profileImage || "/placeholder.svg"}
                   />
+
                   <AvatarFallback>
                     {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
-                <div>
+
+                <div className="min-w-0">
                   {userProfile?.profile?.id === post?.user?._id ? (
-                    <span className="font-medium text-sm sm:text-base">
-                      {post?.user?.userName}
-                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="truncate text-sm font-medium sm:text-base">
+                        {post?.user?.userName}
+                      </span>
+
+                      {post?.user?.isVerified && (
+                        <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                      )}
+                    </div>
                   ) : (
                     <Link
                       to={`/users/${post?.user?._id}`}
-                      className="font-medium text-sm sm:text-base cursor-pointer"
+                      className="flex items-center gap-1 cursor-pointer"
                     >
-                      {post?.user?.userName}
+                      <span className="truncate text-sm font-medium sm:text-base">
+                        {post?.user?.userName}
+                      </span>
+
+                      {post?.user?.isVerified && (
+                        <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                      )}
                     </Link>
                   )}
+
                   <p className="text-xs sm:text-sm text-muted-foreground">
                     {formatRelative(post?.createdAt)}
                   </p>
                 </div>
               </div>
+
               {post?.isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
-                      <MoreHorizontal className="w-4 h-4" />
+                    <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
+                      <MoreHorizontal className="h-4 w-4" />
                       <span className="sr-only">Toggle user menu</span>
                     </span>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent
                     align="end"
-                    className="w-full mt-1 border-slate-200 shadow-lg"
+                    className="mt-1 w-full border-slate-200 shadow-lg"
                     sideOffset={8}
                   >
                     <DropdownMenuItem
@@ -174,16 +192,22 @@ export function CenterFeed() {
                         openModal({ userProfile, postId: post._id })
                       }
                     >
-                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 group-hover:text-emerald-600 transition-colors duration-200" />
-                      <span className="text-emerald-700 font-medium">Edit Post</span>
+                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-600" />
+
+                      <span className="font-medium text-emerald-700">
+                        Edit Post
+                      </span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
-                      className="cursor-pointer transition-colors duration-200 mt-1"
+                      className="mt-1 cursor-pointer transition-colors duration-200"
                       onClick={() => handleDelete(post._id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
-                      <span className="text-red-500 font-medium">Delete Post</span>
+
+                      <span className="font-medium text-red-500">
+                        Delete Post
+                      </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -192,27 +216,22 @@ export function CenterFeed() {
           </CardHeader>
 
           <CardContent className="pt-0">
-            <PostContent text={post?.postText} className="mb-4" />
-            {/* {post?.image && (
-              <img
-                className="w-full h-auto object-cover rounded-lg"
-                src={post.image}
-                alt="post"
-              />
-            )} */}
             <PostImageWithLikes
               post={post}
               likedUsers={post?.likedByUsers}
               onImageClick={() => open(post.image)}
             />
 
-            <div className="flex items-center mt-3 justify-start ">
+            <PostContent text={post?.postText} className="mt-3 pl-2" />
+
+            <div className="mt-3 flex items-center justify-start">
               <PostLikeComponent post={post} userId={post?.user?._id} />
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => toggleComments(post._id)}
-                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                 aria-label="Comment on post"
               >
                 <MessageCircle
@@ -222,11 +241,12 @@ export function CenterFeed() {
                   }}
                 />
               </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => openShareModal(post._id)}
-                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                 aria-label="Share post"
               >
                 <Send
@@ -237,6 +257,12 @@ export function CenterFeed() {
                 />
               </Button>
             </div>
+            <Link
+              to={`/posts/${post._id}/liked-users`}
+              className="pl-2 text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-emerald-600"
+            >
+              {post?.likes} {post?.likes === 1 ? "Like" : "Likes"}
+            </Link>
 
             {openPostId === post._id && (
               <div className="mt-3">

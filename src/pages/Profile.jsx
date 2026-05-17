@@ -292,33 +292,36 @@ const Profile = () => {
                 <Avatar className="w-10 h-10 text-emerald-600">
                   <AvatarImage
                     onClick={() => open(user?.profileImage)}
-                    className="w-full h-full object-cover object-top cursor-pointer"
+                    className="h-full w-full cursor-pointer object-cover object-top"
                     src={user?.profileImage || "/placeholder.svg"}
                   />
                   <AvatarFallback>
                     {user?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
+
                 <div>
-                  <p className="font-medium text-sm sm:text-base">
+                  <p className="text-sm font-medium sm:text-base">
                     {user?.userName}
                   </p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     {formatRelative(post?.createdAt)}
                   </p>
                 </div>
               </div>
+
               {post?.isOwner && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <span className="relative cursor-pointer border-0 rounded-full p-1 transition-colors duration-200 hover:bg-accent">
-                      <MoreHorizontal className="w-4 h-4" />
+                    <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-accent">
+                      <MoreHorizontal className="h-4 w-4" />
                       <span className="sr-only">Toggle user menu</span>
                     </span>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent
                     align="end"
-                    className="w-full mt-1 border-border shadow-lg"
+                    className="mt-1 w-full border-border shadow-lg"
                     sideOffset={8}
                   >
                     <DropdownMenuItem
@@ -327,16 +330,20 @@ const Profile = () => {
                         openModal({ userProfile, postId: post._id })
                       }
                     >
-                      <SquarePen className="mr-1 h-4 w-4 text-muted-foreground group-hover:text-emerald-600 transition-colors duration-200" />
-                      <span className="text-emerald-700 font-medium">Edit Post</span>
+                      <SquarePen className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200 group-hover:text-emerald-600" />
+                      <span className="font-medium text-emerald-700">
+                        Edit Post
+                      </span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
-                      className="cursor-pointer transition-colors duration-200 mt-1"
+                      className="mt-1 cursor-pointer transition-colors duration-200"
                       onClick={() => handleDelete(post._id)}
                     >
                       <Trash2 className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200" />
-                      <span className="text-red-500 font-medium">Delete Post</span>
+                      <span className="font-medium text-red-500">
+                        Delete Post
+                      </span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -345,20 +352,22 @@ const Profile = () => {
           </CardHeader>
 
           <CardContent className="pt-0">
-            <PostContent text={post?.postText} className="mb-4" />
             <PostImageWithLikes
               likedUsers={post?.likedByUsers}
               post={post}
               onImageClick={() => open(post.image)}
             />
 
-            <div className="flex items-center justify-start mt-3">
+            <PostContent text={post?.postText} className="mt-3 pl-2" />
+
+            <div className="mt-3 flex items-center justify-start">
               <PostLikeComponent post={post} userId={post?.user?._id} />
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => toggleComments(post?._id)}
-                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                 aria-label="Comment on post"
               >
                 <MessageCircle
@@ -368,11 +377,12 @@ const Profile = () => {
                   }}
                 />
               </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => openShareModal(post?._id)}
-                className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                 aria-label="Share post"
               >
                 <Send
@@ -383,6 +393,12 @@ const Profile = () => {
                 />
               </Button>
             </div>
+            <Link
+              to={`/posts/${post._id}/liked-users`}
+              className="pl-2 text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-emerald-600"
+            >
+              {post?.likes} {post?.likes === 1 ? "Like" : "Likes"}
+            </Link>
 
             {openPostId === post._id && (
               <div className="mt-3">

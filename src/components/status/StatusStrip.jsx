@@ -1,7 +1,6 @@
 import { useRef } from "react";
-import { Play, Plus, X } from "lucide-react";
+import {  Plus, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useUserDetail } from "@/hooks/authHooks";
 import {
   useMyStatus,
@@ -120,22 +119,22 @@ function StatusBubble({
   );
 }
 
-function StatusBubbleSkeleton({ compact = false }) {
-  return (
-    <div className="flex shrink-0 flex-col items-center gap-2 text-center">
-      <div
-        className={cn(
-          "rounded-full p-[2px] bg-gradient-to-br from-emerald-200 via-emerald-100 to-cyan-100",
-          compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
-        )}
-      >
-        <Skeleton className="h-full w-full rounded-full bg-emerald-100/80" />
-      </div>
-      <Skeleton className={cn("h-3 rounded-full", compact ? "w-16" : "w-20")} />
-      <Skeleton className={cn("h-2 rounded-full", compact ? "w-12" : "w-14")} />
-    </div>
-  );
-}
+// function StatusBubbleSkeleton({ compact = false }) {
+//   return (
+//     <div className="flex shrink-0 flex-col items-center gap-2 text-center">
+//       <div
+//         className={cn(
+//           "rounded-full p-[2px] bg-gradient-to-br from-emerald-200 via-emerald-100 to-cyan-100",
+//           compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
+//         )}
+//       >
+//         <Skeleton className="h-full w-full rounded-full bg-emerald-100/80" />
+//       </div>
+//       <Skeleton className={cn("h-3 rounded-full", compact ? "w-16" : "w-20")} />
+//       <Skeleton className={cn("h-2 rounded-full", compact ? "w-12" : "w-14")} />
+//     </div>
+//   );
+// }
 
 export function StatusStrip({
   compact = false,
@@ -145,7 +144,7 @@ export function StatusStrip({
 }) {
   const { data: profileData } = useUserDetail();
   const { data: myStatusData } = useMyStatus();
-  const { data: feedData, isLoading, isFetching } = useStatusFeed();
+  const { data: feedData} = useStatusFeed();
   const { mutateAsync: uploadStatus, isPending: isUploading } =
     useUploadStatus();
   const { profileId } = useAuthStore();
@@ -213,11 +212,16 @@ export function StatusStrip({
         onChange={handleUpload}
       />
 
-      <div className={cn("overflow-x-auto overflow-y-hidden pb-2 no-scrollbar md:pb-1", showDismissButton ? "pr-10" : "")}>
+      <div
+        className={cn(
+          "overflow-x-auto overflow-y-hidden pb-2 no-scrollbar md:pb-1",
+          showDismissButton ? "pr-10" : "",
+        )}
+      >
         <div className="flex w-max min-w-max snap-x snap-mandatory gap-3 pr-6 md:gap-4">
           <StatusBubble
             highlight
-            label={isUploading ? "Uploading..." : "Your status"}
+            label={isUploading ? "Posting..." : "Your status"}
             image={myStatusImage}
             fallback={currentUser?.userName?.charAt(0).toUpperCase() || "Y"}
             compact={compact}
@@ -233,49 +237,36 @@ export function StatusStrip({
             caption={myStatus?.caption || ""}
           />
 
-          {isLoading
-            ? Array.from({ length: compact ? 4 : 6 }).map((_, index) => (
-                <StatusBubbleSkeleton
-                  key={`status-skeleton-${index}`}
-                  compact={compact}
-                />
-              ))
-            : visibleStatuses.map((entry) => {
-                const friend = entry?.status?.user;
-                const userId = friend?._id || friend?.id;
-                const statusId =
-                  entry?.status?.id || entry?.status?._id || userId;
-                const statusImage =
-                  entry?.status?.image || friend?.profileImage;
+          {visibleStatuses.map((entry) => {
+            const friend = entry?.status?.user;
+            const userId = friend?._id || friend?.id;
+            const statusId = entry?.status?.id || entry?.status?._id || userId;
+            const statusImage = entry?.status?.image || friend?.profileImage;
 
-                if (!friend || !userId) return null;
+            if (!friend || !userId) return null;
 
-                return (
-                  <StatusBubble
-                    key={statusId}
-                    label={friend.userName}
-                    online={friend.isOnline}
-                    image={statusImage}
-                    fallback={friend.userName?.charAt(0).toUpperCase() || "-"}
-                    compact={compact}
-                    caption={entry?.status?.caption}
-                    onClick={() =>
-                      openStatus({
-                        status: {
-                          ...entry.status,
-                          id: statusId,
-                          user: friend,
-                        },
-                        user: friend,
-                      })
-                    }
-                  />
-                );
-              })}
-
-          {!isLoading && isFetching ? (
-            <StatusBubbleSkeleton compact={compact} />
-          ) : null}
+            return (
+              <StatusBubble
+                key={statusId}
+                label={friend.userName}
+                online={friend.isOnline}
+                image={statusImage}
+                fallback={friend.userName?.charAt(0).toUpperCase() || "-"}
+                compact={compact}
+                caption={entry?.status?.caption}
+                onClick={() =>
+                  openStatus({
+                    status: {
+                      ...entry.status,
+                      id: statusId,
+                      user: friend,
+                    },
+                    user: friend,
+                  })
+                }
+              />
+            );
+          })}
         </div>
       </div>
     </section>

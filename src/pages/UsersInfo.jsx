@@ -334,18 +334,19 @@ const UsersInfo = () => {
                     <Avatar className="w-10 h-10 text-emerald-600">
                       <AvatarImage
                         onClick={() => open(user?.profileImage)}
-                        className="w-full h-full object-cover object-top cursor-pointer"
+                        className="h-full w-full cursor-pointer object-cover object-top"
                         src={user?.profileImage || "/placeholder.svg"}
                       />
                       <AvatarFallback>
                         {user?.userName?.charAt(0).toUpperCase() || "-"}
                       </AvatarFallback>
                     </Avatar>
+
                     <div>
-                      <p className="font-medium text-sm sm:text-base">
+                      <p className="text-sm font-medium sm:text-base">
                         {user?.userName}
                       </p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground sm:text-sm">
                         {formatRelative(post?.createdAt)}
                       </p>
                     </div>
@@ -354,21 +355,22 @@ const UsersInfo = () => {
               </CardHeader>
 
               <CardContent className="pt-0">
-                <PostContent text={post?.postText} className="mb-4" />
-
                 <PostImageWithLikes
                   post={post}
                   likedUsers={post?.likedByUsers}
                   onImageClick={() => open(post.image)}
                 />
 
-                <div className="flex items-center justify-start mt-3">
+                <PostContent text={post?.postText} className="mt-3 mb-4 pl-2" />
+
+                <div className="mt-3 flex items-center justify-start">
                   <PostLikeComponent post={post} userId={post?.user?._id} />
+
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => toggleComments(post?._id)}
-                    className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                    className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                     aria-label="Comment on post"
                   >
                     <MessageCircle
@@ -383,7 +385,7 @@ const UsersInfo = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => openShareModal(post?._id)}
-                    className="h-9 w-9 p-0 text-muted-foreground hover:bg-transparent cursor-pointer"
+                    className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
                     aria-label="Share post"
                   >
                     <Send
@@ -394,7 +396,12 @@ const UsersInfo = () => {
                     />
                   </Button>
                 </div>
-
+                <Link
+                  to={`/posts/${post._id}/liked-users`}
+                  className="pl-2  text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-emerald-600"
+                >
+                  {post?.likes} {post?.likes === 1 ? "Like" : "Likes"}
+                </Link>
                 {openPostId === post._id && (
                   <div className="mt-3">
                     <CommentSection
