@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
 import { useFriendsList } from "@/hooks/postHooks";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useAuthStore } from "@/store/authStore";
 
 export function PostImageWithLikes({
   post,
@@ -13,6 +14,8 @@ export function PostImageWithLikes({
   likedUsers,
 }) {
   const { data: friendsList } = useFriendsList();
+  const { profileId } = useAuthStore();
+
   const friendData = useMemo(() => friendsList, [friendsList]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -27,11 +30,24 @@ export function PostImageWithLikes({
     );
   }, [friends]);
 
-  const likedFriendUsers = useMemo(() => {
-    return (likedUsers || []).filter((user) =>
-      friendIds.has(String(user?.id || user?.userId)),
+
+
+const likedFriendUsers = useMemo(() => {
+  return [...(likedUsers || [])]
+    .filter((user) => {
+      const likedUserId = String(user?.id || user?.userId);
+
+      return (
+        friendIds.has(likedUserId) &&
+        likedUserId !== String(profileId)
+      );
+    })
+    .sort(
+      (a, b) =>
+        new Date(b?.likedAt || 0).getTime() -
+        new Date(a?.likedAt || 0).getTime(),
     );
-  }, [likedUsers, friendIds]);
+}, [likedUsers, friendIds, profileId]);
 
   const likedFriendName = likedFriendUsers?.[0]?.userName;
   const likedFriendImage = likedFriendUsers?.[0]?.profileImage;

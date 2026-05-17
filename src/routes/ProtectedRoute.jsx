@@ -28,10 +28,6 @@ const ProtectedRoute = () => {
         
 
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-foreground">
-              Checking Profile
-            </h2>
-
             <p className="text-sm text-muted-foreground mt-1">
               Please wait a moment...
             </p>
