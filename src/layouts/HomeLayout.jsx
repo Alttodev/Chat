@@ -12,6 +12,7 @@ import { Eye } from "lucide-react";
 import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
+
 function HomeLayout() {
   const { pathname } = useLocation();
   const isHome = pathname === "/home";
@@ -21,7 +22,7 @@ function HomeLayout() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SocialHeader />
-
+     
       {/* Mobile status strip only on home */}
       {isHome && !isReels ? <StatusStrip className="md:hidden" /> : null}
 

@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Expand, Heart, Pause, Play, Volume2, VolumeX } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
 import { useFriendsList } from "@/hooks/postHooks";
-
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 export function PostImageWithLikes({
   post,
@@ -13,7 +12,6 @@ export function PostImageWithLikes({
   className,
   likedUsers,
 }) {
-  const navigate = useNavigate();
   const { data: friendsList } = useFriendsList();
   const friendData = useMemo(() => friendsList, [friendsList]);
 
@@ -39,26 +37,13 @@ export function PostImageWithLikes({
   const likedFriendImage = likedFriendUsers?.[0]?.profileImage;
   const likeCount = typeof post?.likes === "number" ? post.likes : 0;
 
- 
-  
   const videoRef = useRef(null);
   const [isMediaReady, setIsMediaReady] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+
   const isVideo = isVideoMediaUrl(post?.image || "");
   const videoPoster = getVideoPosterUrl(post?.image || "");
-
-  const canOpenLikes = Boolean(post?._id);
-
-  const handleOpenLikes = (event) => {
-    event.stopPropagation();
-
-    if (!canOpenLikes) {
-      return;
-    }
-
-    navigate(`/posts/${post._id}/liked-users`);
-  };
 
   useEffect(() => {
     setIsMediaReady(false);
@@ -189,29 +174,66 @@ export function PostImageWithLikes({
       ) : null}
 
       {likeCount > 0 && likedFriendImage && (
-        <>
-          <Avatar
-            onClick={handleOpenLikes}
-            className="absolute left-3 bottom-3 z-10 w-10 h-10 text-emerald-600 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] like-fly cursor-pointer"
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="absolute left-3 bottom-3 z-10 rounded-full"
+              aria-label={`${likedFriendName} liked this`}
+            >
+              <Avatar className="w-10 h-10 text-emerald-600 shadow-xl backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:scale-[1.03] ring-2 ring-white/80 dark:ring-white/10 cursor-pointer like-fly">
+                <AvatarImage
+                  className="w-full h-full object-cover object-top cursor-pointer"
+                  src={likedFriendImage || "/placeholder.svg"}
+                />
+
+                <AvatarFallback className="flex items-center justify-center bg-white text-foreground dark:bg-zinc-900 dark:text-white">
+                  {likedFriendName?.charAt(0).toUpperCase() || "-"}
+                </AvatarFallback>
+
+                <Heart
+                  className="absolute bottom-1 right-1 z-20 h-4 w-4"
+                  style={{
+                    fill: "#10b981",
+                    stroke: "#10b981",
+                  }}
+                />
+              </Avatar>
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            side="bottom"
+            sideOffset={10}
+            className="
+              w-56
+              border
+              border-slate-200
+              bg-white
+              px-3
+              py-2
+              text-slate-800
+              shadow-xl
+              dark:border-white/10
+              dark:bg-zinc-950
+              dark:text-white
+            "
           >
-            <AvatarImage
-              className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"
-              src={likedFriendImage || "/placeholder.svg"}
-            />
+            <div className="flex items-center gap-2">
+              <Avatar className="h-7 w-7">
+                <AvatarImage src={likedFriendImage || "/placeholder.svg"} />
+                <AvatarFallback className="bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-white">
+                  {likedFriendName?.charAt(0).toUpperCase() || "-"}
+                </AvatarFallback>
+              </Avatar>
 
-            <AvatarFallback className="absolute inset-0 z-10 flex items-center justify-center">
-              {likedFriendName?.charAt(0).toUpperCase() || "-"}
-            </AvatarFallback>
-
-            <Heart
-              className="absolute bottom-1 right-1 z-20 h-4 w-4"
-              style={{
-                fill: "#10b981",
-                stroke: "#10b981",
-              }}
-            />
-          </Avatar>
-        </>
+              <p className="text-xs font-medium">
+                <span className="font-semibold">{likedFriendName}</span> liked
+                this Post
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
     </div>
   );
