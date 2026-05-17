@@ -229,7 +229,6 @@ export default function Message() {
       matchedFriendRow?.from?._id?.toString() === profileId?.toString()
         ? matchedFriendRow?.to
         : matchedFriendRow?.from;
-  
 
     return [
       {
@@ -304,7 +303,8 @@ export default function Message() {
         const prevTargetId = prev?.targetUserId?.toString();
         const nextTargetId = matched?.targetUserId?.toString();
         const prevConversationId = prev?.conversationId?.toString?.() || null;
-        const nextConversationId = matched?.conversationId?.toString?.() || null;
+        const nextConversationId =
+          matched?.conversationId?.toString?.() || null;
 
         if (
           prevTargetId === nextTargetId &&
@@ -398,8 +398,15 @@ export default function Message() {
   }, [queryClient]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const timeout = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [messages, selectedConversationId]);
 
   useEffect(() => {
     if (!socket || !selectedConversationId || !selectedContact?.targetUserId) {
@@ -724,13 +731,9 @@ export default function Message() {
   };
 
   const handleAudioCall = async () => {
-
     if (!selectedContact?.targetUserId) {
       return;
     }
-
-
-    
 
     if (selectedContact.targetUserId.toString() === profileId?.toString()) {
       toastError("You cannot call yourself");
@@ -754,8 +757,8 @@ export default function Message() {
 
     // decide correct userId
     const callUserId =
-      selectedContact?.callUserId || 
-      selectedContact?.userId || 
+      selectedContact?.callUserId ||
+      selectedContact?.userId ||
       matchedProfile?.userId ||
       selectedContact?.targetUserId;
 

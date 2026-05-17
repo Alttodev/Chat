@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Expand, Heart, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useAuthStore } from "@/store/authStore";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
+import { useFriendsList } from "@/hooks/postHooks";
 
-const getUserId = (user) => user?._id || user?.id || user?.userId;
 
 export function PostImageWithLikes({
   post,
@@ -15,13 +14,33 @@ export function PostImageWithLikes({
   likedUsers,
 }) {
   const navigate = useNavigate();
-  const { profileId, user } = useAuthStore();
+  const { data: friendsList } = useFriendsList();
+  const friendData = useMemo(() => friendsList, [friendsList]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const friends =
+    friendData?.friends?.filter((item) => item?.isFriends === true) || [];
+
+  const friendIds = useMemo(() => {
+    return new Set(
+      friends.flatMap((item) =>
+        [item?.from?._id, item?.to?._id].filter(Boolean).map(String),
+      ),
+    );
+  }, [friends]);
+
+  const likedFriendUsers = useMemo(() => {
+    return (likedUsers || []).filter((user) =>
+      friendIds.has(String(user?.id || user?.userId)),
+    );
+  }, [likedUsers, friendIds]);
+
+  const likedFriendName = likedFriendUsers?.[0]?.userName;
+  const likedFriendImage = likedFriendUsers?.[0]?.profileImage;
   const likeCount = typeof post?.likes === "number" ? post.likes : 0;
-  const currentUserId = profileId || user?._id;
-  const visibleLiker = likedUsers?.find(
-    (likedUser) => String(getUserId(likedUser)) !== String(currentUserId),
-  );
-  const hasLiked = visibleLiker?.profileImage;
+
+ 
+  
   const videoRef = useRef(null);
   const [isMediaReady, setIsMediaReady] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
@@ -169,7 +188,7 @@ export function PostImageWithLikes({
         </div>
       ) : null}
 
-      {likeCount > 0 && visibleLiker && (
+      {likeCount > 0 && likedFriendImage && (
         <>
           <Avatar
             onClick={handleOpenLikes}
@@ -177,11 +196,11 @@ export function PostImageWithLikes({
           >
             <AvatarImage
               className="absolute inset-0 w-full h-full object-cover object-top cursor-pointer"
-              src={hasLiked || "/placeholder.svg"}
+              src={likedFriendImage || "/placeholder.svg"}
             />
 
             <AvatarFallback className="absolute inset-0 z-10 flex items-center justify-center">
-              {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+              {likedFriendName?.charAt(0).toUpperCase() || "-"}
             </AvatarFallback>
 
             <Heart

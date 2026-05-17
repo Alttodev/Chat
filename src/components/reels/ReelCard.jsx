@@ -43,7 +43,7 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   );
 
   const userInfo = post?.user || {};
- 
+
   const videoPoster = getVideoPosterUrl(post?.image || "");
   const commentCount =
     post?.commentCount ||
@@ -184,8 +184,13 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
               </div>
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-white/75 sm:text-xs">
-                <span>{likeCount} likes</span>
-                <span>{commentCount} comments</span>
+                <span>
+                  {likeCount} {likeCount === 1 ? "like" : "likes"}
+                </span>
+
+                <span>
+                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
+                </span>
               </div>
             </div>
 

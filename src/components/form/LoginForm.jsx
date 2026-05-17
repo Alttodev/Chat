@@ -13,6 +13,7 @@ import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import logo from "@/assets/logo.png";
+import messageBg from "@/assets/bgwallpaper.png";
 
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
@@ -84,7 +85,11 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
+      <div
+        className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.30]"
+        style={{ backgroundImage: `url(${messageBg})` }}
+      />
+      <div className="relative z-0 w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img src={logo} alt="Clix Logo" className="w-12 h-12" />

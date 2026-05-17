@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import {  Plus, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserDetail } from "@/hooks/authHooks";
 import {
@@ -47,10 +47,10 @@ function StatusBubble({
           type="button"
           onClick={onClick}
           className={cn(
-            "relative flex items-center justify-center rounded-full p-[2px] transition-transform duration-200 group-hover:scale-105",
+            "relative flex items-center justify-center rounded-full p-[2px] cursor-pointer ",
             compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
             highlight
-              ? "border-2 border-dashed border-emerald-500/75 bg-transparent shadow-none"
+              ? "border-1 bg-gradient-to-br from-emerald-300/80 via-emerald-200/60 to-cyan-300/70"
               : "bg-gradient-to-br from-emerald-300/80 via-emerald-200/60 to-cyan-300/70",
           )}
         >
@@ -95,7 +95,7 @@ function StatusBubble({
           </button>
         ) : (
           <div
-            className={`absolute -bottom-0 -right-0 w-4 h-4 rounded-full border-2 border-background ${
+            className={`absolute -bottom-0 right-1 w-4 h-4 rounded-full border-2 border-background ${
               online ? "bg-green-500" : "bg-yellow-500"
             }`}
           />
@@ -144,7 +144,7 @@ export function StatusStrip({
 }) {
   const { data: profileData } = useUserDetail();
   const { data: myStatusData } = useMyStatus();
-  const { data: feedData} = useStatusFeed();
+  const { data: feedData } = useStatusFeed();
   const { mutateAsync: uploadStatus, isPending: isUploading } =
     useUploadStatus();
   const { profileId } = useAuthStore();

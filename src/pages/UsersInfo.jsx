@@ -396,12 +396,7 @@ const UsersInfo = () => {
                     />
                   </Button>
                 </div>
-                <Link
-                  to={`/posts/${post._id}/liked-users`}
-                  className="pl-2  text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-emerald-600"
-                >
-                  {post?.likes} {post?.likes === 1 ? "Like" : "Likes"}
-                </Link>
+
                 {openPostId === post._id && (
                   <div className="mt-3">
                     <CommentSection

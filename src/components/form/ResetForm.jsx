@@ -8,6 +8,7 @@ import { toastError, toastSuccess } from "../../lib/toast";
 import TextInput from "../form_inputs/TextInput";
 import { useUserReset } from "@/hooks/authHooks";
 import logo from "@/assets/logo.png";
+import messageBg from "@/assets/bgwallpaper.png";
 
 const ResetForm = () => {
   const navigate = useNavigate();
@@ -35,7 +36,11 @@ const ResetForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6">
+      <div
+        className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.30]"
+        style={{ backgroundImage: `url(${messageBg})` }}
+      />
+      <div className="relative z-0 w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img src={logo} alt="Clix Logo" className="w-12 h-12" />
