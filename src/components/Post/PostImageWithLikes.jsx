@@ -41,6 +41,7 @@ const likedFriendUsers = useMemo(() => {
         friendIds.has(likedUserId) &&
         likedUserId !== String(profileId)
       );
+      
     })
     .sort(
       (a, b) =>

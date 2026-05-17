@@ -43,9 +43,7 @@ const VerifyAccountPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
         <div className="mb-5 flex justify-center">
-          <div className="rounded-full bg-emerald-50 p-5 shadow-sm">
-            <LoaderCircle className="h-12 w-12 animate-spin text-emerald-600" />
-          </div>
+          <LoaderCircle className="h-12 w-12 animate-spin text-emerald-600" />
         </div>
 
         <h1 className="text-2xl font-bold tracking-tight">Verifying Account</h1>
