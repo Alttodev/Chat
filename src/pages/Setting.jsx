@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import {
   MapPin,
   MoonStar,
   BadgeCheck,
+  Globe,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
@@ -58,6 +59,11 @@ function SettingsComponent() {
   const { theme, toggleTheme } = useThemeStore();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
+  const [isPublicAccount, setIsPublicAccount] = useState(false);
+
+  const togglePublicAccount = () => {
+    setIsPublicAccount((prev) => !prev);
+  };
 
   const queryClient = useQueryClient();
 
@@ -326,6 +332,30 @@ function SettingsComponent() {
                   onCheckedChange={toggleTheme}
                   className="data-[state=checked]:bg-emerald-600"
                   aria-label="Toggle dark mode"
+                />
+              </div>
+            </div>
+            <Separator />
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4 text-slate-500" />
+
+                  <label className="!text-sm font-medium">Public Account</label>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  Allow everyone to view your profile and posts
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  disabled
+                  checked={isPublicAccount}
+                  onCheckedChange={togglePublicAccount}
+                  className="data-[state=checked]:bg-emerald-600"
+                  aria-label="Toggle public account"
                 />
               </div>
             </div>
