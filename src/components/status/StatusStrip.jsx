@@ -27,6 +27,7 @@ const isSupportedStatusFile = (file) => {
 
 function StatusBubble({
   label,
+  hasMedia,
   online,
   image,
   fallback,
@@ -47,11 +48,13 @@ function StatusBubble({
           type="button"
           onClick={onClick}
           className={cn(
-            "relative flex items-center justify-center rounded-full p-[2px] cursor-pointer ",
+            "relative flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 mt-1 ml-1",
+
             compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
-            highlight
-              ? "border-1 bg-gradient-to-br from-emerald-300/80 via-emerald-200/60 to-cyan-300/70"
-              : "bg-gradient-to-br from-emerald-300/80 via-emerald-200/60 to-cyan-300/70",
+
+            hasMedia
+              ? "p-[2px] bg-emerald-500 ring-2 ring-emerald-200/60 dark:ring-emerald-500/20"
+              : "p-[4px] border-2 border-dashed border-emerald-400 bg-transparent",
           )}
         >
           {!highlight ? (
@@ -221,6 +224,7 @@ export function StatusStrip({
         <div className="flex w-max min-w-max snap-x snap-mandatory gap-3 pr-6 md:gap-4">
           <StatusBubble
             highlight
+            hasMedia={Boolean(myStatus?.image)}
             label={isUploading ? "Posting..." : "Your status"}
             image={myStatusImage}
             fallback={currentUser?.userName?.charAt(0).toUpperCase() || "Y"}
@@ -248,6 +252,7 @@ export function StatusStrip({
             return (
               <StatusBubble
                 key={statusId}
+                hasMedia={Boolean(entry?.status?.image)}
                 label={friend.userName}
                 online={friend.isOnline}
                 image={statusImage}

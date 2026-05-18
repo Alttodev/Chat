@@ -403,9 +403,8 @@ function SettingsComponent() {
               <div className="flex items-center gap-2">
                 <Button
                   type="button"
-                  variant="ghost"
                   onClick={() => navigate("/profileViews")}
-                  className="rounded-full border border-border bg-background px-4 py-2 text-sm font-medium shadow-sm transition-all hover:bg-muted cursor-pointer"
+                  className="h-9 rounded-full bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 hover:shadow-md cursor-pointer"
                 >
                   View
                 </Button>
