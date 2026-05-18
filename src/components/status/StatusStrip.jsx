@@ -54,7 +54,7 @@ function StatusBubble({
 
             hasMedia
               ? "p-[2px] bg-emerald-500 ring-2 ring-emerald-200/60 dark:ring-emerald-500/20"
-              : "p-[4px] border-2 border-dashed border-emerald-400 bg-transparent",
+              : "p-0 bg-transparent",
           )}
         >
           {!highlight ? (

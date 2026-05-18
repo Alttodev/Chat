@@ -14,8 +14,8 @@ export function PostSkeleton() {
         </div>
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-4 w-3/4 mb-3" />
         <Skeleton className="h-64 w-full rounded-lg" />
+        <Skeleton className="h-4 w-3/4 mt-3" />
         <div className="flex justify-between mt-4">
           <Skeleton className="h-8 w-20" />
           <Skeleton className="h-8 w-20" />
