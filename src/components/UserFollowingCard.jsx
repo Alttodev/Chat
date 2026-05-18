@@ -7,7 +7,7 @@ import {
   useRequestListInfo,
 } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { MapPin } from "lucide-react";
+import { BadgeCheck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 function UserFollowingCard({ user, profileId }) {
@@ -53,7 +53,7 @@ function UserFollowingCard({ user, profileId }) {
   return (
     <Card className="border-border shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
-        <div className="flex flex-row items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           {canOpenProfile ? (
             <Link
               to={`/users/${target?._id}`}
@@ -82,8 +82,11 @@ function UserFollowingCard({ user, profileId }) {
               </div>
 
               <div className="flex-1 ">
-                <div className="text-xl font-bold text-foreground">
+                <div className="flex items-center gap-1 text-xl font-bold text-foreground">
                   {target?.userName || "-"}
+                  {target?.isVerified && (
+                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                  )}
                 </div>
 
                 <div className="flex gap-2 items-center text-muted-foreground">

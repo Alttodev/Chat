@@ -153,13 +153,13 @@ export function SocialHeader() {
                   <User className="w-4 h-4" />
                   Profile
                 </DropdownMenuItem>
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   onClick={() => navigate("/profileViews")}
                   className="mb-1"
                 >
                   <UserRoundSearch className="w-4 h-4" />
                   Visitors
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
 
                 <DropdownMenuItem
                   onClick={() => navigate("/settings")}

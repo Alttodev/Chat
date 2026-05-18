@@ -5,7 +5,6 @@ import {
   User,
   MessageCircle,
   BarChart3,
-  UserRoundSearch,
   Clapperboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,6 @@ export function LeftSidebar() {
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
     { icon: User, label: "Profile", path: "/profile" },
-    { icon:UserRoundSearch, label: "Visitors", path: "/profileViews" },
     { icon: Clapperboard, label: "Reels", path: "/reels" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },

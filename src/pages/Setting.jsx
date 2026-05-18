@@ -25,6 +25,8 @@ import {
   BadgeCheck,
   Globe,
   Lock,
+  ChevronRight,
+  UserRoundSearch,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
@@ -381,6 +383,32 @@ function SettingsComponent() {
                   onCheckedChange={handlePrivacyToggle}
                   className="data-[state=checked]:bg-emerald-600"
                 />
+              </div>
+            </div>
+            <Separator />
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <UserRoundSearch className="h-4 w-4 text-slate-500" />
+
+                  <label className="!text-sm font-medium">Profile Views</label>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  See who recently viewed your profile
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => navigate("/profileViews")}
+                  className="rounded-full border border-border bg-background px-4 py-2 text-sm font-medium shadow-sm transition-all hover:bg-muted cursor-pointer"
+                >
+                  View
+                </Button>
               </div>
             </div>
 
