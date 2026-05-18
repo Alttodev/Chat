@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,13 +61,18 @@ function SettingsComponent() {
   const { theme, toggleTheme } = useThemeStore();
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
-  const [isPublicAccount, setIsPublicAccount] = useState(false);
+  const { data: profileData, isFetching } = useUserDetail();
+  const queryClient = useQueryClient();
+  const userProfile = useMemo(() => profileData, [profileData]);
+  const [isPublic, setIsPublic] = useState(
+    userProfile?.profile?.isPublic ?? true,
+  );
 
   const handlePrivacyToggle = async (checked) => {
     try {
       const res = await markPublicAccount(checked);
 
-      setIsPublicAccount(checked);
+      setIsPublic(checked);
 
       toastSuccess(
         res?.message ||
@@ -79,11 +84,6 @@ function SettingsComponent() {
       );
     }
   };
-  const queryClient = useQueryClient();
-
-  const { data: profileData, isFetching } = useUserDetail();
-
-  const userProfile = useMemo(() => profileData, [profileData]);
 
   const memberSince =
     dayjs(userProfile?.profile?.memberSince).format("MMM YY") || "-";
@@ -140,6 +140,10 @@ function SettingsComponent() {
       toastError(error, "Failed to logout");
     }
   };
+
+  useEffect(() => {
+    setIsPublic(userProfile?.profile?.isPublic ?? true);
+  }, [userProfile?.profile?.isPublic]);
 
   if (isFetching) {
     return (
@@ -353,19 +357,19 @@ function SettingsComponent() {
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  {isPublicAccount ? (
+                  {isPublic ? (
                     <Globe className="h-4 w-4 text-slate-500" />
                   ) : (
                     <Lock className="h-4 w-4 text-slate-500" />
                   )}
 
                   <label className="!text-sm font-medium">
-                    {isPublicAccount ? "Public Account" : "Private Account"}
+                    {isPublic ? "Public Account" : "Private Account"}
                   </label>
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  {isPublicAccount
+                  {isPublic
                     ? "Allow everyone to view your profile and posts"
                     : "Only permitted users can view your profile and posts"}
                 </p>
@@ -373,7 +377,7 @@ function SettingsComponent() {
 
               <div className="flex items-center gap-2">
                 <Switch
-                  checked={isPublicAccount}
+                  checked={isPublic}
                   onCheckedChange={handlePrivacyToggle}
                   className="data-[state=checked]:bg-emerald-600"
                 />
