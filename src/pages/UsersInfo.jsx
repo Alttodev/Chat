@@ -68,6 +68,7 @@ const UsersInfo = () => {
 
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
+ 
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(id);
@@ -322,7 +323,7 @@ const UsersInfo = () => {
           </div>
         </CardContent>
       </Card>
-      {user?.isPublic ? (
+      {user?.isPublic || friends  ? (
         <>
           {displayPosts.map((post) => (
             <Card
