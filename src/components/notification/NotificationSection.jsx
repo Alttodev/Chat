@@ -300,7 +300,7 @@ function NotificationSection() {
           </Button>
         </div>
 
-        <ScrollArea className="h-[320px]">
+        <ScrollArea className="h-[220px]">
           <div className="p-2">
             {isLoading ? (
               <div className="py-8 text-center text-sm text-muted-foreground">

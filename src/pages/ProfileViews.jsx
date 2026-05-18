@@ -1,4 +1,4 @@
-import { EyeIcon } from "lucide-react";
+import { ArrowLeft, EyeIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import { useProfileViewSeen } from "@/hooks/profileViewHooks";
+import { Button } from "@/components/ui/button";
 
 const getDisplayName = (user) =>
   user?.userName || user?.name || user?.fullName || user?.email || "User";
@@ -31,19 +32,31 @@ function ProfileViews() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4  pb-20">
+    <div className="mx-auto w-full max-w-2xl px-4 pb-20">
       <Card className="overflow-hidden border-border shadow-sm">
         <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-500/10 dark:to-background">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <CardTitle className="text-lg text-foreground">
-                Profile Views
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                {totalViews === 1
-                  ? "1 person viewed your profile"
-                  : `${totalViews} people viewed your profile`}
-              </p>
+            <div className="flex items-start gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="rounded-full text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+
+              <div>
+                <CardTitle className="text-lg text-foreground">
+                  Profile Views
+                </CardTitle>
+
+                <p className="text-sm text-muted-foreground">
+                  {totalViews === 1
+                    ? "1 person viewed your profile"
+                    : `${totalViews} people viewed your profile`}
+                </p>
+              </div>
             </div>
 
             <div className="flex items-center gap-2 rounded-full bg-emerald-600 px-3 py-1.5 text-white shadow-sm">
@@ -83,6 +96,7 @@ function ProfileViews() {
                         src={avatarSrc}
                         alt={displayName}
                       />
+
                       <AvatarFallback className="bg-emerald-100 text-emerald-700">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
@@ -111,6 +125,7 @@ function ProfileViews() {
 
               <div>
                 <p className="text-base font-semibold">No views yet</p>
+
                 <p className="text-sm text-muted-foreground">
                   When people view your profile, they will appear here.
                 </p>

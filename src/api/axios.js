@@ -85,6 +85,14 @@ export const deleteMyStatus = async () => {
   return res.data;
 };
 
+export const markPublicAccount = async (isPublic) => {
+  const res = await axiosInstance.patch("/user/privacy", {
+    isPublic,
+  });
+
+  return res.data;
+};
+
 //profileViews
 export const markProfileViewSeen = async (statusId) => {
   const res = await axiosInstance.post(`/profileviews/seen/${statusId}`);
@@ -102,7 +110,6 @@ export const requestVerifiedBadge = async () => {
   const { data } = await axiosInstance.post(`/verification/request`);
   return data;
 };
-
 
 // notifications
 

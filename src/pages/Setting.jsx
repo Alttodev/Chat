@@ -24,6 +24,7 @@ import {
   MoonStar,
   BadgeCheck,
   Globe,
+  Lock,
 } from "lucide-react";
 import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
@@ -44,6 +45,7 @@ import { useImageModalStore } from "@/lib/zustand";
 import { useThemeStore } from "@/lib/zustand";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
+import { markPublicAccount } from "@/api/axios";
 
 function SettingsComponent() {
   const {
@@ -61,10 +63,22 @@ function SettingsComponent() {
   const userId = storedData?.state?.user?._id;
   const [isPublicAccount, setIsPublicAccount] = useState(false);
 
-  const togglePublicAccount = () => {
-    setIsPublicAccount((prev) => !prev);
-  };
+  const handlePrivacyToggle = async (checked) => {
+    try {
+      const res = await markPublicAccount(checked);
 
+      setIsPublicAccount(checked);
+
+      toastSuccess(
+        res?.message ||
+          (checked ? "Account is now public" : "Account is now private"),
+      );
+    } catch (error) {
+      toastError(
+        error?.response?.data?.message || "Failed to update privacy settings",
+      );
+    }
+  };
   const queryClient = useQueryClient();
 
   const { data: profileData, isFetching } = useUserDetail();
@@ -339,23 +353,29 @@ function SettingsComponent() {
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-slate-500" />
+                  {isPublicAccount ? (
+                    <Globe className="h-4 w-4 text-slate-500" />
+                  ) : (
+                    <Lock className="h-4 w-4 text-slate-500" />
+                  )}
 
-                  <label className="!text-sm font-medium">Public Account</label>
+                  <label className="!text-sm font-medium">
+                    {isPublicAccount ? "Public Account" : "Private Account"}
+                  </label>
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  Allow everyone to view your profile and posts
+                  {isPublicAccount
+                    ? "Allow everyone to view your profile and posts"
+                    : "Only permitted users can view your profile and posts"}
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
                 <Switch
-                  disabled
                   checked={isPublicAccount}
-                  onCheckedChange={togglePublicAccount}
+                  onCheckedChange={handlePrivacyToggle}
                   className="data-[state=checked]:bg-emerald-600"
-                  aria-label="Toggle public account"
                 />
               </div>
             </div>

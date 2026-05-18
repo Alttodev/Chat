@@ -53,7 +53,7 @@ function UserFollowingCard({ user, profileId }) {
   return (
     <Card className="border-border shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="flex flex-row items-center justify-between gap-6">
           {canOpenProfile ? (
             <Link
               to={`/users/${target?._id}`}

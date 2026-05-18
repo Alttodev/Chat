@@ -4,7 +4,6 @@ import {
   User,
   Settings,
   UserRoundSearch,
-  BarChart3,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -62,7 +61,7 @@ export function SocialHeader() {
           <div className="relative flex-1 min-w-0 w-full max-w-none sm:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
             <Input
-              placeholder="Search users..."
+              placeholder="Search ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 bg-muted border-0 focus:bg-background text-sm sm:text-base"
@@ -162,13 +161,6 @@ export function SocialHeader() {
                   Visitors
                 </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={() => navigate("/survey")}
-                  className="mb-1"
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  Analytics
-                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => navigate("/settings")}
                   className="mb-1"
