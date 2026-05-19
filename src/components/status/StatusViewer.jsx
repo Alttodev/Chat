@@ -207,7 +207,7 @@ export function StatusViewer() {
       {/* Progress */}
       <div className="absolute top-0 left-0 w-full h-1 bg-white/20">
         <div
-          className="h-[7px] bg-emerald-600"
+          className="h-[5px] bg-emerald-600"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -305,8 +305,12 @@ export function StatusViewer() {
             )}
 
             {caption && (
-              <div className="absolute bottom-4 left-4 right-4 bg-black/50 text-white text-sm p-3 rounded-xl">
-                {caption}
+              <div className="absolute bottom-0 left-0 right-0 rounded-b-3xl bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-4 pt-10">
+                <div className="max-h-24 overflow-y-auto pr-1">
+                  <p className="break-words text-center text-sm font-medium leading-relaxed text-white drop-shadow-md sm:text-[15px]">
+                    {caption}
+                  </p>
+                </div>
               </div>
             )}
             {isOwner && (
@@ -315,7 +319,7 @@ export function StatusViewer() {
                   e.stopPropagation();
                   setShowViewers(true);
                 }}
-                className="absolute bottom-2 left-40 flex items-center gap-2 bg-black/60 text-white text-[14px] px-3 py-1 rounded-full cursor-pointer"
+                className="absolute -bottom-3 left-40 flex items-center gap-2 bg-black/60 text-white text-[14px] px-3 py-1 rounded-full cursor-pointer"
               >
                 <Eye className="w-5 h-5" /> {seenBy.length}
               </button>
