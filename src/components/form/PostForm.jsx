@@ -100,9 +100,22 @@ export function PostForm({ userProfile }) {
                 spellCheck={true}
                 autoCapitalize="sentences"
                 inputMode="text"
-                className={`min-h-[100px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
-                  selectedLocation?.name ? "pb-14" : ""
-                }`}
+                enterKeyHint="send"
+                className={`
+    min-h-[100px]
+    resize-none
+    border-0
+    bg-muted
+    focus:bg-background
+    text-sm sm:text-base
+    overflow-y-auto
+    thin-scrollbar
+    touch-manipulation
+    whitespace-pre-wrap
+    break-words
+    leading-relaxed
+    ${selectedLocation?.name ? "pb-14" : ""}
+  `}
               />
 
               {selectedLocation?.name ? (
