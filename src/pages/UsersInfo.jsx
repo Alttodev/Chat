@@ -174,14 +174,14 @@ const UsersInfo = () => {
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <div className="text-xl font-bold text-balance flex items-center gap-1">
+                  <div className="text-md font-bold text-balance flex items-center gap-1">
                     {user?.userName || "-"}
                     {user?.isVerified && (
                       <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center text-muted-foreground">
+                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>

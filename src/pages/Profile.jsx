@@ -177,7 +177,7 @@ const Profile = () => {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-xl font-bold text-balance flex items-center gap-1">
+                    <div className="text-md font-bold text-balance flex items-center gap-1">
                       {userProfile?.profile?.userName}
 
                       {userProfile?.profile?.isVerified && (
@@ -221,7 +221,7 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center text-muted-foreground">
+                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{userProfile?.profile?.address}</span>
                   </div>

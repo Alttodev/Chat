@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +18,7 @@ export function StatusDraftModal({
   isUploading = false,
 }) {
   const [caption, setCaption] = useState("");
+
   const previewUrl = useMemo(() => {
     if (!file) return "";
     return URL.createObjectURL(file);
@@ -48,31 +48,35 @@ export function StatusDraftModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "w-[94vw] max-w-2xl rounded-2xl p-0 overflow-hidden",
-          "max-h-[90vh] sm:max-h-[85vh]",
+          "w-[94vw] max-w-3xl overflow-hidden rounded-2xl p-0",
+          "max-h-[92vh] sm:max-h-[88vh]",
         )}
       >
         <DialogHeader className="border-b px-4 py-4 sm:px-6">
-          <DialogTitle className="text-base sm:text-lg">Add Status</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">
+            Add Status
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-[calc(90vh-90px)] overflow-y-auto p-4 sm:max-h-[calc(85vh-90px)] sm:p-6">
+        <div className="max-h-[calc(92vh-72px)] overflow-y-auto p-4 sm:max-h-[calc(88vh-72px)] sm:p-6">
           <div className="flex flex-col gap-4 md:flex-row">
-            <div className="w-full shrink-0 md:w-56 lg:w-64">
-              {isVideo ? (
-                <video
-                  src={previewUrl}
-                  controls
-                  playsInline
-                  className="h-full w-full rounded-2xl object-cover"
-                />
-              ) : (
-                <img
-                  src={previewUrl}
-                  alt="Selected status preview"
-                  className="h-full w-full rounded-2xl object-cover"
-                />
-              )}
+            <div className="w-full shrink-0 md:w-1/2">
+              <div className="flex h-[45vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-black sm:h-[50vh] md:h-[60vh]">
+                {isVideo ? (
+                  <video
+                    src={previewUrl}
+                    controls
+                    playsInline
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <img
+                    src={previewUrl}
+                    alt="Selected status preview"
+                    className="h-full w-full object-contain"
+                  />
+                )}
+              </div>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -84,7 +88,8 @@ export function StatusDraftModal({
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder="Write a caption..."
-                className="min-h-[100px] w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                rows={6}
+                className="min-h-[140px] w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               />
 
               <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">

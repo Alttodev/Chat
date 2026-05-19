@@ -4,7 +4,7 @@ import { useFriendsList } from "@/hooks/postHooks";
 import { useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { Link } from "react-router-dom";
-import { MapPin, UsersRound } from "lucide-react";
+import { BadgeCheck, MapPin, UsersRound } from "lucide-react";
 
 export const FriendCard = ({ tabValue }) => {
   const { data: friendsList, isFetching } = useFriendsList();
@@ -57,10 +57,13 @@ export const FriendCard = ({ tabValue }) => {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">
+                    <div className="font-semibold flex items-center gap-1 text-md text-foreground">
                       {item?.from?.userName}
-                    </h3>
-                    <div className="flex items-center gap-1 text-muted-foreground">
+                       {item?.from?.isVerified && (
+                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                    )}
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                       <span>{item?.from?.address || "-"}</span>
                     </div>

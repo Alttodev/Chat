@@ -113,10 +113,13 @@ export const RequestCard = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold text-foreground">
-                    {requester?.userName || "Unknown User"}
-                  </h3>
-                  <div className="flex gap-1 items-center text-muted-foreground">
+                  <div className="font-semibold flex items-center gap-1 text-md text-foreground">
+                      {requester?.userName || "Unknown User"}
+                       {requester?.isVerified && (
+                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                    )}
+                  </div>
+                  <div className="flex gap-1 items-center  text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{requester?.address || "-"}</span>
                   </div>

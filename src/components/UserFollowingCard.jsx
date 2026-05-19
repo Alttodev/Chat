@@ -82,14 +82,14 @@ function UserFollowingCard({ user, profileId }) {
               </div>
 
               <div className="flex-1 ">
-                <div className="flex items-center gap-1 text-xl font-bold text-foreground">
+                <div className="flex items-center gap-1 text-md font-bold text-foreground">
                   {target?.userName || "-"}
                   {target?.isVerified && (
                     <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
                   )}
                 </div>
 
-                <div className="flex gap-2 items-center text-muted-foreground">
+                <div className="flex gap-2 items-center text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   <span>{target?.address || "-"}</span>
                 </div>
@@ -120,11 +120,14 @@ function UserFollowingCard({ user, profileId }) {
               </div>
 
               <div className="flex-1">
-                <div className="text-xl font-bold text-foreground">
-                  {target?.userName || "-"}
+                <div className="text-md flex items-center gap-1 font-bold text-foreground">
+                    {target?.userName || "-"}
+                     {target?.isVerified && (
+                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                  )}
                 </div>
 
-                <div className="flex gap-2 items-center text-muted-foreground">
+                <div className="flex gap-2 items-center text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   <span>{target?.address || "-"}</span>
                 </div>

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {  MapPin } from "lucide-react";
+import { BadgeCheck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -84,11 +84,14 @@ function UserCard({ user, profileId }) {
 
               <div className="flex-1 space-y-2">
                 <div>
-                  <div className="text-xl font-bold text-foreground">
+                  <div className="text-md flex items-center gap-1 font-bold text-foreground">
                     {user?.userName || "-"}
+                    {user?.isVerified && (
+                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                    )}
                   </div>
 
-                  <div className="flex gap-2 items-center text-muted-foreground">
+                  <div className="flex gap-2 items-center text-md text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
@@ -156,7 +159,6 @@ function UserCard({ user, profileId }) {
     shadow-sm
   "
               >
-               
                 Pending
               </Button>
             ) : (

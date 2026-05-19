@@ -52,11 +52,10 @@ export function StatusViewer() {
   const user = status?.status?.user || status?.user || {};
 
   const userName = user?.userName || "Status";
-
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
   const statusId = status?.status?.id || status?.id;
 
-  const isOwner = user?.id === currentUserId;
+  const isOwner = user?._id === currentUserId || user?.id === currentUserId;
 
   const statusTime =
     formatRelative(
@@ -205,7 +204,7 @@ export function StatusViewer() {
   return (
     <div className="fixed inset-0 z-50 bg-black/95">
       {/* Progress */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-white/20">
+      <div className="absolute left-0 top-0 h-1 w-full bg-white/20">
         <div
           className="h-[5px] bg-emerald-600"
           style={{ width: `${progress}%` }}
@@ -216,13 +215,14 @@ export function StatusViewer() {
         <button
           type="button"
           onClick={closeStatus}
-          className="absolute top-4 left-4 z-50 flex h-10 w-5 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75 cursor-pointer"
+          className="absolute left-4 top-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75"
           aria-label="Back"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
+
         {/* Header */}
-        <header className="flex items-center justify-between px-2 pl-12 pt-4 pb-3 text-white">
+        <header className="flex items-center justify-between px-2 pb-3 pl-12 pt-4 text-white">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
@@ -237,24 +237,24 @@ export function StatusViewer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 relative">
+          <div className="relative flex items-center gap-4">
             {isOwner && (
               <div className="relative">
                 <button
                   onClick={() => setShowMenu((prev) => !prev)}
-                  className="h-10 w-10 flex items-center justify-center cursor-pointer"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center"
                 >
                   <MoreVertical className="h-5 w-5" />
                 </button>
 
                 {showMenu && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white shadow-md rounded-md border z-50">
+                  <div className="absolute right-0 z-50 mt-2 w-32 rounded-md border bg-white shadow-md">
                     <button
                       onClick={() => {
                         handleDelete();
                         setShowMenu(false);
                       }}
-                      className="flex items-center gap-2 px-3 py-2 w-full text-sm text-red-500 hover:bg-gray-100"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-gray-100"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete
@@ -266,12 +266,12 @@ export function StatusViewer() {
           </div>
         </header>
 
-        {/* Image */}
+        {/* Media */}
         <button
           onClick={() => setIsPaused((p) => !p)}
           className="flex flex-1 items-center justify-center px-4 pb-8"
         >
-          <div className="relative w-full max-w-[420px] h-full">
+          <div className="relative flex h-[75vh] w-full max-w-[92vw] items-center justify-center overflow-hidden rounded-3xl bg-black sm:max-w-[84vw] md:max-w-[720px] lg:max-w-[820px]">
             {isVideo ? (
               <video
                 ref={videoRef}
@@ -281,7 +281,7 @@ export function StatusViewer() {
                 playsInline
                 preload="metadata"
                 className={cn(
-                  "w-full h-full object-contain rounded-3xl transition pointer-events-none",
+                  "h-full w-full object-contain transition pointer-events-none",
                   isLoaded ? "opacity-100" : "opacity-0",
                 )}
                 onLoadedMetadata={handleVideoMetadata}
@@ -290,7 +290,7 @@ export function StatusViewer() {
               <img
                 src={mediaUrl}
                 className={cn(
-                  "w-full h-full object-contain rounded-3xl transition",
+                  "h-full w-full object-contain transition",
                   isLoaded ? "opacity-100" : "opacity-0",
                 )}
                 onLoad={() => setIsLoaded(true)}
@@ -299,33 +299,42 @@ export function StatusViewer() {
             )}
 
             {!isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/5 rounded-3xl">
+              <div className="absolute inset-0 flex items-center justify-center rounded-3xl bg-white/5">
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white" />
               </div>
             )}
 
-            {caption && (
-              <div className="absolute bottom-0 left-0 right-0 rounded-b-3xl bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-4 pt-10">
-                <div className="max-h-24 overflow-y-auto pr-1">
-                  <p className="break-words text-center text-sm font-medium leading-relaxed text-white drop-shadow-md sm:text-[15px]">
-                    {caption}
-                  </p>
+            <div className="absolute bottom-0 left-0 right-0 rounded-b-3xl bg-gradient-to-t from-black/90 via-black/45 to-transparent px-4 pb-4 pt-14">
+              <div className="flex items-end justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  {caption ? (
+                    <div className="max-h-24 overflow-y-auto pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      <p className="break-words text-sm font-medium leading-relaxed text-white drop-shadow-md sm:text-[15px]">
+                        {caption}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-white/70">No caption</p>
+                  )}
                 </div>
+
+                {isOwner && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowViewers(true);
+                    }}
+                    className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md transition hover:bg-white/20 cursor-pointer"
+                  >
+                    <Eye className="h-4 w-4" />
+                    {seenBy.length}
+                  </button>
+                )}
               </div>
-            )}
-            {isOwner && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowViewers(true);
-                }}
-                className="absolute -bottom-3 left-40 flex items-center gap-2 bg-black/60 text-white text-[14px] px-3 py-1 rounded-full cursor-pointer"
-              >
-                <Eye className="w-5 h-5" /> {seenBy.length}
-              </button>
-            )}
+            </div>
+
             {isPaused && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+              <div className="absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white">
                 Paused
               </div>
             )}
