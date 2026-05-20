@@ -54,6 +54,22 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
     };
   }, []);
 
+  useEffect(() => {
+    const closeReactions = () => {
+      setShowReactions(false);
+    };
+
+    if (showReactions) {
+      document.addEventListener("touchstart", closeReactions, {
+        once: true,
+      });
+    }
+
+    return () => {
+      document.removeEventListener("touchstart", closeReactions);
+    };
+  }, [showReactions]);
+
   const activeReaction = useMemo(
     () => REACTIONS.find((item) => item.type === myReaction),
     [myReaction],
@@ -134,7 +150,17 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
         type="button"
         variant="ghost"
         size="sm"
-        onClick={handleMainClick}
+        onClick={() => {
+          if (!showReactions) {
+            setShowReactions(true);
+            return;
+          }
+          handleMainClick();
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setShowReactions((prev) => !prev);
+        }}
         className="h-10 px-2 gap-2 cursor-pointer hover:bg-transparent"
       >
         {activeReaction ? (
