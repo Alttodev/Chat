@@ -6,6 +6,7 @@ import { usePostLike } from "@/hooks/postHooks";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
+  { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },
   { type: "sad", emoji: "😢", label: "Sad" },
@@ -151,9 +152,7 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
           activeReaction.type === "love" ? (
             <Heart className="h-[26px] w-[26px] fill-current text-red-500" />
           ) : (
-            <span className="text-[17px] leading-none">
-              {activeReaction.emoji}
-            </span>
+            <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />
           )
         ) : (
           <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />

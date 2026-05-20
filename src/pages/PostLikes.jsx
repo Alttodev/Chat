@@ -13,6 +13,7 @@ import { useMemo } from "react";
 
 const REACTION_EMOJI = {
   love: "❤️",
+  clap:"👏",
   haha: "😂",
   wow: "😮",
   sad: "😢",

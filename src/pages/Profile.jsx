@@ -50,6 +50,7 @@ import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
+  { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },
   { type: "sad", emoji: "😢", label: "Sad" },
