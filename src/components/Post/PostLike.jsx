@@ -76,7 +76,12 @@ function PostLikeComponent({ post, onLikeChange }) {
       {likeCount > 0 && (
         <Link
           to={`/posts/${post._id}/liked-users`}
-          className="text-sm font-medium text-slate-700 transition-colors duration-200 hover:text-emerald-600"
+          className="
+      text-sm font-medium
+      text-slate-700 dark:text-slate-200
+      transition-colors duration-200
+      hover:text-emerald-600 dark:hover:text-emerald-400
+    "
         >
           {likeCount} {likeCount === 1 ? "Like" : "Likes"}
         </Link>
