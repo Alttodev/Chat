@@ -51,13 +51,8 @@ export const useProfileFollow = () => {
 };
 
 export const usePostLike = () => {
-  // const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id) => userPostLike(id),
-    onSuccess: () => {
-      // queryClient.invalidateQueries(["user_post"]);
-      // queryClient.invalidateQueries(["user_Info_post"]);
-    },
+    mutationFn: ({ id, type }) => userPostLike(id, type),
   });
 };
 

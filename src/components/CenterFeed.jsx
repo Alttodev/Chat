@@ -1,3 +1,4 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   MessageCircle,
   Send,
@@ -10,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserDetail } from "@/hooks/authHooks";
-import { useEffect, useMemo, useRef } from "react";
 import { PostForm } from "./form/PostForm";
 import { usePostDelete, usePostList } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
@@ -41,6 +41,19 @@ import { usePostInfo } from "@/hooks/postHooks";
 import { PostImageWithLikes } from "./Post/PostImageWithLikes";
 import PostContent from "./Post/PostContent";
 
+const REACTIONS = [
+  { type: "love", emoji: "❤️", label: "Love" },
+  { type: "haha", emoji: "😂", label: "Haha" },
+  { type: "wow", emoji: "😮", label: "Wow" },
+  { type: "sad", emoji: "😢", label: "Sad" },
+];
+
+function getUniqueReactions(likedBy = []) {
+  return [
+    ...new Map((likedBy || []).map((item) => [item?.type, item])).values(),
+  ];
+}
+
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
   const { openShareModal } = useZustandSharePopup();
@@ -59,18 +72,44 @@ export function CenterFeed() {
   const loadMoreRef = useRef(null);
   const { open } = useImageModalStore();
 
-  const posts = useMemo(
+  const basePosts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
 
   const { data: targetPostData } = usePostInfo(targetPostId);
   const targetPost = targetPostData?.post;
+
+  const [localPosts, setLocalPosts] = useState([]);
+  const [targetPostOverride, setTargetPostOverride] = useState(null);
+
+  useEffect(() => {
+    setLocalPosts(basePosts);
+  }, [basePosts]);
+
+  useEffect(() => {
+    setTargetPostOverride(targetPost || null);
+  }, [targetPost]);
+
   const displayPosts = useMemo(() => {
-    if (!targetPostId || !targetPost) return posts;
-    if (posts.some((post) => post._id === targetPostId)) return posts;
-    return [targetPost, ...posts];
-  }, [posts, targetPost, targetPostId]);
+    if (!targetPostId) return localPosts;
+
+    const hasTargetInList = localPosts.some((post) => post._id === targetPostId);
+
+    if (hasTargetInList) {
+      return localPosts.map((post) =>
+        post._id === targetPostId && targetPostOverride
+          ? { ...post, ...targetPostOverride }
+          : post,
+      );
+    }
+
+    if (targetPostOverride) {
+      return [targetPostOverride, ...localPosts];
+    }
+
+    return localPosts;
+  }, [localPosts, targetPostId, targetPostOverride]);
 
   useScrollToPost(targetPostId, [displayPosts]);
 
@@ -82,11 +121,13 @@ export function CenterFeed() {
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
+
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     });
+
     observer.observe(loadMoreRef.current);
 
     return () => observer.disconnect();
@@ -101,6 +142,26 @@ export function CenterFeed() {
     }
   };
 
+  const handleLikeChange = (postId, updated) => {
+    const patchPost = (post) => {
+      if (post._id !== postId) return post;
+
+      return {
+        ...post,
+        likedBy: Array.isArray(updated?.likedBy) ? updated.likedBy : post.likedBy,
+        likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
+        myReaction:
+          typeof updated?.myReaction !== "undefined"
+            ? updated.myReaction
+            : post.myReaction,
+        likedByMe: Boolean(updated?.myReaction),
+      };
+    };
+
+    setLocalPosts((prev) => prev.map(patchPost));
+    setTargetPostOverride((prev) => (prev ? patchPost(prev) : prev));
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
@@ -111,167 +172,184 @@ export function CenterFeed() {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-0 sm:px-4 mt-2 space-y-4 pb-20">
-      {/* Create Post */}
       <Card id="create-post">
         <CardContent className="p-3">
           <PostForm userProfile={userProfile} />
         </CardContent>
       </Card>
 
-      {/* Posts Feed */}
-      {displayPosts.map((post) => (
-        <Card
-          key={post._id}
-          id={`post-${post._id}`}
-          className="overflow-hidden scroll-mt-28"
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex min-w-0 flex-1 items-center gap-3">
-                <Avatar className="w-10 h-10 text-emerald-600">
-                  <AvatarImage
-                    onClick={() => open(post?.user?.profileImage)}
-                    className="h-full w-full cursor-pointer object-cover object-top"
-                    src={post?.user?.profileImage || "/placeholder.svg"}
-                  />
+      {displayPosts.map((post) => {
+        const uniqueReactions = getUniqueReactions(post?.likedBy);
 
-                  <AvatarFallback>
-                    {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
+        return (
+          <Card
+            key={post._id}
+            id={`post-${post._id}`}
+            className="overflow-hidden scroll-mt-28"
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <Avatar className="w-10 h-10 text-emerald-600">
+                    <AvatarImage
+                      onClick={() => open(post?.user?.profileImage)}
+                      className="h-full w-full cursor-pointer object-cover object-top"
+                      src={post?.user?.profileImage || "/placeholder.svg"}
+                    />
+                    <AvatarFallback>
+                      {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+                    </AvatarFallback>
+                  </Avatar>
 
-                <div className="min-w-0">
-                  {userProfile?.profile?.id === post?.user?._id ? (
-                    <div className="flex items-center gap-1">
-                      <span className="truncate text-sm font-medium sm:text-base">
-                        {post?.user?.userName}
-                      </span>
+                  <div className="min-w-0">
+                    {userProfile?.profile?.id === post?.user?._id ? (
+                      <div className="flex items-center gap-1">
+                        <span className="truncate text-sm font-medium sm:text-base">
+                          {post?.user?.userName}
+                        </span>
+                        {post?.user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        to={`/users/${post?.user?._id}`}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        <span className="truncate text-sm font-medium sm:text-base">
+                          {post?.user?.userName}
+                        </span>
+                        {post?.user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
+                      </Link>
+                    )}
 
-                      {post?.user?.isVerified && (
-                        <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      to={`/users/${post?.user?._id}`}
-                      className="flex items-center gap-1 cursor-pointer"
-                    >
-                      <span className="truncate text-sm font-medium sm:text-base">
-                        {post?.user?.userName}
-                      </span>
-
-                      {post?.user?.isVerified && (
-                        <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
-                      )}
-                    </Link>
-                  )}
-
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    {formatRelative(post?.createdAt)}
-                  </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      {formatRelative(post?.createdAt)}
+                    </p>
+                  </div>
                 </div>
+
+                {post?.isOwner && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Toggle user menu</span>
+                      </span>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="mt-1 w-full border-slate-200 shadow-lg"
+                      sideOffset={8}
+                    >
+                      <DropdownMenuItem
+                        className="cursor-pointer transition-colors duration-200"
+                        onClick={() =>
+                          openModal({ userProfile, postId: post._id })
+                        }
+                      >
+                        <SquarePen className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-600" />
+                        <span className="font-medium text-emerald-700">
+                          Edit Post
+                        </span>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        className="mt-1 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleDelete(post._id)}
+                      >
+                        <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
+                        <span className="font-medium text-red-500">
+                          Delete Post
+                        </span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-0">
+              <PostImageWithLikes
+                post={post}
+                likedUsers={post?.likedByUsers}
+                onImageClick={() => open(post.image)}
+              />
+
+              <PostContent text={post?.postText} className="mt-3 pl-2" />
+
+              <div className="mt-3 flex items-start gap-2 flex-wrap sm:flex-nowrap">
+                <PostLikeComponent
+                  post={post}
+                  currentUserId={userProfile?.profile?.id}
+                  onLikeChange={handleLikeChange}
+                />
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleComments(post._id)}
+                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  aria-label="Comment on post"
+                >
+                  <MessageCircle style={{ width: 18, height: 18 }} />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openShareModal(post._id)}
+                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  aria-label="Share post"
+                >
+                  <Send style={{ width: 18, height: 18 }} />
+                </Button>
               </div>
 
-              {post?.isOwner && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Toggle user menu</span>
-                    </span>
-                  </DropdownMenuTrigger>
+              {uniqueReactions.length > 0 && (
+                <Link
+                  to={`/posts/${post._id}/liked-users`}
+                  className="
+                    mt-2 inline-flex items-center gap-1
+                    rounded-full bg-slate-50 px-2 py-1
+                    dark:bg-slate-800
+                    max-w-full overflow-x-auto
+                  "
+                >
+                  {uniqueReactions.map((item, index) => {
+                    const reaction = REACTIONS.find((r) => r.type === item?.type);
 
-                  <DropdownMenuContent
-                    align="end"
-                    className="mt-1 w-full border-slate-200 shadow-lg"
-                    sideOffset={8}
-                  >
-                    <DropdownMenuItem
-                      className="cursor-pointer transition-colors duration-200"
-                      onClick={() =>
-                        openModal({ userProfile, postId: post._id })
-                      }
-                    >
-                      <SquarePen className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-600" />
-
-                      <span className="font-medium text-emerald-700">
-                        Edit Post
+                    return (
+                      <span
+                        key={`${item?._id || item?.type || index}`}
+                        className="text-sm leading-none"
+                        title={reaction?.label || "Love"}
+                      >
+                        {reaction?.emoji || "❤️"}
                       </span>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem
-                      className="mt-1 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleDelete(post._id)}
-                    >
-                      <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
-
-                      <span className="font-medium text-red-500">
-                        Delete Post
-                      </span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    );
+                  })}
+                </Link>
               )}
-            </div>
-          </CardHeader>
 
-          <CardContent className="pt-0">
-            <PostImageWithLikes
-              post={post}
-              likedUsers={post?.likedByUsers}
-              onImageClick={() => open(post.image)}
-            />
-
-            <PostContent text={post?.postText} className="mt-3 pl-2" />
-
-            <div className="mt-3 flex items-center justify-start">
-              <PostLikeComponent post={post} userId={post?.user?._id} />
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleComments(post._id)}
-                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                aria-label="Comment on post"
-              >
-                <MessageCircle
-                  style={{
-                    width: 18,
-                    height: 18,
-                  }}
-                />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => openShareModal(post._id)}
-                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                aria-label="Share post"
-              >
-                <Send
-                  style={{
-                    width: 18,
-                    height: 18,
-                  }}
-                />
-              </Button>
-            </div>
-
-            {openPostId === post._id && (
-              <div className="mt-3">
-                <CommentSection
-                  postId={post._id}
-                  userProfile={userProfile?.profile}
-                  highlightCommentId={
-                    targetPostId === post._id ? targetCommentId : undefined
-                  }
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
+              {openPostId === post._id && (
+                <div className="mt-3">
+                  <CommentSection
+                    postId={post._id}
+                    userProfile={userProfile?.profile}
+                    highlightCommentId={
+                      targetPostId === post._id ? targetCommentId : undefined
+                    }
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
 
       <PostDialog />
       <PostImageDialog />

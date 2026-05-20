@@ -209,11 +209,8 @@ const likedFriendUsers = useMemo(() => {
                 </AvatarFallback>
 
                 <Heart
-                  className="absolute bottom-1 right-1 z-20 h-4 w-4"
-                  style={{
-                    fill: "#10b981",
-                    stroke: "#10b981",
-                  }}
+                  className="absolute bottom-1 right-1 z-20 h-4 w-4 fill-current text-red-500"
+                 
                 />
               </Avatar>
             </button>

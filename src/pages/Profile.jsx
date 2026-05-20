@@ -1,6 +1,5 @@
 import {
   BadgeCheck,
-  CheckCircle2,
   Loader2,
   MapPin,
   MessageCircle,
@@ -17,7 +16,7 @@ import {
   useZustandPopup,
   useZustandSharePopup,
 } from "@/lib/zustand";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useFriendsCount,
   usePostDelete,
@@ -48,6 +47,19 @@ import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
+
+const REACTIONS = [
+  { type: "love", emoji: "❤️", label: "Love" },
+  { type: "haha", emoji: "😂", label: "Haha" },
+  { type: "wow", emoji: "😮", label: "Wow" },
+  { type: "sad", emoji: "😢", label: "Sad" },
+];
+
+const getUniqueReactions = (likedBy = []) => {
+  return [
+    ...new Map((likedBy || []).map((item) => [item?.type, item])).values(),
+  ];
+};
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -80,14 +92,23 @@ const Profile = () => {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+
+  const [localPosts, setLocalPosts] = useState([]);
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
+
   const { data: targetPostData } = usePostInfo(targetPostId);
   const targetPost = targetPostData?.post;
+
   const displayPosts = useMemo(() => {
-    if (!targetPostId || !targetPost) return posts;
-    if (posts.some((post) => post._id === targetPostId)) return posts;
-    return [targetPost, ...posts];
-  }, [posts, targetPost, targetPostId]);
+    if (!targetPostId || !targetPost) return localPosts;
+    if (localPosts.some((post) => post._id === targetPostId)) return localPosts;
+    return [targetPost, ...localPosts];
+  }, [localPosts, targetPost, targetPostId]);
+
   useScrollToPost(targetPostId, [displayPosts]);
+
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
@@ -130,6 +151,25 @@ const Profile = () => {
     }
   };
 
+  const handleLikeChange = (postId, updated) => {
+    const patchPost = (post) => {
+      if (post._id !== postId) return post;
+
+      return {
+        ...post,
+        likedBy: Array.isArray(updated?.likedBy) ? updated.likedBy : post.likedBy,
+        likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
+        myReaction:
+          typeof updated?.myReaction !== "undefined"
+            ? updated.myReaction
+            : post.myReaction,
+        likedByMe: Boolean(updated?.myReaction),
+      };
+    };
+
+    setLocalPosts((prev) => prev.map(patchPost));
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
@@ -140,7 +180,6 @@ const Profile = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 space-y-8 pb-20">
-      {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
           <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
@@ -161,7 +200,7 @@ const Profile = () => {
                       userProfile?.profile?.profileImage || "/placeholder.svg"
                     }
                   />
-                  <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
+                  <AvatarFallback className="text-2xl font-semibold text-emerald-700">
                     {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
                       "-"}
                   </AvatarFallback>
@@ -190,21 +229,21 @@ const Profile = () => {
                         onClick={handleVerificationRequest}
                         disabled={verificationLoading}
                         className="
-        inline-flex
-        items-center
-        gap-1
-        rounded-full
-        bg-[#1DA1F2]
-        px-3
-        py-1
-        text-xs
-        font-medium
-        text-white
-        transition
-        hover:bg-[#1a8cd8]
-        disabled:opacity-50
-        cursor-pointer
-      "
+                          inline-flex
+                          items-center
+                          gap-1
+                          rounded-full
+                          bg-[#1DA1F2]
+                          px-3
+                          py-1
+                          text-xs
+                          font-medium
+                          text-white
+                          transition
+                          hover:bg-[#1a8cd8]
+                          disabled:opacity-50
+                          cursor-pointer
+                        "
                       >
                         {verificationLoading ? (
                           <>
@@ -225,8 +264,9 @@ const Profile = () => {
                     <MapPin className="h-4 w-4" />
                     <span>{userProfile?.profile?.address}</span>
                   </div>
+
                   <div className="flex gap-4">
-                    <div className="flex flex-col   mt-1">
+                    <div className="flex flex-col mt-1">
                       <span className="text-lg font-semibold text-foreground">
                         {totalPosts}
                       </span>
@@ -234,7 +274,8 @@ const Profile = () => {
                         {totalPosts <= 1 ? "Post" : "Posts"}
                       </span>
                     </div>
-                    <div className="flex flex-col   mt-1">
+
+                    <div className="flex flex-col mt-1">
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to="/friends"
@@ -254,7 +295,8 @@ const Profile = () => {
                           : "Followers"}
                       </span>
                     </div>
-                    <div className="flex flex-col   mt-1">
+
+                    <div className="flex flex-col mt-1">
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to={`/following/${userProfile?.profile?.id}`}
@@ -280,137 +322,163 @@ const Profile = () => {
         </CardContent>
       </Card>
 
-      {displayPosts.map((post) => (
-        <Card
-          key={post._id}
-          id={`post-${post._id}`}
-          className="overflow-hidden scroll-mt-28"
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10 text-emerald-600">
-                  <AvatarImage
-                    onClick={() => open(user?.profileImage)}
-                    className="h-full w-full cursor-pointer object-cover object-top"
-                    src={user?.profileImage || "/placeholder.svg"}
-                  />
-                  <AvatarFallback>
-                    {user?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
+      {displayPosts.map((post) => {
+        const uniqueReactions = getUniqueReactions(post?.likedBy);
 
-                <div>
-                  <p className="text-sm font-medium sm:text-base">
-                    {user?.userName}
-                  </p>
-                  <p className="text-xs text-muted-foreground sm:text-sm">
-                    {formatRelative(post?.createdAt)}
-                  </p>
+        return (
+          <Card
+            key={post._id}
+            id={`post-${post._id}`}
+            className="overflow-hidden scroll-mt-28"
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-10 h-10 text-emerald-600">
+                    <AvatarImage
+                      onClick={() => open(user?.profileImage)}
+                      className="h-full w-full cursor-pointer object-cover object-top"
+                      src={user?.profileImage || "/placeholder.svg"}
+                    />
+                    <AvatarFallback>
+                      {user?.userName?.charAt(0).toUpperCase() || "-"}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div>
+                    <p className="text-sm font-medium sm:text-base">
+                      {user?.userName}
+                    </p>
+                    <p className="text-xs text-muted-foreground sm:text-sm">
+                      {formatRelative(post?.createdAt)}
+                    </p>
+                  </div>
                 </div>
+
+                {post?.isOwner && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-accent">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Toggle user menu</span>
+                      </span>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="end"
+                      className="mt-1 w-full border-border shadow-lg"
+                      sideOffset={8}
+                    >
+                      <DropdownMenuItem
+                        className="cursor-pointer transition-colors duration-200"
+                        onClick={() =>
+                          openModal({ userProfile, postId: post._id })
+                        }
+                      >
+                        <SquarePen className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200 group-hover:text-emerald-600" />
+                        <span className="font-medium text-emerald-700">
+                          Edit Post
+                        </span>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        className="mt-1 cursor-pointer transition-colors duration-200"
+                        onClick={() => handleDelete(post._id)}
+                      >
+                        <Trash2 className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200" />
+                        <span className="font-medium text-red-500">
+                          Delete Post
+                        </span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-0">
+              <PostImageWithLikes
+                likedUsers={post?.likedByUsers}
+                post={post}
+                onImageClick={() => open(post.image)}
+              />
+
+              <PostContent text={post?.postText} className="mt-3 pl-2" />
+
+              <div className="mt-3 flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <PostLikeComponent
+                  post={post}
+                  currentUserId={userProfile?.profile?.id}
+                  onLikeChange={handleLikeChange}
+                />
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => toggleComments(post?._id)}
+                  className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  aria-label="Comment on post"
+                >
+                  <MessageCircle style={{ width: 18, height: 18 }} />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openShareModal(post?._id)}
+                  className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  aria-label="Share post"
+                >
+                  <Send style={{ width: 18, height: 18 }} />
+                </Button>
               </div>
 
-              {post?.isOwner && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-accent">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Toggle user menu</span>
-                    </span>
-                  </DropdownMenuTrigger>
+              {uniqueReactions.length > 0 && (
+                <Link
+                  to={`/posts/${post._id}/liked-users`}
+                  className="
+                    mt-2 inline-flex items-center gap-1
+                    rounded-full bg-slate-50 px-2 py-1
+                    dark:bg-slate-800
+                    max-w-full overflow-x-auto
+                  "
+                >
+                  {uniqueReactions.map((item, index) => {
+                    const reaction = REACTIONS.find((r) => r.type === item?.type);
 
-                  <DropdownMenuContent
-                    align="end"
-                    className="mt-1 w-full border-border shadow-lg"
-                    sideOffset={8}
-                  >
-                    <DropdownMenuItem
-                      className="cursor-pointer transition-colors duration-200"
-                      onClick={() =>
-                        openModal({ userProfile, postId: post._id })
-                      }
-                    >
-                      <SquarePen className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200 group-hover:text-emerald-600" />
-                      <span className="font-medium text-emerald-700">
-                        Edit Post
+                    return (
+                      <span
+                        key={`${item?._id || item?.type || index}`}
+                        className="text-sm leading-none"
+                        title={reaction?.label || "Love"}
+                      >
+                        {reaction?.emoji || "❤️"}
                       </span>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuItem
-                      className="mt-1 cursor-pointer transition-colors duration-200"
-                      onClick={() => handleDelete(post._id)}
-                    >
-                      <Trash2 className="mr-1 h-4 w-4 text-muted-foreground transition-colors duration-200" />
-                      <span className="font-medium text-red-500">
-                        Delete Post
-                      </span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    );
+                  })}
+                </Link>
               )}
-            </div>
-          </CardHeader>
 
-          <CardContent className="pt-0">
-            <PostImageWithLikes
-              likedUsers={post?.likedByUsers}
-              post={post}
-              onImageClick={() => open(post.image)}
-            />
+              {openPostId === post._id && (
+                <div className="mt-3">
+                  <CommentSection
+                    postId={post._id}
+                    userProfile={currentUser}
+                    highlightCommentId={
+                      targetPostId === post._id ? targetCommentId : undefined
+                    }
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
 
-            <PostContent text={post?.postText} className="mt-3 pl-2" />
-
-            <div className="mt-3 flex items-center justify-start">
-              <PostLikeComponent post={post} userId={post?.user?._id} />
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => toggleComments(post?._id)}
-                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                aria-label="Comment on post"
-              >
-                <MessageCircle
-                  style={{
-                    width: 18,
-                    height: 18,
-                  }}
-                />
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => openShareModal(post?._id)}
-                className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                aria-label="Share post"
-              >
-                <Send
-                  style={{
-                    width: 18,
-                    height: 18,
-                  }}
-                />
-              </Button>
-            </div>
-
-            {openPostId === post._id && (
-              <div className="mt-3">
-                <CommentSection
-                  postId={post._id}
-                  userProfile={currentUser}
-                  highlightCommentId={
-                    targetPostId === post._id ? targetCommentId : undefined
-                  }
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      ))}
       <ShareDialog />
       <PostDialog />
       <ImageViewer />
+
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}
       {!hasNextPage && (

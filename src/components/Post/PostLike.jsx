@@ -1,91 +1,204 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "../ui/button";
 import { toastError } from "@/lib/toast";
 import { usePostLike } from "@/hooks/postHooks";
-import { Link } from "react-router-dom";
 
-function PostLikeComponent({ post, onLikeChange }) {
+const REACTIONS = [
+  { type: "love", emoji: "❤️", label: "Love" },
+  { type: "haha", emoji: "😂", label: "Haha" },
+  { type: "wow", emoji: "😮", label: "Wow" },
+  { type: "sad", emoji: "😢", label: "Sad" },
+];
+
+function getReactionFromLikedBy(likedBy = [], currentUserId) {
+  if (!Array.isArray(likedBy) || !currentUserId) return null;
+
+  const found = likedBy.find(
+    (item) => String(item?.user) === String(currentUserId),
+  );
+  return found?.type || null;
+}
+
+function PostLikeComponent({ post, currentUserId, onLikeChange }) {
   const { mutateAsync: postLike } = usePostLike();
 
-  const [isLiked, setIsLiked] = useState(Boolean(post?.likedByMe));
-  const [likeCount, setLikeCount] = useState(post?.likes || 0);
+  const [likedByList, setLikedByList] = useState(
+    Array.isArray(post?.likedBy) ? post.likedBy : [],
+  );
+  const [myReaction, setMyReaction] = useState(
+    post?.myReaction ||
+      getReactionFromLikedBy(post?.likedBy, currentUserId) ||
+      (post?.likedByMe ? "love" : null),
+  );
+
+  const [jumpReaction, setJumpReaction] = useState(null);
+  const [jumpToken, setJumpToken] = useState(0);
+  const jumpTimerRef = useRef(null);
 
   useEffect(() => {
-    setIsLiked(Boolean(post?.likedByMe));
-    setLikeCount(post?.likes || 0);
-  }, [post?.likedByMe, post?.likes]);
+    setLikedByList(Array.isArray(post?.likedBy) ? post.likedBy : []);
+    setMyReaction(
+      post?.myReaction ||
+        getReactionFromLikedBy(post?.likedBy, currentUserId) ||
+        (post?.likedByMe ? "love" : null),
+    );
+  }, [post?.likedBy, post?.myReaction, post?.likedByMe, currentUserId]);
 
-  const handleLike = async () => {
-    const nextLiked = !isLiked;
-    const nextCount = nextLiked ? likeCount + 1 : likeCount - 1;
+  useEffect(() => {
+    return () => {
+      if (jumpTimerRef.current) {
+        clearTimeout(jumpTimerRef.current);
+      }
+    };
+  }, []);
 
-    setIsLiked(nextLiked);
-    setLikeCount(nextCount);
+  const activeReaction = useMemo(
+    () => REACTIONS.find((item) => item.type === myReaction),
+    [myReaction],
+  );
+
+  const triggerJump = (reactionType) => {
+    if (!reactionType) return;
+
+    setJumpReaction(reactionType);
+    setJumpToken((prev) => prev + 1);
+
+    if (jumpTimerRef.current) {
+      clearTimeout(jumpTimerRef.current);
+    }
+
+    jumpTimerRef.current = setTimeout(() => {
+      setJumpReaction(null);
+    }, 260);
+  };
+
+  const handleReact = async (reactionType) => {
+    const previousReaction = myReaction;
+    const previousLikedBy = likedByList;
+
+    const nextReaction =
+      previousReaction === reactionType ? null : reactionType;
+
+    setMyReaction(nextReaction);
+
+    // jump only for the reaction user clicked
+    triggerJump(reactionType);
 
     try {
-      const res = await postLike(post._id);
+      const res = await postLike({
+        id: post._id,
+        type: nextReaction,
+      });
 
-      const updatedLikes = res?.data?.likes;
-      const updatedLikedBy = res?.data?.likedBy;
-
-      if (typeof updatedLikes === "number") {
-        setLikeCount(updatedLikes);
-      }
+      const updatedLikedBy = res?.likedBy || res?.data?.likedBy;
+      const updatedMyReaction =
+        res?.myReaction ||
+        res?.data?.myReaction ||
+        getReactionFromLikedBy(updatedLikedBy, currentUserId) ||
+        nextReaction;
 
       if (Array.isArray(updatedLikedBy)) {
-        const me = updatedLikedBy.some((like) => {
-          const id = like?.user?._id || like?.user || like?.userId;
-          return String(id) === String(post?.currentUserId);
-        });
-
-        setIsLiked(me);
+        setLikedByList(updatedLikedBy);
       }
 
+      setMyReaction(updatedMyReaction);
+
       onLikeChange?.(post._id, {
-        likes: res?.data?.likes,
-        likedBy: res?.data?.likedBy,
+        likedBy: updatedLikedBy,
+        myReaction: updatedMyReaction,
+        likes: res?.likes || res?.data?.likes,
       });
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
-      setIsLiked(!nextLiked);
-      setLikeCount(likeCount);
+      setMyReaction(previousReaction);
+      setLikedByList(previousLikedBy);
+    }
+  };
+
+  const handleMainClick = () => {
+    if (myReaction) {
+      handleReact(null);
+    } else {
+      handleReact("love");
     }
   };
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="group relative inline-flex items-center">
       <Button
+        type="button"
         variant="ghost"
         size="sm"
-        onClick={handleLike}
-        className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-        aria-label={`${isLiked ? "Unlike" : "Like"} post`}
+        onClick={handleMainClick}
+        className="h-9 px-2 gap-2 cursor-pointer hover:bg-transparent"
       >
-        <Heart
-          className={isLiked ? "heart-animate" : ""}
-          style={{
-            width: 18,
-            height: 18,
-            fill: isLiked ? "#10b981" : "none",
-            stroke: isLiked ? "#10b981" : "currentColor",
-          }}
-        />
+        {activeReaction ? (
+          <Heart className="h-[20px] w-[20px] fill-current text-red-500" />
+        ) : (
+          <Heart className="h-[20px] w-[20px] text-slate-700 dark:text-slate-200" />
+        )}
       </Button>
 
-      {likeCount > 0 && (
-        <Link
-          to={`/posts/${post._id}/liked-users`}
-          className="
-      text-sm font-medium
-      text-slate-700 dark:text-slate-200
-      transition-colors duration-200
-      hover:text-emerald-600 dark:hover:text-emerald-400
-    "
-        >
-          {likeCount} {likeCount === 1 ? "Like" : "Likes"}
-        </Link>
-      )}
+      <div
+        className="
+          absolute left-0 bottom-5 z-30 mb-2
+          flex items-center gap-1
+          overflow-visible
+          rounded-full border border-slate-200 bg-white p-2 shadow-lg
+          dark:border-slate-800 dark:bg-slate-950
+          opacity-0 pointer-events-none
+          transition-opacity duration-150
+          group-hover:opacity-100 group-hover:pointer-events-auto
+          group-focus-within:opacity-100 group-focus-within:pointer-events-auto
+        "
+      >
+        {REACTIONS.map((reaction) => (
+          <button
+            key={reaction.type}
+            type="button"
+            onClick={() => handleReact(reaction.type)}
+            className="rounded-full p-2 text-2xl transition-transform hover:scale-125"
+            title={reaction.label}
+          >
+            <span
+              key={
+                jumpReaction === reaction.type
+                  ? `${reaction.type}-${jumpToken}`
+                  : reaction.type
+              }
+              className={
+                jumpReaction === reaction.type
+                  ? "inline-block reaction-jump"
+                  : "inline-block"
+              }
+            >
+              {reaction.emoji}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <style>{`
+        .reaction-jump {
+          animation: reactionJump 260ms ease-out;
+        }
+
+        @keyframes reactionJump {
+          0% {
+            transform: translateY(0) scale(1);
+          }
+          35% {
+            transform: translateY(-28px) scale(1.35);
+          }
+          70% {
+            transform: translateY(-14px) scale(1.15);
+          }
+          100% {
+            transform: translateY(0) scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -14,7 +14,7 @@ import {
   useImageModalStore,
   useZustandSharePopup,
 } from "@/lib/zustand";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useProfileFollow,
   useRequestDelete,
@@ -39,8 +39,20 @@ import PostContent from "@/components/Post/PostContent";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 
+const REACTIONS = [
+  { type: "love", emoji: "❤️", label: "Love" },
+  { type: "haha", emoji: "😂", label: "Haha" },
+  { type: "wow", emoji: "😮", label: "Wow" },
+  { type: "sad", emoji: "😢", label: "Sad" },
+];
+
+const getUniqueReactions = (likedBy = []) => {
+  return [
+    ...new Map((likedBy || []).map((item) => [item?.type, item])).values(),
+  ];
+};
+
 const UsersInfo = () => {
-  // const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
@@ -68,7 +80,6 @@ const UsersInfo = () => {
 
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
- 
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(id);
@@ -77,16 +88,27 @@ const UsersInfo = () => {
     () => data?.pages?.flatMap((page) => page.posts) || [],
     [data],
   );
+
+  const [localPosts, setLocalPosts] = useState([]);
+
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
+
   const { data: targetPostData } = usePostInfo(targetPostId);
   const targetPost = targetPostData?.post;
+
   const displayPosts = useMemo(() => {
-    if (!targetPostId || !targetPost) return posts;
-    if (posts.some((post) => post._id === targetPostId)) return posts;
-    return [targetPost, ...posts];
-  }, [posts, targetPost, targetPostId]);
+    if (!targetPostId || !targetPost) return localPosts;
+    if (localPosts.some((post) => post._id === targetPostId)) return localPosts;
+    return [targetPost, ...localPosts];
+  }, [localPosts, targetPost, targetPostId]);
+
   useScrollToPost(targetPostId, [displayPosts]);
+
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
+
   const totalPosts = data?.pages?.[0]?.totalPosts;
 
   useEffect(() => {
@@ -116,7 +138,6 @@ const UsersInfo = () => {
   const handleFollow = async (userId) => {
     try {
       await followRequest(userId);
-      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -128,10 +149,30 @@ const UsersInfo = () => {
         fromId: profileId,
         toId: id,
       });
-      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
+  };
+
+  const handleLikeChange = (postId, updated) => {
+    const patchPost = (post) => {
+      if (post._id !== postId) return post;
+
+      return {
+        ...post,
+        likedBy: Array.isArray(updated?.likedBy)
+          ? updated.likedBy
+          : post.likedBy,
+        likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
+        myReaction:
+          typeof updated?.myReaction !== "undefined"
+            ? updated.myReaction
+            : post.myReaction,
+        likedByMe: Boolean(updated?.myReaction),
+      };
+    };
+
+    setLocalPosts((prev) => prev.map(patchPost));
   };
 
   if (isLoading) {
@@ -155,11 +196,13 @@ const UsersInfo = () => {
                   className="w-full h-full object-cover object-top cursor-pointer"
                   src={user?.profileImage || "/placeholder.svg"}
                 />
-                <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
+                <AvatarFallback className="text-2xl font-semibold text-emerald-700">
                   {user?.userName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
+
               <ImageViewer />
+
               <div className="absolute bottom-2 right-2">
                 <div className="flex items-center gap-2">
                   <span
@@ -185,8 +228,9 @@ const UsersInfo = () => {
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
+
                   <div className="flex gap-4">
-                    <div className="flex flex-col   mt-1">
+                    <div className="flex flex-col mt-1">
                       <span className="text-lg font-semibold text-foreground">
                         {totalPosts}
                       </span>
@@ -194,7 +238,8 @@ const UsersInfo = () => {
                         {totalPosts <= 1 ? "Post" : "Posts"}
                       </span>
                     </div>
-                    <div className="flex flex-col  mt-1">
+
+                    <div className="flex flex-col mt-1">
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to={`/friends/${user?._id}`}
@@ -214,7 +259,8 @@ const UsersInfo = () => {
                           : "Followers"}
                       </span>
                     </div>
-                    <div className="flex flex-col  mt-1">
+
+                    <div className="flex flex-col mt-1">
                       {countData?.totalFollowing > 0 ? (
                         <Link
                           to={`/following/${user?._id}`}
@@ -241,22 +287,22 @@ const UsersInfo = () => {
               {reqStatus === "pending" ? (
                 <Button
                   className="
-    bg-rose-500/10
-    hover:bg-rose-500/15
-    text-rose-600
-    border
-    border-rose-500/20
-    rounded-full
-    px-4
-    h-8
-    text-xs
-    font-medium
-    flex
-    items-center
-    gap-1.5
-    cursor-default
-    shadow-sm
-  "
+                    bg-rose-500/10
+                    hover:bg-rose-500/15
+                    text-rose-600
+                    border
+                    border-rose-500/20
+                    rounded-full
+                    px-4
+                    h-8
+                    text-xs
+                    font-medium
+                    flex
+                    items-center
+                    gap-1.5
+                    cursor-default
+                    shadow-sm
+                  "
                 >
                   Pending
                 </Button>
@@ -268,152 +314,174 @@ const UsersInfo = () => {
                     }
                     disabled={isFollowing || isUnfollowing}
                     className={`
-    rounded-full
-    px-4
-    h-8
-    text-xs
-    font-medium
-    cursor-pointer
-    transition-all
-    duration-200
-    active:scale-95
-    shadow-sm
-    ${
-      friends
-        ? `
-          bg-zinc-100
-          hover:bg-zinc-200
-          text-zinc-700
-          border
-          border-zinc-200
-        `
-        : `
-          bg-emerald-600
-          hover:bg-emerald-700
-          text-white
-        `
-    }
-  `}
+                      rounded-full
+                      px-4
+                      h-8
+                      text-xs
+                      font-medium
+                      cursor-pointer
+                      transition-all
+                      duration-200
+                      active:scale-95
+                      shadow-sm
+                      ${
+                        friends
+                          ? `
+                            bg-zinc-100
+                            hover:bg-zinc-200
+                            text-zinc-700
+                            border
+                            border-zinc-200
+                          `
+                          : `
+                            bg-emerald-600
+                            hover:bg-emerald-700
+                            text-white
+                          `
+                      }
+                    `}
                   >
                     {friends ? "Unfollow" : "Follow"}
                   </Button>
                 )
               )}
-
-              {/* {reqStatus === "accepted" ? (
-                <span
-                  onClick={() =>
-                    navigate(
-                      `/messages?userId=${user?._id}&name=${encodeURIComponent(
-                        user?.userName || "User"
-                      )}`
-                    )
-                  }
-                  size="sm"
-                  className="flex justify-around cursor-pointer"
-                >
-                  <img
-                    src="/src/assets/logo.png"
-                    alt="Clix Logo"
-                    className="w-8 h-8"
-                  />
-                </span>
-              ) : null} */}
             </div>
           </div>
         </CardContent>
       </Card>
-      {user?.isPublic || friends  ? (
-        <>
-          {displayPosts.map((post) => (
-            <Card
-              key={post._id}
-              id={`post-${post._id}`}
-              className="overflow-hidden scroll-mt-28"
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10 text-emerald-600">
-                      <AvatarImage
-                        onClick={() => open(user?.profileImage)}
-                        className="h-full w-full cursor-pointer object-cover object-top"
-                        src={user?.profileImage || "/placeholder.svg"}
-                      />
-                      <AvatarFallback>
-                        {user?.userName?.charAt(0).toUpperCase() || "-"}
-                      </AvatarFallback>
-                    </Avatar>
 
-                    <div>
-                      <p className="text-sm font-medium sm:text-base">
-                        {user?.userName}
-                      </p>
-                      <p className="text-xs text-muted-foreground sm:text-sm">
-                        {formatRelative(post?.createdAt)}
-                      </p>
+      {user?.isPublic || friends ? (
+        <>
+          {displayPosts.map((post) => {
+            const uniqueReactions = getUniqueReactions(post?.likedBy);
+
+            return (
+              <Card
+                key={post._id}
+                id={`post-${post._id}`}
+                className="overflow-hidden scroll-mt-28"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10 text-emerald-600">
+                        <AvatarImage
+                          onClick={() => open(user?.profileImage)}
+                          className="h-full w-full cursor-pointer object-cover object-top"
+                          src={user?.profileImage || "/placeholder.svg"}
+                        />
+                        <AvatarFallback>
+                          {user?.userName?.charAt(0).toUpperCase() || "-"}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div>
+                        <p className="text-sm font-medium sm:text-base">
+                          {user?.userName}
+                        </p>
+                        <p className="text-xs text-muted-foreground sm:text-sm">
+                          {formatRelative(post?.createdAt)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
+                </CardHeader>
 
-              <CardContent className="pt-0">
-                <PostImageWithLikes
-                  post={post}
-                  likedUsers={post?.likedByUsers}
-                  onImageClick={() => open(post.image)}
-                />
+                <CardContent className="pt-0">
+                  <PostImageWithLikes
+                    post={post}
+                    likedUsers={post?.likedByUsers}
+                    onImageClick={() => open(post.image)}
+                  />
 
-                <PostContent text={post?.postText} className="mt-3 mb-4 pl-2" />
+                  <PostContent
+                    text={post?.postText}
+                    className="mt-3 mb-4 pl-2"
+                  />
 
-                <div className="mt-3 flex items-center justify-start">
-                  <PostLikeComponent post={post} userId={post?.user?._id} />
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleComments(post?._id)}
-                    className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                    aria-label="Comment on post"
-                  >
-                    <MessageCircle
-                      style={{
-                        width: 18,
-                        height: 18,
-                      }}
+                  <div className="mt-3 flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                    <PostLikeComponent
+                      post={post}
+                      currentUserId={currentUser?.id}
+                      onLikeChange={handleLikeChange}
                     />
-                  </Button>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openShareModal(post?._id)}
-                    className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
-                    aria-label="Share post"
-                  >
-                    <Send
-                      style={{
-                        width: 18,
-                        height: 18,
-                      }}
-                    />
-                  </Button>
-                </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleComments(post?._id)}
+                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                      aria-label="Comment on post"
+                    >
+                      <MessageCircle
+                        style={{
+                          width: 18,
+                          height: 18,
+                        }}
+                      />
+                    </Button>
 
-                {openPostId === post._id && (
-                  <div className="mt-3">
-                    <CommentSection
-                      postId={post._id}
-                      userProfile={currentUser}
-                      highlightCommentId={
-                        targetPostId === post._id ? targetCommentId : undefined
-                      }
-                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openShareModal(post?._id)}
+                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                      aria-label="Share post"
+                    >
+                      <Send
+                        style={{
+                          width: 18,
+                          height: 18,
+                        }}
+                      />
+                    </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+
+                  {uniqueReactions.length > 0 && (
+                    <Link
+                      to={`/posts/${post._id}/liked-users`}
+                      className="
+                        mt-2 inline-flex items-center gap-1
+                        rounded-full bg-slate-50 px-2 py-1
+                        dark:bg-slate-800
+                        max-w-full overflow-x-auto
+                      "
+                    >
+                      {uniqueReactions.map((item, index) => {
+                        const reaction = REACTIONS.find(
+                          (r) => r.type === item?.type,
+                        );
+
+                        return (
+                          <span
+                            key={`${item?._id || item?.type || index}`}
+                            className="text-sm leading-none"
+                            title={reaction?.label || "Love"}
+                          >
+                            {reaction?.emoji || "❤️"}
+                          </span>
+                        );
+                      })}
+                    </Link>
+                  )}
+
+                  {openPostId === post._id && (
+                    <div className="mt-3">
+                      <CommentSection
+                        postId={post._id}
+                        userProfile={currentUser}
+                        highlightCommentId={
+                          targetPostId === post._id
+                            ? targetCommentId
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
 
           <ShareDialog />
           <ImageViewer />
@@ -434,7 +502,7 @@ const UsersInfo = () => {
         <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white dark:border-zinc-800 dark:from-black dark:to-zinc-950">
           <CardContent className="py-16">
             <div className="flex flex-col items-center justify-center text-center">
-              <div className=" mb-6">
+              <div className="mb-6">
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/15 backdrop-blur-sm dark:bg-emerald-500/10">
                   <Lock className="h-9 w-9 text-emerald-600 dark:text-emerald-400" />
                 </div>

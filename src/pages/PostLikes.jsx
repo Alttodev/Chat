@@ -9,6 +9,14 @@ import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import PostContent from "@/components/Post/PostContent";
 import { useAuthStore } from "@/store/authStore";
+import { useMemo } from "react";
+
+const REACTION_EMOJI = {
+  love: "❤️",
+  haha: "😂",
+  wow: "😮",
+  sad: "😢",
+};
 
 const getDisplayName = (user) =>
   user?.userName || user?.name || user?.fullName || user?.email || "User";
@@ -22,19 +30,34 @@ function PostLikes() {
   const navigate = useNavigate();
   const { profileId: authId } = useAuthStore();
   const { id } = useParams();
+
   const { data: postData, isLoading: isPostLoading } = usePostInfo(id);
   const { data: likedUsersData, isLoading: isLikesLoading } =
     usePostLikedUsers(id);
 
   const post = postData?.post;
   const likers = likedUsersData?.likedUsers || [];
+
   const totalLikes =
     typeof likedUsersData?.totalLikes === "number"
       ? likedUsersData.totalLikes
       : post?.likes || 0;
-  const isLoading = isPostLoading || isLikesLoading;
 
+  const isLoading = isPostLoading || isLikesLoading;
   const hasLikerList = likers.length > 0;
+
+  const reactionByUserId = useMemo(() => {
+    const map = new Map();
+
+    (post?.likedBy || []).forEach((item) => {
+      const uid = getUserId(item?.user ? item.user : item);
+      if (!uid) return;
+
+      map.set(String(uid), item?.type || "love");
+    });
+
+    return map;
+  }, [post?.likedBy]);
 
   if (isLoading) {
     return (
@@ -45,7 +68,7 @@ function PostLikes() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4  pb-20">
+    <div className="mx-auto w-full max-w-2xl px-4 pb-20">
       <Card className="overflow-hidden border-border shadow-sm">
         <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-500/10 dark:to-background">
           <div className="flex items-center justify-between gap-3">
@@ -54,10 +77,11 @@ function PostLikes() {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(-1)}
-                className="rounded-full text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                className="cursor-pointer rounded-full text-foreground hover:bg-accent hover:text-accent-foreground"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
+
               <div>
                 <CardTitle className="text-lg text-foreground">
                   Liked by
@@ -100,21 +124,28 @@ function PostLikes() {
             </div>
           </CardContent>
         )}
+
         <CardContent className="p-0">
           {hasLikerList ? (
             <div className="divide-y">
               {likers.map((user, index) => {
-                const userId = getUserId(user) || `${index}`;
+                const likerId = getUserId(user) || `${index}`;
                 const displayName = getDisplayName(user);
                 const avatarSrc = getAvatarSrc(user);
-                const profileId = getUserId(user);
+                const viewedUserId = getUserId(user);
+                const isOwnProfile = viewedUserId === authId;
 
-                const isOwnProfile = profileId === authId;
+                const reactionType =
+                  user?.type ||
+                  reactionByUserId.get(String(viewedUserId)) ||
+                  "love";
+
+                const reactionEmoji = REACTION_EMOJI[reactionType] || "❤️";
 
                 return isOwnProfile ? (
                   <div
-                    key={userId}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left "
+                    key={likerId}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left"
                   >
                     <Avatar className="h-12 w-12">
                       <AvatarImage
@@ -132,25 +163,30 @@ function PostLikes() {
                         {displayName}
                       </div>
 
-                      <div className="truncate text-sm text-muted-foreground">
-                        {user?.likedAt
-                          ? `Liked ${formatRelative(user.likedAt)}`
-                          : "Your profile"}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="text-base leading-none">
+                          {reactionEmoji}
+                        </span>
+                        <span>
+                          {user?.likedAt
+                            ? `Reacted ${formatRelative(user.likedAt)}`
+                            : "Your profile"}
+                        </span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <button
-                    key={userId}
+                    key={likerId}
                     type="button"
                     onClick={() => {
-                      if (profileId) {
-                        navigate(`/users/${profileId}`);
+                      if (viewedUserId) {
+                        navigate(`/users/${viewedUserId}`);
                       }
                     }}
                     className={cn(
                       "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/60",
-                      profileId ? "cursor-pointer" : "cursor-default",
+                      viewedUserId ? "cursor-pointer" : "cursor-default",
                     )}
                   >
                     <Avatar className="h-12 w-12">
@@ -159,7 +195,6 @@ function PostLikes() {
                         src={avatarSrc}
                         alt={displayName}
                       />
-
                       <AvatarFallback className="bg-emerald-100 text-emerald-700">
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
@@ -170,10 +205,15 @@ function PostLikes() {
                         {displayName}
                       </div>
 
-                      <div className="truncate text-sm text-muted-foreground">
-                        {user?.likedAt
-                          ? `Liked ${formatRelative(user.likedAt)}`
-                          : "Tap to view profile"}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="text-base leading-none">
+                          {reactionEmoji}
+                        </span>
+                        <span>
+                          {user?.likedAt
+                            ? `Reacted ${formatRelative(user.likedAt)}`
+                            : "Tap to view profile"}
+                        </span>
                       </div>
                     </div>
                   </button>
