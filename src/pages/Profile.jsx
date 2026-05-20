@@ -157,7 +157,9 @@ const Profile = () => {
 
       return {
         ...post,
-        likedBy: Array.isArray(updated?.likedBy) ? updated.likedBy : post.likedBy,
+        likedBy: Array.isArray(updated?.likedBy)
+          ? updated.likedBy
+          : post.likedBy,
         likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
         myReaction:
           typeof updated?.myReaction !== "undefined"
@@ -405,7 +407,7 @@ const Profile = () => {
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-              <div className="mt-3 flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <div className="mt-3 flex items-center flex-wrap sm:flex-nowrap">
                 <PostLikeComponent
                   post={post}
                   currentUserId={userProfile?.profile?.id}
@@ -437,25 +439,43 @@ const Profile = () => {
                 <Link
                   to={`/posts/${post._id}/liked-users`}
                   className="
-                    mt-2 inline-flex items-center gap-1
-                    rounded-full bg-slate-50 px-2 py-1
-                    dark:bg-slate-800
-                    max-w-full overflow-x-auto
-                  "
+      mt-2 inline-flex items-center
+      rounded-full bg-slate-50 px-2 py-1
+      dark:bg-slate-800
+      shadow-sm
+      transition-colors hover:bg-slate-100
+      dark:hover:bg-slate-700
+      w-fit
+    "
                 >
-                  {uniqueReactions.map((item, index) => {
-                    const reaction = REACTIONS.find((r) => r.type === item?.type);
+                  <div className="flex items-center">
+                    {uniqueReactions.map((item, index) => {
+                      const reaction = REACTIONS.find(
+                        (r) => r.type === item?.type,
+                      );
 
-                    return (
-                      <span
-                        key={`${item?._id || item?.type || index}`}
-                        className="text-sm leading-none"
-                        title={reaction?.label || "Love"}
-                      >
-                        {reaction?.emoji || "❤️"}
-                      </span>
-                    );
-                  })}
+                      return (
+                        <span
+                          key={`${item?._id || item?.type || index}`}
+                          className={`
+              relative
+              flex h-5 w-5 items-center justify-center
+              rounded-full
+              border border-white dark:border-slate-900
+              bg-white dark:bg-slate-900
+              text-xs shadow-sm
+              ${index !== 0 ? "-ml-2" : ""}
+            `}
+                          style={{
+                            zIndex: uniqueReactions.length - index,
+                          }}
+                          title={reaction?.label || "Love"}
+                        >
+                          {reaction?.emoji || "❤️"}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </Link>
               )}
 

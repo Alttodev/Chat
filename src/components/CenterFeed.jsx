@@ -94,7 +94,9 @@ export function CenterFeed() {
   const displayPosts = useMemo(() => {
     if (!targetPostId) return localPosts;
 
-    const hasTargetInList = localPosts.some((post) => post._id === targetPostId);
+    const hasTargetInList = localPosts.some(
+      (post) => post._id === targetPostId,
+    );
 
     if (hasTargetInList) {
       return localPosts.map((post) =>
@@ -148,7 +150,9 @@ export function CenterFeed() {
 
       return {
         ...post,
-        likedBy: Array.isArray(updated?.likedBy) ? updated.likedBy : post.likedBy,
+        likedBy: Array.isArray(updated?.likedBy)
+          ? updated.likedBy
+          : post.likedBy,
         likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
         myReaction:
           typeof updated?.myReaction !== "undefined"
@@ -281,7 +285,7 @@ export function CenterFeed() {
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-              <div className="mt-3 flex items-start gap-2 flex-wrap sm:flex-nowrap">
+              <div className="mt-3 flex items-start  flex-wrap sm:flex-nowrap">
                 <PostLikeComponent
                   post={post}
                   currentUserId={userProfile?.profile?.id}
@@ -309,31 +313,46 @@ export function CenterFeed() {
                 </Button>
               </div>
 
-              {uniqueReactions.length > 0 && (
-                <Link
-                  to={`/posts/${post._id}/liked-users`}
-                  className="
-                    mt-2 inline-flex items-center gap-1
-                    rounded-full bg-slate-50 px-2 py-1
-                    dark:bg-slate-800
-                    max-w-full overflow-x-auto
-                  "
-                >
+              <Link
+                to={`/posts/${post._id}/liked-users`}
+                className="
+    mt-2 inline-flex items-center
+    rounded-full bg-slate-50 px-2 py-1
+    dark:bg-slate-800
+    shadow-sm
+    transition-colors hover:bg-slate-100
+    dark:hover:bg-slate-700
+  "
+              >
+                <div className="flex items-center">
                   {uniqueReactions.map((item, index) => {
-                    const reaction = REACTIONS.find((r) => r.type === item?.type);
+                    const reaction = REACTIONS.find(
+                      (r) => r.type === item?.type,
+                    );
 
                     return (
                       <span
                         key={`${item?._id || item?.type || index}`}
-                        className="text-sm leading-none"
+                        className={`
+            relative
+            flex h-5 w-5 items-center justify-center
+            rounded-full
+            border border-white dark:border-slate-900
+            bg-white dark:bg-slate-900
+            text-xs shadow-sm
+            ${index !== 0 ? "-ml-2" : ""}
+          `}
+                        style={{
+                          zIndex: uniqueReactions.length - index,
+                        }}
                         title={reaction?.label || "Love"}
                       >
                         {reaction?.emoji || "❤️"}
                       </span>
                     );
                   })}
-                </Link>
-              )}
+                </div>
+              </Link>
 
               {openPostId === post._id && (
                 <div className="mt-3">

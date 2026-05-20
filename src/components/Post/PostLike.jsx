@@ -32,6 +32,7 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
       (post?.likedByMe ? "love" : null),
   );
 
+  const [showReactions, setShowReactions] = useState(false);
   const [jumpReaction, setJumpReaction] = useState(null);
   const [jumpToken, setJumpToken] = useState(0);
   const jumpTimerRef = useRef(null);
@@ -70,7 +71,7 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
 
     jumpTimerRef.current = setTimeout(() => {
       setJumpReaction(null);
-    }, 260);
+    }, 500);
   };
 
   const handleReact = async (reactionType) => {
@@ -81,8 +82,7 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
       previousReaction === reactionType ? null : reactionType;
 
     setMyReaction(nextReaction);
-
-    // jump only for the reaction user clicked
+    setShowReactions(false);
     triggerJump(reactionType);
 
     try {
@@ -125,40 +125,54 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
   };
 
   return (
-    <div className="group relative inline-flex items-center">
+    <div
+      className="relative inline-flex items-center"
+      onMouseEnter={() => setShowReactions(true)}
+      onMouseLeave={() => setShowReactions(false)}
+    >
       <Button
         type="button"
         variant="ghost"
         size="sm"
         onClick={handleMainClick}
-        className="h-9 px-2 gap-2 cursor-pointer hover:bg-transparent"
+        className="h-10 px-2 gap-2 cursor-pointer hover:bg-transparent"
       >
         {activeReaction ? (
-          <Heart className="h-[20px] w-[20px] fill-current text-red-500" />
+          <Heart className="h-[26px] w-[26px] fill-current text-red-500" />
         ) : (
-          <Heart className="h-[20px] w-[20px] text-slate-700 dark:text-slate-200" />
+          <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />
         )}
       </Button>
 
       <div
-        className="
-          absolute left-0 bottom-5 z-30 mb-2
-          flex items-center gap-1
-          overflow-visible
-          rounded-full border border-slate-200 bg-white p-2 shadow-lg
-          dark:border-slate-800 dark:bg-slate-950
-          opacity-0 pointer-events-none
-          transition-opacity duration-150
-          group-hover:opacity-100 group-hover:pointer-events-auto
-          group-focus-within:opacity-100 group-focus-within:pointer-events-auto
-        "
+        className={`
+    absolute left-0 bottom-5 z-30 mb-2
+    flex items-center gap-0.5
+    overflow-visible
+    rounded-full border border-slate-200 bg-white
+    px-1.5 py-1 shadow-lg
+    dark:border-slate-800 dark:bg-slate-950
+    transition-all duration-150
+    ${
+      showReactions
+        ? "opacity-100 pointer-events-auto translate-y-0"
+        : "opacity-0 pointer-events-none translate-y-1"
+    }
+  `}
       >
         {REACTIONS.map((reaction) => (
           <button
             key={reaction.type}
             type="button"
             onClick={() => handleReact(reaction.type)}
-            className="rounded-full p-2 text-2xl transition-transform hover:scale-125"
+            className="
+        rounded-full
+        p-1
+        text-[20px]
+        leading-none
+        transition-transform duration-150
+        hover:scale-115
+      "
             title={reaction.label}
           >
             <span
