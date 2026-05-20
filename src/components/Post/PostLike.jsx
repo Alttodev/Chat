@@ -134,7 +134,6 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
       <Button
         type="button"
         variant="ghost"
-        size="sm"
         onClick={() => {
           if (!showReactions) {
             setShowReactions(true);
@@ -146,16 +145,19 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
           e.preventDefault();
           setShowReactions((prev) => !prev);
         }}
-        className="h-10 px-2 gap-2 cursor-pointer hover:bg-transparent"
+        className="inline-flex h-auto p-2 w-auto   text-muted-foreground hover:bg-transparent hover:text-muted-foreground  cursor-pointer"
       >
         {activeReaction ? (
           activeReaction.type === "love" ? (
-            <Heart className="h-[26px] w-[26px] fill-current text-red-500" />
+            <Heart
+              style={{ width: 20, height: 20 }}
+              className="fill-current text-red-500 shrink-0"
+            />
           ) : (
-            <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />
+            <Heart style={{ width: 20, height: 20 }} />
           )
         ) : (
-          <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />
+          <Heart style={{ width: 20, height: 20 }} />
         )}
       </Button>
 

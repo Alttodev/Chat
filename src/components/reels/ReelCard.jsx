@@ -92,12 +92,16 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
     const nextLiked = !isLiked;
     const nextLikeCount = Math.max(0, likeCount + (nextLiked ? 1 : -1));
+    const nextReaction = nextLiked ? "love" : null;
 
     setIsLiked(nextLiked);
     setLikeCount(nextLikeCount);
 
     try {
-      await postLike(post._id);
+      await postLike({
+        id: post._id,
+        type: nextReaction,
+      });
     } catch (error) {
       setIsLiked(!nextLiked);
       setLikeCount(likeCount);

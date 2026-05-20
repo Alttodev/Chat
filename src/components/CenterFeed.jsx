@@ -43,7 +43,7 @@ import PostContent from "./Post/PostContent";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
-   { type: "clap", emoji: "👏", label: "Clap" },
+  { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },
   { type: "sad", emoji: "😢", label: "Sad" },
@@ -297,7 +297,7 @@ export function CenterFeed() {
                   variant="ghost"
                   size="sm"
                   onClick={() => toggleComments(post._id)}
-                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
                   aria-label="Comment on post"
                 >
                   <MessageCircle style={{ width: 18, height: 18 }} />
@@ -307,7 +307,7 @@ export function CenterFeed() {
                   variant="ghost"
                   size="sm"
                   onClick={() => openShareModal(post._id)}
-                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
                   aria-label="Share post"
                 >
                   <Send style={{ width: 18, height: 18 }} />
