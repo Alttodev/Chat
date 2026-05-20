@@ -54,22 +54,6 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
     };
   }, []);
 
-  useEffect(() => {
-    const closeReactions = () => {
-      setShowReactions(false);
-    };
-
-    if (showReactions) {
-      document.addEventListener("touchstart", closeReactions, {
-        once: true,
-      });
-    }
-
-    return () => {
-      document.removeEventListener("touchstart", closeReactions);
-    };
-  }, [showReactions]);
-
   const activeReaction = useMemo(
     () => REACTIONS.find((item) => item.type === myReaction),
     [myReaction],
@@ -164,7 +148,13 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
         className="h-10 px-2 gap-2 cursor-pointer hover:bg-transparent"
       >
         {activeReaction ? (
-          <Heart className="h-[26px] w-[26px] fill-current text-red-500" />
+          activeReaction.type === "love" ? (
+            <Heart className="h-[26px] w-[26px] fill-current text-red-500" />
+          ) : (
+            <span className="text-[17px] leading-none">
+              {activeReaction.emoji}
+            </span>
+          )
         ) : (
           <Heart className="h-[26px] w-[26px] text-slate-700 dark:text-slate-200" />
         )}
@@ -172,19 +162,19 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
 
       <div
         className={`
-    absolute left-0 bottom-5 z-30 mb-2
-    flex items-center gap-0.5
-    overflow-visible
-    rounded-full border border-slate-200 bg-white
-    px-1.5 py-1 shadow-lg
-    dark:border-slate-800 dark:bg-slate-950
-    transition-all duration-150
-    ${
-      showReactions
-        ? "opacity-100 pointer-events-auto translate-y-0"
-        : "opacity-0 pointer-events-none translate-y-1"
-    }
-  `}
+          absolute left-0 bottom-5 z-30 mb-2
+          flex items-center gap-0.5
+          overflow-visible
+          rounded-full border border-slate-200 bg-white
+          px-1.5 py-1 shadow-lg
+          dark:border-slate-800 dark:bg-slate-950
+          transition-all duration-150
+          ${
+            showReactions
+              ? "opacity-100 pointer-events-auto translate-y-0"
+              : "opacity-0 pointer-events-none translate-y-1"
+          }
+        `}
       >
         {REACTIONS.map((reaction) => (
           <button
@@ -192,13 +182,13 @@ function PostLikeComponent({ post, currentUserId, onLikeChange }) {
             type="button"
             onClick={() => handleReact(reaction.type)}
             className="
-        rounded-full
-        p-1
-        text-[20px]
-        leading-none
-        transition-transform duration-150
-        hover:scale-115
-      "
+              rounded-full
+              p-1
+              text-[20px]
+              leading-none
+              transition-transform duration-150
+              hover:scale-115
+            "
             title={reaction.label}
           >
             <span
