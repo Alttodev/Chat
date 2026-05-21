@@ -392,12 +392,29 @@ const Profile = () => {
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-              <div className="mt-3 flex items-center flex-wrap sm:flex-nowrap">
+              <div className="mt-3 flex items-center gap-1 flex-wrap sm:flex-nowrap">
                 <PostLikeComponent
                   post={post}
                   currentUserId={userProfile?.profile?.id}
                   onLikeChange={handleLikeChange}
                 />
+
+                {post?.likes > 0 && (
+                  <Link
+                    to={`/posts/${post._id}/liked-users`}
+                    className="
+                       inline-flex items-center
+                      text-sm font-medium
+                      text-slate-700
+                      transition-colors duration-200
+                      hover:text-black
+                      dark:text-slate-300
+                      dark:hover:text-white
+                    "
+                  >
+                    {post?.likes}
+                  </Link>
+                )}
 
                 <Button
                   variant="ghost"
@@ -419,23 +436,6 @@ const Profile = () => {
                   <Send style={{ width: 18, height: 18 }} />
                 </Button>
               </div>
-
-              {post?.likes > 0 && (
-                <Link
-                  to={`/posts/${post._id}/liked-users`}
-                  className="
-                   mt-2 ml-2 inline-flex items-center
-                   text-sm font-medium
-                   text-slate-700
-                   transition-colors duration-200
-                   hover:text-black
-                   dark:text-slate-300
-                   dark:hover:text-white
-                 "
-                >
-                  {post?.likes === 1 ? "1 like" : `${post?.likes} likes`}
-                </Link>
-              )}
 
               {openPostId === post._id && (
                 <div className="mt-3">

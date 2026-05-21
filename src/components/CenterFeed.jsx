@@ -170,6 +170,8 @@ export function CenterFeed() {
       </Card>
 
       {displayPosts.map((post) => {
+        const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+
         return (
           <Card
             key={post._id}
@@ -270,12 +272,28 @@ export function CenterFeed() {
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-              <div className="mt-3 flex items-start  flex-wrap sm:flex-nowrap">
+              <div className="mt-3 flex items-start gap-1 flex-wrap sm:flex-nowrap">
                 <PostLikeComponent
                   post={post}
                   currentUserId={userProfile?.profile?.id}
                   onLikeChange={handleLikeChange}
                 />
+                {likeCount> 0 && (
+                  <Link
+                    to={`/posts/${post._id}/liked-users`}
+                    className="
+      mt-2  inline-flex items-center
+      text-sm font-medium
+      text-slate-700
+      transition-colors duration-200
+      hover:text-black
+      dark:text-slate-300
+      dark:hover:text-white
+    "
+                  >
+                    {likeCount}
+                  </Link>
+                )}
 
                 <Button
                   variant="ghost"
@@ -297,23 +315,6 @@ export function CenterFeed() {
                   <Send style={{ width: 18, height: 18 }} />
                 </Button>
               </div>
-
-              {post?.likes > 0 && (
-                <Link
-                  to={`/posts/${post._id}/liked-users`}
-                  className="
-      mt-2 ml-2 inline-flex items-center
-      text-sm font-medium
-      text-slate-700
-      transition-colors duration-200
-      hover:text-black
-      dark:text-slate-300
-      dark:hover:text-white
-    "
-                >
-                  {post?.likes === 1 ? "1 like" : `${post?.likes} likes`}
-                </Link>
-              )}
 
               {openPostId === post._id && (
                 <div className="mt-3">

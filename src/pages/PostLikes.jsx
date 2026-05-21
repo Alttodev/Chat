@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Heart } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -136,8 +136,11 @@ function PostLikes() {
                     </Avatar>
 
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-foreground">
+                      <div className="flex items-center gap-1 truncate font-medium text-foreground">
                         {displayName}
+                          {user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
                       </div>
 
                       <div className="text-sm text-muted-foreground">
@@ -175,8 +178,11 @@ function PostLikes() {
                     </Avatar>
 
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-foreground">
+                      <div className="flex items-center gap-1 truncate font-medium text-foreground">
                         {displayName}
+                        {user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
                       </div>
 
                       <div className="text-sm text-muted-foreground">
