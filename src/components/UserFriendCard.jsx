@@ -90,7 +90,7 @@ function UserFriendCard({ user, profileId }) {
                   )}
                 </div>
 
-                <div className="flex gap-1 items-center text-sm text-muted-foreground">
+                <div className="flex gap-1 items-center justify-center text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   <span>{target?.address || "-"}</span>
                 </div>

@@ -40,6 +40,7 @@ import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { usePostInfo } from "@/hooks/postHooks";
 import { PostImageWithLikes } from "./Post/PostImageWithLikes";
 import PostContent from "./Post/PostContent";
+import { FollowSuggestions } from "./suggestions/FollowSuggestions";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -58,6 +59,7 @@ export function CenterFeed() {
 
   const loadMoreRef = useRef(null);
   const { open } = useImageModalStore();
+  const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
 
   const basePosts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
@@ -69,6 +71,21 @@ export function CenterFeed() {
 
   const [localPosts, setLocalPosts] = useState([]);
   const [targetPostOverride, setTargetPostOverride] = useState(null);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+
+    const update = () => setShowMobileSuggestions(media.matches);
+    update();
+
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", update);
+      return () => media.removeEventListener("change", update);
+    }
+
+    media.addListener(update);
+    return () => media.removeListener(update);
+  }, []);
 
   useEffect(() => {
     setLocalPosts(basePosts);
@@ -168,6 +185,8 @@ export function CenterFeed() {
           <PostForm userProfile={userProfile} />
         </CardContent>
       </Card>
+
+      {showMobileSuggestions ? <FollowSuggestions compact /> : null}
 
       {displayPosts.map((post) => {
         const likeCount = typeof post?.likes === "number" ? post.likes : 0;

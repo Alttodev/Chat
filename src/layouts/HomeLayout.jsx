@@ -65,7 +65,7 @@ function HomeLayout() {
         {/* Main Content */}
         <main
           className={cn(
-            "flex-1 pb-8 px-4 md:ml-64 md:mr-80",
+            "min-w-0 flex-1 pb-8 px-4 md:ml-64 md:mr-80",
             isReels
               ? "pt-20 sm:pt-24 px-2 sm:px-4"
               : isHome

@@ -15,7 +15,7 @@ function UsersList() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 space-y-6">
+    <div className="w-full max-w-3xl mx-auto px-4 space-y-6 pb-20">
       {data?.profiles?.map((user, index) => {
         return <UserCard key={index} user={user} profileId={profileId} />;
       })}
