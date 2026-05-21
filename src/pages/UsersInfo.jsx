@@ -39,21 +39,6 @@ import PostContent from "@/components/Post/PostContent";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 
-const REACTIONS = [
-  { type: "love", emoji: "❤️", label: "Love" },
-  { type: "fire", emoji: "🔥", label: "Fire" },
-  { type: "clap", emoji: "👏", label: "Clap" },
-  { type: "haha", emoji: "😂", label: "Haha" },
-  { type: "wow", emoji: "😮", label: "Wow" },
-  { type: "sad", emoji: "😢", label: "Sad" },
-];
-
-const getUniqueReactions = (likedBy = []) => {
-  return [
-    ...new Map((likedBy || []).map((item) => [item?.type, item])).values(),
-  ];
-};
-
 const UsersInfo = () => {
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
@@ -170,7 +155,7 @@ const UsersInfo = () => {
           typeof updated?.myReaction !== "undefined"
             ? updated.myReaction
             : post.myReaction,
-        likedByMe: Boolean(updated?.myReaction),
+        likedByMe: Boolean(updated?.likedByMe ?? updated?.myReaction),
       };
     };
 
@@ -355,8 +340,6 @@ const UsersInfo = () => {
       {user?.isPublic || friends ? (
         <>
           {displayPosts.map((post) => {
-            const uniqueReactions = getUniqueReactions(post?.likedBy);
-
             return (
               <Card
                 key={post._id}
@@ -438,92 +421,20 @@ const UsersInfo = () => {
                       />
                     </Button>
                   </div>
-
-                  {post?.myReaction && post?.myReaction !== "love" && (
-                    <div className="mt-1 pl-1">
-                      <span
-                        className="
-        inline-flex items-center gap-1
-        rounded-full
-        bg-slate-100 px-2 py-0.5
-        text-[11px] font-medium
-        text-slate-600
-        dark:bg-slate-800
-        dark:text-slate-300
-      "
-                      >
-                        {
-                          REACTIONS.find((r) => r.type === post.myReaction)
-                            ?.emoji
-                        }
-
-                        {
-                          REACTIONS.find((r) => r.type === post.myReaction)
-                            ?.label
-                        }
-                      </span>
-                    </div>
-                  )}
-
-                  {uniqueReactions.length > 0 && (
+                  {post?.likes > 0 && (
                     <Link
                       to={`/posts/${post._id}/liked-users`}
                       className="
-      mt-2 inline-flex items-center
-      rounded-full bg-slate-50 px-2 py-1
-      dark:bg-slate-800
-      shadow-sm
-      transition-colors hover:bg-slate-100
-      dark:hover:bg-slate-700
-      w-fit
-    "
+                        mt-2 ml-2 inline-flex items-center
+                        text-sm font-medium
+                        text-slate-700
+                        transition-colors duration-200
+                        hover:text-black
+                        dark:text-slate-300
+                        dark:hover:text-white
+                      "
                     >
-                      <div className="flex items-center">
-                        {uniqueReactions.slice(0, 3).map((item, index) => {
-                          const reaction = REACTIONS.find(
-                            (r) => r.type === item?.type,
-                          );
-
-                          return (
-                            <span
-                              key={`${item?._id || item?.type || index}`}
-                              className={`
-              relative
-              flex h-6 w-6 items-center justify-center
-              rounded-full
-              border border-white dark:border-slate-900
-              bg-white dark:bg-slate-900
-              text-xs shadow-sm
-              ${index !== 0 ? "-ml-2" : ""}
-            `}
-                              style={{
-                                zIndex: uniqueReactions.length - index,
-                              }}
-                              title={reaction?.label || "Love"}
-                            >
-                              {reaction?.emoji || "❤️"}
-                            </span>
-                          );
-                        })}
-
-                        {uniqueReactions.length > 3 && (
-                          <span
-                            className="
-            relative -ml-1
-            flex h-5 min-w-[20px] items-center justify-center
-            rounded-full
-            border border-white dark:border-slate-900
-            bg-slate-100 dark:bg-slate-700
-            px-1
-            text-[10px] font-semibold
-            text-slate-600 dark:text-slate-200
-            shadow-sm
-          "
-                          >
-                            +{uniqueReactions.length - 3}
-                          </span>
-                        )}
-                      </div>
+                      {post?.likes === 1 ? "1 like" : `${post?.likes} likes`}
                     </Link>
                   )}
 

@@ -6,6 +6,7 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { usePostList } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
@@ -14,6 +15,7 @@ import { useZustandSharePopup } from "@/lib/zustand";
 import { ReelCommentsDialog } from "./ReelCommentsDialog";
 
 export function ReelsFeed() {
+  const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     usePostList();
@@ -133,6 +135,9 @@ export function ReelsFeed() {
                 post={post}
                 index={index}
                 isActive={index === activeIndex}
+                onLikes={(selectedPost) =>
+                  navigate(`/posts/${selectedPost?._id}/liked-users`)
+                }
                 onComment={() => setSelectedCommentPost(post)}
                 onShare={() => openShareModal(post?._id)}
               />

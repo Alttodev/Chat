@@ -9,16 +9,6 @@ import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
 import PostContent from "@/components/Post/PostContent";
 import { useAuthStore } from "@/store/authStore";
-import { useMemo } from "react";
-
-const REACTION_EMOJI = {
-  love: "❤️",
-  fire: "🔥",
-  clap: "👏",
-  haha: "😂",
-  wow: "😮",
-  sad: "😢",
-};
 
 const getDisplayName = (user) =>
   user?.userName || user?.name || user?.fullName || user?.email || "User";
@@ -48,19 +38,6 @@ function PostLikes() {
   const isLoading = isPostLoading || isLikesLoading;
   const hasLikerList = likers.length > 0;
 
-  const reactionByUserId = useMemo(() => {
-    const map = new Map();
-
-    (post?.likedBy || []).forEach((item) => {
-      const uid = getUserId(item?.user ? item.user : item);
-      if (!uid) return;
-
-      map.set(String(uid), item?.type || "love");
-    });
-
-    return map;
-  }, [post?.likedBy]);
-
   if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
@@ -79,7 +56,12 @@ function PostLikes() {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(-1)}
-                className="cursor-pointer rounded-full text-foreground hover:bg-accent hover:text-accent-foreground"
+                className="
+    cursor-pointer
+    text-foreground
+    hover:bg-transparent
+    hover:text-foreground
+  "
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -96,7 +78,7 @@ function PostLikes() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 rounded-full bg-emerald-600 px-3 py-1.5 text-white shadow-sm">
+            <div className="flex items-center gap-2 rounded-full bg-red-500 px-3 py-1.5 text-white shadow-sm">
               <Heart className="h-4 w-4 fill-white text-white" />
               <span className="text-sm font-semibold">{totalLikes}</span>
             </div>
@@ -137,13 +119,6 @@ function PostLikes() {
                 const viewedUserId = getUserId(user);
                 const isOwnProfile = viewedUserId === authId;
 
-                const reactionType =
-                  user?.type ||
-                  reactionByUserId.get(String(viewedUserId)) ||
-                  "love";
-
-                const reactionEmoji = REACTION_EMOJI[reactionType] || "❤️";
-
                 return isOwnProfile ? (
                   <div
                     key={likerId}
@@ -165,13 +140,10 @@ function PostLikes() {
                         {displayName}
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="text-base leading-none">
-                          {reactionEmoji}
-                        </span>
+                      <div className="text-sm text-muted-foreground">
                         <span>
                           {user?.likedAt
-                            ? `Reacted ${formatRelative(user.likedAt)}`
+                            ? `Liked ${formatRelative(user.likedAt)}`
                             : "Your profile"}
                         </span>
                       </div>
@@ -207,13 +179,10 @@ function PostLikes() {
                         {displayName}
                       </div>
 
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="text-base leading-none">
-                          {reactionEmoji}
-                        </span>
+                      <div className="text-sm text-muted-foreground">
                         <span>
                           {user?.likedAt
-                            ? `Reacted ${formatRelative(user.likedAt)}`
+                            ? `Liked ${formatRelative(user.likedAt)}`
                             : "Tap to view profile"}
                         </span>
                       </div>

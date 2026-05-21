@@ -36,10 +36,8 @@ export const userPost = async (formData) => {
   return data;
 };
 
-export const userPostLike = async (id, type) => {
-  const { data } = await axiosInstance.post(`/post/${id}/like`, {
-    type, // love | haha | wow | sad | null
-  });
+export const userPostLike = async (id) => {
+  const { data } = await axiosInstance.post(`/post/${id}/like`);
   return data;
 };
 export const userPostComment = async (id, formData) => {

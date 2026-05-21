@@ -49,6 +49,8 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
   const currentProfile = profileData?.profile || profileData;
   const [replyToComment, setReplyToComment] = useState(null);
   const [expandedReplies, setExpandedReplies] = useState({});
+  const [reactionLoadingCommentId, setReactionLoadingCommentId] =
+    useState(null);
   const isDark = theme === "dark";
 
   useEffect(() => {
@@ -65,10 +67,15 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
   };
 
   const handleReaction = async ({ commentId, type }) => {
+    setReactionLoadingCommentId(commentId);
     try {
       await reactToComment({ postId: post?._id, commentId, type });
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setReactionLoadingCommentId((current) =>
+        current === commentId ? null : current,
+      );
     }
   };
 
@@ -235,8 +242,9 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
               <button
                 type="button"
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer",
+                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
                 )}
+                disabled={reactionLoadingCommentId === comment._id}
                 onClick={() =>
                   handleReaction({ commentId: comment._id, type: "like" })
                 }
@@ -248,8 +256,9 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
               <button
                 type="button"
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer",
+                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
                 )}
+                disabled={reactionLoadingCommentId === comment._id}
                 onClick={() =>
                   handleReaction({ commentId: comment._id, type: "dislike" })
                 }

@@ -53,7 +53,7 @@ export const useProfileFollow = () => {
 
 export const usePostLike = () => {
   return useMutation({
-    mutationFn: ({ id, type }) => userPostLike(id, type),
+    mutationFn: ({ id }) => userPostLike(id),
   });
 };
 

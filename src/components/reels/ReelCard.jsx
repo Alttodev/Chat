@@ -31,11 +31,10 @@ function ActionButton({ icon, label, active = false, onClick }) {
   );
 }
 
-export function ReelCard({ post, isActive, onComment, onShare }) {
+export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
   const videoRef = useRef(null);
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [showCaption, setShowCaption] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
   const [isLiked, setIsLiked] = useState(
     !!post?.likedByMe && post?.myReaction === "love",
@@ -57,7 +56,6 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   useEffect(() => {
     setIsPlaying(true);
     setIsReady(false);
-    setShowCaption(true);
     setIsLiked(!!post?.likedByMe);
     setLikeCount(typeof post?.likes === "number" ? post.likes : 0);
   }, [post?._id, post?.image, post?.likedByMe, post?.likes]);
@@ -78,15 +76,8 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
     videoRef.current.pause();
   }, [isActive, isPlaying, post?.image]);
 
-  useEffect(() => {
-    if (!isActive) {
-      setShowCaption(true);
-    }
-  }, [isActive]);
-
   const handleTogglePlay = () => {
     setIsPlaying((prev) => !prev);
-    setShowCaption(false);
   };
 
   const handleLike = async (event) => {
@@ -113,7 +104,6 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
   const handleVideoEnded = () => {
     setIsPlaying(false);
-    setShowCaption(true);
   };
 
   return (
@@ -154,9 +144,12 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
           </div>
         ) : null}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/10" />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-black/10"
+          aria-hidden="true"
+        />
 
-        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6">
+        <div className="absolute inset-x-0 bottom-0 z-10 p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-none space-y-2 pr-20 text-left text-white sm:max-w-[65%] sm:space-y-3 sm:pr-0">
               <div className="flex items-start gap-3 sm:items-center">
@@ -177,26 +170,42 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
                     </span>
                   </div>
                   {post?.postText ? (
-                    <p
-                      className={cn(
-                        "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
-                        showCaption ? "opacity-100" : "opacity-0",
-                      )}
-                    >
-                      {post.postText}
-                    </p>
+                  <p
+                    className={cn(
+                      "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
+                      "opacity-100",
+                    )}
+                  >
+                    {post.postText}
+                  </p>
                   ) : null}
                 </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-white/75 sm:text-xs">
-                <span>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onLikes?.(post);
+                  }}
+                  className="rounded-full transition cursor-pointer"
+                  aria-label="View reel likes"
+                >
                   {likeCount} {likeCount === 1 ? "like" : "likes"}
-                </span>
+                </button>
 
-                <span>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onComment?.(post);
+                  }}
+                  className="rounded-full transition  cursor-pointer"
+                  aria-label="View reel comments"
+                >
                   {commentCount} {commentCount === 1 ? "comment" : "comments"}
-                </span>
+                </button>
               </div>
             </div>
 
