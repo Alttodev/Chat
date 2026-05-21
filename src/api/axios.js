@@ -47,6 +47,14 @@ export const userPostComment = async (id, formData) => {
   return data;
 };
 
+export const userPostCommentReaction = async ({ postId, commentId, type }) => {
+  const { data } = await axiosInstance.post(
+    `/posts/${postId}/comment/${commentId}/reaction`,
+    { type },
+  );
+  return data;
+};
+
 // status
 
 export const markStatusSeen = async (statusId) => {

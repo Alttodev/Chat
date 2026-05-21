@@ -16,6 +16,7 @@ import {
   userFollowRequestUpdate,
   userPost,
   userPostComment,
+  userPostCommentReaction,
   userPostDelete,
   userPostLike,
   userPostUpdate,
@@ -63,6 +64,20 @@ export const usePostComment = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["comment", variables.id],
+        exact: true,
+      });
+    },
+  });
+};
+
+export const usePostCommentReaction = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ postId, commentId, type }) =>
+      userPostCommentReaction({ postId, commentId, type }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["comment", variables.postId],
         exact: true,
       });
     },

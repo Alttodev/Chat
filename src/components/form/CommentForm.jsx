@@ -11,11 +11,14 @@ import { cn } from "@/lib/utils";
 export function CommentForm({
   userProfile,
   postId,
+  parentCommentId,
+  replyToUserName,
   className,
   avatarClassName,
   textareaClassName,
   buttonClassName,
-  placeholder = "Write a comment...",
+  placeholder,
+  onSuccess,
 }) {
   const { open } = useImageModalStore();
   const { mutateAsync: createComment } = usePostComment();
@@ -33,11 +36,26 @@ export function CommentForm({
   });
 
   const commentValue = watch("comment");
+  const resolvedPlaceholder =
+    placeholder || (parentCommentId ? `Reply to ${replyToUserName || "comment"}...` : "Write a comment...");
 
   const onSubmit = async (formData) => {
     try {
-      await createComment({ id: postId, formData: formData });
+      await createComment({
+        id: postId,
+        formData: {
+          ...formData,
+          ...(parentCommentId
+            ? {
+                parentCommentId,
+                parentId: parentCommentId,
+                replyToCommentId: parentCommentId,
+              }
+            : {}),
+        },
+      });
       reset();
+      onSuccess?.();
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -63,7 +81,7 @@ export function CommentForm({
             render={({ field }) => (
               <Textarea
                 {...field}
-                placeholder={placeholder}
+                placeholder={resolvedPlaceholder}
                 disabled={isSubmitting}
                 className={cn(
                   "min-h-[60px] resize-none text-sm placeholder:text-xs sm:text-base sm:placeholder:text-sm",

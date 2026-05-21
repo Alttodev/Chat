@@ -1,7 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
 import { CommentForm } from "../form/CommentForm";
-import { usePostCommentDelete, usePostComments } from "@/hooks/postHooks";
+import {
+  usePostCommentDelete,
+  usePostCommentReaction,
+  usePostComments,
+} from "@/hooks/postHooks";
 import { SkeletonComment } from "../skeleton/commentSkeleton";
 import {
   DropdownMenu,
@@ -9,19 +13,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  CornerDownRight,
+  MessageSquareText,
+  MoreHorizontal,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
 import { toastError } from "@/lib/toast";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { renderMentionText } from "@/lib/mentionText";
+import { cn } from "@/lib/utils";
 
 export function CommentSection({ postId, userProfile, highlightCommentId }) {
   const { profileId } = useAuthStore();
   const navigate = useNavigate();
   const { data: activeComments, isLoading } = usePostComments(postId);
   const { mutateAsync: deleteComment } = usePostCommentDelete();
+  const { mutateAsync: reactToComment } = usePostCommentReaction();
   const lastHighlightedCommentIdRef = useRef(null);
+  const [replyToComment, setReplyToComment] = useState(null);
+  const [expandedReplies, setExpandedReplies] = useState({});
 
   useEffect(() => {
     if (!highlightCommentId) return;
@@ -48,37 +63,64 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
     }
   };
 
-  if (isLoading) {
-    return <SkeletonComment />;
-  }
+  const handleReaction = async ({ commentId, type }) => {
+    try {
+      await reactToComment({ postId, commentId, type });
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
+  };
 
-  return (
-    <div className="space-y-3   pt-5">
-      <div className="text-sm text-muted-foreground">
-        Comments {activeComments?.comments?.length}
-      </div>
-      <CommentForm userProfile={userProfile} postId={postId} />
+  const toggleReplies = (commentId) => {
+    setExpandedReplies((prev) => ({
+      ...prev,
+      [commentId]: prev[commentId] === false,
+    }));
+  };
 
-      {/* Comments List */}
-      {activeComments?.comments?.map((comment) => (
+  const renderCommentNode = (comment, level = 0) => {
+    const threadedReplies = comment?.replies || [];
+    const isNested = level > 0;
+    const isReplyingToThisComment = replyToComment?.commentId === comment._id;
+    const areRepliesOpen = expandedReplies[comment._id] !== false;
+    const hasReplies = threadedReplies.length > 0;
+    const likeCount = comment?.likeCount || 0;
+    const dislikeCount = comment?.dislikeCount || 0;
+
+    return (
+      <div
+        key={comment._id}
+        id={`comment-${comment._id}`}
+        className={cn("scroll-mt-24", isNested ? "pl-4 sm:pl-6" : "")}
+      >
         <div
-          key={comment._id}
-          id={`comment-${comment._id}`}
-          className={`flex gap-2 scroll-mt-24 rounded-lg transition-colors 
-          }`}
+          className={cn(
+            "flex gap-2 transition-colors",
+            isNested
+              ? "relative border-l border-muted-foreground/15 pl-2.5 pt-1.5"
+              : "rounded-lg",
+            highlightCommentId === comment._id && "bg-muted/30",
+          )}
         >
-          <Avatar className="w-8 h-8 text-emerald-600">
+          {isNested ? (
+            <CornerDownRight className="absolute -left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground/50" />
+          ) : null}
+
+          <Avatar
+            className={cn("text-emerald-600", isNested ? "w-7 h-7" : "w-8 h-8")}
+          >
             <AvatarImage
               onClick={
                 profileId !== comment?.user?._id
                   ? () => navigate(`/users/${comment?.user?._id}`)
                   : undefined
               }
-              className={`${
+              className={cn(
+                "w-full h-full object-cover object-top",
                 profileId !== comment?.user?._id
-                  ? "w-full h-full object-cover object-top cursor-pointer"
-                  : "w-full h-full object-cover object-top cursor-default"
-              }`}
+                  ? "cursor-pointer"
+                  : "cursor-default",
+              )}
               src={comment?.user?.profileImage || "/placeholder.svg"}
             />
             <AvatarFallback>
@@ -86,7 +128,14 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
             </AvatarFallback>
           </Avatar>
 
-          <div className="flex-1 bg-muted rounded-lg p-3">
+          <div
+            className={cn(
+              "flex-1",
+              isNested
+                ? "rounded-none border-0 bg-transparent p-0"
+                : "bg-muted rounded-lg p-3",
+            )}
+          >
             <div className="flex items-center gap-2 mb-1 justify-between">
               <div className="flex gap-2 items-center">
                 <span className="font-medium text-muted-foreground text-sm">
@@ -132,9 +181,122 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                 __html: renderMentionText(comment?.comment),
               }}
             />
+
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer",
+                )}
+                onClick={() =>
+                  handleReaction({ commentId: comment._id, type: "like" })
+                }
+              >
+                <ThumbsUp className="h-3.5 w-3.5" />
+                <span>{likeCount}</span>
+              </button>
+
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer",
+                )}
+                onClick={() =>
+                  handleReaction({ commentId: comment._id, type: "dislike" })
+                }
+              >
+                <ThumbsDown className="h-3.5 w-3.5" />
+                <span>{dislikeCount}</span>
+              </button>
+
+              {hasReplies ? (
+                <button
+                  type="button"
+                  className={cn(
+                    "inline-flex items-center gap-1.5 text-xs font-medium  transition-colors hover:none cursor-pointer",
+                  )}
+                  onClick={() => toggleReplies(comment._id)}
+                >
+                  <MessageSquareText className="h-3.5 w-3.5" />
+                  <span>{threadedReplies.length}</span>
+                </button>
+              ) : null}
+
+              {profileId !== comment?.user?._id ? (
+                <>
+                  <button
+                    type="button"
+                    className="text-xs font-medium text-muted-foreground transition-colors  hover:none cursor-pointer"
+                    onClick={() =>
+                      setReplyToComment({
+                        commentId: comment._id,
+                        userName: comment?.user?.userName,
+                      })
+                    }
+                  >
+                    Reply
+                  </button>
+
+                  {isReplyingToThisComment ? (
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-muted-foreground transition-colors hover:none cursor-pointer"
+                      onClick={() => setReplyToComment(null)}
+                    >
+                      Cancel
+                    </button>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
+
+            {isReplyingToThisComment ? (
+              <div className="mt-3">
+                <CommentForm
+                  userProfile={userProfile}
+                  postId={postId}
+                  parentCommentId={comment._id}
+                  replyToUserName={comment?.user?.userName}
+                  className="w-full"
+                  avatarClassName="h-7 w-7"
+                  textareaClassName="min-h-[48px] text-sm"
+                  buttonClassName="h-10 w-10"
+                  placeholder={`Reply to ${comment?.user?.userName || "comment"}...`}
+                  onSuccess={() => setReplyToComment(null)}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
-      ))}
+
+        {hasReplies && areRepliesOpen ? (
+          <div className="mt-1.5 space-y-1.5">
+            {threadedReplies.map((reply) =>
+              renderCommentNode(reply, level + 1),
+            )}
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return <SkeletonComment />;
+  }
+
+  return (
+    <div className="space-y-3   pt-5">
+      <div className="text-sm text-muted-foreground">
+        Comments {activeComments?.comments?.length}
+      </div>
+      <CommentForm userProfile={userProfile} postId={postId} />
+
+      {/* Comments List */}
+      <div className="space-y-3">
+        {(activeComments?.comments || []).map((comment) =>
+          renderCommentNode(comment),
+        )}
+      </div>
     </div>
   );
 }

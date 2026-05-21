@@ -23,7 +23,7 @@ function ActionButton({ icon, label, active = false, onClick }) {
         <Icon
           className={cn(
             "h-5 w-5",
-            active ? "fill-current text-emerald-500" : "text-white",
+            active ? "fill-current text-red-500" : "text-white",
           )}
         />
       </span>
