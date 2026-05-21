@@ -6,6 +6,7 @@ import { usePostLike } from "@/hooks/postHooks";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
+  { type: "fire", emoji: "🔥", label: "Fire" },
   { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },

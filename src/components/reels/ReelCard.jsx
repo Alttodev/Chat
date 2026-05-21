@@ -37,7 +37,9 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const [showCaption, setShowCaption] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
-  const [isLiked, setIsLiked] = useState(!!post?.likedByMe);
+  const [isLiked, setIsLiked] = useState(
+    !!post?.likedByMe && post?.myReaction === "love",
+  );
   const [likeCount, setLikeCount] = useState(
     typeof post?.likes === "number" ? post.likes : 0,
   );

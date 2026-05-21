@@ -43,6 +43,7 @@ import PostContent from "./Post/PostContent";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
+  { type: "fire", emoji: "🔥", label: "Fire" },
   { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },
@@ -313,16 +314,36 @@ export function CenterFeed() {
                   <Send style={{ width: 18, height: 18 }} />
                 </Button>
               </div>
+              {post?.myReaction && post?.myReaction !== "love" && (
+                <div className="mt-1 pl-1">
+                  <span
+                    className="
+        inline-flex items-center gap-1
+        rounded-full
+        bg-slate-100 px-2 py-0.5
+        text-[11px] font-medium
+        text-slate-600
+        dark:bg-slate-800
+        dark:text-slate-300
+      "
+                  >
+                    {REACTIONS.find((r) => r.type === post.myReaction)?.emoji}
+
+                    {REACTIONS.find((r) => r.type === post.myReaction)?.label}
+                  </span>
+                </div>
+              )}
 
               <Link
                 to={`/posts/${post._id}/liked-users`}
                 className="
-    mt-2 inline-flex items-center
-    rounded-full bg-slate-50 px-2 py-1
-    dark:bg-slate-800
-    shadow-sm
-    transition-colors hover:bg-slate-100
-    dark:hover:bg-slate-700
+    mt-2 inline-flex w-fit items-center rounded-full
+    border border-slate-200/80 bg-white px-2 py-1
+    shadow-sm backdrop-blur
+    transition-all duration-200
+    hover:-translate-y-0.5 hover:shadow-md hover:bg-slate-50
+    dark:border-slate-700/80 dark:bg-slate-900
+    dark:hover:bg-slate-800
   "
               >
                 <div className="flex items-center">
@@ -335,17 +356,13 @@ export function CenterFeed() {
                       <span
                         key={`${item?._id || item?.type || index}`}
                         className={`
-            relative
-            flex h-5 w-5 items-center justify-center
-            rounded-full
-            border border-white dark:border-slate-900
-            bg-white dark:bg-slate-900
-            text-xs shadow-sm
+            relative flex h-6 w-6 items-center justify-center
+            rounded-full border-2 border-white
+            bg-white text-xs shadow-sm
+            dark:border-slate-900 dark:bg-slate-900
             ${index !== 0 ? "-ml-2" : ""}
           `}
-                        style={{
-                          zIndex: uniqueReactions.length - index,
-                        }}
+                        style={{ zIndex: uniqueReactions.length - index }}
                         title={reaction?.label || "Love"}
                       >
                         {reaction?.emoji || "❤️"}

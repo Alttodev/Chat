@@ -41,6 +41,7 @@ import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 
 const REACTIONS = [
   { type: "love", emoji: "❤️", label: "Love" },
+  { type: "fire", emoji: "🔥", label: "Fire" },
   { type: "clap", emoji: "👏", label: "Clap" },
   { type: "haha", emoji: "😂", label: "Haha" },
   { type: "wow", emoji: "😮", label: "Wow" },
@@ -411,7 +412,7 @@ const UsersInfo = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleComments(post?._id)}
-                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
                       aria-label="Comment on post"
                     >
                       <MessageCircle
@@ -426,7 +427,7 @@ const UsersInfo = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => openShareModal(post?._id)}
-                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent"
+                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent  hover:text-muted-foreground"
                       aria-label="Share post"
                     >
                       <Send
@@ -437,6 +438,32 @@ const UsersInfo = () => {
                       />
                     </Button>
                   </div>
+
+                  {post?.myReaction && post?.myReaction !== "love" && (
+                    <div className="mt-1 pl-1">
+                      <span
+                        className="
+        inline-flex items-center gap-1
+        rounded-full
+        bg-slate-100 px-2 py-0.5
+        text-[11px] font-medium
+        text-slate-600
+        dark:bg-slate-800
+        dark:text-slate-300
+      "
+                      >
+                        {
+                          REACTIONS.find((r) => r.type === post.myReaction)
+                            ?.emoji
+                        }
+
+                        {
+                          REACTIONS.find((r) => r.type === post.myReaction)
+                            ?.label
+                        }
+                      </span>
+                    </div>
+                  )}
 
                   {uniqueReactions.length > 0 && (
                     <Link
