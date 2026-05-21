@@ -272,17 +272,17 @@ export function CenterFeed() {
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-              <div className="mt-3 flex items-start gap-1 flex-wrap sm:flex-nowrap">
+              <div className="mt-3 flex items-center gap-1 flex-wrap sm:flex-nowrap">
                 <PostLikeComponent
                   post={post}
                   currentUserId={userProfile?.profile?.id}
                   onLikeChange={handleLikeChange}
                 />
-                {likeCount> 0 && (
+                {likeCount > 0 && (
                   <Link
                     to={`/posts/${post._id}/liked-users`}
                     className="
-      mt-2  inline-flex items-center
+        inline-flex items-center
       text-sm font-medium
       text-slate-700
       transition-colors duration-200
