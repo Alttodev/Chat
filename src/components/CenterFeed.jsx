@@ -329,7 +329,7 @@ export function CenterFeed() {
                   >
                     {REACTIONS.find((r) => r.type === post.myReaction)?.emoji}
 
-                    {REACTIONS.find((r) => r.type === post.myReaction)?.label}
+                    <span>You reacted</span>
                   </span>
                 </div>
               )}
@@ -347,7 +347,7 @@ export function CenterFeed() {
   "
               >
                 <div className="flex items-center">
-                  {uniqueReactions.map((item, index) => {
+                  {uniqueReactions.slice(0, 3).map((item, index) => {
                     const reaction = REACTIONS.find(
                       (r) => r.type === item?.type,
                     );
@@ -362,13 +362,33 @@ export function CenterFeed() {
             dark:border-slate-900 dark:bg-slate-900
             ${index !== 0 ? "-ml-2" : ""}
           `}
-                        style={{ zIndex: uniqueReactions.length - index }}
+                        style={{
+                          zIndex: 10 - index,
+                        }}
                         title={reaction?.label || "Love"}
                       >
                         {reaction?.emoji || "❤️"}
                       </span>
                     );
                   })}
+
+                  {uniqueReactions.length > 3 && (
+                    <span
+                      className="
+          relative -ml-1
+          flex h-6 min-w-[24px] items-center justify-center
+          rounded-full border-2 border-white
+          bg-slate-100 px-1
+          text-[10px] font-semibold
+          text-slate-600 shadow-sm
+          dark:border-slate-900
+          dark:bg-slate-800
+          dark:text-slate-300
+        "
+                    >
+                      +{uniqueReactions.length - 3}
+                    </span>
+                  )}
                 </div>
               </Link>
 

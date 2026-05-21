@@ -471,7 +471,7 @@ const Profile = () => {
     "
                 >
                   <div className="flex items-center">
-                    {uniqueReactions.map((item, index) => {
+                    {uniqueReactions.slice(0, 3).map((item, index) => {
                       const reaction = REACTIONS.find(
                         (r) => r.type === item?.type,
                       );
@@ -481,7 +481,7 @@ const Profile = () => {
                           key={`${item?._id || item?.type || index}`}
                           className={`
               relative
-              flex h-5 w-5 items-center justify-center
+              flex h-6 w-6 items-center justify-center
               rounded-full
               border border-white dark:border-slate-900
               bg-white dark:bg-slate-900
@@ -497,6 +497,24 @@ const Profile = () => {
                         </span>
                       );
                     })}
+
+                    {uniqueReactions.length > 3 && (
+                      <span
+                        className="
+            relative -ml-1
+            flex h-5 min-w-[20px] items-center justify-center
+            rounded-full
+            border border-white dark:border-slate-900
+            bg-slate-100 dark:bg-slate-700
+            px-1
+            text-[10px] font-semibold
+            text-slate-600 dark:text-slate-200
+            shadow-sm
+          "
+                      >
+                        +{uniqueReactions.length - 3}
+                      </span>
+                    )}
                   </div>
                 </Link>
               )}
