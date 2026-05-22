@@ -49,6 +49,8 @@ import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
 import { markPublicAccount } from "@/api/axios";
 
+const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
+
 function SettingsComponent() {
   const {
     clearToken,
@@ -131,6 +133,7 @@ function SettingsComponent() {
       sessionStorage.removeItem("login-at");
       sessionStorage.removeItem("welcome-post-pending");
       sessionStorage.removeItem("profile-image-reminder-shown");
+      sessionStorage.removeItem(MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY);
       clearToken();
       closeEditing();
       setProfileId(null);
@@ -402,9 +405,10 @@ function SettingsComponent() {
 
               <div className="flex items-center gap-2">
                 <Button
+                  variant="outline"
                   type="button"
                   onClick={() => navigate("/profileViews")}
-                  className="h-9 rounded-full bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 hover:shadow-md cursor-pointer"
+                  className="h-9 rounded-full  text-sm font-medium  text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
                 >
                   View
                 </Button>

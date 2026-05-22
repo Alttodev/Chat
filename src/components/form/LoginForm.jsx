@@ -15,6 +15,8 @@ import { useSocket } from "@/lib/socket";
 import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
 
+const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
+
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
   const navigate = useNavigate();
@@ -56,6 +58,7 @@ const LoginForm = () => {
         setProfileId(profileId);
         sessionStorage.setItem("login-at", String(Date.now()));
         sessionStorage.removeItem("profile-image-reminder-shown");
+        sessionStorage.removeItem(MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY);
         sessionStorage.setItem(
           "welcome-post-pending",
           JSON.stringify({

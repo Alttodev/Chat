@@ -9,18 +9,40 @@ import {
 import { useUserProfiles } from "@/hooks/authHooks";
 import { useQueries } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { ChevronRight, Compass, Sparkles } from "lucide-react";
-import { useMemo } from "react";
+import {
+  ChevronRight,
+  Compass,
+  EyeOff,
+  MoreHorizontal,
+  Sparkles,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { getFollowRequestInfo } from "@/api/axios";
 import { FollowSuggestionsSkeleton } from "./FollowSuggestionsSkeleton";
 import RightUserCard from "../RightUserCard";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
 export function FollowSuggestions({ compact = false, className }) {
   const navigate = useNavigate();
   const { profileId } = useAuthStore();
   const { data, isLoading } = useUserProfiles();
+  const [isHiddenOnMobile, setIsHiddenOnMobile] = useState(false);
+
+  useEffect(() => {
+    if (!compact) return;
+    const hidden =
+      sessionStorage.getItem(MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY) === "1";
+    setIsHiddenOnMobile(hidden);
+  }, [compact]);
 
   const suggestions = useMemo(() => {
     const profiles = data?.profiles || [];
@@ -58,6 +80,10 @@ export function FollowSuggestions({ compact = false, className }) {
     return <FollowSuggestionsSkeleton compact={compact} />;
   }
 
+  if (compact && isHiddenOnMobile) {
+    return null;
+  }
+
   if (!visibleSuggestions.length) {
     return null;
   }
@@ -83,16 +109,39 @@ export function FollowSuggestions({ compact = false, className }) {
             </CardDescription>
           </div>
 
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/userslist")}
-            className="h-8 rounded-full px-3 text-xs font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
-          >
-            See all
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full cursor-pointer"
+                aria-label="Open suggestions menu"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-10">
+              <DropdownMenuItem
+                onClick={() => navigate("/userslist")}
+                className="cursor-pointer"
+              >
+                View all
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setIsHiddenOnMobile(true);
+                  sessionStorage.setItem(
+                    MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY,
+                    "1",
+                  );
+                }}
+                className="cursor-pointer"
+              >
+                Hide
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="flex w-full max-w-full gap-3 overflow-x-auto overflow-y-hidden pb-1 pr-1 no-scrollbar snap-x snap-mandatory overscroll-x-contain scroll-smooth">

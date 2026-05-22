@@ -30,25 +30,19 @@ export function PostImageWithLikes({
     );
   }, [friends]);
 
+  const likedFriendUsers = useMemo(() => {
+    return [...(likedUsers || [])]
+      .filter((user) => {
+        const likedUserId = String(user?.id || user?.userId);
 
-
-const likedFriendUsers = useMemo(() => {
-  return [...(likedUsers || [])]
-    .filter((user) => {
-      const likedUserId = String(user?.id || user?.userId);
-
-      return (
-        friendIds.has(likedUserId) &&
-        likedUserId !== String(profileId)
+        return friendIds.has(likedUserId) && likedUserId !== String(profileId);
+      })
+      .sort(
+        (a, b) =>
+          new Date(b?.likedAt || 0).getTime() -
+          new Date(a?.likedAt || 0).getTime(),
       );
-      
-    })
-    .sort(
-      (a, b) =>
-        new Date(b?.likedAt || 0).getTime() -
-        new Date(a?.likedAt || 0).getTime(),
-    );
-}, [likedUsers, friendIds, profileId]);
+  }, [likedUsers, friendIds, profileId]);
 
   const likedFriendName = likedFriendUsers?.[0]?.userName;
   const likedFriendImage = likedFriendUsers?.[0]?.profileImage;
@@ -208,42 +202,41 @@ const likedFriendUsers = useMemo(() => {
                   {likedFriendName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
 
-                <Heart
-                  className="absolute bottom-1 right-1 z-20 h-4 w-4 fill-current text-red-500"
-                 
-                />
+                <Heart className="absolute bottom-1 right-1 z-20 h-4 w-4 fill-current text-red-500" />
               </Avatar>
             </button>
           </PopoverTrigger>
 
           <PopoverContent
-            side="bottom"
+            side="center"
             sideOffset={10}
             className="
-              w-56
-              border
-              border-slate-200
-              bg-white
-              px-3
-              py-2
-              text-slate-800
-              shadow-xl
-              dark:border-white/10
-              dark:bg-zinc-950
-              dark:text-white
-            "
+    w-56
+    border
+    border-slate-200
+    bg-white
+    px-3
+    py-2
+    text-slate-800
+    shadow-xl
+    dark:border-white/10
+    dark:bg-zinc-950
+    dark:text-white
+  "
           >
-            <div className="flex items-center gap-2">
-              <Avatar className="h-7 w-7">
+            <div className="flex items-start gap-2 min-w-0">
+              <Avatar className="h-7 w-7 shrink-0">
                 <AvatarImage src={likedFriendImage || "/placeholder.svg"} />
                 <AvatarFallback className="bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-white">
                   {likedFriendName?.charAt(0).toUpperCase() || "-"}
                 </AvatarFallback>
               </Avatar>
 
-              <p className="text-xs font-medium">
-                <span className="font-semibold">{likedFriendName}</span> liked
-                this Post
+              <p className="min-w-0 flex-1 break-words text-xs font-medium leading-5">
+                <span className="font-semibold break-all">
+                  {likedFriendName}
+                </span>{" "}
+                liked this post
               </p>
             </div>
           </PopoverContent>
