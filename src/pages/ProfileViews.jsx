@@ -81,6 +81,8 @@ function ProfileViews() {
                 const avatarSrc = getAvatarSrc(viewer);
                 const viewerId = getUserId(viewer);
 
+                
+
                 return (
                   <button
                     key={userId}
@@ -110,7 +112,7 @@ function ProfileViews() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1 truncate font-medium text-foreground">
                         {displayName}
-                        {viewer?.isVerified && (
+                        {item?.viewer?.isVerified && (
                           <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
                         )}
                       </div>
