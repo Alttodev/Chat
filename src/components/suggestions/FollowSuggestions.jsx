@@ -8,7 +8,13 @@ import {
 } from "@/components/ui/card";
 import { useRequestList, useRecommendedConnections } from "@/hooks/postHooks";
 import { cn } from "@/lib/utils";
-import { Compass, MoreHorizontal, Sparkles } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Compass,
+  MoreHorizontal,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -72,7 +78,7 @@ export function FollowSuggestions({ compact = false, className }) {
   }, [requestListData, profileId]);
 
   const suggestions = useMemo(() => {
-    const recommended = recommendationsData?.suggestions || [];
+    const recommended = recommendationsData?.commonSuggestions || [];
 
     return recommended.filter((user) => {
       const userId = user?.id ?? user?._id;
@@ -122,39 +128,41 @@ export function FollowSuggestions({ compact = false, className }) {
             </CardDescription>
           </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-full cursor-pointer"
-                aria-label="Open suggestions menu"
-              >
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-10">
-              <DropdownMenuItem
-                onClick={() => navigate("/userslist")}
-                className="cursor-pointer"
-              >
-                View all
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setIsHiddenOnMobile(true);
-                  sessionStorage.setItem(
-                    MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY,
-                    "1",
-                  );
-                }}
-                className="cursor-pointer"
-              >
-                Hide
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full cursor-pointer"
+                  aria-label="Open suggestions menu"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-10">
+                <DropdownMenuItem
+                  onClick={() => navigate("/userslist")}
+                  className="cursor-pointer"
+                >
+                  View all
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsHiddenOnMobile(true);
+                    sessionStorage.setItem(
+                      MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY,
+                      "1",
+                    );
+                  }}
+                  className="cursor-pointer"
+                >
+                  Hide
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="flex w-full max-w-full gap-3 overflow-x-auto overflow-y-hidden pb-1 pr-1 no-scrollbar snap-x snap-mandatory overscroll-x-contain scroll-smooth">
@@ -178,9 +186,23 @@ export function FollowSuggestions({ compact = false, className }) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold sm:text-lg">
-              <Compass className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" />
+            <CardTitle className="flex items-center justify-between gap-2 text-sm font-semibold sm:text-lg">
+              {/* <Compass className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" /> */}
               Follow Suggestions
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => navigate("/userslist")}
+                className="
+    h-auto
+    w-auto
+    p-0
+    hover:bg-transparent
+    cursor-pointer
+  "
+              >
+                <ArrowRight className="h-4 w-4 text-emerald-700" />
+              </Button>
             </CardTitle>
             <CardDescription className="text-[11px] leading-4 sm:text-sm">
               A clean way to discover more people in your network.

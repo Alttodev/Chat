@@ -47,6 +47,7 @@ import { useScrollToPost } from "@/hooks/useScrollToPost";
 import PostContent from "@/components/Post/PostContent";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
+import { formatShortUsername } from "@/lib/shortUserName";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -312,6 +313,17 @@ const Profile = () => {
       </Card>
 
       {displayPosts.map((post) => {
+        const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+        const currentUserId = userProfile?.profile?.id
+          ? String(userProfile.profile.id)
+          : null;
+        const likedByUsers = Array.isArray(post?.likedByUsers)
+          ? post.likedByUsers
+          : [];
+        const visibleLiker = likedByUsers.find((user) => {
+          const likerId = String(user?._id ?? user?.id ?? user?.userId ?? "");
+          return likerId && likerId !== currentUserId;
+        });
         return (
           <Card
             key={post._id}
@@ -399,23 +411,6 @@ const Profile = () => {
                   onLikeChange={handleLikeChange}
                 />
 
-                {post?.likes > 0 && (
-                  <Link
-                    to={`/posts/${post._id}/liked-users`}
-                    className="
-                       inline-flex items-center
-                      text-sm font-medium
-                      text-slate-700
-                      transition-colors duration-200
-                      hover:text-black
-                      dark:text-slate-300
-                      dark:hover:text-white
-                    "
-                  >
-                    {post?.likes}
-                  </Link>
-                )}
-
                 <Button
                   variant="ghost"
                   size="sm"
@@ -436,7 +431,27 @@ const Profile = () => {
                   <Send style={{ width: 18, height: 18 }} />
                 </Button>
               </div>
-
+              {likeCount > 0 && visibleLiker && (
+                <Link
+                  to={`/posts/${post._id}/liked-users`}
+                  title={visibleLiker?.userName || ""}
+                  className="
+      inline-flex ml-2 max-w-[180px] items-center truncate
+      text-[13px] font-medium
+      text-slate-500
+      transition-colors duration-200
+      hover:text-slate-700
+      dark:text-slate-400
+      dark:hover:text-slate-200
+    "
+                >
+                  {likeCount === 1
+                    ? `Liked by ${formatShortUsername(visibleLiker?.userName)}`
+                    : `Liked by ${formatShortUsername(
+                        visibleLiker?.userName,
+                      )} and others`}
+                </Link>
+              )}
               {openPostId === post._id && (
                 <div className="mt-3">
                   <CommentSection

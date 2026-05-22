@@ -132,7 +132,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                   {recommendedByLabel ? (
                     <div
                       className="
-    mt-1
+    mt-2
     max-w-[180px]
     break-words
     text-sm

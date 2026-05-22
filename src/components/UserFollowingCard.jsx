@@ -120,7 +120,7 @@ function UserFollowingCard({ user, profileId }) {
               </div>
 
               <div className="flex-1">
-                <div className="text-md flex items-center justify-center gap-1 font-bold text-foreground">
+                <div className="text-md flex items-center  gap-1 font-bold text-foreground">
                     {target?.userName || "-"}
                      {target?.isVerified && (
                     <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />

@@ -138,17 +138,30 @@ function RightUserCard({
               {recommendedByLabel ? (
                 <div
                   className="
-    mt-1
-    max-w-[180px]
-    break-words
-    text-[11px]
-    leading-4
-    text-muted-foreground
-  "
+      mt-1
+      max-w-[180px]
+      break-words
+      text-center
+      text-[12px]
+      leading-4
+      text-muted-foreground
+    "
                 >
                   {recommendedByLabel}
                 </div>
-              ) : null}
+              ) : (
+                <div
+                  className="
+      mt-1
+      text-[11px]
+      leading-4
+      opacity-0
+      select-none
+    "
+                >
+                  placeholder
+                </div>
+              )}
             </div>
           </Link>
 
