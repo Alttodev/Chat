@@ -11,16 +11,61 @@ import {
 import { toastError } from "@/lib/toast";
 import { BadgeCheck, MapPin } from "lucide-react";
 
-function RightUserCard({ user, profileId, compact = false }) {
-  const userId = user?.id ?? user?._id;
+const getRecommendedByLabel = (user) => {
+  const friendNames = [
+    ...(Array.isArray(user?.suggestedByFriendNames)
+      ? user.suggestedByFriendNames
+      : []),
+    ...(Array.isArray(user?.suggestedByFriends)
+      ? user.suggestedByFriends
+          .map((friend) => friend?.userName)
+          .filter(Boolean)
+      : []),
+  ].filter(Boolean);
 
-  const { data: requestStatus, refetch } = useRequestListInfo({
+  const uniqueFriendNames = [...new Set(friendNames)];
+
+  const mutualFriendCount = Number(
+    user?.mutualFriendCount || uniqueFriendNames.length,
+  );
+
+  if (!mutualFriendCount) return null;
+
+  if (uniqueFriendNames.length > 0) {
+    const [firstName, ...rest] = uniqueFriendNames;
+    if (rest.length > 0) {
+      return `Followed by ${firstName} 
+      `;
+    }
+
+    return `Followed by ${firstName}`;
+  }
+
+  return `Followed by ${mutualFriendCount} mutual friend${
+    mutualFriendCount === 1 ? "" : "s"
+  }`;
+};
+
+function RightUserCard({
+  user,
+  profileId,
+  compact = false,
+  requestStatus: requestStatusOverride,
+}) {
+  const userId = user?.id ?? user?._id;
+  const useRequestQuery = requestStatusOverride === undefined;
+
+  const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
+    enabled: useRequestQuery,
   });
+  const activeRequestStatus =
+    requestStatusOverride === undefined ? requestStatus : requestStatusOverride;
 
-  const reqStatus = requestStatus?.request?.status;
-  const friends = requestStatus?.request?.isFriends;
+  const reqStatus = activeRequestStatus?.request?.status;
+  const friends = activeRequestStatus?.request?.isFriends;
+  const recommendedByLabel = getRecommendedByLabel(user);
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
     useProfileFollow();
@@ -31,9 +76,6 @@ function RightUserCard({ user, profileId, compact = false }) {
   const handleFollow = async () => {
     try {
       await followRequest(userId);
-      // toastSuccess(res?.message);
-      // Refetch to update UI immediately
-      await refetch();
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -45,9 +87,6 @@ function RightUserCard({ user, profileId, compact = false }) {
         fromId: profileId,
         toId: userId,
       });
-      // toastSuccess(res?.message);
-      // Refetch to update UI immediately
-      await refetch();
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -79,7 +118,7 @@ function RightUserCard({ user, profileId, compact = false }) {
               </Avatar>
 
               <div
-                className={`absolute -bottom-0 -right-0 w-3 h-3 rounded-full border-2 border-background ${
+                className={`absolute -bottom-0 right-1 w-3 h-3 rounded-full border-2 border-background ${
                   user?.isOnline ? "bg-green-500" : "bg-yellow-500"
                 }`}
               />
@@ -87,15 +126,29 @@ function RightUserCard({ user, profileId, compact = false }) {
 
             <div className="min-w-0 ">
               <div className="flex items-center justify-center gap-1  truncate text-sm font-semibold text-foreground">
-                  {user?.userName}
+                {user?.userName}
                 {user?.isVerified && (
                   <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
                 )}
               </div>
-              <div className="flex gap-2 items-center mt-1 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
+              <div className="flex gap-1 items-center justify-center mt-1 text-sm text-muted-foreground">
+                <MapPin className="h-3 w-3" />
                 <span>{user?.address}</span>
               </div>
+              {recommendedByLabel ? (
+                <div
+                  className="
+    mt-1
+    max-w-[180px]
+    break-words
+    text-[11px]
+    leading-4
+    text-muted-foreground
+  "
+                >
+                  {recommendedByLabel}
+                </div>
+              ) : null}
             </div>
           </Link>
 

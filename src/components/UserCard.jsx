@@ -12,7 +12,40 @@ import {
 
 import { toastError, toastSuccess } from "@/lib/toast";
 
-function UserCard({ user, profileId }) {
+const getRecommendedByLabel = (user) => {
+  const friendNames = [
+    ...(Array.isArray(user?.suggestedByFriendNames)
+      ? user.suggestedByFriendNames
+      : []),
+    ...(Array.isArray(user?.suggestedByFriends)
+      ? user.suggestedByFriends
+          .map((friend) => friend?.userName)
+          .filter(Boolean)
+      : []),
+  ].filter(Boolean);
+
+  const uniqueFriendNames = [...new Set(friendNames)];
+  const mutualFriendCount = Number(
+    user?.mutualFriendCount || uniqueFriendNames.length,
+  );
+
+  if (!mutualFriendCount) return null;
+
+  if (uniqueFriendNames.length > 0) {
+    const [firstName, ...rest] = uniqueFriendNames;
+    if (rest.length > 0) {
+      return `Followed by ${firstName} `;
+    }
+
+    return `Followed by ${firstName}`;
+  }
+
+  return `Followed by ${mutualFriendCount} mutual friend${
+    mutualFriendCount === 1 ? "" : "s"
+  }`;
+};
+
+function UserCard({ user, profileId, recommendedUser }) {
   const userId = user?.id;
   const canOpenProfile = profileId !== userId;
   const { data: requestStatus } = useRequestListInfo({
@@ -22,6 +55,7 @@ function UserCard({ user, profileId }) {
 
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
+  const recommendedByLabel = getRecommendedByLabel(recommendedUser);
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
     useProfileFollow();
@@ -57,7 +91,7 @@ function UserCard({ user, profileId }) {
           {canOpenProfile ? (
             <Link
               to={`/users/${userId}`}
-              className="flex flex-col md:flex-row items-start md:items-center gap-6 cursor-pointer flex-1"
+              className="flex flex-col md:flex-row items-start md:items-center gap-1 sm:gap-6 cursor-pointer flex-1"
             >
               <div className="relative">
                 <Avatar className="h-18 w-18">
@@ -91,10 +125,24 @@ function UserCard({ user, profileId }) {
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center text-md text-muted-foreground">
+                  <div className="flex gap-1 items-center text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
+                  {recommendedByLabel ? (
+                    <div
+                      className="
+    mt-1
+    max-w-[180px]
+    break-words
+    text-sm
+    leading-4
+    text-muted-foreground
+  "
+                    >
+                      {recommendedByLabel}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </Link>
@@ -129,10 +177,24 @@ function UserCard({ user, profileId }) {
                     {user?.userName || "-"}
                   </div>
 
-                  <div className="flex gap-2 items-center text-muted-foreground">
+                  <div className="flex gap-1 items-center text-muted-foreground">
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
+                  {recommendedByLabel ? (
+                    <div
+                      className="
+    mt-1
+    max-w-[180px]
+    break-words
+    text-sm
+    leading-4
+    text-muted-foreground
+  "
+                    >
+                      {recommendedByLabel}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>

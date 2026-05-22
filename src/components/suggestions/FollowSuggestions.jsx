@@ -6,20 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useUserProfiles } from "@/hooks/authHooks";
-import { useQueries } from "@tanstack/react-query";
+import { useRequestList, useRecommendedConnections } from "@/hooks/postHooks";
 import { cn } from "@/lib/utils";
-import {
-  ChevronRight,
-  Compass,
-  EyeOff,
-  MoreHorizontal,
-  Sparkles,
-} from "lucide-react";
+import { Compass, MoreHorizontal, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-import { getFollowRequestInfo } from "@/api/axios";
 import { FollowSuggestionsSkeleton } from "./FollowSuggestionsSkeleton";
 import RightUserCard from "../RightUserCard";
 import {
@@ -31,10 +23,21 @@ import {
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
+const getEntityId = (value) => {
+  if (!value) return null;
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+  return String(value?.id ?? value?._id ?? "");
+};
+
 export function FollowSuggestions({ compact = false, className }) {
   const navigate = useNavigate();
   const { profileId } = useAuthStore();
-  const { data, isLoading } = useUserProfiles();
+  const { data: recommendationsData, isLoading: isRecommendationsLoading } =
+    useRecommendedConnections();
+  const { data: requestListData, isLoading: isRequestListLoading } =
+    useRequestList();
   const [isHiddenOnMobile, setIsHiddenOnMobile] = useState(false);
 
   useEffect(() => {
@@ -44,39 +47,49 @@ export function FollowSuggestions({ compact = false, className }) {
     setIsHiddenOnMobile(hidden);
   }, [compact]);
 
+  const pendingOutgoingIds = useMemo(() => {
+    const requestItems =
+      requestListData?.requests ||
+      requestListData?.followRequests ||
+      requestListData?.data?.requests ||
+      requestListData?.data ||
+      [];
+
+    if (!Array.isArray(requestItems) || !profileId) {
+      return new Set();
+    }
+
+    return new Set(
+      requestItems
+        .filter(
+          (item) => String(item?.status || "").toLowerCase() === "pending",
+        )
+        .filter((item) => getEntityId(item?.from) === String(profileId))
+        .map((item) => getEntityId(item?.to))
+        .filter(Boolean)
+        .map((id) => String(id)),
+    );
+  }, [requestListData, profileId]);
+
   const suggestions = useMemo(() => {
-    const profiles = data?.profiles || [];
-    return profiles.filter((user) => (user?.id ?? user?._id) !== profileId);
-  }, [data, profileId]);
+    const recommended = recommendationsData?.suggestions || [];
 
-  const suggestionRequests = useQueries({
-    queries: suggestions.map((user) => {
+    return recommended.filter((user) => {
       const userId = user?.id ?? user?._id;
-      return {
-        queryKey: ["request_info", profileId, userId],
-        queryFn: () =>
-          getFollowRequestInfo({ fromId: profileId, toId: userId }),
-        enabled: Boolean(profileId && userId),
-        refetchOnWindowFocus: false,
-      };
-    }),
-  });
+      if (!userId) return false;
 
-  const unfollowedSuggestions = useMemo(() => {
-    return suggestions.filter((user, index) => {
-      const request = suggestionRequests[index]?.data?.request;
-      if (!request) return true;
-      return !request.isFriends && request.status !== "pending";
+      const normalizedUserId = String(userId);
+      return !pendingOutgoingIds.has(normalizedUserId);
     });
-  }, [suggestions, suggestionRequests]);
+  }, [recommendationsData, pendingOutgoingIds]);
 
   const visibleSuggestions = compact
-    ? unfollowedSuggestions.slice(0, 8)
-    : unfollowedSuggestions.slice(0, 4);
+    ? suggestions.slice(0, 8)
+    : suggestions.slice(0, 4);
 
-  const isRequestLoading = suggestionRequests.some((query) => query.isLoading);
+  const isRequestLoading = isRecommendationsLoading || isRequestListLoading;
 
-  if (isLoading || isRequestLoading) {
+  if (isRequestLoading) {
     return <FollowSuggestionsSkeleton compact={compact} />;
   }
 
@@ -190,7 +203,7 @@ export function FollowSuggestions({ compact = false, className }) {
             type="button"
             variant="outline"
             onClick={() => navigate("/userslist")}
-            className="h-10 w-full rounded-full border-dashed border-emerald-200 text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
+            className="h-10 w-full rounded-full  border-emerald-200 text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
           >
             View more suggestions
           </Button>

@@ -1,4 +1,4 @@
-import { ArrowLeft, EyeIcon } from "lucide-react";
+import { ArrowLeft, BadgeCheck, EyeIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,7 +41,12 @@ function ProfileViews() {
                 variant="ghost"
                 size="icon"
                 onClick={() => navigate(-1)}
-                className="rounded-full text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                className="
+    cursor-pointer
+    text-foreground
+    hover:bg-transparent
+    hover:text-foreground
+  "
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -103,8 +108,11 @@ function ProfileViews() {
                     </Avatar>
 
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-foreground">
+                      <div className="flex items-center gap-1 truncate font-medium text-foreground">
                         {displayName}
+                        {viewer?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
                       </div>
 
                       <div className="truncate text-sm text-muted-foreground">

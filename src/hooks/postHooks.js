@@ -2,6 +2,7 @@ import {
   getFollowRequestInfo,
   getFriendsCount,
   getFriendsList,
+  getRecommendedConnections,
   getPostLikedUsers,
   getRequestList,
   getUserFollowers,
@@ -44,6 +45,8 @@ export const useProfileFollow = () => {
   return useMutation({
     mutationFn: (id) => userFollowRequest(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["recommended_connections"] });
       queryClient.invalidateQueries({ queryKey: ["request_info"] });
       queryClient.invalidateQueries({ queryKey: ["follow_request"] });
       queryClient.invalidateQueries({ queryKey: ["user-followers"] });
@@ -152,11 +155,20 @@ export const useRequestList = () => {
   });
 };
 
-export const useRequestListInfo = ({ fromId, toId }) => {
+export const useRecommendedConnections = () => {
+  return useQuery({
+    queryKey: ["recommended_connections"],
+    queryFn: () => getRecommendedConnections(),
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useRequestListInfo = ({ fromId, toId, enabled = true } = {}) => {
   return useQuery({
     queryKey: ["request_info", fromId, toId],
     queryFn: () => getFollowRequestInfo({ fromId, toId }),
-    enabled: !!fromId && !!toId,
+    enabled: !!fromId && !!toId && enabled,
     refetchOnWindowFocus: false,
   });
 };
@@ -216,6 +228,8 @@ export const useFollowRequestUpdate = () => {
   return useMutation({
     mutationFn: ({ id, formData }) => userFollowRequestUpdate(id, formData),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["recommended_connections"] });
       queryClient.invalidateQueries({ queryKey: ["follow_request"] });
       queryClient.invalidateQueries({ queryKey: ["friends"] });
       queryClient.invalidateQueries({ queryKey: ["friends-count"] });
@@ -273,6 +287,8 @@ export const useRequestDelete = () => {
       });
 
       // Invalidate other related queries
+      queryClient.invalidateQueries({ queryKey: ["connections"] });
+      queryClient.invalidateQueries({ queryKey: ["recommended_connections"] });
       queryClient.invalidateQueries({ queryKey: ["follow_request"] });
       queryClient.invalidateQueries({ queryKey: ["friends"] });
       queryClient.invalidateQueries({ queryKey: ["friends-count"] });

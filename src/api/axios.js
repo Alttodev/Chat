@@ -277,6 +277,11 @@ export const getFriendsList = async () => {
   return data;
 };
 
+export const getRecommendedConnections = async () => {
+  const { data } = await axiosInstance.get(`/follow/connections/recommended`);
+  return data;
+};
+
 export const getFriendsCount = async () => {
   const { data } = await axiosInstance.get(`/follow/counts`);
   return data;

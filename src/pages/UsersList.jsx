@@ -3,12 +3,23 @@ import { useUserProfiles } from "@/hooks/authHooks";
 import { useMemo } from "react";
 import { useAuthStore } from "@/store/authStore";
 import UserCard from "@/components/UserCard";
+import { useRecommendedConnections } from "@/hooks/postHooks";
 
 function UsersList() {
   const { profileId } = useAuthStore();
   const { data: profile, isFetching } = useUserProfiles();
+  const { data: recommendations } = useRecommendedConnections();
 
   const data = useMemo(() => profile, [profile]);
+  const recommendedMap = useMemo(() => {
+    const suggestions = recommendations?.suggestions || [];
+
+    return new Map(
+      suggestions
+        .map((item) => [String(item?.id ?? item?._id ?? ""), item])
+        .filter(([id]) => Boolean(id)),
+    );
+  }, [recommendations]);
 
   if (isFetching) {
     return <UsersListSkeleton />;
@@ -17,7 +28,17 @@ function UsersList() {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 space-y-6 pb-20">
       {data?.profiles?.map((user, index) => {
-        return <UserCard key={index} user={user} profileId={profileId} />;
+        const userId = String(user?.id ?? user?._id ?? "");
+        const recommendedUser = recommendedMap.get(userId);
+
+        return (
+          <UserCard
+            key={index}
+            user={user}
+            profileId={profileId}
+            recommendedUser={recommendedUser}
+          />
+        );
       })}
     </div>
   );
