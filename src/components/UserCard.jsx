@@ -84,7 +84,7 @@ function UserCard({ user, profileId, recommendedUser }) {
 
   return (
     <Card className="border-border shadow-sm transition-shadow hover:shadow-md">
-      <CardContent className="p-3 sm:p-4">
+      <CardContent className="p-4">
         <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
           {canOpenProfile ? (
             <Link

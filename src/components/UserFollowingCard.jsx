@@ -53,7 +53,7 @@ function UserFollowingCard({ user, profileId }) {
 
   return (
     <Card className="border-border shadow-sm transition-shadow hover:shadow-md">
-      <CardContent className="p-3 sm:p-4">
+      <CardContent className="p-4">
         <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
           {canOpenProfile ? (
             <Link
@@ -81,7 +81,7 @@ function UserFollowingCard({ user, profileId }) {
                 </div>
               </div>
 
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 space-y-1 ">
                 <div className="flex min-w-0 items-center gap-1 text-sm sm:text-md font-bold text-foreground">
                   <span className="truncate">
                     {target?.userName || "-"}

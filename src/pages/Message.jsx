@@ -30,7 +30,7 @@ export default function Message() {
   const { socket } = useSocket();
   const { startAudioCall } = useJitsiCall();
   const { profileId } = useAuthStore();
-  const [searchParams] = useSearchParams();
+  const [searchParams,setSearchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -257,36 +257,45 @@ export default function Message() {
     blockedUsers,
   ]);
 
-  useEffect(() => {
-    if (!contactsWithTarget.length) return;
-    if (targetUserIdFromUrl) {
-      const matched = contactsWithTarget.find(
-        (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
-      );
+ useEffect(() => {
+  if (!contactsWithTarget.length) return;
 
-      if (matched) {
-        setSelectedContact((prev) => {
-          const currentTargetId = prev?.targetUserId?.toString();
-          const nextTargetId = matched?.targetUserId?.toString();
+  if (targetUserIdFromUrl) {
+    const matched = contactsWithTarget.find(
+      (item) =>
+        item?.targetUserId?.toString() === targetUserIdFromUrl,
+    );
 
-          if (currentTargetId === nextTargetId) {
-            return prev;
-          }
+    if (matched) {
+      setSelectedContact((prev) => {
+        const currentTargetId = prev?.targetUserId?.toString();
+        const nextTargetId = matched?.targetUserId?.toString();
 
-          return matched;
-        });
-      } else if (!selectedContact) {
-        setSelectedContact((prev) => prev || contactsWithTarget[0]);
-      }
+        if (currentTargetId === nextTargetId) {
+          return prev;
+        }
 
-      setShowChat((prev) => (prev ? prev : true));
-      return;
+        return matched;
+      });
+
+      setShowChat(true);
+
+      // clear params after selecting user
+      setSearchParams({});
     }
 
-    if (!selectedContact) {
-      setSelectedContact((prev) => prev || contactsWithTarget[0]);
-    }
-  }, [contactsWithTarget, selectedContact, targetUserIdFromUrl]);
+    return;
+  }
+
+  if (!selectedContact) {
+    setSelectedContact((prev) => prev || contactsWithTarget[0]);
+  }
+}, [
+  contactsWithTarget,
+  selectedContact,
+  targetUserIdFromUrl,
+  setSearchParams,
+]);
 
   useEffect(() => {
     if (!selectedContact?.targetUserId || selectedContact?.conversationId)

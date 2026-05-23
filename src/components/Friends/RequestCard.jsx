@@ -7,7 +7,7 @@ import {
   useRequestList,
 } from "@/hooks/postHooks";
 import { formatRelative } from "@/lib/dateHelpers";
-import { BadgeCheck, Check, MapPin, X } from "lucide-react";
+import { BadgeCheck, Check, MapPin, Users, X } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -77,8 +77,24 @@ export const RequestCard = () => {
   }
   if (!requestedData || requestedData.length === 0) {
     return (
-      <div className="text-center py-10 text-muted-foreground">
-        No requests found
+      <div className="flex flex-col items-center justify-center py-14">
+        <div
+          className="
+      flex h-14 w-14 items-center justify-center
+      rounded-full
+      border border-slate-200
+      bg-white
+      shadow-sm
+      dark:border-slate-700
+      dark:bg-slate-900
+    "
+        >
+          <Users className="h-6 w-6 text-slate-400" />
+        </div>
+
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+          No Request found
+        </p>
       </div>
     );
   }
@@ -103,30 +119,30 @@ export const RequestCard = () => {
                   to={requesterId ? `/users/${requesterId}` : "#"}
                   className="flex items-center gap-4"
                 >
-                  <Avatar className="h-12 w-12">
+                  <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                     <AvatarImage
                       className="w-full h-full object-cover object-top cursor-pointer"
                       src={requester?.profileImage || "/placeholder.svg"}
                     />
-                  <AvatarFallback className="text-xl font-semibold  text-emerald-700">
-                    {requester?.userName?.charAt(0).toUpperCase() || "-"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="font-semibold flex items-center gap-1 text-md text-foreground">
+                    <AvatarFallback className="text-base sm:text-xl font-semibold text-emerald-700">
+                      {requester?.userName?.charAt(0).toUpperCase() || "-"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-semibold flex items-center gap-1 text-md text-foreground">
                       {requester?.userName || "Unknown User"}
-                       {requester?.isVerified && (
-                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
-                    )}
-                  </div>
-                  <div className="flex gap-1 items-center  text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{requester?.address || "-"}</span>
-                  </div>
+                      {requester?.isVerified && (
+                        <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                      )}
+                    </div>
+                    <div className="flex gap-1 items-center  text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{requester?.address || "-"}</span>
+                    </div>
                     <span className="text-xs text-muted-foreground">
-                    Pending {formatRelative(item?.createdAt)}
-                  </span>
-                </div>
+                      Pending {formatRelative(item?.createdAt)}
+                    </span>
+                  </div>
                 </Link>
 
                 <div className="flex gap-2">
