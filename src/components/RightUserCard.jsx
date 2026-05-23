@@ -221,9 +221,10 @@ function RightUserCard({
                   <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
                 )}
               </div>
-              <div className="flex gap-1 items-center text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" />
-                <span>{user?.address}</span>
+              <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3 shrink-0" />
+
+                <span className="truncate">{user?.address}</span>
               </div>
             </div>
           </Link>

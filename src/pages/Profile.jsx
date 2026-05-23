@@ -1,5 +1,6 @@
 import {
   BadgeCheck,
+  Edit3,
   Loader2,
   MapPin,
   MessageCircle,
@@ -13,6 +14,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   useCommentStore,
   useImageModalStore,
+  useProfileEdit,
   useZustandPopup,
   useZustandSharePopup,
 } from "@/lib/zustand";
@@ -28,7 +30,6 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { OnlineStatus } from "@/components/onlineStatus";
 import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -48,9 +49,11 @@ import PostContent from "@/components/Post/PostContent";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 import { formatShortUsername } from "@/lib/shortUserName";
+import { ProfileEditDialog } from "@/components/modals/profileEditModal";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
+  const { openProfile, closeProfile } = useProfileEdit();
   const { profileId } = useAuthStore();
   const { openShareModal } = useZustandSharePopup();
   const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
@@ -60,8 +63,8 @@ const Profile = () => {
   const targetPostId = searchParams.get("postId");
   const targetCommentId = searchParams.get("commentId");
 
-  const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
-  const userId = storedData?.state?.user?._id;
+  // const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
+  // const userId = storedData?.state?.user?._id;
 
   const { mutateAsync: deletePost } = usePostDelete();
   const { mutateAsync: requestVerifiedBadge, isPending: verificationLoading } =
@@ -173,6 +176,7 @@ const Profile = () => {
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
           <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
+            {/* PROFILE AVATAR */}
             <div className="relative">
               <div
                 onClick={() =>
@@ -190,6 +194,7 @@ const Profile = () => {
                       userProfile?.profile?.profileImage || "/placeholder.svg"
                     }
                   />
+
                   <AvatarFallback className="text-2xl font-semibold text-emerald-700">
                     {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
                       "-"}
@@ -197,14 +202,34 @@ const Profile = () => {
                 </Avatar>
               </div>
 
-              <div className="absolute bottom-2 right-2">
-                <OnlineStatus userId={userId} size="h-3 w-3" />
-              </div>
+              {/* ONLINE STATUS */}
+
+              {/* EDIT PROFILE ICON */}
+              <button
+                onClick={() =>
+                  openProfile({
+                    userProfile,
+                    isEditing: true,
+                    closeEditing: closeProfile,
+                  })
+                }
+                className="
+    absolute bottom-0 right-0 h-7 w-7 rounded-full
+    bg-emerald-600 hover:bg-emerald-700 text-white
+    flex items-center justify-center shadow-lg
+    border-2 border-white transition-all duration-200
+    active:scale-95 cursor-pointer
+  "
+              >
+                <Edit3 className="h-3 w-3" />
+              </button>
             </div>
 
+            {/* PROFILE DETAILS */}
             <div className="flex-1 space-y-2">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
+                  {/* USERNAME */}
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="text-md font-bold text-balance flex items-center gap-1">
                       {userProfile?.profile?.userName}
@@ -219,21 +244,21 @@ const Profile = () => {
                         onClick={handleVerificationRequest}
                         disabled={verificationLoading}
                         className="
-                          inline-flex
-                          items-center
-                          gap-1
-                          rounded-full
-                          bg-[#1DA1F2]
-                          px-3
-                          py-1
-                          text-xs
-                          font-medium
-                          text-white
-                          transition
-                          hover:bg-[#1a8cd8]
-                          disabled:opacity-50
-                          cursor-pointer
-                        "
+                    inline-flex
+                    items-center
+                    gap-1
+                    rounded-full
+                    bg-[#1DA1F2]
+                    px-3
+                    py-1
+                    text-xs
+                    font-medium
+                    text-white
+                    transition
+                    hover:bg-[#1a8cd8]
+                    disabled:opacity-50
+                    cursor-pointer
+                  "
                       >
                         {verificationLoading ? (
                           <>
@@ -250,22 +275,27 @@ const Profile = () => {
                     )}
                   </div>
 
-                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
+                  {/* ADDRESS */}
+                  <div className="flex gap-2 items-center text-sm text-muted-foreground mt-1">
                     <MapPin className="h-4 w-4" />
                     <span>{userProfile?.profile?.address}</span>
                   </div>
 
-                  <div className="flex gap-4">
-                    <div className="flex flex-col mt-1">
+                  {/* COUNTS */}
+                  <div className="flex gap-6 mt-3">
+                    {/* POSTS */}
+                    <div className="flex flex-col">
                       <span className="text-lg font-semibold text-foreground">
                         {totalPosts}
                       </span>
+
                       <span className="text-sm text-muted-foreground">
                         {totalPosts <= 1 ? "Post" : "Posts"}
                       </span>
                     </div>
 
-                    <div className="flex flex-col mt-1">
+                    {/* FOLLOWERS */}
+                    <div className="flex flex-col">
                       {countData?.totalFriends > 0 ? (
                         <Link
                           to="/friends"
@@ -286,8 +316,9 @@ const Profile = () => {
                       </span>
                     </div>
 
-                    <div className="flex flex-col mt-1">
-                      {countData?.totalFriends > 0 ? (
+                    {/* FOLLOWING */}
+                    <div className="flex flex-col">
+                      {countData?.totalFollowing > 0 ? (
                         <Link
                           to={`/following/${userProfile?.profile?.id}`}
                           className="text-lg font-semibold text-foreground"
@@ -471,6 +502,8 @@ const Profile = () => {
       <ShareDialog />
       <PostDialog />
       <ImageViewer />
+
+      <ProfileEditDialog />
 
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}

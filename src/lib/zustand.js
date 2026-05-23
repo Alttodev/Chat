@@ -55,6 +55,23 @@ export const useIncomingCallStore = create((set) => ({
   closeIncomingCall: () => set({ isOpen: false, incomingCall: null }),
 }));
 
+export const useProfileEdit = create((set) => ({
+  isOpen: false,
+  modalData: null,
+
+  openProfile: (data) =>
+    set({
+      isOpen: true,
+      modalData: data, 
+    }),
+
+  closeProfile: () =>
+    set({
+      isOpen: false,
+      modalData: null,
+    }),
+}));
+
 export const useThemeStore = create(
   persist(
     (set) => ({

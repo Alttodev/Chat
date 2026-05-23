@@ -313,9 +313,7 @@ export function StatusViewer() {
                         {caption}
                       </p>
                     </div>
-                  ) : (
-                    <p className="text-sm text-white/70">No caption</p>
-                  )}
+                  ) : null}
                 </div>
 
                 {isOwner && (

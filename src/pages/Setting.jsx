@@ -14,21 +14,15 @@ import { Badge } from "@/components/ui/badge";
 import {
   Bell,
   Shield,
-  Edit3,
   Calendar,
   Clock,
   LogOut,
   User,
-  Mail,
-  MapPin,
   MoonStar,
-  BadgeCheck,
   Globe,
   Lock,
-  ChevronRight,
   UserRoundSearch,
 } from "lucide-react";
-import { PersonalInfoForm } from "@/components/form/PersonalInfoForm";
 import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
@@ -39,11 +33,9 @@ import {
 } from "@/hooks/notificationHooks";
 import dayjs from "dayjs";
 import { formatDate, formatRelative } from "@/lib/dateHelpers";
-import { OnlineStatus } from "@/components/onlineStatus";
 import { useSocket } from "@/lib/socket";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useQueryClient } from "@tanstack/react-query";
-import { useImageModalStore } from "@/lib/zustand";
 import { useThemeStore } from "@/lib/zustand";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
@@ -52,19 +44,11 @@ import { markPublicAccount } from "@/api/axios";
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
 function SettingsComponent() {
-  const {
-    clearToken,
-    isEditing,
-    openEditing,
-    closeEditing,
-    user,
-    setProfileId,
-  } = useAuthStore();
+  const { clearToken, closeEditing, user, setProfileId } = useAuthStore();
   const { disconnectSocket } = useSocket();
-  const { open } = useImageModalStore();
+
   const { theme, toggleTheme } = useThemeStore();
-  const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
-  const userId = storedData?.state?.user?._id;
+
   const { data: profileData, isFetching } = useUserDetail();
   const queryClient = useQueryClient();
   const userProfile = useMemo(() => profileData, [profileData]);
@@ -120,10 +104,6 @@ function SettingsComponent() {
     },
   ];
 
-  const handleSave = () => {
-    openEditing(false);
-  };
-
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -161,99 +141,8 @@ function SettingsComponent() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4  space-y-8 pb-20">
       {/* Header Section */}
-      <Card className="border-border shadow-sm">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="relative">
-              <div
-                onClick={() =>
-                  userProfile?.profile?.profileImage &&
-                  open(userProfile?.profile?.profileImage)
-                }
-                className={
-                  userProfile?.profile?.profileImage ? "cursor-pointer" : ""
-                }
-              >
-                <Avatar className="h-24 w-24">
-                  {userProfile?.profile?.profileImage && (
-                    <AvatarImage
-                      className="w-full h-full object-cover object-top"
-                      src={userProfile?.profile?.profileImage}
-                      alt={userProfile?.profile?.userName}
-                    />
-                  )}
-                  <AvatarFallback className="text-2xl font-semibold  text-emerald-700">
-                    {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                      "-"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-
-              <div className="absolute bottom-2 right-2">
-                <OnlineStatus userId={userId} size="h-3 w-3" />
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-2">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div className="text-md font-bold text-balance flex items-center gap-1">
-                    {userProfile?.profile?.userName}
-                    {userProfile?.profile?.isVerified && (
-                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
-                    )}
-                  </div>
-                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                    <span>{userProfile?.profile?.email}</span>
-                  </div>
-
-                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{userProfile?.profile?.address}</span>
-                  </div>
-                </div>
-                <Button
-                  className="
-    bg-emerald-600
-    hover:bg-emerald-700
-    text-white
-    rounded-full
-    px-5
-    h-10
-    cursor-pointer
-    font-medium
-    text-sm
-    shadow-sm
-    hover:shadow-md
-    transition-all
-    duration-200
-    active:scale-95
-    flex
-    items-center
-    gap-2
-  "
-                  onClick={() => (isEditing ? handleSave() : openEditing(true))}
-                >
-                  <Edit3 className="h-4 w-4" />
-                  {isEditing ? "Save Changes" : "Edit Profile"}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="grid grid-cols-1  gap-8">
-        {/* Personal Information */}
-        <div className="space-y-6">
-          <PersonalInfoForm
-            userProfile={userProfile}
-            isEditing={isEditing}
-            closeEditing={closeEditing}
-          />
-        </div>
-
         {/* Activity Section */}
         <div className="space-y-6">
           <Card className="border-border shadow-sm">

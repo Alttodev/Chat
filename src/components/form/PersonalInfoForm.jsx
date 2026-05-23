@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { User, Mail, Phone, MapPin } from "lucide-react";
+import { User, Mail, MapPin, Camera } from "lucide-react";
 import TextInput from "../form_inputs/TextInput";
 import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { useForm } from "react-hook-form";
@@ -42,14 +35,13 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       formData.append("email", data.email);
       formData.append("address", data.address);
 
-      // Add profile image as binary if present
       if (data.profileImage) {
         formData.append("profileImage", data.profileImage);
       }
 
       const res = await userUpdate(formData);
-      toastSuccess(res?.message);
-      closeEditing(false);
+      toastSuccess(res?.message || "Profile updated successfully");
+      closeEditing?.(false);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -66,123 +58,101 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
   }, [userProfile, reset]);
 
   return (
-    <Card className="border-border shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5 text-primary" />
-          Personal Information
-        </CardTitle>
-        <CardDescription>
-          Manage your personal details and contact information
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1  gap-4">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {isEditing && (
-              <div className="flex justify-center mb-4">
-                <ProfileImageUpload
-                  name="profileImage"
-                  control={control}
-                  disabled={isSubmitting}
-                />
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label
-                htmlFor="name"
-                className="flex !text-sm items-center gap-2"
-              >
-                <User className="h-4 w-4" />
-                Full Name
-              </label>
-              <TextInput
-                name="userName"
-                control={control}
-                disabled={!isEditing}
-                className="bg-card"
-              />
-              {errors.userName?.message && (
-                <p className="text-red-500 text-sm">
-                  {errors.userName?.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="flex !text-sm items-center gap-2"
-              >
-                <Mail className="h-4 w-4" />
-                Email
-              </label>
-              <TextInput
-                name="email"
-                type="email"
-                control={control}
-                disabled={!isEditing}
-                className="bg-card"
-              />
-              {errors.email?.message && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email?.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="address"
-                className="flex !text-sm items-center gap-2"
-              >
-                <MapPin className="h-4 w-4" />
-                Address
-              </label>
-              <TextInput
-                name="address"
-                control={control}
-                disabled={!isEditing}
-                className="bg-card"
-              />
-              {errors.address?.message && (
-                <p className="text-red-500 text-sm">
-                  {errors.address?.message}
-                </p>
-              )}
-            </div>
-            {isEditing ? (
-              <div>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="
-    bg-emerald-600
-    hover:bg-emerald-700
-    text-white
-    rounded-full
-    px-5
-    h-10
-    font-medium
-    text-sm
-    shadow-sm
-    hover:shadow-md
-    transition-all
-    duration-200
-    active:scale-95
-    cursor-pointer
-    disabled:opacity-70
-    disabled:cursor-not-allowed
-  "
-                >
-                  {isSubmitting ? "Saving..." : "Save"}
-                </Button>
-              </div>
-            ) : null}
-          </form>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {isEditing && (
+        <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-emerald-700">
+            <Camera className="h-4 w-4" />
+            Profile photo
+          </div>
+          <div className="flex justify-center">
+            <ProfileImageUpload
+              name="profileImage"
+              control={control}
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      <div className="grid gap-5">
+        <div className="space-y-2">
+          <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <User className="h-4 w-4 text-emerald-600" />
+            Full Name
+          </label>
+          <TextInput
+            name="userName"
+            control={control}
+            disabled={!isEditing}
+            className="bg-background"
+          />
+          {errors.userName?.message && (
+            <p className="text-sm text-red-500">{errors.userName.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <Mail className="h-4 w-4 text-emerald-600" />
+            Email
+          </label>
+          <TextInput
+            name="email"
+            type="email"
+            control={control}
+            disabled={!isEditing}
+            className="bg-background"
+          />
+          {errors.email?.message && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <label htmlFor="address" className="flex items-center gap-2 text-sm font-medium text-foreground">
+            <MapPin className="h-4 w-4 text-emerald-600" />
+            Address
+          </label>
+          <TextInput
+            name="address"
+            control={control}
+            disabled={!isEditing}
+            className="bg-background"
+          />
+          {errors.address?.message && (
+            <p className="text-sm text-red-500">{errors.address.message}</p>
+          )}
+        </div>
+      </div>
+
+      {isEditing && (
+        <div className="flex justify-end pt-2">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="
+              bg-emerald-600
+              hover:bg-emerald-700
+              text-white
+              rounded-full
+              px-6
+              h-10
+              font-medium
+              text-sm
+              shadow-sm
+              hover:shadow-md
+              transition-all
+              duration-200
+              active:scale-95
+              disabled:opacity-70
+              disabled:cursor-not-allowed
+            "
+          >
+            {isSubmitting ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      )}
+    </form>
   );
 }

@@ -23,6 +23,7 @@ import ProfileViews from "@/pages/ProfileViews";
 import UsersFollowingList from "@/pages/UsersFollowingList";
 import Reels from "@/pages/Reels";
 import VerifyAccountPage from "@/pages/VerifyAccountPage";
+import ProfileRoute from "./profileRoute";
 
 function AppRoutes() {
   return (
@@ -32,13 +33,15 @@ function AppRoutes() {
           <Route element={<PublicRoute />}>
             <Route path="/" element={<LoginFormComponent />} />
             <Route path="/signup" element={<SignupFormComponent />} />
-            <Route path="/profile/create" element={<ProfileCreateForm />} />
             <Route path="/reset" element={<ResetFormComponent />} />
             <Route
               path="/reset-password"
               element={<ResetMailFormComponent />}
             />
             <Route path="/verify-account" element={<VerifyAccountPage />} />
+          </Route>
+          <Route element={<ProfileRoute />}>
+            <Route path="/profile/create" element={<ProfileCreateForm />} />
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route element={<HomeLayout />}>

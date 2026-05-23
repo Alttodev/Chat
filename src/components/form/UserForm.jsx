@@ -11,8 +11,8 @@ import { useUserCreate } from "@/hooks/authHooks";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/authStore";
-import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
+import { Camera } from "lucide-react";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
@@ -86,9 +86,6 @@ const ProfileCreateForm = () => {
       />
       <div className="relative z-0 w-full max-w-md bg-white shadow-lg rounded-xl p-6">
         {/* Logo */}
-        <div className="flex justify-center mb-2">
-          <img src={logo} alt="Clix Logo" className="w-12 h-12" />
-        </div>
 
         {/* Heading */}
         <div className="text-center mb-5">
@@ -96,12 +93,18 @@ const ProfileCreateForm = () => {
         </div>
 
         {/* Profile Image Upload */}
-        <div className="flex justify-center mb-6">
-          <ProfileImageUpload
-            name="profileImage"
-            control={control}
-            disabled={isSubmitting}
-          />
+        <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-medium text-emerald-700">
+            <Camera className="h-4 w-4" />
+            Profile photo
+          </div>
+          <div className="flex justify-center">
+            <ProfileImageUpload
+              name="profileImage"
+              control={control}
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
 
         {/* Form */}
