@@ -20,7 +20,7 @@ function UserFollowingCard({ user, profileId }) {
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
 
-  const { data: requestStatus } = useRequestListInfo({
+  const { data: requestStatus, isFetching } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
   });
@@ -44,6 +44,7 @@ function UserFollowingCard({ user, profileId }) {
         fromId: profileId,
         toId: userId,
       });
+
       toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
@@ -51,149 +52,166 @@ function UserFollowingCard({ user, profileId }) {
   };
 
   return (
-    <Card className="border-border shadow-sm hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+    <Card className="border-border shadow-sm transition-shadow hover:shadow-md">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex flex-row items-center justify-between gap-3 sm:gap-4">
           {canOpenProfile ? (
             <Link
               to={`/users/${target?._id}`}
-              className="flex flex-col md:flex-row items-start md:items-center gap-6 cursor-pointer flex-1"
+              className="flex min-w-0 flex-1 flex-row items-center gap-3 sm:gap-4 cursor-pointer"
             >
-              <div className="relative">
-                <Avatar className="h-18 w-18">
+              <div className="relative shrink-0">
+                <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                   <AvatarImage
-                    className="w-full h-full object-cover object-top"
+                    className="h-full w-full object-cover object-top"
                     src={target?.profileImage || "/placeholder.svg"}
                   />
-                  <AvatarFallback className="text-xl font-semibold text-emerald-700">
+
+                  <AvatarFallback className="text-base sm:text-xl font-semibold text-emerald-700">
                     {target?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="absolute bottom-2 right-0">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`h-3 w-3 rounded-full ${
-                        target?.isOnline ? "bg-green-500" : "bg-yellow-500"
-                      }`}
-                    ></span>
-                  </div>
+                <div className="absolute bottom-1 right-1">
+                  <span
+                    className={`block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full ${
+                      target?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                    }`}
+                  />
                 </div>
               </div>
 
-              <div className="flex-1 ">
-                <div className="flex items-center gap-1 text-md font-bold text-foreground">
-                  {target?.userName || "-"}
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 items-center gap-1 text-sm sm:text-md font-bold text-foreground">
+                  <span className="truncate">
+                    {target?.userName || "-"}
+                  </span>
+
                   {target?.isVerified && (
-                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
                   )}
                 </div>
 
-                <div className="flex gap-2 items-center text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{target?.address || "-"}</span>
+                <div className="flex min-w-0 items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+
+                  <span className="truncate">
+                    {target?.address || "-"}
+                  </span>
                 </div>
               </div>
             </Link>
           ) : (
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 flex-1">
-              <div className="relative">
-                <Avatar className="h-18 w-18">
+            <div className="flex min-w-0 flex-1 flex-row items-center gap-3 sm:gap-4">
+              <div className="relative shrink-0">
+                <Avatar className="h-12 w-12 sm:h-16 sm:w-16">
                   <AvatarImage
-                    className="w-full h-full object-cover object-top"
+                    className="h-full w-full object-cover object-top"
                     src={target?.profileImage || "/placeholder.svg"}
                   />
-                  <AvatarFallback className="text-xl font-semibold text-emerald-700">
+
+                  <AvatarFallback className="text-base sm:text-xl font-semibold text-emerald-700">
                     {target?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="absolute bottom-2 right-0">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`h-3 w-3 rounded-full ${
-                        target?.isOnline ? "bg-green-500" : "bg-yellow-500"
-                      }`}
-                    ></span>
-                  </div>
+                <div className="absolute bottom-1 right-1">
+                  <span
+                    className={`block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full ${
+                      target?.isOnline ? "bg-green-500" : "bg-yellow-500"
+                    }`}
+                  />
                 </div>
               </div>
 
-              <div className="flex-1">
-                <div className="text-md flex items-center  gap-1 font-bold text-foreground">
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 items-center gap-1 text-sm sm:text-md font-bold text-foreground">
+                  <span className="truncate">
                     {target?.userName || "-"}
-                     {target?.isVerified && (
-                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                  </span>
+
+                  {target?.isVerified && (
+                    <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
                   )}
                 </div>
 
-                <div className="flex gap-2 items-center text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{target?.address || "-"}</span>
+                <div className="flex min-w-0 items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                  <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+
+                  <span className="truncate">
+                    {target?.address || "-"}
+                  </span>
                 </div>
               </div>
             </div>
           )}
 
-          {reqStatus === "pending" ? (
-            <Button
-              className="
-    bg-rose-500/10
-    hover:bg-rose-500/15
-    text-rose-600
-    border
-    border-rose-500/20
-    rounded-full
-    px-4
-    h-8
-    text-xs
-    font-medium
-    flex
-    items-center
-    gap-1.5
-    cursor-default
-    shadow-sm
-  "
-            >
-              Pending
-            </Button>
-          ) : (
-            profileId !== userId && (
+          <div className="shrink-0">
+            {reqStatus === "pending" ? (
               <Button
-                onClick={friends ? handleUnfollow : handleFollow}
-                disabled={isFollowing || isUnfollowing}
-                className={`
-    rounded-full
-    px-4
-    h-8
-    text-xs
-    font-medium
-    cursor-pointer
-    transition-all
-    duration-200
-    active:scale-95
-    shadow-sm
-    ${
-      friends
-        ? `
-          bg-zinc-100
-          hover:bg-zinc-200
-          text-zinc-700
-          border
-          border-zinc-200
-        `
-        : `
-          bg-emerald-600
-          hover:bg-emerald-700
-          text-white
-        `
-    }
-  `}
+                disabled={isFetching}
+                className="
+                  h-7 sm:h-8
+                  rounded-full
+                  px-3 sm:px-4
+                  text-[11px] sm:text-xs
+                  font-medium
+                  cursor-default
+                  shadow-sm
+                  border border-rose-500/20
+                  bg-rose-500/10
+                  text-rose-600
+                  hover:bg-rose-500/15
+                "
               >
-                {friends ? "Unfollow" : "Follow"}
+                Pending
               </Button>
-            )
-          )}
+            ) : (
+              profileId !== userId && (
+                <Button
+                  onClick={friends ? handleUnfollow : handleFollow}
+                  disabled={
+                    isFetching || isFollowing || isUnfollowing
+                  }
+                  className={`
+                    h-7 sm:h-8
+                    rounded-full
+                    px-3 sm:px-4
+                    text-[11px] sm:text-xs
+                    font-medium
+                    cursor-pointer
+                    transition-all
+                    duration-200
+                    active:scale-95
+                    shadow-sm
+                    ${
+                      friends
+                        ? `
+                          bg-zinc-100
+                          hover:bg-zinc-200
+                          text-zinc-700
+                          border
+                          border-zinc-200
+                        `
+                        : `
+                          bg-emerald-600
+                          hover:bg-emerald-700
+                          text-white
+                        `
+                    }
+                  `}
+                >
+                  {isFetching
+                    ? "Loading..."
+                    : isFollowing || isUnfollowing
+                    ? "Please wait..."
+                    : friends
+                    ? "Unfollow"
+                    : "Follow"}
+                </Button>
+              )
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
