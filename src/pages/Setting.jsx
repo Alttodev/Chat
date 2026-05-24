@@ -299,7 +299,7 @@ function SettingsComponent() {
                   onClick={() => navigate("/profileViews")}
                   className="h-9 rounded-full  text-sm font-medium  text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
                 >
-                  View
+                  Profile views
                 </Button>
               </div>
             </div>
@@ -339,7 +339,7 @@ function SettingsComponent() {
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <LogOut className="h-4 w-4" />
-                  <label className="!text-sm font-medium">Logout</label>
+                  <label className="!text-sm font-medium">Log out</label>
                 </div>
               </div>
 
@@ -368,7 +368,7 @@ function SettingsComponent() {
     gap-2
   "
               >
-                Logout
+                Log out
               </Button>
             </div>
           </CardContent>
