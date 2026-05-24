@@ -21,22 +21,22 @@ export default function ProfileTextAreaInput({
           maxLength={maxLength}
           placeholder={placeholder}
           className={`
-            w-full
-            resize-none
-            rounded-xl
-            border border-input
-            bg-background
-            px-3 py-2
-            text-sm
-            outline-none
-            transition-colors
-            focus:border-emerald-500
-            focus:ring-2
-            focus:ring-emerald-500/20
-            disabled:cursor-not-allowed
-            disabled:opacity-70
-            ${className}
-          `}
+  w-full
+  resize-none
+  rounded-xl
+  border border-input
+  bg-background
+  px-3 py-2
+  text-sm
+  outline-none
+  transition-colors
+  focus:ring-0
+  focus:border-slate-300
+  dark:focus:border-slate-600
+  disabled:cursor-not-allowed
+  disabled:opacity-70
+  ${className}
+`}
         />
       )}
     />
