@@ -24,6 +24,8 @@ import UsersFollowingList from "@/pages/UsersFollowingList";
 import Reels from "@/pages/Reels";
 import VerifyAccountPage from "@/pages/VerifyAccountPage";
 import ProfileRoute from "./profileRoute";
+import HashtagPosts from "@/pages/HashtagPosts";
+
 
 function AppRoutes() {
   return (
@@ -59,6 +61,7 @@ function AppRoutes() {
               <Route path="/userslist" element={<UsersList />} />
               <Route path="/posts/:id/likes" element={<PostLikes />} />
               <Route path="/posts/:id/liked-users" element={<PostLikes />} />
+              <Route path="/hashtags/:tag" element={<HashtagPosts />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -37,7 +37,10 @@ export function CommentForm({
 
   const commentValue = watch("comment");
   const resolvedPlaceholder =
-    placeholder || (parentCommentId ? `Reply to ${replyToUserName || "comment"}...` : "Write a comment...");
+    placeholder ||
+    (parentCommentId
+      ? `Reply to ${replyToUserName || "comment"}...`
+      : "Write a comment...");
 
   const onSubmit = async (formData) => {
     try {

@@ -146,6 +146,7 @@ export function PostForm({ userProfile }) {
             </div>
           )}
         />
+        
       </div>
 
       <div className="flex justify-between items-center">

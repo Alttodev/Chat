@@ -57,7 +57,7 @@ export function CenterFeed() {
   const targetPostId = searchParams.get("postId");
   const targetCommentId = searchParams.get("commentId");
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     usePostList();
 
   const loadMoreRef = useRef(null);
@@ -173,7 +173,7 @@ export function CenterFeed() {
     setTargetPostOverride((prev) => (prev ? patchPost(prev) : prev));
   };
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
@@ -303,6 +303,7 @@ export function CenterFeed() {
               />
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
+              
 
               <div className="mt-3 flex items-center gap-1 flex-wrap sm:flex-nowrap">
                 <PostLikeComponent

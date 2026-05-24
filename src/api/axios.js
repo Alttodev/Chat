@@ -250,6 +250,14 @@ export const getUserPostInfo = async (id) => {
   return data;
 };
 
+export const getHashtagPosts = async (tag, page = 1) => {
+  const { data } = await axiosInstance.get(
+    `/post/hashtags/${tag}?page=${page}&limit=5`,
+  );
+
+  return data;
+};
+
 export const getPostLikedUsers = async (id) => {
   const { data } = await axiosInstance.get(`/post/${id}/liked-users`);
   return data;

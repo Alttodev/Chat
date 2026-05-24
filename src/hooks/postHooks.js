@@ -22,6 +22,7 @@ import {
   userPostLike,
   userPostUpdate,
   userRequestDelete,
+  getHashtagPosts,
 } from "@/api/axios";
 import {
   useInfiniteQuery,
@@ -123,6 +124,14 @@ export const usePostInfo = (id) => {
     enabled: !!id,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useHashtagPosts = (tag, page = 1) => {
+  return useQuery({
+    queryKey: ["hashtag-posts", tag, page],
+    queryFn: () => getHashtagPosts(tag, page),
+    enabled: !!tag,
   });
 };
 
@@ -246,6 +255,7 @@ export const usePostUpdate = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
+      queryClient.invalidateQueries({ queryKey: ["hashtag-posts"] });
     },
   });
 };
@@ -259,6 +269,7 @@ export const usePostDelete = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
+      queryClient.invalidateQueries({ queryKey: ["hashtag-posts"] });
     },
   });
 };
