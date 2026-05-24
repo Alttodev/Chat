@@ -78,7 +78,7 @@ export const FriendCard = ({ tabValue }) => {
                     <div className="font-semibold flex items-center gap-1 text-sm sm:text-md text-foreground">
                       {item?.from?.userName}
                       {item?.from?.isVerified && (
-                        <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                        <BadgeCheck className="h-4 w-4 sm:h-5 sm:w-5 fill-blue-500 text-white" />
                       )}
                     </div>
                     <div className="flex items-center gap-1 text-xs sm:text-sm  text-muted-foreground">

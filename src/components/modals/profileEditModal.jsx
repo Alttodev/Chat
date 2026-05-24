@@ -7,7 +7,22 @@ export function ProfileEditDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeProfile()}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-[550px] rounded-lg p-4 sm:rounded-xl [&_button]:cursor-pointer">
+      <DialogContent
+        className="
+    w-[calc(100%-2rem)]
+    max-w-[550px]
+    max-h-[98vh]
+    overflow-y-auto
+    rounded-lg
+    p-4
+    sm:rounded-xl
+    [&_button]:cursor-pointer
+
+    [scrollbar-width:none]
+    [-ms-overflow-style:none]
+    [&::-webkit-scrollbar]:hidden
+  "
+      >
         <DialogHeader>
           <DialogTitle className="text-emerald-600 flex justify-center">
             Edit Profile

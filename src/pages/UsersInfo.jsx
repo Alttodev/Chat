@@ -176,7 +176,7 @@ const UsersInfo = () => {
       {/* Header */}
       <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
-          <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="relative">
               <Avatar className="h-24 w-24">
                 <AvatarImage
@@ -216,7 +216,20 @@ const UsersInfo = () => {
                     <MapPin className="h-4 w-4" />
                     <span>{user?.address || "-"}</span>
                   </div>
-
+                  <div
+                    className="
+    mt-2
+    max-w-full
+    sm:max-w-[420px]
+    break-words
+    text-sm
+    leading-5
+    text-slate-700
+    dark:text-slate-300
+  "
+                  >
+                    {user?.bio}
+                  </div>
                   <div className="flex gap-4">
                     <div className="flex flex-col mt-1">
                       <span className="text-lg font-semibold text-foreground">
@@ -271,7 +284,7 @@ const UsersInfo = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
+           <div className="flex items-start self-start md:items-center md:self-center">
               {reqStatus === "pending" ? (
                 <Button
                   className="

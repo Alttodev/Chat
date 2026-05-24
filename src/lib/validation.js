@@ -16,7 +16,7 @@ const baseAuthSchema = {
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(
       /[^a-zA-Z0-9]/,
-      "Password must contain at least one special character (e.g., !@#$%^&*)"
+      "Password must contain at least one special character (e.g., !@#$%^&*)",
     ),
 };
 export const loginSchema = z.object({
@@ -46,7 +46,7 @@ export const resetMailSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(
       /[^a-zA-Z0-9]/,
-      "Password must contain at least one special character (e.g., !@#$%^&*)"
+      "Password must contain at least one special character (e.g., !@#$%^&*)",
     ),
 });
 
@@ -57,5 +57,10 @@ export const userSchema = z.object({
     .min(1, { message: "Email is required." })
     .email("Please enter a valid email."),
   address: z.string().min(1, { message: "Address is required" }),
-  profileImage: z.any().optional()
+  profileImage: z.any().optional(),
+  bio: z
+    .string()
+    .max(150, "Bio must be 150 characters or less")
+    .optional()
+    .or(z.literal("")),
 });

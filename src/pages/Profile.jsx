@@ -174,174 +174,200 @@ const Profile = () => {
   return (
     <div className="w-full max-w-3xl mx-auto px-4 space-y-8 pb-20">
       <Card className="border-border shadow-sm">
-        <CardContent className="pt-3">
-          <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-6">
-            {/* PROFILE AVATAR */}
-            <div className="relative">
-              <div
-                onClick={() =>
-                  userProfile?.profile?.profileImage &&
-                  open(userProfile?.profile?.profileImage)
-                }
-                className={
-                  userProfile?.profile?.profileImage ? "cursor-pointer" : ""
-                }
-              >
-                <Avatar className="h-24 w-24">
-                  <AvatarImage
-                    className="w-full h-full object-cover object-top"
-                    src={
-                      userProfile?.profile?.profileImage || "/placeholder.svg"
-                    }
-                  />
+  <CardContent className="pt-4">
+    <div className="flex flex-col md:flex-row items-start gap-6">
+      {/* PROFILE AVATAR */}
+      <div className="relative shrink-0 self-start">
+        <div
+          onClick={() =>
+            userProfile?.profile?.profileImage &&
+            open(userProfile?.profile?.profileImage)
+          }
+          className={
+            userProfile?.profile?.profileImage
+              ? "cursor-pointer"
+              : ""
+          }
+        >
+          <Avatar className="h-24 w-24 ring-2 ring-slate-100 dark:ring-slate-800">
+            <AvatarImage
+              className="h-full w-full object-cover object-top"
+              src={
+                userProfile?.profile?.profileImage ||
+                "/placeholder.svg"
+              }
+            />
 
-                  <AvatarFallback className="text-2xl font-semibold text-emerald-700">
-                    {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                      "-"}
-                  </AvatarFallback>
-                </Avatar>
+            <AvatarFallback className="text-2xl font-semibold text-emerald-700">
+              {userProfile?.profile?.userName
+                ?.charAt(0)
+                .toUpperCase() || "-"}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+
+        {/* EDIT PROFILE ICON */}
+        <button
+          onClick={() =>
+            openProfile({
+              userProfile,
+              isEditing: true,
+              closeEditing: closeProfile,
+            })
+          }
+          className="
+            absolute bottom-0 right-0
+            flex h-7 w-7 items-center justify-center
+            rounded-full
+            border-2 border-white
+            bg-emerald-600
+            text-white
+            shadow-lg
+            transition-all duration-200
+            hover:bg-emerald-700
+            active:scale-95
+            cursor-pointer
+          "
+        >
+          <Edit3 className="h-3 w-3" />
+        </button>
+      </div>
+
+      {/* PROFILE DETAILS */}
+      <div className="flex-1 space-y-3">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0">
+            {/* USERNAME */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 text-lg font-bold text-foreground">
+                {userProfile?.profile?.userName}
+
+                {userProfile?.profile?.isVerified && (
+                  <BadgeCheck className="h-5 w-5 fill-blue-500 text-white" />
+                )}
               </div>
 
-              {/* ONLINE STATUS */}
-
-              {/* EDIT PROFILE ICON */}
-              <button
-                onClick={() =>
-                  openProfile({
-                    userProfile,
-                    isEditing: true,
-                    closeEditing: closeProfile,
-                  })
-                }
-                className="
-    absolute bottom-0 right-0 h-7 w-7 rounded-full
-    bg-emerald-600 hover:bg-emerald-700 text-white
-    flex items-center justify-center shadow-lg
-    border-2 border-white transition-all duration-200
-    active:scale-95 cursor-pointer
-  "
-              >
-                <Edit3 className="h-3 w-3" />
-              </button>
-            </div>
-
-            {/* PROFILE DETAILS */}
-            <div className="flex-1 space-y-2">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  {/* USERNAME */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-md font-bold text-balance flex items-center gap-1">
-                      {userProfile?.profile?.userName}
-
-                      {userProfile?.profile?.isVerified && (
-                        <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
-                      )}
-                    </div>
-
-                    {!userProfile?.profile?.isVerified && (
-                      <button
-                        onClick={handleVerificationRequest}
-                        disabled={verificationLoading}
-                        className="
-                    inline-flex
-                    items-center
-                    gap-1
+              {!userProfile?.profile?.isVerified && (
+                <button
+                  onClick={handleVerificationRequest}
+                  disabled={verificationLoading}
+                  className="
+                    inline-flex items-center gap-1
                     rounded-full
                     bg-[#1DA1F2]
-                    px-3
-                    py-1
-                    text-xs
-                    font-medium
-                    text-white
+                    px-3 py-1
+                    text-xs font-medium text-white
                     transition
                     hover:bg-[#1a8cd8]
                     disabled:opacity-50
                     cursor-pointer
                   "
-                      >
-                        {verificationLoading ? (
-                          <>
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            verifying...
-                          </>
-                        ) : (
-                          <>
-                            <BadgeCheck className="h-3 w-3" />
-                            Get Verified
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
+                >
+                  {verificationLoading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      verifying...
+                    </>
+                  ) : (
+                    <>
+                      <BadgeCheck className="h-3 w-3" />
+                      Get Verified
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
 
-                  {/* ADDRESS */}
-                  <div className="flex gap-2 items-center text-sm text-muted-foreground mt-1">
-                    <MapPin className="h-4 w-4" />
-                    <span>{userProfile?.profile?.address}</span>
-                  </div>
+            {/* ADDRESS */}
+            <div className="mt-1 flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 shrink-0" />
 
-                  {/* COUNTS */}
-                  <div className="flex gap-6 mt-3">
-                    {/* POSTS */}
-                    <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-foreground">
-                        {totalPosts}
-                      </span>
+              <span className="truncate max-w-[240px]">
+                {userProfile?.profile?.address}
+              </span>
+            </div>
 
-                      <span className="text-sm text-muted-foreground">
-                        {totalPosts <= 1 ? "Post" : "Posts"}
-                      </span>
-                    </div>
+            {/* BIO */}
+            <div
+              className="
+                mt-2
+                max-w-full
+                sm:max-w-[420px]
+                break-words
+                text-sm
+                leading-5
+                text-slate-700
+                dark:text-slate-300
+              "
+            >
+              {userProfile?.profile?.bio}
+              
+            </div>
 
-                    {/* FOLLOWERS */}
-                    <div className="flex flex-col">
-                      {countData?.totalFriends > 0 ? (
-                        <Link
-                          to="/friends"
-                          className="text-lg font-semibold text-foreground"
-                        >
-                          {countData?.totalFriends}
-                        </Link>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFriends}
-                        </span>
-                      )}
+            {/* COUNTS */}
+            <div className="mt-4 flex gap-6">
+              {/* POSTS */}
+              <div className="flex flex-col">
+                <span className="text-lg font-semibold text-foreground">
+                  {totalPosts}
+                </span>
 
-                      <span className="text-sm text-muted-foreground">
-                        {countData?.totalFriends <= 1
-                          ? "Follower"
-                          : "Followers"}
-                      </span>
-                    </div>
+                <span className="text-sm text-muted-foreground">
+                  {totalPosts <= 1 ? "Post" : "Posts"}
+                </span>
+              </div>
 
-                    {/* FOLLOWING */}
-                    <div className="flex flex-col">
-                      {countData?.totalFollowing > 0 ? (
-                        <Link
-                          to={`/following/${userProfile?.profile?.id}`}
-                          className="text-lg font-semibold text-foreground"
-                        >
-                          {countData?.totalFollowing}
-                        </Link>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFollowing}
-                        </span>
-                      )}
+              {/* FOLLOWERS */}
+              <div className="flex flex-col">
+                {countData?.totalFriends > 0 ? (
+                  <Link
+                    to="/friends"
+                    className="text-lg font-semibold text-foreground"
+                  >
+                    {countData?.totalFriends}
+                  </Link>
+                ) : (
+                  <span className="text-lg font-semibold text-foreground">
+                    {countData?.totalFriends}
+                  </span>
+                )}
 
-                      <span className="text-sm text-muted-foreground">
-                        Following
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <span className="text-sm text-muted-foreground">
+                  {countData?.totalFriends <= 1
+                    ? "Follower"
+                    : "Followers"}
+                </span>
+              </div>
+
+              {/* FOLLOWING */}
+              <div className="flex flex-col">
+                {countData?.totalFollowing > 0 ? (
+                  <Link
+                    to={`/following/${userProfile?.profile?.id}`}
+                    className="text-lg font-semibold text-foreground"
+                  >
+                    {countData?.totalFollowing}
+                  </Link>
+                ) : (
+                  <span className="text-lg font-semibold text-foreground">
+                    {countData?.totalFollowing}
+                  </span>
+                )}
+
+                <span className="text-sm text-muted-foreground">
+                  Following
+                </span>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* RIGHT SIDE BUTTON */}
+         
+        </div>
+      </div>
+    </div>
+  </CardContent>
+</Card>
 
       {displayPosts.map((post) => {
         const likeCount = typeof post?.likes === "number" ? post.likes : 0;
