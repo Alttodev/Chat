@@ -59,7 +59,7 @@ const HashtagPosts = () => {
 
   const userProfile = useMemo(() => profileData, [profileData]);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useHashtagPosts(tag);
 
   const posts = useMemo(() => data?.posts || [], [data]);
@@ -130,7 +130,7 @@ const HashtagPosts = () => {
     setLocalPosts((prev) => prev.map(patchPost));
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="flex min-h-90 items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />

@@ -69,7 +69,7 @@ const UsersInfo = () => {
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(id);
 
   const posts = useMemo(
@@ -163,7 +163,7 @@ const UsersInfo = () => {
     setLocalPosts((prev) => prev.map(patchPost));
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
