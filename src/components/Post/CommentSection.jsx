@@ -93,6 +93,8 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
     const hasReplies = threadedReplies.length > 0;
     const likeCount = comment?.likeCount || 0;
     const dislikeCount = comment?.dislikeCount || 0;
+    const isLiked = comment?.myReaction === "like";
+    const isDisliked = comment?.myReaction === "dislike";
 
     return (
       <div
@@ -194,13 +196,22 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                 type="button"
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
+                  isLiked && "text-neutral-700 dark:text-neutral-300",
                 )}
                 disabled={reactionLoadingCommentId === comment._id}
                 onClick={() =>
                   handleReaction({ commentId: comment._id, type: "like" })
                 }
               >
-                <ThumbsUp className="h-3.5 w-3.5" />
+                <ThumbsUp
+                  className={cn(
+                    "h-3.5 w-3.5 transition-all",
+                    isLiked
+                      ? "fill-current text-neutral-700 dark:text-neutral-300"
+                      : "text-current",
+                  )}
+                />
+
                 <span>{likeCount}</span>
               </button>
 
@@ -208,13 +219,21 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                 type="button"
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
+                  isDisliked && "text-neutral-700 dark:text-neutral-300",
                 )}
                 disabled={reactionLoadingCommentId === comment._id}
                 onClick={() =>
                   handleReaction({ commentId: comment._id, type: "dislike" })
                 }
               >
-                <ThumbsDown className="h-3.5 w-3.5" />
+                <ThumbsDown
+                  className={cn(
+                    "h-3.5 w-3.5 transition-all",
+                    isDisliked
+                      ? "fill-current text-neutral-700 dark:text-neutral-300"
+                      : "text-current",
+                  )}
+                />
                 <span>{dislikeCount}</span>
               </button>
 
@@ -269,7 +288,6 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                   className="w-full"
                   avatarClassName="h-7 w-7"
                   textareaClassName="min-h-[48px] text-sm"
-                  buttonClassName="h-10 w-10"
                   placeholder={`Reply to ${comment?.user?.userName || "comment"}...`}
                   onSuccess={() => setReplyToComment(null)}
                 />

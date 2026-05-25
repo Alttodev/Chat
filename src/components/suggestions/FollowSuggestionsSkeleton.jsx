@@ -20,7 +20,7 @@ export function FollowSuggestionsSkeleton({ compact = false }) {
               className="min-w-[220px] snap-start rounded-2xl border border-border/70 bg-muted/30 p-4"
             >
               <div className="flex flex-col items-center text-center gap-3">
-                <Skeleton className="h-16 w-16 rounded-full" />
+                <Skeleton className="h-8 w-8 rounded-full" />
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-28" />
                   <Skeleton className="h-3 w-20 mx-auto" />
@@ -47,10 +47,10 @@ export function FollowSuggestionsSkeleton({ compact = false }) {
             key={index}
             className="flex items-center gap-3 rounded-2xl border border-border/70 p-3"
           >
-            <Skeleton className="h-12 w-12 rounded-full" />
+            <Skeleton className="h-8 w-8 rounded-full" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-28" />
-              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-4 w-18" />
+              <Skeleton className="h-3 w-14" />
             </div>
             <Skeleton className="h-8 w-20 rounded-full" />
           </div>

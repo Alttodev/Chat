@@ -101,8 +101,9 @@ export function CommentForm({
           disabled={!commentValue || isSubmitting}
           className={cn(
             `
-      h-11
-      w-11
+            h-8 w-8
+     sm:h-11
+     sm:w-11
       rounded-full
       bg-emerald-600
       hover:bg-emerald-700
@@ -122,7 +123,7 @@ export function CommentForm({
             buttonClassName,
           )}
         >
-          <Send className="w-4 h-4" />
+          <Send className="w-2 h-2 sm:w-4 sm:h-4" />
         </Button>
       </div>
     </form>
