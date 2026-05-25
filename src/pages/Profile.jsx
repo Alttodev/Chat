@@ -319,17 +319,14 @@ const Profile = () => {
 
               {/* FOLLOWERS */}
               <div className="flex flex-col">
-                {countData?.totalFriends > 0 ? (
+                {countData?.totalFriends > 0 && (
                   <Link
-                    to="/friends"
+                    to={`/friends/${userProfile?.profile?.id}`}
                     className="text-lg font-semibold text-foreground"
                   >
                     {countData?.totalFriends}
                   </Link>
-                ) : (
-                  <span className="text-lg font-semibold text-foreground">
-                    {countData?.totalFriends}
-                  </span>
+              
                 )}
 
                 <span className="text-sm text-muted-foreground">
