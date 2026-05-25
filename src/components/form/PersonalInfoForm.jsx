@@ -40,6 +40,8 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
 
       if (data.profileImage) {
         formData.append("profileImage", data.profileImage);
+      } else {
+        formData.append("profileImage", "null");
       }
 
       const res = await userUpdate(formData);
@@ -57,6 +59,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
         address: userProfile?.profile?.address || "",
         email: userProfile?.profile?.email || "",
         bio: userProfile?.profile?.bio || "",
+        profileImage: null,
       });
     }
   }, [userProfile, reset]);
@@ -74,6 +77,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
               name="profileImage"
               control={control}
               disabled={isSubmitting}
+              defaultImage={userProfile?.profile?.profileImage}
             />
           </div>
         </div>
@@ -137,6 +141,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             <p className="text-sm text-red-500">{errors.address.message}</p>
           )}
         </div>
+
         <div className="space-y-2">
           <label
             htmlFor="bio"

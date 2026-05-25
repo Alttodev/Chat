@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Controller } from "react-hook-form";
 import Cropper from "react-easy-crop";
 import { Button } from "@/components/ui/button";
@@ -58,14 +58,26 @@ function createImage(url) {
   });
 }
 
-export function ProfileImageUpload({ name, control, rules, disabled = false }) {
+export function ProfileImageUpload({
+  name,
+  control,
+  rules,
+  disabled = false,
+  defaultImage,
+}) {
   const [imagePreview, setImagePreview] = useState(null);
   const [cropOpen, setCropOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [isDefaultHidden, setIsDefaultHidden] = useState(false);
+
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    setIsDefaultHidden(false);
+  }, [defaultImage]);
 
   const handleImageSelect = (file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -87,7 +99,9 @@ export function ProfileImageUpload({ name, control, rules, disabled = false }) {
       const previewUrl = URL.createObjectURL(croppedFile);
       setImagePreview(previewUrl);
 
+      setIsDefaultHidden(true);
       setCropOpen(false);
+
       URL.revokeObjectURL(imageSrc);
       setImageSrc(null);
     } catch (error) {
@@ -98,6 +112,8 @@ export function ProfileImageUpload({ name, control, rules, disabled = false }) {
   const handleImageRemove = (onChange) => {
     onChange(null);
     setImagePreview(null);
+    setIsDefaultHidden(true);
+
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -115,158 +131,164 @@ export function ProfileImageUpload({ name, control, rules, disabled = false }) {
         name={name}
         control={control}
         rules={rules}
-        render={({ field: { value, onChange } }) => (
-          <div className="flex flex-col items-center gap-4 w-full">
-            <div
-              className="
-                relative
-                w-28 h-28
-              
-                rounded-full
-                border-4 border-gray-300
-                flex items-center justify-center
-                cursor-pointer
-                hover:border-emerald-500 hover:bg-emerald-50
-                transition overflow-hidden
-                shrink-0
-              "
-              onDrop={(e) => handleDrop(e, onChange)}
-              onDragOver={handleDragOver}
-              onClick={() => !disabled && fileInputRef.current?.click()}
-            >
-              <Input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageSelect(e.target.files?.[0])}
-                className="hidden"
-                disabled={disabled}
-              />
+        render={({ field: { value, onChange } }) => {
+          const currentImage =
+            imagePreview ||
+            (typeof value === "string" ? value : null) ||
+            (!isDefaultHidden ? defaultImage : null);
 
-              {imagePreview || value ? (
-                <img
-                  src={
-                    imagePreview || (typeof value === "string" ? value : null)
-                  }
-                  alt="Profile Preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-center gap-1 px-2">
-                  <Upload className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
-                  <p className="text-[11px] sm:text-xs text-gray-500 font-medium">
-                    Upload Photo
-                  </p>
-                </div>
-              )}
-            </div>
+          const showRemoveButton = Boolean(currentImage);
 
-            {(value || imagePreview) && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleImageRemove(onChange)}
-                disabled={disabled}
-                className="text-red-500 hover:text-red-600 border-red-200 hover:border-red-300 cursor-pointer"
-              >
-                <X className="w-4 h-4 mr-1" /> Remove Photo
-              </Button>
-            )}
-
-            <Dialog open={cropOpen} onOpenChange={setCropOpen}>
-              <DialogContent
+          return (
+            <div className="flex flex-col items-center gap-4 w-full">
+              <div
                 className="
-                  w-[95vw]
-                  sm:max-w-xl
-                  p-4 sm:p-6
-                  rounded-2xl
+                  relative
+                  w-28 h-28
+                  rounded-full
+                  border-4 border-gray-300
+                  flex items-center justify-center
+                  cursor-pointer
+                  hover:border-emerald-500 hover:bg-emerald-50
+                  transition overflow-hidden
+                  shrink-0
                 "
+                onDrop={(e) => handleDrop(e, onChange)}
+                onDragOver={handleDragOver}
+                onClick={() => !disabled && fileInputRef.current?.click()}
               >
-                <DialogHeader>
-                  <DialogTitle className="text-base sm:text-lg">
-                    Crop profile photo
-                  </DialogTitle>
-                </DialogHeader>
+                <Input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageSelect(e.target.files?.[0])}
+                  className="hidden"
+                  disabled={disabled}
+                />
 
-                <div className="relative w-full h-[260px] sm:h-[360px] bg-black/80 rounded-xl overflow-hidden">
-                  {imageSrc && (
-                    <Cropper
-                      image={imageSrc}
-                      crop={crop}
-                      zoom={zoom}
-                      aspect={1}
-                      cropShape="round"
-                      showGrid={false}
-                      onCropChange={setCrop}
-                      onZoomChange={setZoom}
-                      onCropComplete={handleCropComplete}
-                    />
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm mb-2 font-medium text-gray-700">
-                      Zoom
+                {currentImage ? (
+                  <img
+                    src={currentImage}
+                    alt="Profile Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-center gap-1 px-2">
+                    <Upload className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+                    <p className="text-[11px] sm:text-xs text-gray-500 font-medium">
+                      Upload Photo
                     </p>
-                    <Slider
-                      value={[zoom]}
-                      min={1}
-                      max={3}
-                      step={0.1}
-                      onValueChange={(val) => setZoom(val[0])}
-                      className="
-                        [&_[role=slider]]:border-emerald-600
-                        [&_[role=slider]]:bg-emerald-600
-                        [&_[data-orientation=horizontal]_.bg-primary]:bg-emerald-600
-                      "
-                    />
                   </div>
-                </div>
+                )}
+              </div>
 
-                <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-0">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setCropOpen(false);
-                      setImageSrc(null);
-                    }}
-                    className="w-full sm:w-auto rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-all duration-200 hover:bg-red-100 hover:text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 cursor-pointer"
-                  >
-                    Cancel
-                  </Button>
+              {showRemoveButton && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleImageRemove(onChange)}
+                  disabled={disabled}
+                  className="text-red-500 hover:text-red-600 border-red-200 hover:border-red-300 cursor-pointer"
+                >
+                  <X className="w-4 h-4 mr-1" /> Remove Photo
+                </Button>
+              )}
 
-                  <Button
-                    type="button"
-                    onClick={() => handleCropConfirm(onChange)}
-                    className="
-                      w-full sm:w-auto
-                      bg-emerald-600
-                      hover:bg-emerald-700
-                      text-white
-                      rounded-full
-                      px-4 py-2
-                      font-medium
-                      text-sm
-                      shadow-sm
-                      hover:shadow-md
-                      transition-all
-                      duration-200
-                      active:scale-95
-                      cursor-pointer
-                      disabled:opacity-70
-                      disabled:cursor-not-allowed
-                    "
-                  >
-                    Use Photo
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        )}
+              <Dialog open={cropOpen} onOpenChange={setCropOpen}>
+                <DialogContent
+                  className="
+                    w-[95vw]
+                    sm:max-w-xl
+                    p-4 sm:p-6
+                    rounded-2xl
+                  "
+                >
+                  <DialogHeader>
+                    <DialogTitle className="text-base sm:text-lg">
+                      Crop profile photo
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div className="relative w-full h-[260px] sm:h-[360px] bg-black/80 rounded-xl overflow-hidden">
+                    {imageSrc && (
+                      <Cropper
+                        image={imageSrc}
+                        crop={crop}
+                        zoom={zoom}
+                        aspect={1}
+                        cropShape="round"
+                        showGrid={false}
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onCropComplete={handleCropComplete}
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm mb-2 font-medium text-gray-700">
+                        Zoom
+                      </p>
+                      <Slider
+                        value={[zoom]}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onValueChange={(val) => setZoom(val[0])}
+                        className="
+                          [&_[role=slider]]:border-emerald-600
+                          [&_[role=slider]]:bg-emerald-600
+                          [&_[data-orientation=horizontal]_.bg-primary]:bg-emerald-600
+                        "
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-0">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCropOpen(false);
+                        setImageSrc(null);
+                      }}
+                      className="w-full sm:w-auto rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-all duration-200 hover:bg-red-100 hover:text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 cursor-pointer"
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      type="button"
+                      onClick={() => handleCropConfirm(onChange)}
+                      className="
+                        w-full sm:w-auto
+                        bg-emerald-600
+                        hover:bg-emerald-700
+                        text-white
+                        rounded-full
+                        px-4 py-2
+                        font-medium
+                        text-sm
+                        shadow-sm
+                        hover:shadow-md
+                        transition-all
+                        duration-200
+                        active:scale-95
+                        cursor-pointer
+                        disabled:opacity-70
+                        disabled:cursor-not-allowed
+                      "
+                    >
+                      Use Photo
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          );
+        }}
       />
     </>
   );
