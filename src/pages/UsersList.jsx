@@ -27,6 +27,11 @@ function UsersList() {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-4 space-y-6 pb-20">
+      <div className="flex items-center justify-between">
+        <h2 className="text-md sm:text-lg font-bold tracking-tight text-foreground">
+          People You May Know
+        </h2>
+      </div>
       {data?.profiles?.map((user, index) => {
         const userId = String(user?.id ?? user?._id ?? "");
         const recommendedUser = recommendedMap.get(userId);

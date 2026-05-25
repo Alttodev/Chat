@@ -172,7 +172,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 space-y-8 pb-20">
+    <div className="w-full max-w-3xl mx-auto  space-y-8 pb-20">
       <Card className="border-border shadow-sm">
         <CardContent className="pt-4">
           <div className="flex flex-col md:flex-row items-start gap-6">
