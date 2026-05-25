@@ -83,9 +83,7 @@ function UserFollowingCard({ user, profileId }) {
 
               <div className="min-w-0 flex-1 space-y-1 ">
                 <div className="flex min-w-0 items-center gap-1 text-sm sm:text-md font-bold text-foreground">
-                  <span className="truncate">
-                    {target?.userName || "-"}
-                  </span>
+                  <span className="truncate">{target?.userName || "-"}</span>
 
                   {target?.isVerified && (
                     <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
@@ -95,9 +93,7 @@ function UserFollowingCard({ user, profileId }) {
                 <div className="flex min-w-0 items-center gap-1 text-xs sm:text-sm text-muted-foreground">
                   <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
 
-                  <span className="truncate">
-                    {target?.address || "-"}
-                  </span>
+                  <span className="truncate">{target?.address || "-"}</span>
                 </div>
               </div>
             </Link>
@@ -126,9 +122,7 @@ function UserFollowingCard({ user, profileId }) {
 
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 items-center gap-1 text-sm sm:text-md font-bold text-foreground">
-                  <span className="truncate">
-                    {target?.userName || "-"}
-                  </span>
+                  <span className="truncate">{target?.userName || "-"}</span>
 
                   {target?.isVerified && (
                     <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
@@ -138,9 +132,7 @@ function UserFollowingCard({ user, profileId }) {
                 <div className="flex min-w-0 items-center gap-1 text-xs sm:text-sm text-muted-foreground">
                   <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
 
-                  <span className="truncate">
-                    {target?.address || "-"}
-                  </span>
+                  <span className="truncate">{target?.address || "-"}</span>
                 </div>
               </div>
             </div>
@@ -170,9 +162,7 @@ function UserFollowingCard({ user, profileId }) {
               profileId !== userId && (
                 <Button
                   onClick={friends ? handleUnfollow : handleFollow}
-                  disabled={
-                    isFetching || isFollowing || isUnfollowing
-                  }
+                  disabled={isFetching || isFollowing || isUnfollowing}
                   className={`
                     h-7 sm:h-8
                     rounded-full
@@ -204,10 +194,10 @@ function UserFollowingCard({ user, profileId }) {
                   {isFetching
                     ? "Loading..."
                     : isFollowing || isUnfollowing
-                    ? "Please wait..."
-                    : friends
-                    ? "Unfollow"
-                    : "Follow"}
+                      ? "Please wait..."
+                      : friends
+                        ? "Unfollow"
+                        : "Follow"}
                 </Button>
               )
             )}

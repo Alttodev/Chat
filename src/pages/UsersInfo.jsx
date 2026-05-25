@@ -241,17 +241,13 @@ const UsersInfo = () => {
                     </div>
 
                     <div className="flex flex-col mt-1">
-                      {countData?.totalFriends > 0 ? (
+                      {countData?.totalFriends > 0 && (
                         <Link
                           to={`/friends/${user?._id}`}
                           className="text-lg font-semibold text-foreground"
                         >
                           {countData?.totalFriends}
                         </Link>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFriends}
-                        </span>
                       )}
 
                       <span className="text-sm text-muted-foreground">
@@ -284,7 +280,7 @@ const UsersInfo = () => {
               </div>
             </div>
 
-           <div className="flex items-start self-start md:items-center md:self-center">
+            <div className="flex items-start self-start md:items-center md:self-center">
               {reqStatus === "pending" ? (
                 <Button
                   className="
