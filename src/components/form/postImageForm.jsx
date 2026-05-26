@@ -6,9 +6,13 @@ import { ImageUpload } from "../form_inputs/ImageUpload";
 import { usePostCreate } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useMemo, useRef, useState } from "react";
-import { MapPin, X } from "lucide-react";
+import { MapPin, Sparkles, X } from "lucide-react";
 import LocationPickerDialog from "../form_inputs/LocationPickerDialog";
 import { appendLocationMarker } from "@/lib/location";
+import axiosInstance from "@/api/axiosInstance";
+
+import { useAIPromptStore } from "@/lib/zustand";
+import AIPromptDialog from "../modals/aiPromptDialog";
 
 export function PostImageForm() {
   const { closeImageModal } = useZustandImagePopup();
@@ -16,11 +20,14 @@ export function PostImageForm() {
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
+  const { openDialog, setGenerating, closeDialog } = useAIPromptStore();
+
   const {
     handleSubmit,
     control,
     reset,
     watch,
+    setValue,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
@@ -55,6 +62,35 @@ export function PostImageForm() {
     setSelectedLocation(null);
   };
 
+  const handleGenerateAI = async (prompt) => {
+    try {
+      setGenerating(true);
+
+      const res = await axiosInstance.post("/ai/post-caption", {
+        prompt,
+      });
+
+      const generatedText = res?.data?.text?.trim();
+
+      if (!generatedText) {
+        toastError("AI did not return any text");
+        return;
+      }
+
+      setValue("postText", generatedText, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      closeDialog();
+      textareaRef.current?.focus();
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const onSubmit = async (formData) => {
     try {
       const data = new FormData();
@@ -79,106 +115,117 @@ export function PostImageForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-3">
-      <div className="relative space-y-1">
-        <Controller
-          name="postText"
-          control={control}
-          rules={{
-            required: "Post description is required",
-            validate: (value) =>
-              value.trim().length > 0 || "Post description is required",
-          }}
-          render={({ field, fieldState }) => (
-            <>
-              <Textarea
-                {...field}
-                ref={textareaRef}
-                placeholder="Enter description....."
-                className={`min-h-[65px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
-                  selectedLocation?.name ? "pb-14" : ""
-                } `}
-              />
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-3">
+        <div className="relative space-y-1">
+          <Controller
+            name="postText"
+            control={control}
+            rules={{
+              required: "Post description is required",
+              validate: (value) =>
+                value.trim().length > 0 || "Post description is required",
+            }}
+            render={({ field, fieldState }) => (
+              <>
+                <Textarea
+                  {...field}
+                  ref={textareaRef}
+                  placeholder="Enter description....."
+                  className={`min-h-[85px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
+                    selectedLocation?.name ? "pb-14" : ""
+                  } `}
+                />
 
-              {fieldState.error && (
-                <p className="mt-1 text-sm text-red-500">
-                  {fieldState.error.message}
-                </p>
-              )}
-            </>
-          )}
-        />
+                {fieldState.error && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {fieldState.error.message}
+                  </p>
+                )}
+              </>
+            )}
+          />
 
-        {selectedLocation?.name ? (
-          <div className="pointer-events-none absolute bottom-3 left-3 right-3">
-            <div className="flex w-full max-w-full items-center gap-1 overflow-hidden rounded-full bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 shadow-sm ring-1 ring-emerald-100 sm:text-sm">
-              <a
-                href={selectedLocation.url}
-                target="_blank"
-                rel="noreferrer"
-                className="pointer-events-auto flex min-w-0 flex-1 items-center gap-1 overflow-hidden transition-colors hover:text-emerald-800"
-              >
-                <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                <span className="min-w-0 truncate">
-                  {selectedLocation.name}
-                </span>
-              </a>
-              <button
-                type="button"
-                onClick={handleLocationClear}
-                className="pointer-events-auto ml-auto shrink-0 rounded-full p-0.5 text-emerald-600 transition-colors hover:bg-emerald-100 hover:text-emerald-800"
-                aria-label="Remove location"
-              >
-                <X className="h-3 w-3" />
-              </button>
+          {selectedLocation?.name ? (
+            <div className="pointer-events-none absolute bottom-3 left-3 right-3">
+              <div className="flex w-full max-w-full items-center gap-1 overflow-hidden rounded-full bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 shadow-sm ring-1 ring-emerald-100 sm:text-sm">
+                <a
+                  href={selectedLocation.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="pointer-events-auto flex min-w-0 flex-1 items-center gap-1 overflow-hidden transition-colors hover:text-emerald-800"
+                >
+                  <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="min-w-0 truncate">
+                    {selectedLocation.name}
+                  </span>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleLocationClear}
+                  className="pointer-events-auto ml-auto shrink-0 rounded-full p-0.5 text-emerald-600 transition-colors hover:bg-emerald-100 hover:text-emerald-800"
+                  aria-label="Remove location"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
             </div>
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
 
-      <div className="flex items-center gap-1">
-        <span
-          onClick={() => setIsLocationPickerOpen(true)}
-          className="flex h-10 w-10 items-center justify-center text-emerald-600 transition hover:bg-emerald-50"
-        >
-          <MapPin className="h-5 w-5 " />
-        </span>
-      </div>
+        <div className="flex items-center gap-1">
+          <span
+            onClick={() => setIsLocationPickerOpen(true)}
+            className="flex h-10 w-10 items-center justify-center text-emerald-600 transition hover:bg-emerald-50 cursor-pointer rounded-full"
+          >
+            <MapPin className="h-5 w-5 " />
+          </span>
 
-      <ImageUpload name="image" control={control} />
+          <span
+            onClick={() => openDialog("post")}
+            className="flex h-10 w-10 items-center justify-center text-sky-500 transition hover:bg-sky-50 cursor-pointer rounded-full"
+          >
+            <Sparkles className="h-5 w-5 text-fuchsia-500" />
+          </span>
+        </div>
 
-      <div className="flex justify-end">
-        <Button
-          type="submit"
-          disabled={submitDisabled}
-          className="
-    bg-emerald-600
-    hover:bg-emerald-700
-    text-white
-    rounded-full
-    px-5
-    h-10
-    font-medium
-    text-sm
-    shadow-sm
-    hover:shadow-md
-    transition-all
-    duration-200
-    active:scale-95
-    cursor-pointer
-    disabled:opacity-70
-    disabled:cursor-not-allowed
-  "
-        >
-          Post
-        </Button>
-      </div>
+        <ImageUpload name="image" control={control} />
 
-      <LocationPickerDialog
-        open={isLocationPickerOpen}
-        onOpenChange={setIsLocationPickerOpen}
-        onSelect={handleLocationSelect}
-      />
-    </form>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={submitDisabled}
+            className="
+              bg-emerald-600
+              hover:bg-emerald-700
+              text-white
+              rounded-full
+              px-5
+              h-10
+              font-medium
+              text-sm
+              shadow-sm
+              hover:shadow-md
+              transition-all
+              duration-200
+              active:scale-95
+              cursor-pointer
+              disabled:opacity-70
+              disabled:cursor-not-allowed
+            "
+          >
+            Post
+          </Button>
+        </div>
+
+        <LocationPickerDialog
+          open={isLocationPickerOpen}
+          onOpenChange={setIsLocationPickerOpen}
+          onSelect={handleLocationSelect}
+        />
+      </form>
+
+      <AIPromptDialog onGenerate={handleGenerateAI} />
+    </>
   );
 }

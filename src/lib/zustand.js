@@ -89,3 +89,28 @@ export const useThemeStore = create(
     },
   ),
 );
+
+
+export const useAIPromptStore = create((set) => ({
+  isOpen: false,
+  prompt: "",
+  isGenerating: false,
+  target: "post",
+
+  openDialog: (target = "post") =>
+    set({
+      isOpen: true,
+      target,
+    }),
+
+  closeDialog: () =>
+    set({
+      isOpen: false,
+      prompt: "",
+      isGenerating: false,
+      target: "post",
+    }),
+
+  setPrompt: (prompt) => set({ prompt }),
+  setGenerating: (value) => set({ isGenerating: value }),
+}));
