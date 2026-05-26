@@ -23,6 +23,7 @@ import {
   userPostUpdate,
   userRequestDelete,
   getHashtagPosts,
+  getUserPostVideos,
 } from "@/api/axios";
 import {
   useInfiniteQuery,
@@ -102,6 +103,22 @@ export const usePostList = () => {
     refetchOnWindowFocus: false,
   });
 };
+
+
+
+export const usePostListVideos = () => {
+  return useInfiniteQuery({
+    queryKey: ["user_post_videos"],
+    queryFn: getUserPostVideos,
+    getNextPageParam: (lastPage) => {
+      return lastPage.nextPage <= lastPage.totalPages
+        ? lastPage.nextPage
+        : undefined;
+    },
+    refetchOnWindowFocus: false,
+  });
+};
+
 
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
@@ -183,28 +200,59 @@ export const useRequestListInfo = ({ fromId, toId, enabled = true } = {}) => {
 };
 
 export const useFriendsList = () => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["friends"],
-    queryFn: () => getFriendsList(),
-    keepPreviousData: true,
+    initialPageParam: 1,
+
+    queryFn: ({ pageParam = 1 }) =>
+      getFriendsList(pageParam, 10),
+
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+
+      const currentPage = Number(lastPage.currentPage || 1);
+      const totalPages = Number(lastPage.totalPages || 1);
+
+      return currentPage < totalPages
+        ? currentPage + 1
+        : undefined;
+    },
+
     refetchOnWindowFocus: false,
   });
 };
 
+
+
 export const useUserFollowers = (id) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["user-followers", id],
-    queryFn: () => getUserFollowers(id),
-    keepPreviousData: true,
+    enabled: !!id,
+    initialPageParam: 1,
+    queryFn: ({ pageParam = 1 }) => getUserFollowers(id, pageParam, 5),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+
+      const currentPage = Number(lastPage.currentPage || 1);
+      const totalPages = Number(lastPage.totalPages || 1);
+
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
     refetchOnWindowFocus: false,
   });
 };
 
 export const useUserFollowing = (id) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["user-following", id],
-    queryFn: () => getUserFollowing(id),
-    keepPreviousData: true,
+    queryFn: ({ pageParam = 1 }) => getUserFollowing(id, pageParam, 5),
+    getNextPageParam: (lastPage) => {
+      const currentPage = lastPage?.currentPage || 1;
+      const totalPages = lastPage?.totalPages || 1;
+
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
+    initialPageParam: 1,
     refetchOnWindowFocus: false,
   });
 };

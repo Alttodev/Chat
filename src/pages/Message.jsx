@@ -30,7 +30,7 @@ export default function Message() {
   const { socket } = useSocket();
   const { startAudioCall } = useJitsiCall();
   const { profileId } = useAuthStore();
-  const [searchParams,setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -49,12 +49,19 @@ export default function Message() {
   const messagesEndRef = useRef(null);
   const typingStopTimeoutRef = useRef(null);
   const typingResetTimeoutRef = useRef(null);
+    const loadMoreRef = useRef(null);
   const targetUserIdFromUrl = searchParams.get("userId");
   const targetUserNameFromUrl = searchParams.get("name");
 
   const { data: conversationData, isLoading: conversationsLoading } =
     useChatConversations();
-  const { data: friendsData, isLoading: friendsLoading } = useFriendsList();
+  const {
+    data,
+    isLoading: friendsLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFriendsList();
   const { mutateAsync: sendMessage, isPending: isSending } =
     useSendChatMessage();
   const { mutateAsync: markSeen } = useMarkConversationSeen();
@@ -69,6 +76,10 @@ export default function Message() {
   const { data: profile } = useUserProfiles();
   const profileData = useMemo(() => profile, [profile]);
 
+  const friendsData = useMemo(() => {
+    return data?.pages?.flatMap((page) => page?.friends || []) || [];
+  }, [data]);
+
   const getUserCallId = useCallback((userObj) => {
     if (!userObj) return "";
 
@@ -82,9 +93,7 @@ export default function Message() {
   }, []);
 
   const contacts = useMemo(() => {
-    const friendRows = friendsData?.friends || [];
-
-    const acceptedFriends = friendRows.filter(
+    const acceptedFriends = friendsData.filter(
       (item) => item?.isFriends === true,
     );
     const acceptedFriendIds = new Set(
@@ -188,6 +197,29 @@ export default function Message() {
     );
   }, [blockedUsers]);
 
+
+
+useEffect(() => {
+  if (!loadMoreRef.current || !hasNextPage) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    {
+      root: null,
+      rootMargin: "200px",
+      threshold: 0.1,
+    },
+  );
+
+  observer.observe(loadMoreRef.current);
+
+  return () => observer.disconnect();
+}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   const contactsWithTarget = useMemo(() => {
     if (!targetUserIdFromUrl || targetUserIdFromUrl === profileId) {
       return contacts;
@@ -257,45 +289,44 @@ export default function Message() {
     blockedUsers,
   ]);
 
- useEffect(() => {
-  if (!contactsWithTarget.length) return;
+  useEffect(() => {
+    if (!contactsWithTarget.length) return;
 
-  if (targetUserIdFromUrl) {
-    const matched = contactsWithTarget.find(
-      (item) =>
-        item?.targetUserId?.toString() === targetUserIdFromUrl,
-    );
+    if (targetUserIdFromUrl) {
+      const matched = contactsWithTarget.find(
+        (item) => item?.targetUserId?.toString() === targetUserIdFromUrl,
+      );
 
-    if (matched) {
-      setSelectedContact((prev) => {
-        const currentTargetId = prev?.targetUserId?.toString();
-        const nextTargetId = matched?.targetUserId?.toString();
+      if (matched) {
+        setSelectedContact((prev) => {
+          const currentTargetId = prev?.targetUserId?.toString();
+          const nextTargetId = matched?.targetUserId?.toString();
 
-        if (currentTargetId === nextTargetId) {
-          return prev;
-        }
+          if (currentTargetId === nextTargetId) {
+            return prev;
+          }
 
-        return matched;
-      });
+          return matched;
+        });
 
-      setShowChat(true);
+        setShowChat(true);
 
-      // clear params after selecting user
-      setSearchParams({});
+        // clear params after selecting user
+        setSearchParams({});
+      }
+
+      return;
     }
 
-    return;
-  }
-
-  if (!selectedContact) {
-    setSelectedContact((prev) => prev || contactsWithTarget[0]);
-  }
-}, [
-  contactsWithTarget,
-  selectedContact,
-  targetUserIdFromUrl,
-  setSearchParams,
-]);
+    if (!selectedContact) {
+      setSelectedContact((prev) => prev || contactsWithTarget[0]);
+    }
+  }, [
+    contactsWithTarget,
+    selectedContact,
+    targetUserIdFromUrl,
+    setSearchParams,
+  ]);
 
   useEffect(() => {
     if (!selectedContact?.targetUserId || selectedContact?.conversationId)
@@ -801,6 +832,8 @@ export default function Message() {
           setSelectedContact={setSelectedContact}
           setShowChat={setShowChat}
           showChat={showChat}
+          loadMoreRef={loadMoreRef}
+          isLoadingMore={isFetchingNextPage}
         />
 
         <Card

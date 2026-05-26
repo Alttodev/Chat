@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { SkeletonComment } from "../skeleton/commentSkeleton";
 
 export default function ContactsSidebar({
   contacts,
@@ -10,6 +11,8 @@ export default function ContactsSidebar({
   setSelectedContact,
   setShowChat,
   showChat,
+  loadMoreRef,
+  isLoadingMore,
 }) {
   return (
     <Card
@@ -86,6 +89,13 @@ export default function ContactsSidebar({
               </div>
             </div>
           ))}
+        </div>
+        <div ref={loadMoreRef} className="p-2">
+          {isLoadingMore && (
+           
+              <SkeletonComment />
+           
+          )}
         </div>
       </ScrollArea>
     </Card>

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { useFriendsList } from "@/hooks/postHooks";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { SkeletonRequest } from "../skeleton/RequestSkeleton";
 import { Link, useNavigate } from "react-router-dom";
 import { BadgeCheck, MapPin, Users } from "lucide-react";
@@ -9,34 +9,58 @@ import { Button } from "../ui/button";
 
 export const FriendCard = ({ tabValue }) => {
   const navigate = useNavigate();
-  const { data: friendsList, isFetching } = useFriendsList();
-  const friendData = useMemo(() => friendsList, [friendsList]);
+  const loadMoreRef = useRef(null);
 
-  const friends = friendData?.friends?.filter(
-    (item) => item?.isFriends === true,
-  );
-  const onlineFriends = friendData?.friends?.filter(
-    (item) => item?.from?.isOnline === true && item?.isFriends === true,
-  );
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useFriendsList();
+
+  const allFriends = useMemo(() => {
+    return data?.pages?.flatMap((page) => page?.friends || []) || [];
+  }, [data]);
+
+  const friends = useMemo(() => {
+    return allFriends.filter((item) => item?.isFriends === true);
+  }, [allFriends]);
+
+  const onlineFriends = useMemo(() => {
+    return allFriends.filter(
+      (item) => item?.from?.isOnline === true && item?.isFriends === true,
+    );
+  }, [allFriends]);
+
   const friendsData = tabValue === "online" ? onlineFriends : friends;
 
-  if (!friendsData || friendsData.length === 0) {
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  if (isLoading) {
+    return <SkeletonRequest />;
+  }
+
+  if (friendsData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-14">
-        <div
-          className="
-      flex h-14 w-14 items-center justify-center
-      rounded-full
-      border border-slate-200
-      bg-white
-      shadow-sm
-      dark:border-slate-700
-      dark:bg-slate-900
-    "
-        >
+        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
           <Users className="h-6 w-6 text-slate-400" />
         </div>
-
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
           No data found
         </p>
@@ -44,12 +68,9 @@ export const FriendCard = ({ tabValue }) => {
     );
   }
 
-  if (isFetching) {
-    return <SkeletonRequest />;
-  }
   return (
     <>
-      {friendsData?.map((item) => {
+      {friendsData.map((item) => {
         const friendId = item?.from?._id || item?.to?._id || item?._id;
 
         return (
@@ -63,7 +84,7 @@ export const FriendCard = ({ tabValue }) => {
                         className="h-full w-full cursor-pointer object-cover object-top"
                         src={item?.from?.profileImage || "/placeholder.svg"}
                       />
-                      <AvatarFallback className="text-base sm:text-xl font-semibold text-emerald-700">
+                      <AvatarFallback className="text-base font-semibold text-emerald-700 sm:text-xl">
                         {item?.from?.userName?.charAt(0).toUpperCase() || "-"}
                       </AvatarFallback>
                     </Avatar>
@@ -74,40 +95,42 @@ export const FriendCard = ({ tabValue }) => {
                       }`}
                     />
                   </div>
+
                   <div>
-                    <div className="font-semibold flex items-center gap-1 text-sm sm:text-md text-foreground">
+                    <div className="flex items-center gap-1 text-sm font-semibold text-foreground sm:text-md">
                       {item?.from?.userName}
                       {item?.from?.isVerified && (
-                        <BadgeCheck className="h-4 w-4 sm:h-5 sm:w-5 fill-blue-500 text-white" />
+                        <BadgeCheck className="h-4 w-4 fill-blue-500 text-white sm:h-5 sm:w-5" />
                       )}
                     </div>
-                    <div className="flex items-center gap-1 text-xs sm:text-sm  text-muted-foreground">
-                      <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground sm:text-sm">
+                      <MapPin className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
                       <span>{item?.from?.address || "-"}</span>
                     </div>
                   </div>
                 </div>
+
                 <Button
                   type="button"
                   variant="outline"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-
                     navigate(
                       `/messages?userId=${item?.from?._id}&name=${item?.from?.userName}`,
                     );
                   }}
                   className="
-    h-8 rounded-full
-    px-3
-    text-xs font-medium
-    text-emerald-600
-    hover:bg-emerald-50
-    hover:text-emerald-700
-    transition-all duration-200
-    cursor-pointer
-  "
+                      h-8 rounded-full
+                      px-3
+                      text-xs font-medium
+                      text-emerald-600
+                      transition-all duration-200
+                      hover:bg-emerald-50
+                      hover:text-emerald-700
+                      cursor-pointer
+                    "
                 >
                   Message
                 </Button>
@@ -116,6 +139,15 @@ export const FriendCard = ({ tabValue }) => {
           </Link>
         );
       })}
+
+      <div ref={loadMoreRef} className="py-4">
+        {isFetchingNextPage ? <SkeletonRequest /> : null}
+        {!hasNextPage && friendsData.length > 0 ? (
+          <p className="text-center text-sm text-muted-foreground">
+            No more friends
+          </p>
+        ) : null}
+      </div>
     </>
   );
 };

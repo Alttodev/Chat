@@ -238,6 +238,13 @@ export const getUserPost = async ({ pageParam = 1 }) => {
   return data;
 };
 
+export const getUserPostVideos = async ({ pageParam = 1 }) => {
+  const { data } = await axiosInstance.get(
+    `/post/videos?page=${pageParam}&limit=5`,
+  );
+  return data;
+};
+
 export const getUserInfoPost = async ({ id, pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
     `/post/list/${id}?page=${pageParam}&limit=5`,
@@ -280,8 +287,11 @@ export const getFollowRequestInfo = async ({ fromId, toId }) => {
   return data;
 };
 
-export const getFriendsList = async () => {
-  const { data } = await axiosInstance.get(`/follow/friends`);
+export const getFriendsList = async (pageParam = 1, limit = 5) => {
+  const { data } = await axiosInstance.get(
+    `/follow/friends?page=${pageParam}&limit=${limit}`,
+  );
+
   return data;
 };
 
@@ -300,13 +310,17 @@ export const getUserInfoCount = async (id) => {
   return data;
 };
 
-export const getUserFollowers = async (id) => {
-  const { data } = await axiosInstance.get(`/follow/friends/${id}`);
+export const getUserFollowers = async (id, pageParam = 1, limit = 5) => {
+  const { data } = await axiosInstance.get(
+    `/follow/friends/${id}?page=${pageParam}&limit=${limit}`,
+  );
   return data;
 };
 
-export const getUserFollowing = async (id) => {
-  const { data } = await axiosInstance.get(`/follow/friends/following/${id}`);
+export const getUserFollowing = async (id, pageParam = 1, limit = 5) => {
+  const { data } = await axiosInstance.get(
+    `/follow/friends/following/${id}?page=${pageParam}&limit=${limit}`,
+  );
   return data;
 };
 

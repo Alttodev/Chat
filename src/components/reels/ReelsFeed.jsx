@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { usePostList } from "@/hooks/postHooks";
+import { usePostListVideos } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
 import { useZustandSharePopup } from "@/lib/zustand";
@@ -18,7 +18,7 @@ export function ReelsFeed() {
   const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    usePostList();
+    usePostListVideos();
   const scrollRef = useRef(null);
   const itemRefs = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -31,7 +31,12 @@ export function ReelsFeed() {
 
   const reels = useMemo(
     () =>
-      posts.filter((post) => isVideoMediaUrl(post?.image || "", post?.mimeType || post?.mimetype || "")),
+      posts.filter((post) =>
+        isVideoMediaUrl(
+          post?.image || "",
+          post?.mimeType || post?.mimetype || "",
+        ),
+      ),
     [posts],
   );
 
@@ -91,7 +96,6 @@ export function ReelsFeed() {
             <Clapperboard className="h-6 w-6" />
             Reels
           </p>
-         
         </div>
 
         <div className="hidden items-center gap-2 sm:flex">
@@ -105,7 +109,9 @@ export function ReelsFeed() {
           </button>
           <button
             type="button"
-            onClick={() => scrollToIndex(Math.min(activeIndex + 1, reels.length - 1))}
+            onClick={() =>
+              scrollToIndex(Math.min(activeIndex + 1, reels.length - 1))
+            }
             className="rounded-full border border-border bg-background p-2 text-muted-foreground transition hover:border-emerald-200 hover:text-emerald-600"
             aria-label="Next reel"
           >
