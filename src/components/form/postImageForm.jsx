@@ -185,7 +185,7 @@ export function PostImageForm() {
             onClick={() => openDialog("post")}
             className="flex h-10 w-10 items-center justify-center text-sky-500 transition hover:bg-sky-50 cursor-pointer rounded-full"
           >
-            <Sparkles className="h-5 w-5 text-fuchsia-500" />
+            <Sparkles className="h-5 w-5 text-sky-500" />
           </span>
         </div>
 

@@ -34,7 +34,7 @@ export default function AIPromptDialog({ onGenerate }) {
         <div className="border-b border-border px-5 py-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-semibold sm:text-lg">
-             <Sparkles className="h-5 w-5 text-fuchsia-500" />
+              <Sparkles className="h-5 w-5 text-sky-500" />
               Generate with AI
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
@@ -75,7 +75,7 @@ export default function AIPromptDialog({ onGenerate }) {
             </div>
           </div>
 
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <div className="flex  gap-2 flex-row justify-end">
             <Button
               type="button"
               variant="outline"
@@ -90,7 +90,7 @@ export default function AIPromptDialog({ onGenerate }) {
               type="button"
               onClick={handleGenerate}
               disabled={isGenerating || !prompt.trim()}
-             className="rounded-full bg-emerald-600 px-5 text-white hover:bg-emerald-700 disabled:opacity-70"
+              className="rounded-full bg-emerald-600 px-5 text-white hover:bg-emerald-700 disabled:opacity-70"
             >
               {isGenerating ? (
                 <>

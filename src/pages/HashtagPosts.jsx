@@ -139,7 +139,7 @@ const HashtagPosts = () => {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-8 px-4 pb-20">
+    <div className="mx-auto w-full max-w-3xl space-y-8 pb-20">
       <div
         className="
     sticky top-0 z-20

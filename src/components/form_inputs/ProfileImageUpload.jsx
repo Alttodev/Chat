@@ -64,6 +64,7 @@ export function ProfileImageUpload({
   rules,
   disabled = false,
   defaultImage,
+  onRemove,
 }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [cropOpen, setCropOpen] = useState(false);
@@ -115,6 +116,9 @@ export function ProfileImageUpload({
     setIsDefaultHidden(true);
 
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (onRemove) {
+      onRemove();
+    }
   };
 
   const handleDrop = (e, onChange) => {

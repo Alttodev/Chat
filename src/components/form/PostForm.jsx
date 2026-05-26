@@ -15,10 +15,9 @@ import AIPromptDialog from "../modals/aiPromptDialog";
 export function PostForm({ userProfile }) {
   const { mutateAsync: createPost } = usePostCreate();
   const { openImageModal } = useZustandImagePopup();
-  const { setGenerating, closeDialog,openDialog } = useAIPromptStore();
+  const { setGenerating, closeDialog, openDialog } = useAIPromptStore();
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  
 
   const {
     handleSubmit,
@@ -56,37 +55,35 @@ export function PostForm({ userProfile }) {
     setSelectedLocation(null);
   };
 
- const handleGenerateAI = async (prompt) => {
-  
+  const handleGenerateAI = async (prompt) => {
+    try {
+      setGenerating(true);
 
-  try {
-    setGenerating(true);
+      const res = await axiosInstance.post("/ai/post-caption", {
+        prompt,
+      });
 
-    const res = await axiosInstance.post("/ai/post-caption", {
-      prompt,
-    });
+      const generatedText = res?.data?.text?.trim();
 
-    const generatedText = res?.data?.text?.trim();
+      if (!generatedText) {
+        toastError("AI did not return any text");
+        return;
+      }
 
-    if (!generatedText) {
-      toastError("AI did not return any text");
-      return;
+      setValue("postText", generatedText, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+
+      closeDialog();
+      textareaRef.current?.focus();
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    } finally {
+      setGenerating(false);
     }
-
-    setValue("postText", generatedText, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
-
-    closeDialog();
-    textareaRef.current?.focus();
-  } catch (error) {
-    toastError(error?.response?.data?.message || "Something went wrong");
-  } finally {
-    setGenerating(false);
-  }
-};
+  };
 
   const onSubmit = async (formData) => {
     try {
@@ -204,10 +201,10 @@ export function PostForm({ userProfile }) {
             </span>
 
             <span
-              onClick={() =>openDialog("post")}
+              onClick={() => openDialog("post")}
               className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-emerald-600 transition hover:bg-emerald-50"
             >
-             <Sparkles className="h-5 w-5 text-fuchsia-500" />
+              <Sparkles className="h-5 w-5 text-sky-500" />
             </span>
           </div>
 
@@ -244,7 +241,7 @@ export function PostForm({ userProfile }) {
         />
       </form>
 
-     <AIPromptDialog onGenerate={handleGenerateAI} />
+      <AIPromptDialog onGenerate={handleGenerateAI} />
     </>
   );
 }

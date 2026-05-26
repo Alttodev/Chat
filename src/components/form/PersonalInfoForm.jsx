@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { userSchema } from "@/lib/validation";
 import { useUserUpdate } from "@/hooks/authHooks";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import ProfileTextAreaInput from "../form_inputs/ProfileTextarea";
 import { useAIPromptStore } from "@/lib/zustand";
@@ -16,6 +16,8 @@ import axiosInstance from "@/api/axiosInstance";
 export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
   const { mutateAsync: userUpdate } = useUserUpdate();
   const { setGenerating, openDialog, closeDialog } = useAIPromptStore();
+
+  const isProfileImageRemovedRef = useRef(false);
 
   const {
     handleSubmit,
@@ -72,15 +74,20 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       formData.append("address", data.address);
       formData.append("bio", data.bio);
 
-      if (data.profileImage) {
+      // only send if user selected a new file
+      if (data.profileImage instanceof File) {
         formData.append("profileImage", data.profileImage);
-      } else {
+      }
+
+      // only send null when user explicitly removed the image
+      if (isProfileImageRemovedRef.current) {
         formData.append("profileImage", "null");
       }
 
       const res = await userUpdate(formData);
       toastSuccess(res?.message || "Profile updated successfully");
       closeEditing?.(false);
+      isProfileImageRemovedRef.current = false;
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -95,12 +102,16 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
         bio: userProfile?.profile?.bio || "",
         profileImage: null,
       });
+      isProfileImageRemovedRef.current = false;
     }
   }, [userProfile, reset]);
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4 sm:space-y-6"
+      >
         {isEditing && (
           <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/60 p-3 sm:p-4">
             <div className="flex items-center gap-2 text-sm font-medium text-emerald-700">
@@ -113,6 +124,9 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                 control={control}
                 disabled={isSubmitting}
                 defaultImage={userProfile?.profile?.profileImage}
+                onRemove={() => {
+                  isProfileImageRemovedRef.current = true;
+                }}
               />
             </div>
           </div>
@@ -201,7 +215,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                   onClick={() => openDialog("bio")}
                   className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-emerald-600 transition hover:bg-emerald-50 sm:h-10 sm:w-10"
                 >
-                  <Sparkles className="h-5 w-5 text-fuchsia-500" />
+                  <Sparkles className="h-5 w-5 text-sky-500" />
                 </span>
               </div>
             )}
