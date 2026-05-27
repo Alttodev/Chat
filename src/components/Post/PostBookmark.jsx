@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
@@ -10,10 +10,20 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
   const [isBookmarked, setIsBookmarked] = useState(
     Boolean(post?.bookmarkedByMe),
   );
+  const [animateBookmark, setAnimateBookmark] = useState(false);
+  const bookmarkTimerRef = useRef(null);
 
   useEffect(() => {
     setIsBookmarked(Boolean(post?.bookmarkedByMe));
   }, [post?._id, post?.bookmarkedByMe]);
+
+  useEffect(() => {
+    return () => {
+      if (bookmarkTimerRef.current) {
+        window.clearTimeout(bookmarkTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleBookmark = async (event) => {
     event.stopPropagation();
@@ -24,6 +34,15 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
     const nextBookmarked = !previousBookmarked;
 
     setIsBookmarked(nextBookmarked);
+    setAnimateBookmark(true);
+
+    if (bookmarkTimerRef.current) {
+      window.clearTimeout(bookmarkTimerRef.current);
+    }
+
+    bookmarkTimerRef.current = window.setTimeout(() => {
+      setAnimateBookmark(false);
+    }, 280);
 
     try {
       const res = await postBookmark({ id: post._id });
@@ -52,7 +71,8 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
       variant="ghost"
       onClick={handleBookmark}
       className={cn(
-        "inline-flex h-10 w-10 items-center justify-center p-0 text-muted-foreground hover:bg-transparent cursor-pointer",
+        "inline-flex h-10 w-10 items-center justify-center p-0 text-muted-foreground hover:bg-transparent cursor-pointer transition-transform duration-200 ease-out",
+        animateBookmark ? "scale-110" : "scale-100",
         className,
       )}
       aria-label={isBookmarked ? "Remove bookmark" : "Bookmark post"}
@@ -61,8 +81,8 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
       <Bookmark
         style={{ width: 20, height: 20 }}
         className={`shrink-0 transition-transform duration-200 ease-out ${
-          isBookmarked ? "fill-current text-emerald-500" : ""
-        }`}
+          isBookmarked ? "fill-current text-emerald-500 dark:text-emerald-300" : ""
+        } ${animateBookmark ? "scale-125 -rotate-12" : "scale-100"}`}
       />
     </Button>
   );
