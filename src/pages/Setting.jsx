@@ -328,15 +328,18 @@ function SettingsComponent() {
                 onClick={() => navigate("/bookmarked-posts")}
                 className="
       h-9 px-4 rounded-full
-       text-emerald-700
-      hover:bg-emerald-50 hover:text-emerald-800
+      border-emerald-200 dark:border-emerald-900/60
+      bg-emerald-50 dark:bg-emerald-950/40
+      text-emerald-700 dark:text-emerald-300
+      hover:bg-emerald-100 dark:hover:bg-emerald-950/60
+      hover:text-emerald-800 dark:hover:text-emerald-200
       transition-all duration-200
       flex items-center gap-2
       cursor-pointer
       shadow-sm
     "
               >
-                <Bookmark className="h-4 w-4 fill-white" />
+                <Bookmark className="h-4 w-4" />
                 Saved
               </Button>
             </div>

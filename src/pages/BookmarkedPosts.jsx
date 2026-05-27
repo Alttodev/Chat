@@ -26,7 +26,12 @@ import {
   usePostDelete,
   usePostInfo,
 } from "@/hooks/postHooks";
-import { useCommentStore, useImageModalStore, useZustandPopup, useZustandSharePopup } from "@/lib/zustand";
+import {
+  useCommentStore,
+  useImageModalStore,
+  useZustandPopup,
+  useZustandSharePopup,
+} from "@/lib/zustand";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { formatRelative } from "@/lib/dateHelpers";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
@@ -179,7 +184,10 @@ const BookmarkedPosts = () => {
 
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                <span
+                  className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold  text-emerald-700
+      hover:bg-emerald-50 hover:text-emerald-800"
+                >
                   SAVED
                 </span>
                 <h1 className="truncate text-lg font-bold text-foreground sm:text-xl">
@@ -204,9 +212,7 @@ const BookmarkedPosts = () => {
             ? post.likedByUsers
             : [];
           const visibleLiker = likedByUsers.find((user) => {
-            const likerId = String(
-              user?._id ?? user?.id ?? user?.userId ?? "",
-            );
+            const likerId = String(user?._id ?? user?.id ?? user?.userId ?? "");
             return likerId && likerId !== currentUserId;
           });
 
@@ -376,8 +382,8 @@ const BookmarkedPosts = () => {
         })
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
-            <Bookmark className="h-7 w-7" />
+          <div className="flex h-15 w-15 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/15 backdrop-blur-sm dark:bg-emerald-500/10">
+            <Bookmark className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
           </div>
 
           <p className="text-lg font-semibold text-foreground">
