@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getVideoPosterUrl } from "@/lib/media";
-import { usePostLike } from "@/hooks/postHooks";
+import { usePostBookmark, usePostLike } from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
 
-function ActionButton({ icon, label, active = false, onClick }) {
+function ActionButton({
+  icon,
+  label,
+  active = false,
+  onClick,
+  activeClassName = "fill-current text-red-500",
+}) {
   const Icon = icon;
 
   return (
@@ -23,7 +29,7 @@ function ActionButton({ icon, label, active = false, onClick }) {
         <Icon
           className={cn(
             "h-5 w-5",
-            active ? "fill-current text-red-500" : "text-white",
+            active ? activeClassName : "text-white",
           )}
         />
       </span>
@@ -36,6 +42,10 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
+  const { mutateAsync: postBookmark } = usePostBookmark();
+  const [isBookmarked, setIsBookmarked] = useState(
+    Boolean(post?.bookmarkedByMe),
+  );
   const [isLiked, setIsLiked] = useState(
     !!post?.likedByMe && post?.myReaction === "love",
   );
@@ -58,7 +68,8 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
     setIsReady(false);
     setIsLiked(!!post?.likedByMe);
     setLikeCount(typeof post?.likes === "number" ? post.likes : 0);
-  }, [post?._id, post?.image, post?.likedByMe, post?.likes]);
+    setIsBookmarked(Boolean(post?.bookmarkedByMe));
+  }, [post?._id, post?.image, post?.bookmarkedByMe, post?.likedByMe, post?.likes]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -98,6 +109,34 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
     } catch (error) {
       setIsLiked(!nextLiked);
       setLikeCount(likeCount);
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  const handleBookmark = async (event) => {
+    event.stopPropagation();
+
+    if (!post?._id) return;
+
+    const previousBookmarked = isBookmarked;
+    const nextBookmarked = !previousBookmarked;
+
+    setIsBookmarked(nextBookmarked);
+
+    try {
+      const res = await postBookmark({
+        id: post._id,
+      });
+
+      setIsBookmarked(
+        typeof res?.bookmarkedByMe === "boolean"
+          ? res.bookmarkedByMe
+          : typeof res?.data?.bookmarkedByMe === "boolean"
+            ? res.data.bookmarkedByMe
+            : nextBookmarked,
+      );
+    } catch (error) {
+      setIsBookmarked(previousBookmarked);
       toastError(error?.response?.data?.message || "Something went wrong");
     }
   };
@@ -220,6 +259,13 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                 icon={MessageCircle}
                 label="Comment on reel"
                 onClick={onComment}
+              />
+              <ActionButton
+                icon={Bookmark}
+                label={isBookmarked ? "Remove bookmark" : "Save reel"}
+                active={isBookmarked}
+                activeClassName="fill-current text-amber-400"
+                onClick={handleBookmark}
               />
               <ActionButton icon={Send} label="Share reel" onClick={onShare} />
             </div>

@@ -25,6 +25,7 @@ import Reels from "@/pages/Reels";
 import VerifyAccountPage from "@/pages/VerifyAccountPage";
 import ProfileRoute from "./profileRoute";
 import HashtagPosts from "@/pages/HashtagPosts";
+import BookmarkedPosts from "@/pages/BookmarkedPosts";
 
 
 function AppRoutes() {
@@ -57,6 +58,7 @@ function AppRoutes() {
               <Route path="/survey" element={<Survey />} />
               <Route path="/reels" element={<Reels />} />
               <Route path="/settings" element={<SettingsComponent />} />
+              <Route path="/bookmarked-posts" element={<BookmarkedPosts />} />
               <Route path="/users/:id" element={<UsersInfo />} />
               <Route path="/userslist" element={<UsersList />} />
               <Route path="/posts/:id/likes" element={<PostLikes />} />

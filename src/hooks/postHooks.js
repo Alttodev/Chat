@@ -4,6 +4,7 @@ import {
   getFriendsList,
   getRecommendedConnections,
   getPostLikedUsers,
+  getBookmarkedPosts,
   getRequestList,
   getUserFollowers,
   getUserFollowing,
@@ -20,6 +21,7 @@ import {
   userPostCommentReaction,
   userPostDelete,
   userPostLike,
+  userPostBookmark,
   userPostUpdate,
   userRequestDelete,
   getHashtagPosts,
@@ -59,6 +61,24 @@ export const useProfileFollow = () => {
 export const usePostLike = () => {
   return useMutation({
     mutationFn: ({ id }) => userPostLike(id),
+  });
+};
+
+export const usePostBookmark = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }) => userPostBookmark(id),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["bookmarked_posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user_post"] });
+      queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
+      queryClient.invalidateQueries({ queryKey: ["hashtag-posts"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user_post_info", variables.id],
+        exact: true,
+      });
+      queryClient.invalidateQueries({ queryKey: ["user_post_videos"] });
+    },
   });
 };
 
@@ -149,6 +169,23 @@ export const useHashtagPosts = (tag, page = 1) => {
     queryKey: ["hashtag-posts", tag, page],
     queryFn: () => getHashtagPosts(tag, page),
     enabled: !!tag,
+  });
+};
+
+export const useBookmarkedPosts = () => {
+  return useInfiniteQuery({
+    queryKey: ["bookmarked_posts"],
+    initialPageParam: 1,
+    queryFn: ({ pageParam = 1 }) => getBookmarkedPosts(pageParam, 5),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+
+      const currentPage = Number(lastPage.currentPage || 1);
+      const totalPages = Number(lastPage.totalPages || 1);
+
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -304,6 +341,7 @@ export const usePostUpdate = () => {
       queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
       queryClient.invalidateQueries({ queryKey: ["hashtag-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarked_posts"] });
     },
   });
 };
@@ -318,6 +356,7 @@ export const usePostDelete = () => {
       queryClient.invalidateQueries({ queryKey: ["user_Info_post"] });
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
       queryClient.invalidateQueries({ queryKey: ["hashtag-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarked_posts"] });
     },
   });
 };

@@ -40,6 +40,12 @@ export const userPostLike = async (id) => {
   const { data } = await axiosInstance.post(`/post/${id}/like`);
   return data;
 };
+
+export const userPostBookmark = async (id) => {
+  const { data } = await axiosInstance.post(`/post/${id}/bookmark`);
+  return data;
+};
+
 export const userPostComment = async (id, formData) => {
   const { data } = await axiosInstance.post(`/posts/${id}/comment`, formData);
   return data;
@@ -260,6 +266,14 @@ export const getUserPostInfo = async (id) => {
 export const getHashtagPosts = async (tag, page = 1) => {
   const { data } = await axiosInstance.get(
     `/post/hashtags/${tag}?page=${page}&limit=5`,
+  );
+
+  return data;
+};
+
+export const getBookmarkedPosts = async (page = 1, limit = 5) => {
+  const { data } = await axiosInstance.get(
+    `/post/bookmarked?page=${page}&limit=${limit}`,
   );
 
   return data;

@@ -90,7 +90,6 @@ export const useThemeStore = create(
   ),
 );
 
-
 export const useAIPromptStore = create((set) => ({
   isOpen: false,
   prompt: "",

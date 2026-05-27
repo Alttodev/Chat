@@ -1,59 +1,55 @@
 import {
-    BadgeCheck,
-  MessageCircle,
+  BadgeCheck,
+  Bookmark,
   MoreHorizontal,
   Send,
   SquarePen,
   Trash2,
+  MessageCircle,
+  ArrowLeft,
 } from "lucide-react";
-
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import { useEffect, useMemo, useState, useRef } from "react";
-
-import {
-  useCommentStore,
-  useImageModalStore,
-  useZustandPopup,
-  useZustandSharePopup,
-} from "@/lib/zustand";
-
-import { formatRelative } from "@/lib/dateHelpers";
-import { ShareDialog } from "@/components/modals/shareModal";
-import PostLikeComponent from "@/components/Post/PostLike";
-import { CommentSection } from "@/components/Post/CommentSection";
-import { ImageViewer } from "@/components/modals/imageViewer";
-import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
-import PostContent from "@/components/Post/PostContent";
-import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
-import { useHashtagPosts, usePostDelete } from "@/hooks/postHooks";
-import { usePostInfo } from "@/hooks/postHooks";
-import { useScrollToPost } from "@/hooks/useScrollToPost";
-import { formatShortUsername } from "@/lib/shortUserName";
-import { useUserDetail } from "@/hooks/authHooks";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { useUserDetail } from "@/hooks/authHooks";
+import {
+  useBookmarkedPosts,
+  usePostDelete,
+  usePostInfo,
+} from "@/hooks/postHooks";
+import { useCommentStore, useImageModalStore, useZustandPopup, useZustandSharePopup } from "@/lib/zustand";
+import { toastError, toastSuccess } from "@/lib/toast";
+import { formatRelative } from "@/lib/dateHelpers";
+import { useScrollToPost } from "@/hooks/useScrollToPost";
+import { ShareDialog } from "@/components/modals/shareModal";
+import { ImageViewer } from "@/components/modals/imageViewer";
 import { PostDialog } from "@/components/modals/postModal";
+import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
+import PostContent from "@/components/Post/PostContent";
+import PostLikeComponent from "@/components/Post/PostLike";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
+import { CommentSection } from "@/components/Post/CommentSection";
+import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
+import { formatShortUsername } from "@/lib/shortUserName";
 
-const HashtagPosts = () => {
-  const { tag } = useParams();
-  const { openShareModal } = useZustandSharePopup();
+const BookmarkedPosts = () => {
+  const navigate = useNavigate();
   const { openModal } = useZustandPopup();
+  const { openShareModal } = useZustandSharePopup();
+  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
   const { data: profileData } = useUserDetail();
   const { mutateAsync: deletePost } = usePostDelete();
-  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
   const { open } = useImageModalStore();
   const loadMoreRef = useRef(null);
-
   const [searchParams] = useSearchParams();
   const targetPostId = searchParams.get("postId");
   const targetCommentId = searchParams.get("commentId");
@@ -61,11 +57,15 @@ const HashtagPosts = () => {
   const userProfile = useMemo(() => profileData, [profileData]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useHashtagPosts(tag);
+    useBookmarkedPosts();
 
-  const posts = useMemo(() => data?.posts || [], [data]);
+  const posts = useMemo(
+    () => data?.pages?.flatMap((page) => page.posts) || [],
+    [data],
+  );
 
   const [localPosts, setLocalPosts] = useState([]);
+  const [targetPostOverride, setTargetPostOverride] = useState(null);
 
   useEffect(() => {
     setLocalPosts(posts);
@@ -74,13 +74,39 @@ const HashtagPosts = () => {
   const { data: targetPostData } = usePostInfo(targetPostId);
   const targetPost = targetPostData?.post;
 
+  useEffect(() => {
+    setTargetPostOverride(targetPost || null);
+  }, [targetPost]);
+
   const displayPosts = useMemo(() => {
-    if (!targetPostId || !targetPost) return localPosts;
-    if (localPosts.some((post) => post._id === targetPostId)) return localPosts;
-    return [targetPost, ...localPosts];
-  }, [localPosts, targetPost, targetPostId]);
+    if (!targetPostId) return localPosts;
+
+    const hasTargetInList = localPosts.some(
+      (post) => post._id === targetPostId,
+    );
+
+    if (hasTargetInList) {
+      return localPosts.map((post) =>
+        post._id === targetPostId && targetPostOverride
+          ? { ...post, ...targetPostOverride }
+          : post,
+      );
+    }
+
+    if (targetPostOverride) {
+      return [targetPostOverride, ...localPosts];
+    }
+
+    return localPosts;
+  }, [localPosts, targetPostId, targetPostOverride]);
 
   useScrollToPost(targetPostId, [displayPosts]);
+
+  useEffect(() => {
+    if (targetPostId) {
+      setOpenPostId(targetPostId);
+    }
+  }, [setOpenPostId, targetPostId]);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -92,14 +118,9 @@ const HashtagPosts = () => {
     });
 
     observer.observe(loadMoreRef.current);
+
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  useEffect(() => {
-    if (targetPostId) {
-      setOpenPostId(targetPostId);
-    }
-  }, [setOpenPostId, targetPostId]);
 
   const handleDelete = async (id) => {
     try {
@@ -129,11 +150,14 @@ const HashtagPosts = () => {
     };
 
     setLocalPosts((prev) => prev.map(patchPost));
+    setTargetPostOverride((prev) => (prev ? patchPost(prev) : prev));
   };
+
+  const totalPosts = data?.pages?.[0]?.totalPosts ?? 0;
 
   if (isLoading) {
     return (
-      <div className="flex min-h-90 items-center justify-center">
+      <div className="min-h-90 flex items-center justify-center">
         <Spinner className="text-emerald-600" size={44} />
       </div>
     );
@@ -141,47 +165,31 @@ const HashtagPosts = () => {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8 pb-20">
-      <div
-        className="
-    sticky top-0 z-20
-    border-border/60
-    bg-background/90
-    px-1 
-    backdrop-blur-md
-  "
-      >
-        <div className="flex items-center justify-between">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span
-                className="
-            rounded-full
-            bg-blue-100
-            px-2 py-0.5
-            text-xs font-semibold
-            text-blue-700
-            dark:bg-blue-950/40
-            dark:text-blue-300
-          "
-              >
-                HASHTAG
-              </span>
+      <div className="sticky top-0 z-20 border-border/60 bg-background/90 px-1 backdrop-blur-md">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/settings")}
+              className="cursor-pointer text-foreground hover:bg-transparent hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
 
-              <h1
-                className="
-            truncate
-            text-lg font-bold
-            text-foreground
-            sm:text-xl
-          "
-              >
-                #{tag}
-              </h1>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                  SAVED
+                </span>
+                <h1 className="truncate text-lg font-bold text-foreground sm:text-xl">
+                  Bookmarked Posts
+                </h1>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {totalPosts || 0} bookmarked posts
+              </p>
             </div>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              {data?.totalPosts || 0} posts related to this hashtag
-            </p>
           </div>
         </div>
       </div>
@@ -189,10 +197,18 @@ const HashtagPosts = () => {
       {displayPosts.length > 0 ? (
         displayPosts.map((post) => {
           const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+          const currentUserId = userProfile?.profile?.id
+            ? String(userProfile.profile.id)
+            : null;
           const likedByUsers = Array.isArray(post?.likedByUsers)
             ? post.likedByUsers
             : [];
-          const visibleLiker = likedByUsers[0];
+          const visibleLiker = likedByUsers.find((user) => {
+            const likerId = String(
+              user?._id ?? user?.id ?? user?.userId ?? "",
+            );
+            return likerId && likerId !== currentUserId;
+          });
 
           return (
             <Card
@@ -202,7 +218,7 @@ const HashtagPosts = () => {
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
                     <Avatar className="h-10 w-10 text-emerald-600">
                       <AvatarImage
                         onClick={() => open(post?.user?.profileImage)}
@@ -221,28 +237,29 @@ const HashtagPosts = () => {
                             {post?.user?.userName}
                           </span>
                           {post?.user?.isVerified && (
-                            <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                            <BadgeCheck className="h-4 w-4 flex-shrink-0 fill-blue-500 text-white" />
                           )}
                         </div>
                       ) : (
                         <Link
                           to={`/users/${post?.user?._id}`}
-                          className="flex items-center gap-1 cursor-pointer"
+                          className="flex cursor-pointer items-center gap-1"
                         >
                           <span className="truncate text-sm font-medium sm:text-base">
                             {post?.user?.userName}
                           </span>
                           {post?.user?.isVerified && (
-                            <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                            <BadgeCheck className="h-4 w-4 flex-shrink-0 fill-blue-500 text-white" />
                           )}
                         </Link>
                       )}
 
-                      <p className="text-xs sm:text-sm text-muted-foreground">
+                      <p className="text-xs text-muted-foreground sm:text-sm">
                         {formatRelative(post?.createdAt)}
                       </p>
                     </div>
                   </div>
+
                   {post?.isOwner && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -297,7 +314,7 @@ const HashtagPosts = () => {
                   <div className="flex flex-wrap items-center gap-1 sm:flex-nowrap">
                     <PostLikeComponent
                       post={post}
-                      currentUserId={post?.user?._id}
+                      currentUserId={currentUserId}
                       onLikeChange={handleLikeChange}
                     />
 
@@ -332,15 +349,7 @@ const HashtagPosts = () => {
                   <Link
                     to={`/posts/${post._id}/liked-users`}
                     title={visibleLiker?.userName || ""}
-                    className="
-                      inline-flex ml-2 max-w-[180px] items-center truncate
-                      text-[13px] font-medium
-                      text-slate-500
-                      transition-colors duration-200
-                      hover:text-slate-700
-                      dark:text-slate-400
-                      dark:hover:text-slate-200
-                    "
+                    className="inline-flex ml-2 max-w-[180px] items-center truncate text-[13px] font-medium text-slate-500 transition-colors duration-200 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                   >
                     {likeCount === 1
                       ? `Liked by ${formatShortUsername(visibleLiker?.userName)}`
@@ -367,21 +376,26 @@ const HashtagPosts = () => {
         })
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
+            <Bookmark className="h-7 w-7" />
+          </div>
+
           <p className="text-lg font-semibold text-foreground">
-            No posts found
+            No bookmarked posts
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            No posts available for #{tag}
+            Saved posts will appear here when you bookmark them.
           </p>
         </div>
       )}
+
       <PostDialog />
       <ShareDialog />
       <ImageViewer />
 
       <div ref={loadMoreRef} style={{ height: "20px" }} />
       {isFetchingNextPage && <PostSkeleton />}
-      {!hasNextPage && (
+      {!hasNextPage && displayPosts.length > 0 && (
         <div className="flex justify-center">
           <span className="px-3 text-sm text-muted-foreground">
             No more posts
@@ -392,4 +406,4 @@ const HashtagPosts = () => {
   );
 };
 
-export default HashtagPosts;
+export default BookmarkedPosts;

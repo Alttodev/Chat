@@ -31,6 +31,7 @@ import {
   useZustandSharePopup,
 } from "@/lib/zustand";
 import { CommentSection } from "./Post/CommentSection";
+import PostBookmarkComponent from "./Post/PostBookmark";
 import { PostImageDialog } from "./modals/postImageModal";
 import { ShareDialog } from "./modals/shareModal";
 import { PostSkeleton } from "./skeleton/postListSkeleton";
@@ -305,32 +306,36 @@ export function CenterFeed() {
               <PostContent text={post?.postText} className="mt-3 pl-2" />
               
 
-              <div className="mt-3 flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                <PostLikeComponent
-                  post={post}
-                  currentUserId={userProfile?.profile?.id}
-                  onLikeChange={handleLikeChange}
-                />
+              <div className="mt-3 flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
+                  <PostLikeComponent
+                    post={post}
+                    currentUserId={userProfile?.profile?.id}
+                    onLikeChange={handleLikeChange}
+                  />
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => toggleComments(post._id)}
-                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
-                  aria-label="Comment on post"
-                >
-                  <MessageCircle style={{ width: 18, height: 18 }} />
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleComments(post._id)}
+                    className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
+                    aria-label="Comment on post"
+                  >
+                    <MessageCircle style={{ width: 18, height: 18 }} />
+                  </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => openShareModal(post._id)}
-                  className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
-                  aria-label="Share post"
-                >
-                  <Send style={{ width: 18, height: 18 }} />
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openShareModal(post._id)}
+                    className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
+                    aria-label="Share post"
+                  >
+                    <Send style={{ width: 18, height: 18 }} />
+                  </Button>
+                </div>
+
+                <PostBookmarkComponent post={post} className="ml-auto shrink-0" />
               </div>
               {likeCount > 0 && visibleLiker && (
                 <Link

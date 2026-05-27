@@ -17,6 +17,7 @@ import {
   Calendar,
   Clock,
   LogOut,
+  Bookmark,
   User,
   MoonStar,
   Globe,
@@ -277,9 +278,9 @@ function SettingsComponent() {
                 />
               </div>
             </div>
-            <Separator />
+            {/* <Separator /> */}
 
-            <div className="flex items-center justify-between gap-4">
+            {/* <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <UserRoundSearch className="h-4 w-4 text-slate-500" />
@@ -302,6 +303,42 @@ function SettingsComponent() {
                   Profile views
                 </Button>
               </div>
+            </div> */}
+
+            <Separator />
+
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Bookmark className="h-4 w-4 text-slate-500" />
+
+                  <label className="text-sm font-medium">
+                    Bookmarked Posts
+                  </label>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  View the posts you saved for later
+                </p>
+              </div>
+
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/bookmarked-posts")}
+                className="
+      h-9 px-4 rounded-full
+       text-emerald-700
+      hover:bg-emerald-50 hover:text-emerald-800
+      transition-all duration-200
+      flex items-center gap-2
+      cursor-pointer
+      shadow-sm
+    "
+              >
+                <Bookmark className="h-4 w-4 fill-white" />
+                Saved
+              </Button>
             </div>
 
             <Separator />
