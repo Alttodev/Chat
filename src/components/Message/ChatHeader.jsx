@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Phone, MoreVertical, Ban } from "lucide-react";
+import { ArrowLeft, MoreVertical, Ban } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -41,12 +41,11 @@ export default function ChatHeader({
   onToggleBlockUser,
   isTogglingBlock,
   blockedByMe,
-  onAudioCall,
-  isCalling,
+
 }) {
   return (
-    <div className="flex items-center justify-between p-4 border-b bg-card">
-      <div className="flex items-center gap-3">
+    <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/70 bg-background/90 px-4 py-3 backdrop-blur">
+      <div className="flex min-w-0 items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
@@ -56,9 +55,9 @@ export default function ChatHeader({
           <ArrowLeft className="w-5 h-5 text-emerald-600" />
         </Button>
         <div className="relative">
-          <Avatar className="w-10 h-10 text-emerald-600">
+          <Avatar className="h-10 w-10 text-emerald-600">
             <AvatarImage
-              className="w-full h-full object-cover object-top cursor-pointer"
+              className="h-full w-full cursor-pointer object-cover object-top"
               src={contact?.profileImage || "/placeholder.svg"}
             />
             <AvatarFallback>
@@ -74,9 +73,11 @@ export default function ChatHeader({
             }`}
           />
         </div>
-        <div>
-          <h3 className="font-semibold text-emerald-600">{contact.name}</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className="min-w-0">
+          <h3 className="truncate font-semibold text-foreground">
+            {contact.name}
+          </h3>
+          <p className="truncate text-sm text-muted-foreground">
             {contact.isOnline
               ? "Online"
               : `Last seen ${formatLastSeen(contact.lastSeen)}`}
@@ -84,7 +85,7 @@ export default function ChatHeader({
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button
+        {/* <Button
           variant="ghost"
           size="icon"
           className="cursor-pointer"
@@ -92,7 +93,7 @@ export default function ChatHeader({
           disabled={isCalling}
         >
           <Phone className="w-4 h-4 text-emerald-600" />
-        </Button>
+        </Button> */}
 
         {/* <Button variant="ghost" size="icon">
           <Video className="w-4 h-4 text-emerald-600" />

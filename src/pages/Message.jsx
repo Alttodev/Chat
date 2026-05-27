@@ -5,6 +5,7 @@ import ContactsSidebar from "@/components/Message/ContactsSidebar";
 import MessagesList from "@/components/Message/MessagesList";
 import MessageInput from "@/components/Message/MessageInput";
 import ChatHeader from "@/components/Message/ChatHeader";
+import ForwardMessageSheet from "@/components/Message/ForwardMessageSheet";
 import {
   useBlockChatUser,
   useChatConversations,
@@ -23,6 +24,29 @@ import { useJitsiCall } from "@/lib/jitsiCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { useUserProfiles } from "@/hooks/authHooks";
+import {
+  getMessageMediaMimeType,
+  getMessageMediaUrl,
+  isAudioMediaUrl,
+  isVideoMediaUrl,
+} from "@/lib/media";
+
+const getLastMessagePreview = (message) => {
+  if (!message) return "";
+
+  const text = message?.text?.trim();
+  const mediaUrl = getMessageMediaUrl(message);
+  const mediaType = getMessageMediaMimeType(message);
+  const isAudio = !!message?.audio || isAudioMediaUrl(mediaUrl, mediaType);
+  const isVideo = isVideoMediaUrl(mediaUrl, mediaType);
+
+  if (text) return text;
+  if (isAudio) return "Audio message";
+  if (isVideo) return "Video message";
+  if (mediaUrl) return "Image";
+
+  return "";
+};
 
 export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
@@ -33,6 +57,8 @@ export default function Message() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [replyToMessage, setReplyToMessage] = useState(null);
+  const [forwardingMessage, setForwardingMessage] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [blockedUsers, setBlockedUsers] = useState(() => {
@@ -129,9 +155,7 @@ export default function Message() {
         lastSeen: conversation?.otherParticipant?.lastSeen || "",
         unreadCount: conversation?.unreadCount || 0,
         lastMessageAt: conversation?.lastMessageAt || conversation?.updatedAt,
-        lastMessageText:
-          conversation?.lastMessage?.text ||
-          (conversation?.lastMessage?.type === "image" ? "Image" : ""),
+        lastMessageText: getLastMessagePreview(conversation?.lastMessage),
         isFriend: acceptedFriendIds.has(
           conversation?.otherParticipant?._id?.toString(),
         ),
@@ -289,6 +313,13 @@ useEffect(() => {
     blockedUsers,
   ]);
 
+  const forwardableContacts = useMemo(() => {
+    return contactsWithTarget.filter(
+      (contact) =>
+        contact?.targetUserId?.toString() !== profileId?.toString(),
+    );
+  }, [contactsWithTarget, profileId]);
+
   useEffect(() => {
     if (!contactsWithTarget.length) return;
 
@@ -365,6 +396,8 @@ useEffect(() => {
   useEffect(() => {
     setNewMessage("");
     setSelectedImage(null);
+    setReplyToMessage(null);
+    setForwardingMessage(null);
     setIsOtherTyping(false);
     if (typingStopTimeoutRef.current) {
       window.clearTimeout(typingStopTimeoutRef.current);
@@ -436,17 +469,6 @@ useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
     queryClient.invalidateQueries({ queryKey: ["notifications"] });
   }, [queryClient]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
-      });
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, [messages, selectedConversationId]);
 
   useEffect(() => {
     if (!socket || !selectedConversationId || !selectedContact?.targetUserId) {
@@ -661,6 +683,102 @@ useEffect(() => {
     refreshNotificationQueries,
   ]);
 
+  const handleReplyMessage = useCallback((message) => {
+    setForwardingMessage(null);
+    setReplyToMessage(message || null);
+    setShowChat(true);
+  }, []);
+
+  const handleForwardMessage = useCallback((message) => {
+    setReplyToMessage(null);
+    setForwardingMessage(message || null);
+    setShowChat(true);
+  }, []);
+
+  const handleForwardToContact = useCallback(
+    async (targetContact) => {
+      if (!forwardingMessage || !targetContact?.targetUserId) return;
+
+      if (targetContact.targetUserId?.toString() === profileId?.toString()) {
+        toastError("You cannot chat with yourself");
+        return;
+      }
+
+      if (!targetContact?.isFriend) {
+        toastError("Only accepted friends can message");
+        return;
+      }
+
+      if (targetContact?.isBlocked) {
+        toastError("User is blocked");
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("text", forwardingMessage?.text?.trim() || "");
+        formData.append("forwardedMessageId", forwardingMessage?._id || "");
+        formData.append(
+          "forwardedMessageSenderId",
+          forwardingMessage?.sender?._id || "",
+        );
+
+        const mediaUrl = getMessageMediaUrl(forwardingMessage);
+
+        if (mediaUrl) {
+          try {
+            const response = await fetch(mediaUrl);
+            if (response.ok) {
+              const blob = await response.blob();
+              const isAudio = isAudioMediaUrl(
+                mediaUrl,
+                getMessageMediaMimeType(forwardingMessage),
+              );
+              const isVideo = isVideoMediaUrl(
+                mediaUrl,
+                getMessageMediaMimeType(forwardingMessage),
+              );
+              const mimeType =
+                blob.type ||
+                (isAudio
+                  ? "audio/webm"
+                  : isVideo
+                    ? "video/mp4"
+                    : "image/jpeg");
+              const extension =
+                mimeType.split("/")[1]?.split(";")[0] ||
+                (isAudio ? "webm" : isVideo ? "mp4" : "jpg");
+              const forwardedFile = new File(
+                [blob],
+                `forwarded-${Date.now()}.${extension}`,
+                {
+                  type: mimeType,
+                },
+              );
+              formData.append("image", forwardedFile);
+            }
+          } catch {
+            // Text forward still works if the media fetch fails.
+          }
+        }
+
+        await sendMessage({
+          targetUserId: targetContact.targetUserId,
+          formData,
+          meta: {
+            forwardedMessage: forwardingMessage,
+          },
+        });
+
+        setForwardingMessage(null);
+        toastSuccess("Message forwarded");
+      } catch (error) {
+        toastError(error?.response?.data?.message || "Could not forward message");
+      }
+    },
+    [forwardingMessage, profileId, sendMessage],
+  );
+
   const handleSendMessage = async () => {
     if (!selectedContact?.targetUserId) return;
     if (selectedContact?.targetUserId?.toString() === profileId?.toString()) {
@@ -683,10 +801,21 @@ useEffect(() => {
       if (selectedImage) {
         formData.append("image", selectedImage);
       }
+      if (replyToMessage?._id) {
+        formData.append("replyToMessageId", replyToMessage._id);
+        formData.append(
+          "replyToMessageSenderId",
+          replyToMessage?.sender?._id || "",
+        );
+        formData.append("replyToMessageText", replyToMessage?.text || "");
+      }
 
       const res = await sendMessage({
         targetUserId: selectedContact.targetUserId,
         formData,
+        meta: {
+          replyToMessage,
+        },
       });
       if (res?.conversationId) {
         setSelectedContact((prev) =>
@@ -701,6 +830,7 @@ useEffect(() => {
       }
       setNewMessage("");
       setSelectedImage(null);
+      setReplyToMessage(null);
       setIsOtherTyping(false);
       if (socket && selectedConversationId) {
         socket.emit("chat:typing", {
@@ -824,8 +954,19 @@ useEffect(() => {
   }
 
   return (
-    <div className="w-full h-screen flex flex-col bg-background">
-      <div className="flex flex-1 gap-2 overflow-hidden">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#efeae2] dark:bg-[#0b141a]">
+      <ForwardMessageSheet
+        open={!!forwardingMessage}
+        onOpenChange={(open) => {
+          if (!open) setForwardingMessage(null);
+        }}
+        message={forwardingMessage}
+        contacts={forwardableContacts}
+        onSelectContact={handleForwardToContact}
+        isSending={isSending}
+      />
+
+      <div className="flex flex-1 min-h-0 gap-2 overflow-hidden">
         <ContactsSidebar
           contacts={contactsWithTarget}
           selectedContact={selectedContact}
@@ -838,16 +979,16 @@ useEffect(() => {
 
         <Card
           className={cn(
-            "flex-1 flex flex-col p-0 overflow-hidden",
+            "flex min-w-0 min-h-0 flex-1 flex-col overflow-hidden border-border/40 bg-transparent p-0 shadow-none md:rounded-[28px] md:border md:bg-[#f8f5ee]/80 md:backdrop-blur dark:border-white/10 dark:bg-[#111b21]/80",
             showChat || !selectedContact ? "flex" : "hidden md:flex",
           )}
         >
           {!selectedContact ? (
-            <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
+            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               No conversations yet
             </div>
           ) : (
-            <>
+            <div className="flex min-h-0 flex-1 flex-col">
               <ChatHeader
                 contact={selectedContact}
                 setShowChat={setShowChat}
@@ -873,6 +1014,10 @@ useEffect(() => {
                   deletingMessageId={deletingMessageId}
                   typingUserName={selectedContact?.name}
                   isOtherTyping={isOtherTyping}
+                  conversationId={selectedConversationId}
+                  onReplyMessage={handleReplyMessage}
+                  onForwardMessage={handleForwardMessage}
+                  replyTargetMessageId={replyToMessage?._id}
                 />
               )}
 
@@ -885,8 +1030,10 @@ useEffect(() => {
                 isSending={isSending || !!selectedContact?.isBlocked}
                 isBlocked={!!selectedContact?.isBlocked}
                 blockedByMe={!!selectedContact?.blockedByMe}
+                replyToMessage={replyToMessage}
+                onCancelReply={() => setReplyToMessage(null)}
               />
-            </>
+            </div>
           )}
         </Card>
       </div>

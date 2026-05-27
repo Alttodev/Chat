@@ -113,3 +113,31 @@ export const useAIPromptStore = create((set) => ({
   setPrompt: (prompt) => set({ prompt }),
   setGenerating: (value) => set({ isGenerating: value }),
 }));
+
+export const useChatMessageMetaStore = create(
+  persist(
+    (set) => ({
+      messageMetaById: {},
+      setMessageMeta: (messageId, meta) =>
+        set((state) => ({
+          messageMetaById: {
+            ...state.messageMetaById,
+            [messageId]: meta,
+          },
+        })),
+      clearMessageMeta: (messageId) =>
+        set((state) => {
+          if (!messageId) return { messageMetaById: {} };
+
+          const nextMeta = { ...state.messageMetaById };
+          delete nextMeta[messageId];
+          return { messageMetaById: nextMeta };
+        }),
+    }),
+    {
+      name: "chat-message-meta",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ messageMetaById: state.messageMetaById }),
+    },
+  ),
+);

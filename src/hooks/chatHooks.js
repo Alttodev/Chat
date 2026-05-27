@@ -7,6 +7,7 @@ import {
   sendChatMessage,
   unblockChatUser,
 } from "@/api/axios";
+import { useChatMessageMetaStore } from "@/lib/zustand";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useChatConversations = () => {
@@ -36,14 +37,30 @@ export const useSendChatMessage = () => {
   return useMutation({
     mutationFn: ({ targetUserId, formData }) =>
       sendChatMessage({ targetUserId, formData }),
-    onSuccess: (res) => {
+    onSuccess: (res, variables) => {
       const conversationId = res?.conversationId || res?.conversation?._id;
       const chatMessage =
         res?.chatMessage ||
         res?.data?.chatMessage ||
         (res?.message && typeof res.message === "object" ? res.message : null);
+      const meta = variables?.meta || {};
+      const mergedMessage = chatMessage
+        ? {
+            ...chatMessage,
+            ...(meta.replyToMessage ? { replyToMessage: meta.replyToMessage } : {}),
+            ...(meta.forwardedMessage
+              ? { forwardedMessage: meta.forwardedMessage }
+              : {}),
+          }
+        : null;
 
-      if (conversationId && chatMessage) {
+      if (conversationId && mergedMessage) {
+        if (mergedMessage?._id && meta && Object.keys(meta).length > 0) {
+          useChatMessageMetaStore
+            .getState()
+            .setMessageMeta(mergedMessage._id, meta);
+        }
+
         queryClient.setQueryData(
           ["chat_messages", conversationId],
           (oldData) => {
@@ -58,18 +75,18 @@ export const useSendChatMessage = () => {
             if (!currentMessages.length) {
               return {
                 ...(oldData || {}),
-                messages: [chatMessage],
+                messages: [mergedMessage],
               };
             }
 
             const exists = currentMessages.some(
-              (item) => item?._id === chatMessage?._id
+              (item) => item?._id === mergedMessage?._id
             );
             if (exists) return oldData;
 
             return {
               ...oldData,
-              messages: [...currentMessages, chatMessage],
+              messages: [...currentMessages, mergedMessage],
             };
           }
         );
