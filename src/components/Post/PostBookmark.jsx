@@ -52,10 +52,7 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
       variant="ghost"
       onClick={handleBookmark}
       className={cn(
-        "inline-flex h-10 w-10 items-center justify-center rounded-full p-0 text-muted-foreground transition-colors duration-200 hover:bg-transparent cursor-pointer",
-        isBookmarked
-          ? "bg-amber-500/10 text-amber-500 dark:bg-amber-500/20 dark:text-amber-300"
-          : "",
+        "inline-flex h-10 w-10 items-center justify-center p-0 text-muted-foreground hover:bg-transparent cursor-pointer",
         className,
       )}
       aria-label={isBookmarked ? "Remove bookmark" : "Bookmark post"}
@@ -64,7 +61,7 @@ function PostBookmarkComponent({ post, className, onBookmarkChange }) {
       <Bookmark
         style={{ width: 20, height: 20 }}
         className={`shrink-0 transition-transform duration-200 ease-out ${
-          isBookmarked ? "fill-current text-amber-500 dark:text-amber-300" : ""
+          isBookmarked ? "fill-current text-emerald-500" : ""
         }`}
       />
     </Button>
