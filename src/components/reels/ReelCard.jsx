@@ -264,7 +264,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                 icon={Bookmark}
                 label={isBookmarked ? "Remove bookmark" : "Save reel"}
                 active={isBookmarked}
-                activeClassName="fill-current text-amber-400"
+                activeClassName="fill-current text-emerald-400"
                 onClick={handleBookmark}
               />
               <ActionButton icon={Send} label="Share reel" onClick={onShare} />

@@ -512,7 +512,7 @@ const UsersInfo = () => {
         </>
       ) : (
         <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white dark:border-zinc-800 dark:from-black dark:to-zinc-950">
-          <CardContent className="py-16">
+          <CardContent className="py-8">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="mb-6">
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/15 backdrop-blur-sm dark:bg-emerald-500/10">
