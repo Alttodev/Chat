@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
-import { Virtuoso } from "react-virtuoso";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import whatsappImage from "@/assets/whatsappimage.jpg";
 import { cn } from "@/lib/utils";
 import {
@@ -141,13 +140,11 @@ const getMediaLabel = (message) => {
 };
 
 const chatBackgroundStyle = {
-  backgroundImage:
-    "linear-gradient(rgba(255,255,255,0.82), rgba(255,255,255,0.82)), url(\"" +
-    whatsappImage +
-    "\")",
+  backgroundImage: `url("${whatsappImage}")`,
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
+  opacity: 0.96,
 };
 
 const TypingBubble = ({ typingUserName }) => (
@@ -170,24 +167,19 @@ const TypingBubble = ({ typingUserName }) => (
 );
 
 const MessagesEmpty = () => (
-  <div className="flex h-full items-center justify-center px-4 text-center text-sm text-muted-foreground">
+  <div className="px-4 text-center text-sm text-muted-foreground">
     No messages yet
   </div>
 );
 
-const MessagesFooter = ({ context }) => {
-  if (!context?.isOtherTyping) return null;
+const MessagesFooter = ({ isOtherTyping, typingUserName }) => {
+  if (!isOtherTyping) return null;
 
   return (
     <div className="px-3 pb-3">
-      <TypingBubble typingUserName={context?.typingUserName} />
+      <TypingBubble typingUserName={typingUserName} />
     </div>
   );
-};
-
-const virtuosoComponents = {
-  Footer: MessagesFooter,
-  EmptyPlaceholder: MessagesEmpty,
 };
 
 export default function MessagesList({
@@ -207,64 +199,95 @@ export default function MessagesList({
   const messageMetaById = useChatMessageMetaStore(
     (state) => state.messageMetaById,
   );
-  const virtuosoRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const isAtBottomRef = useRef(true);
   const hasInitialScrollRef = useRef(false);
 
   const renderedMessages = useMemo(() => messages || [], [messages]);
-  const virtuosoContext = useMemo(
-    () => ({
-      isOtherTyping,
-      typingUserName,
-    }),
-    [isOtherTyping, typingUserName],
-  );
 
   useEffect(() => {
     hasInitialScrollRef.current = false;
     isAtBottomRef.current = true;
   }, [conversationId]);
 
+  const scrollToBottom = useCallback((behavior = "auto") => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior,
+    });
+  }, []);
+
+  const scrollMessageIntoView = useCallback((messageId, behavior = "smooth") => {
+    const container = scrollContainerRef.current;
+    if (!container || !messageId) return;
+
+    const target = container.querySelector(
+      `[data-message-id="${CSS.escape(String(messageId))}"]`,
+    );
+
+    target?.scrollIntoView({
+      behavior,
+      block: "center",
+      inline: "nearest",
+    });
+  }, []);
+
   useEffect(() => {
     if (!renderedMessages.length || hasInitialScrollRef.current) return undefined;
 
     const frame = window.requestAnimationFrame(() => {
-      virtuosoRef.current?.scrollToIndex({
-        index: renderedMessages.length - 1,
-        align: "end",
-        behavior: "auto",
-      });
+      scrollToBottom("auto");
       hasInitialScrollRef.current = true;
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [renderedMessages.length, conversationId]);
+  }, [renderedMessages.length, conversationId, scrollToBottom]);
+
+  useEffect(() => {
+    if (!hasInitialScrollRef.current || !renderedMessages.length) return undefined;
+    if (!isAtBottomRef.current) return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      scrollToBottom("auto");
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [renderedMessages.length, scrollToBottom]);
 
   useEffect(() => {
     if (!replyTargetMessageId || !renderedMessages.length) return undefined;
 
-    const targetIndex = renderedMessages.findIndex((message) => {
+    const targetMessage = renderedMessages.find((message) => {
       const messageId = (message?._id || message?.id)?.toString?.();
       return messageId === replyTargetMessageId?.toString?.();
     });
 
-    if (targetIndex < 0) return undefined;
+    if (!targetMessage) return undefined;
 
     const frame = window.requestAnimationFrame(() => {
-      virtuosoRef.current?.scrollToIndex({
-        index: targetIndex,
-        align: "center",
-        behavior: "smooth",
-      });
+      const targetId = (targetMessage?._id || targetMessage?.id)?.toString?.();
+      scrollMessageIntoView(targetId, "smooth");
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [replyTargetMessageId, renderedMessages]);
+  }, [replyTargetMessageId, renderedMessages, scrollMessageIntoView]);
 
   const handleMediaLoad = () => {
     if (isAtBottomRef.current) {
-      virtuosoRef.current?.autoscrollToBottom?.();
+      scrollToBottom("auto");
     }
+  };
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    isAtBottomRef.current = distanceFromBottom < 24;
   };
 
   const renderMessageItem = (message, index) => {
@@ -542,21 +565,33 @@ export default function MessagesList({
         style={chatBackgroundStyle}
       />
 
-      <Virtuoso
+      <div
         key={conversationId || "messages"}
-        ref={virtuosoRef}
-        style={{ height: "100%" }}
-        data={renderedMessages}
-        computeItemKey={(index, item) => item?._id || item?.id || index}
-        itemContent={(index, message) => renderMessageItem(message, index)}
-        followOutput={(isAtBottom) => (isAtBottom ? "smooth" : false)}
-        alignToBottom
-        atBottomStateChange={(atBottom) => {
-          isAtBottomRef.current = atBottom;
-        }}
-        context={virtuosoContext}
-        components={virtuosoComponents}
-      />
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="relative z-10 flex-1 min-h-0 overflow-y-auto no-scrollbar px-2 py-2 sm:px-3 sm:py-3"
+      >
+        <div className="flex min-h-full flex-col justify-end">
+          {renderedMessages.length ? (
+            <div className="space-y-1 pb-2 pt-1">
+              {renderedMessages.map((message, index) => (
+                <div key={message?._id || message?.id || index}>
+                  {renderMessageItem(message, index)}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-full items-center justify-center py-6">
+              <MessagesEmpty />
+            </div>
+          )}
+
+          <MessagesFooter
+            isOtherTyping={isOtherTyping}
+            typingUserName={typingUserName}
+          />
+        </div>
+      </div>
 
       <ImageViewer />
     </div>
