@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import whatsappImage from "@/assets/whatsappimage.jpg";
+import whatsappImage from "@/assets/bgwallpaper.png";
 import { cn } from "@/lib/utils";
 import {
   Check,
