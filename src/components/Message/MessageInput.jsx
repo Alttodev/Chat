@@ -59,7 +59,7 @@ export default function MessageInput({
   };
 
   return (
-    <div className="border-t border-border/60 bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:px-4">
+    <div className="shrink-0 border-t border-border/60 bg-background/95 px-3 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:px-4">
       {replyToMessage && (
         <div className="relative mb-3 rounded-[18px] border-l-4 border-emerald-500/80 bg-[#fdfcf8] px-4 py-3 dark:bg-[#1f2a30]">
           <p className="text-[11px] font-semibold leading-none text-emerald-700/90 dark:text-emerald-300/90">

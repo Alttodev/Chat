@@ -17,6 +17,7 @@ function HomeLayout() {
   const { pathname } = useLocation();
   const isHome = pathname === "/home";
   const isReels = pathname === "/reels";
+  const isMessages = pathname === "/messages";
   const [showDesktopStatusStrip, setShowDesktopStatusStrip] = useState(true);
 
   return (
@@ -66,7 +67,9 @@ function HomeLayout() {
         <main
           className={cn(
             "min-w-0 flex-1 pb-8 px-4 md:ml-64 md:mr-80",
-            isReels
+            isMessages
+              ? "pt-16 pb-0 sm:pt-16"
+              : isReels
               ? "pt-20 sm:pt-24 px-2 sm:px-4"
               : isHome
                 ? showDesktopStatusStrip

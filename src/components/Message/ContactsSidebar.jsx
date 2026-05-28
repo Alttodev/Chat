@@ -17,19 +17,19 @@ export default function ContactsSidebar({
   return (
     <Card
       className={cn(
-        "w-full border-border/70 bg-background/90 p-0 shadow-none backdrop-blur transition-all md:w-[22rem] md:rounded-none md:border-r lg:w-[23rem]",
-        showChat ? "hidden md:block" : "block",
+        "flex h-full min-h-0 w-full flex-col overflow-hidden border-border/70 bg-background/90 p-0 shadow-none backdrop-blur transition-all md:w-[22rem] md:rounded-none md:border-r lg:w-[23rem]",
+        showChat ? "hidden md:flex" : "flex",
       )}
     >
-      <div className="border-b border-border/70 bg-background/95 px-4 py-4 backdrop-blur">
+      <div className="bg-background/90 px-4 py-4  ">
         <h2 className="text-lg font-semibold tracking-tight text-foreground">
           Messages
         </h2>
         <p className="text-sm text-muted-foreground">Pick a chat to continue</p>
       </div>
       <ScrollArea
-        className="h-[calc(100dvh-4rem)]"
-        viewportClassName="p-2 pb-8"
+        className="flex-1 min-h-0"
+        viewportClassName="p-2 pb-20 sm:pb-8"
       >
         <div className="space-y-1 p-1">
           {contacts.length === 0 && (
@@ -98,7 +98,7 @@ export default function ContactsSidebar({
             </div>
           ))}
         </div>
-        <div ref={loadMoreRef} className="p-2">
+        <div ref={loadMoreRef} className="p-2 pb-6">
           {isLoadingMore && <SkeletonComment />}
         </div>
       </ScrollArea>

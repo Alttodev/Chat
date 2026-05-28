@@ -954,7 +954,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#efeae2] dark:bg-[#0b141a]">
+    <div className="flex h-[calc(100dvh-4rem)] min-h-0 w-full flex-col overflow-hidden pt-3 pb-16 sm:pb-4">
       <ForwardMessageSheet
         open={!!forwardingMessage}
         onOpenChange={(open) => {
