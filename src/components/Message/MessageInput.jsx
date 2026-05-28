@@ -137,7 +137,7 @@ export default function MessageInput({
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
               rows={1}
-              className="min-h-12 max-h-32 resize-none border-0 bg-transparent px-3 py-3 text-sm shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
+              className="min-h-12 max-h-32 resize-none border-0 bg-transparent px-3 py-3 text-sm shadow-none placeholder:text-muted-foreground focus-visible:ring-0 no-scrollbar"
               disabled={isBlocked}
             />
           </div>

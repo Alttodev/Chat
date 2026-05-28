@@ -72,7 +72,6 @@ export default function Message() {
   const [deletingMessageId, setDeletingMessageId] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
   const [showChat, setShowChat] = useState(false);
-  const messagesEndRef = useRef(null);
   const typingStopTimeoutRef = useRef(null);
   const typingResetTimeoutRef = useRef(null);
     const loadMoreRef = useRef(null);
@@ -1007,7 +1006,6 @@ useEffect(() => {
               ) : (
                 <MessagesList
                   messages={messages}
-                  messagesEndRef={messagesEndRef}
                   currentUserId={profileId}
                   isLoading={messagesLoading}
                   onDeleteMessage={handleDeleteMessage}
