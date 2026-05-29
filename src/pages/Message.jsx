@@ -953,7 +953,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-4rem)] min-h-0 w-full flex-col overflow-hidden pt-3 pb-16 sm:pb-4">
+    <div className="flex h-[calc(100dvh-8rem)] min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100dvh-4rem)]">
       <ForwardMessageSheet
         open={!!forwardingMessage}
         onOpenChange={(open) => {
@@ -978,7 +978,7 @@ useEffect(() => {
 
         <Card
           className={cn(
-            "flex min-w-0 min-h-0 flex-1 flex-col overflow-hidden border-border/40 bg-transparent p-0 shadow-none md:rounded-[28px] md:border md:bg-[#f8f5ee]/80 md:backdrop-blur dark:border-white/10 dark:bg-[#111b21]/80 ",
+            "flex min-w-0 min-h-0 flex-1 flex-col overflow-hidden border-border/40 bg-[#f8f5ee]/80 p-0 shadow-none md:rounded-[28px] md:border md:backdrop-blur dark:border-white/10 dark:bg-[#111b21]/80 ",
             showChat || !selectedContact ? "flex" : "hidden md:flex",
           )}
         >
