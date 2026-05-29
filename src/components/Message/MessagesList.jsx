@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import whatsappImage from "@/assets/bgwallpaper.png";
 import { cn } from "@/lib/utils";
 import {
   Check,
@@ -140,11 +139,7 @@ const getMediaLabel = (message) => {
 };
 
 const chatBackgroundStyle = {
-  backgroundImage: `url("${whatsappImage}")`,
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "cover",
-  opacity: 0.96,
+  backgroundColor: "rgba(248, 245, 238, 0.8)",
 };
 
 const TypingBubble = ({ typingUserName }) => (

@@ -1000,7 +1000,7 @@ useEffect(() => {
               />
 
               {!selectedConversationId ? (
-                <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+                <div className="flex-1 flex items-center justify-center text-sm text-slate-400 dark:text-slate-500">
                   Send a message to start chatting 💬
                 </div>
               ) : (
