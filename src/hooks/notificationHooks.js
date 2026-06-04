@@ -1,7 +1,7 @@
 import {
   getNotificationCounts,
   getNotifications,
-  markNotificationSeen,
+  markNotificationRead,
   getNotificationSettings,
   updateNotificationSettings,
 } from "@/api/axios";
@@ -27,18 +27,14 @@ export const useNotificationCounts = () => {
   });
 };
 
-export const useMarkNotificationSeen = () => {
+export const useMarkNotificationRead = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload) => markNotificationSeen(payload),
-    onSuccess: (_, variables) => {
+    mutationFn: (notificationId) => markNotificationRead(notificationId),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
-
-      if (variables?.type === "chat-message") {
-        queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
-      }
     },
   });
 };

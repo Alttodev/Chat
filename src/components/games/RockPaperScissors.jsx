@@ -701,7 +701,6 @@ function RockPaperScissors() {
               {players.map((user) => {
                 const userId = getProfileId(user);
                 const isSelected = userId === getProfileId(selectedOpponent);
-
                 return (
                   <button
                     key={userId || user?.userName}
@@ -740,7 +739,7 @@ function RockPaperScissors() {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="truncate font-semibold">
+                        <p className="truncate text-bold text-foreground">
                           {user?.userName || "Player"}
                         </p>
                       </div>

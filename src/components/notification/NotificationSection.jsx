@@ -25,7 +25,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import {
   useNotificationCounts,
-  useMarkNotificationSeen,
+  useMarkNotificationRead,
   useNotifications,
   useNotificationSettings,
 } from "@/hooks/notificationHooks";
@@ -63,7 +63,7 @@ function NotificationSection() {
   const { data: countsData } = useNotificationCounts();
   const { data: notificationsData, isLoading, refetch } = useNotifications(30);
   const { data: notificationSettingsData } = useNotificationSettings();
-  const { mutateAsync: markNotificationSeen } = useMarkNotificationSeen();
+  const { mutateAsync: markNotificationRead } = useMarkNotificationRead();
 
   const pushNotificationsEnabled =
     notificationSettingsData?.settings?.enabled ?? true;
@@ -161,48 +161,14 @@ function NotificationSection() {
     [queryClient, refetch],
   );
 
-  const buildSeenPayload = useCallback((notification) => {
-    if (
-      notification?.type === "follow-request" &&
-      notification?.followRequestId
-    ) {
-      return {
-        type: "follow-request",
-        followRequestId: notification.followRequestId,
-      };
-    }
-
-    if (notification?.type === "chat-message" && notification?.conversationId) {
-      return {
-        type: "chat-message",
-        conversationId: notification.conversationId,
-      };
-    }
-
-    if (
-      notification?.type === "comment-mention" &&
-      notification?.commentId &&
-      notification?.postId
-    ) {
-      return {
-        type: "comment-mention",
-        commentId: notification.commentId,
-        postId: notification.postId,
-        notificationId: notification.notificationId,
-      };
-    }
-
-    return null;
-  }, []);
-
   const markAsSeen = useCallback(
     async (notification) => {
-      const payload = buildSeenPayload(notification);
-      if (!payload) return;
+      const notificationId = notification?.notificationId || notification?._id;
+      if (!notificationId) return;
 
-      await markNotificationSeen(payload);
+      await markNotificationRead(notificationId);
     },
-    [buildSeenPayload, markNotificationSeen],
+    [markNotificationRead],
   );
 
   const handleNotificationClick = useCallback(
@@ -370,7 +336,7 @@ function NotificationSection() {
 
                     {followNotifications.map((notification) => (
                       <button
-                        key={notification.notificationId}
+                        key={notification.notificationId || notification._id}
                         type="button"
                         onClick={() => handleNotificationClick(notification)}
                         className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
@@ -473,7 +439,7 @@ function NotificationSection() {
 
                     {chatNotifications.map((notification) => (
                       <button
-                        key={notification.notificationId}
+                        key={notification.notificationId || notification._id}
                         type="button"
                         onClick={() => handleNotificationClick(notification)}
                         className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
@@ -526,7 +492,7 @@ function NotificationSection() {
 
                     {commentMentionNotifications.map((notification) => (
                       <button
-                        key={notification.notificationId}
+                        key={notification.notificationId || notification._id}
                         type="button"
                         onClick={() => handleNotificationClick(notification)}
                         className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"

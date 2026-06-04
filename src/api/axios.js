@@ -136,8 +136,10 @@ export const getNotificationCounts = async () => {
   return data;
 };
 
-export const markNotificationSeen = async (payload) => {
-  const { data } = await axiosInstance.put(`/notifications/seen`, payload);
+export const markNotificationRead = async (notificationId) => {
+  const { data } = await axiosInstance.put(
+    `/notifications/${notificationId}/read`,
+  );
   return data;
 };
 
