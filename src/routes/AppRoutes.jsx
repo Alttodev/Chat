@@ -26,6 +26,8 @@ import VerifyAccountPage from "@/pages/VerifyAccountPage";
 import ProfileRoute from "./profileRoute";
 import HashtagPosts from "@/pages/HashtagPosts";
 import BookmarkedPosts from "@/pages/BookmarkedPosts";
+import Games from "@/pages/Games";
+import RockPaperScissorsPage from "@/pages/RockPaperScissorsPage";
 
 
 function AppRoutes() {
@@ -57,6 +59,11 @@ function AppRoutes() {
               <Route path="/messages" element={<Message />} />
               <Route path="/survey" element={<Survey />} />
               <Route path="/reels" element={<Reels />} />
+              <Route path="/games" element={<Games />} />
+              <Route
+                path="/games/duo-clash"
+                element={<RockPaperScissorsPage />}
+              />
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/bookmarked-posts" element={<BookmarkedPosts />} />
               <Route path="/users/:id" element={<UsersInfo />} />

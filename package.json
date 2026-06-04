@@ -30,6 +30,7 @@
     "dayjs": "^1.11.18",
     "emoji-picker-react": "^4.13.3",
     "firebase": "^12.13.0",
+    "framer-motion": "^12.40.0",
     "lucide-react": "^0.542.0",
     "nextjs-toploader": "^3.8.16",
     "react": "^19.1.1",

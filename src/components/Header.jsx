@@ -3,7 +3,7 @@ import {
   X,
   User,
   Settings,
-  UserRoundSearch,
+  Gamepad2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -167,6 +167,13 @@ export function SocialHeader() {
                 >
                   <Settings className="w-4 h-4" />
                   Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => navigate("/games")}
+                  className="mb-1"
+                >
+                  <Gamepad2 className="w-4 h-4" />
+                  Games
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

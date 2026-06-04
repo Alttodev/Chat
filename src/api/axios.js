@@ -358,3 +358,20 @@ export const userRequestDelete = async ({ fromId, toId }) => {
   );
   return data;
 };
+
+
+export const submitPuzzleResult = async ({
+  userId,
+  puzzleId = null,
+  score = 0,
+  timeMs = 0,
+}) => {
+  const { data } = await axiosInstance.post(`/game/puzzle/submit`, {
+    userId,
+    puzzleId,
+    score,
+    timeMs,
+  });
+
+  return data;
+};

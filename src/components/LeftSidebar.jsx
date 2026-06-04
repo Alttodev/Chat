@@ -6,6 +6,7 @@ import {
   MessageCircle,
   BarChart3,
   Clapperboard,
+  Gamepad2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -17,6 +18,7 @@ export function LeftSidebar() {
     { icon: Home, label: "Home", path: "/home" },
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Clapperboard, label: "Reels", path: "/reels" },
+    { icon: Gamepad2, label: "Games", path: "/games" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
     { icon: BarChart3, label: "Analytics", path: "/survey" },

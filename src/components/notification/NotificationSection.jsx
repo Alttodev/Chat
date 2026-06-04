@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bell,
   UserPlus,
@@ -96,6 +96,8 @@ function NotificationSection() {
     [notifications],
   );
 
+  const [gameInvites, setGameInvites] = useState([]);
+
   useEffect(() => {
     const handleUnlock = () => {
       primeNotificationSound();
@@ -124,8 +126,28 @@ function NotificationSection() {
 
     socket.on("new-notification", handleNewNotification);
 
+    // handle live rock-paper-scissors invites
+    const handleRpsInvite = (invite) => {
+      try {
+        setGameInvites((s) => {
+          // avoid duplicates by roomId
+          if (s.find((i) => i.roomId === invite.roomId)) return s;
+          return [invite, ...s];
+        });
+
+        if (pushNotificationsEnabled) playNotificationSound();
+        queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
+      } catch (err) {
+        console.log("Failed to handle incoming game invite", err);
+        // ignore
+      }
+    };
+
+    socket.on("game:rps:invite", handleRpsInvite);
+
     return () => {
       socket.off("new-notification", handleNewNotification);
+      socket.off("game:rps:invite", handleRpsInvite);
     };
   }, [socket, queryClient, pushNotificationsEnabled]);
 
@@ -248,6 +270,34 @@ function NotificationSection() {
     }
   }, [notifications, markAsSeen, queryClient, refetch]);
 
+  const respondToInvite = useCallback(
+    (invite, accepted) => {
+      if (!socket) return;
+
+      try {
+        socket.emit("game:rps:response", {
+          roomId: invite.roomId,
+          fromUserId: invite.fromUserId,
+          toUserId: invite.toUserId,
+          accepted,
+        });
+
+        setGameInvites((s) => s.filter((i) => i.roomId !== invite.roomId));
+
+        if (accepted) {
+          // accepted - notify user
+          // navigation or opening the game can be handled here if desired
+          // for now, show success
+          // eslint-disable-next-line no-unused-expressions
+          typeof window !== "undefined" && window.scrollTo(0, 0);
+        }
+      } catch (e) {
+        console.error("Failed to respond to invite", e);
+      }
+    },
+    [socket],
+  );
+
   const badgeText = totalCount > 99 ? "99+" : totalCount;
 
   return (
@@ -352,6 +402,59 @@ function NotificationSection() {
 
                         <UserPlus className="w-4 h-4 text-emerald-600 mt-1" />
                       </button>
+                    ))}
+                  </div>
+                )}
+
+                {gameInvites.length > 0 && (
+                  <div className="mb-2">
+                    <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Game Invites
+                    </p>
+
+                    {gameInvites.map((invite) => (
+                      <div
+                        key={invite.roomId}
+                        className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer"
+                      >
+                        <Avatar className="w-9 h-9">
+                          <AvatarImage
+                            className="w-full h-full object-cover object-top cursor-pointer"
+                            src={invite?.fromProfileImage || "/placeholder.svg"}
+                          />
+                          <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                            {getInitial(invite?.fromUserName)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground leading-snug">
+                            <span className="font-semibold">
+                              {invite?.fromUserName || "Someone"}
+                            </span>{" "}
+                            invited you to play Rock-Paper-Scissors
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {formatTime(invite?.createdAt)}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => respondToInvite(invite, false)}
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => respondToInvite(invite, true)}
+                          >
+                            Accept
+                          </Button>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
