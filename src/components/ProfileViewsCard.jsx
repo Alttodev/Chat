@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EyeIcon, BadgeCheck, Lock, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfileViewSeen } from "@/hooks/profileViewHooks";
-import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
@@ -20,15 +19,10 @@ const getUserId = (user) => user?._id || user?.id || user?.userId;
 function ProfileViewsCard() {
   const navigate = useNavigate();
   const { data: profileData, isLoading } = useProfileViewSeen();
-  const { isSubscribed } = useSubscriptionStatus();
 
   const viewers = profileData?.viewers || [];
   const totalViews = profileData?.count ?? viewers.length;
-  const maxFreeViews = 5;
-  const canSeeAll = isSubscribed || totalViews <= maxFreeViews;
 
-  const displayedViewers = canSeeAll ? viewers : viewers.slice(0, maxFreeViews);
-  const hiddenViewerCount = totalViews - maxFreeViews;
 
   return (
     <div className="space-y-8">
@@ -61,7 +55,7 @@ function ProfileViewsCard() {
 
               <div>
                 <CardTitle className="text-lg text-foreground flex items-center gap-2">
-                  Recent Profile Viewers
+                  Profile Viewers
                 </CardTitle>
 
                 <p className="text-sm text-muted-foreground mt-1">
@@ -87,7 +81,7 @@ function ProfileViewsCard() {
           ) : viewers.length > 0 ? (
             <>
               <div className="divide-y">
-                {displayedViewers.map((item, index) => {
+                {viewers.map((item, index) => {
                   const viewer = item.viewer;
                   const userId = getUserId(viewer) || `${index}`;
                   const displayName = getDisplayName(viewer);
@@ -140,33 +134,6 @@ function ProfileViewsCard() {
                   );
                 })}
               </div>
-
-              {/* Hidden Views Notice */}
-              {!canSeeAll && hiddenViewerCount > 0 && (
-                <div className="border-t bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-blue-600" />
-                      <div>
-                        <p className="font-semibold text-foreground">
-                          {hiddenViewerCount} more view
-                          {hiddenViewerCount > 1 ? "s" : ""} hidden
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Subscribe to see all profile viewers
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => navigate("/subscription")}
-                      className="gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600"
-                    >
-                      Subscribe
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             <div className="flex flex-col items-center justify-center gap-3 px-4 py-14 text-center">
@@ -190,5 +157,3 @@ function ProfileViewsCard() {
 }
 
 export default ProfileViewsCard;
-
- 

@@ -8,15 +8,21 @@ import {
   handleRazorpayPayment,
 } from "@/api/subscription";
 import { useAuthStore } from "@/store/authStore";
+import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
+import { Spinner } from "./ui/shadcn-io/spinner";
 
 function SubscriptionCard() {
   const navigate = useNavigate();
   const [processingPlanId, setProcessingPlanId] = useState(null);
   const [error, setError] = useState(null);
   const { user } = useAuthStore();
-  const planType = user?.planType;
-  const expiryDate = user?.subscriptionEndDate
-    ? new Date(user.subscriptionEndDate).toLocaleDateString("en-IN", {
+  const { data, isLoading } = useSubscriptionStatus();
+
+  const subscription = data?.subscription;
+  const planType = subscription?.planType;
+
+  const expiryDate = subscription?.subscriptionEndDate
+    ? new Date(subscription.subscriptionEndDate).toLocaleDateString("en-IN", {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -82,11 +88,18 @@ function SubscriptionCard() {
         throw new Error(paymentResult.error || "Payment failed");
       }
     } catch (err) {
-      console.error("Subscription error:", err);
       setError(err.message);
       setProcessingPlanId(null);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-90 flex items-center justify-center">
+        <Spinner className="text-emerald-600" size={44} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -108,6 +121,9 @@ function SubscriptionCard() {
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {subscriptionPlans.map((plan) => {
           const isActivePlan = planType === plan.id;
+          const hasActiveSubscription = !!subscription?.isActive;
+          const isDisabled =
+            hasActiveSubscription || processingPlanId === plan.id;
 
           return (
             <Card
@@ -148,7 +164,7 @@ function SubscriptionCard() {
                   </div>
                 </div>
 
-                {/* Active Subscription Info */}
+                {/* Active Plan */}
                 {isActivePlan && expiryDate && (
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
                     <p className="text-sm font-semibold text-emerald-700">
@@ -158,6 +174,22 @@ function SubscriptionCard() {
                     <p className="mt-1 text-xs text-emerald-600">
                       Valid until {expiryDate}
                     </p>
+                  </div>
+                )}
+
+                {/* Other Plan Disabled */}
+                {hasActiveSubscription && !isActivePlan && (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                    <p className="text-sm font-semibold text-amber-700">
+                      Active {planType === "monthly" ? "Monthly" : "Yearly"}{" "}
+                      Subscription
+                    </p>
+
+                    {expiryDate && (
+                      <p className="mt-1 text-xs font-medium text-amber-700">
+                        Expires on {expiryDate}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -174,18 +206,20 @@ function SubscriptionCard() {
                 {/* Button */}
                 <Button
                   onClick={() => handleSubscribe(plan.id)}
-                  disabled={isActivePlan || processingPlanId === plan.id}
+                  disabled={isDisabled}
                   className={`w-full py-6 font-semibold transition-all duration-200 ${
-                    isActivePlan
-                      ? "cursor-not-allowed bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+                    isDisabled
+                      ? "cursor-not-allowed bg-gray-100 text-gray-500 hover:bg-gray-100"
                       : "cursor-pointer bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg hover:from-emerald-600 hover:to-teal-600 hover:shadow-xl"
                   }`}
                 >
                   {isActivePlan
                     ? "Current Plan"
-                    : processingPlanId === plan.id
-                      ? "Processing..."
-                      : "Subscribe Now"}
+                    : hasActiveSubscription
+                      ? "Available After Expiry"
+                      : processingPlanId === plan.id
+                        ? "Processing..."
+                        : "Subscribe Now"}
                 </Button>
               </CardContent>
             </Card>
@@ -199,14 +233,6 @@ function SubscriptionCard() {
           Frequently Asked Questions
         </h3>
         <div className="space-y-4">
-          <div>
-            <h4 className="font-medium text-foreground">
-              Is there a free trial?
-            </h4>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Yes, we offer a 7-day free trial for all new users.
-            </p>
-          </div>
           <div>
             <h4 className="font-medium text-foreground">
               What payment methods do you accept?

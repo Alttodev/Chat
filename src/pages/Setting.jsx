@@ -41,6 +41,7 @@ import { useThemeStore } from "@/lib/zustand";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
 import { markPublicAccount } from "@/api/axios";
+import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
@@ -56,6 +57,9 @@ function SettingsComponent() {
   const [isPublic, setIsPublic] = useState(
     userProfile?.profile?.isPublic ?? true,
   );
+  const { data, isLoading } = useSubscriptionStatus();
+
+  const isSubscribed = data?.isSubscribed;
 
   const handlePrivacyToggle = async (checked) => {
     try {
@@ -292,11 +296,12 @@ function SettingsComponent() {
                 </p>
               </div>
 
-              {userProfile?.profile?.subscription ? (
+              {isSubscribed ? (
                 <Button
                   variant="outline"
+                  disabled={isLoading}
                   type="button"
-                  onClick={() => navigate("/subscription")}
+                  onClick={() => navigate("/profileViews")}
                   className="h-9 rounded-full text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
                 >
                   View
@@ -304,6 +309,7 @@ function SettingsComponent() {
               ) : (
                 <Button
                   variant="outline"
+                  disabled={isLoading}
                   type="button"
                   onClick={() => navigate("/subscription")}
                   className="

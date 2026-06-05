@@ -1,44 +1,20 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getSubscriptionStatus } from "@/api/subscription";
 
 export const useSubscriptionStatus = () => {
-  const [subscription, setSubscription] = useState(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [daysRemaining, setDaysRemaining] = useState(null);
+  return useQuery({
+    queryKey: ["subscription-status"],
+    queryFn: async () => {
+      const result = await getSubscriptionStatus();
 
-  useEffect(() => {
-    const fetchSubscriptionStatus = async () => {
-      try {
-        setIsLoading(true);
-        const result = await getSubscriptionStatus();
-
-        if (result.success) {
-          setSubscription(result.data.subscription);
-          setIsSubscribed(result.data.isSubscribed);
-          setDaysRemaining(result.data.daysRemaining);
-        } else {
-          setError(result.error);
-          setIsSubscribed(false);
-        }
-      } catch (err) {
-        console.error("Error fetching subscription status:", err);
-        setError(err.message);
-        setIsSubscribed(false);
-      } finally {
-        setIsLoading(false);
+      if (!result.success) {
+        throw new Error(
+          result.error || "Failed to fetch subscription status"
+        );
       }
-    };
 
-    fetchSubscriptionStatus();
-  }, []);
-
-  return {
-    subscription,
-    isSubscribed,
-    isLoading,
-    error,
-    daysRemaining,
-  };
+      return result.data;
+    },
+    // staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 };

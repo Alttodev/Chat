@@ -1,4 +1,4 @@
-import { Search, X, User, Settings } from "lucide-react";
+import { Search, X, User, Settings, CreditCard } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -147,13 +147,14 @@ export function SocialHeader() {
                   <User className="w-4 h-4" />
                   Profile
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem
-                  onClick={() => navigate("/profileViews")}
+
+                <DropdownMenuItem
+                  onClick={() => navigate("/subscription")}
                   className="mb-1"
                 >
-                  <UserRoundSearch className="w-4 h-4" />
-                  Visitors
-                </DropdownMenuItem> */}
+                  <CreditCard className="w-4 h-4" />
+                  Subscription
+                </DropdownMenuItem>
 
                 <DropdownMenuItem
                   onClick={() => navigate("/settings")}
