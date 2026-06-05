@@ -4,10 +4,8 @@ import {
   Settings,
   User,
   MessageCircle,
-  BarChart3,
   Clapperboard,
-  Gamepad2,
-  CreditCard,
+  Gem,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -21,7 +19,7 @@ export function LeftSidebar() {
     { icon: Clapperboard, label: "Reels", path: "/reels" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
-    { icon: CreditCard, label: "Subscription", path: "/subscription" },
+    { icon: Gem , label: "Upgrade", path: "/subscription" },
     { icon: Settings, label: "Settings", path: "/settings" },
   ];
 

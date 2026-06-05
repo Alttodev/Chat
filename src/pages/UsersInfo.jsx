@@ -28,7 +28,12 @@ import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
 import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { ImageViewer } from "@/components/modals/imageViewer";
@@ -40,8 +45,12 @@ import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { formatShortUsername } from "@/lib/shortUserName";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
+import PremiumFeatureDialog from "@/components/modals/premiumFeatureDialog";
+import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 
 const UsersInfo = () => {
+  const navigate = useNavigate();
+  const [premiumDialogOpen, setPremiumDialogOpen] = useState(false);
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
@@ -58,6 +67,11 @@ const UsersInfo = () => {
     useProfileFollow();
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
+  
+   const { data:subscriptionData } = useSubscriptionStatus();
+  
+  const subscription = subscriptionData?.subscription;
+ 
 
   const { data: count } = useUserInfoCount(id);
   const countData = useMemo(() => count, [count]);
@@ -243,13 +257,20 @@ const UsersInfo = () => {
 
                     <div className="flex flex-col mt-1">
                       {countData?.totalFriends > 0 ? (
-                        <Link
-                          to={`/friends/${user?._id}`}
-                          className="text-lg font-semibold text-foreground"
+                        <button
+                          onClick={() => {
+                            if (!subscription?.isActive) {
+                              setPremiumDialogOpen(true);
+                              return;
+                            }
+
+                            navigate(`/friends/${user?._id}`);
+                          }}
+                          className="text-lg text-start font-semibold text-foreground cursor-pointer"
                         >
                           {countData?.totalFriends}
-                        </Link>
-                      ): (
+                        </button>
+                      ) : (
                         <span className="text-lg font-semibold text-foreground">
                           {countData?.totalFriends}
                         </span>
@@ -264,12 +285,19 @@ const UsersInfo = () => {
 
                     <div className="flex flex-col mt-1">
                       {countData?.totalFollowing > 0 ? (
-                        <Link
-                          to={`/following/${user?._id}`}
-                          className="text-lg font-semibold text-foreground"
+                        <button
+                          onClick={() => {
+                            if (!subscription?.isActive) {
+                              setPremiumDialogOpen(true);
+                              return;
+                            }
+
+                            navigate(`/following/${user?._id}`);
+                          }}
+                          className="text-lg text-start font-semibold text-foreground cursor-pointer"
                         >
                           {countData?.totalFollowing}
-                        </Link>
+                        </button>
                       ) : (
                         <span className="text-lg font-semibold text-foreground">
                           {countData?.totalFollowing}
@@ -497,6 +525,10 @@ const UsersInfo = () => {
 
           <ShareDialog />
           <ImageViewer />
+          <PremiumFeatureDialog
+            open={premiumDialogOpen}
+            onOpenChange={setPremiumDialogOpen}
+          />
 
           <div ref={loadMoreRef} style={{ height: "20px" }} />
 

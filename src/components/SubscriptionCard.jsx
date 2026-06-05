@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import {
   createSubscriptionOrder,
@@ -10,9 +9,10 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 import { Spinner } from "./ui/shadcn-io/spinner";
+import { useQueryClient } from "@tanstack/react-query";
 
 function SubscriptionCard() {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [processingPlanId, setProcessingPlanId] = useState(null);
   const [error, setError] = useState(null);
   const { user } = useAuthStore();
@@ -61,29 +61,24 @@ function SubscriptionCard() {
     setProcessingPlanId(planId);
 
     try {
-      // Step 1: Create order on backend
       const orderResult = await createSubscriptionOrder(planId);
 
       if (!orderResult.success) {
         throw new Error(orderResult.error || "Failed to create order");
       }
 
-      const orderData = orderResult.data;
-
-      // Step 2: Open Razorpay payment modal
-      const userEmail = user?.email || "";
-      const userName = user?.name || user?.fullName || "User";
-
       const paymentResult = await handleRazorpayPayment(
-        orderData,
-        userEmail,
-        userName,
+        orderResult.data,
+        user?.email || "",
+        user?.name || "User",
       );
 
       if (paymentResult.success) {
-        // Payment successful - redirect to profile views
+        await queryClient.invalidateQueries({
+          queryKey: ["subscription-status"],
+        });
+
         setProcessingPlanId(null);
-        navigate("/profileViews");
       } else {
         throw new Error(paymentResult.error || "Payment failed");
       }
@@ -106,7 +101,7 @@ function SubscriptionCard() {
       {/* Header Section */}
       <div className="text-start">
         <h1 className="text-xl font-semibold uppercase tracking-[0.2em] text-emerald-600">
-          Subscription Plans
+          Premium Plans
         </h1>
       </div>
 
@@ -219,7 +214,7 @@ function SubscriptionCard() {
                       ? "Available After Expiry"
                       : processingPlanId === plan.id
                         ? "Processing..."
-                        : "Subscribe Now"}
+                        : "Upgrade Now"}
                 </Button>
               </CardContent>
             </Card>
@@ -240,15 +235,6 @@ function SubscriptionCard() {
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
               We accept all major credit cards, PayPal, and digital wallets via
               Razorpay.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-medium text-foreground">
-              Can I upgrade or downgrade anytime?
-            </h4>
-            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Yes, you can change your subscription plan anytime. Changes take
-              effect at the next billing cycle.
             </p>
           </div>
         </div>
