@@ -60,7 +60,6 @@ function ProfileViewsCard() {
 
               <div>
                 <CardTitle className="text-lg text-foreground flex items-center gap-2">
-                  <EyeIcon className="h-5 w-5" />
                   Recent Profile Viewers
                 </CardTitle>
 
