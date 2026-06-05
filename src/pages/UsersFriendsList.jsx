@@ -43,7 +43,7 @@ function UsersFriendsList() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 space-y-6 pb-20">
+    <div className="w-full max-w-3xl mx-auto px-0 space-y-6 pb-20">
       <div className="flex items-center justify-between">
         <h2 className="text-md sm:text-lg font-bold">
           {data?.pages?.[0]?.totalCount <= 1 ? "Follower" : "Followers"} (

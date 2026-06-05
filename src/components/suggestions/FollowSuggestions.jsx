@@ -194,6 +194,7 @@ export function FollowSuggestions({ compact = false, className }) {
                 variant="ghost"
                 onClick={() => navigate("/userslist")}
                 className="
+    group
     h-auto
     w-auto
     p-0
@@ -201,7 +202,15 @@ export function FollowSuggestions({ compact = false, className }) {
     cursor-pointer
   "
               >
-                <ArrowRight className="h-4 w-4 text-emerald-700" />
+                <ArrowRight
+                  className="
+      h-4 w-4
+      text-emerald-700
+      transition-transform
+      duration-300
+      group-hover:translate-x-1
+    "
+                />
               </Button>
             </CardTitle>
             <CardDescription className="text-[11px] leading-4 sm:text-sm">

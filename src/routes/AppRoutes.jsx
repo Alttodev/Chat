@@ -15,7 +15,6 @@ import SettingsComponent from "@/pages/Setting";
 import Profile from "@/pages/Profile";
 import UsersList from "@/pages/UsersList";
 import UsersFriendsList from "@/pages/UsersFriendsList";
-import Survey from "@/pages/Survey";
 import PostLikes from "@/pages/PostLikes";
 import NotFound from "@/pages/NotFound";
 import InProgress from "@/pages/InProgress";
@@ -26,8 +25,8 @@ import VerifyAccountPage from "@/pages/VerifyAccountPage";
 import ProfileRoute from "./profileRoute";
 import HashtagPosts from "@/pages/HashtagPosts";
 import BookmarkedPosts from "@/pages/BookmarkedPosts";
-import Games from "@/pages/Games";
-import RockPaperScissorsPage from "@/pages/RockPaperScissorsPage";
+import Subscription from "@/pages/Subscription";
+
 
 
 function AppRoutes() {
@@ -57,13 +56,8 @@ function AppRoutes() {
               <Route path="/profileViews" element={<ProfileViews />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
-              <Route path="/survey" element={<Survey />} />
               <Route path="/reels" element={<Reels />} />
-              <Route path="/games" element={<Games />} />
-              <Route
-                path="/games/duo-clash"
-                element={<RockPaperScissorsPage />}
-              />
+              <Route path="/subscription" element={<Subscription />} />
               <Route path="/settings" element={<SettingsComponent />} />
               <Route path="/bookmarked-posts" element={<BookmarkedPosts />} />
               <Route path="/users/:id" element={<UsersInfo />} />

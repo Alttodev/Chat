@@ -183,7 +183,7 @@ export function CenterFeed() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-0 sm:px-4 mt-2 space-y-4 pb-20">
+    <div className="w-full max-w-3xl mx-auto px-0  mt-2 space-y-4 pb-20">
       <Card id="create-post">
         <CardContent className="p-3">
           <PostForm userProfile={userProfile} />

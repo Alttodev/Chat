@@ -253,6 +253,7 @@ function UserCard({ user, profileId, recommendedUser }) {
               )
             )}
           </div>
+          
         </div>
       </CardContent>
     </Card>

@@ -234,10 +234,6 @@ export const getAllProfiles = async () => {
   return data;
 };
 
-export const getAllUsersProfile = async () => {
-  const { data } = await axiosInstance.get(`/profile/chart`);
-  return data;
-};
 
 export const getUserPost = async ({ pageParam = 1 }) => {
   const { data } = await axiosInstance.get(

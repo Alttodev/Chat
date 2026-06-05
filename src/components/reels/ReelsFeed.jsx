@@ -13,6 +13,8 @@ import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
 import { useZustandSharePopup } from "@/lib/zustand";
 import { ReelCommentsDialog } from "./ReelCommentsDialog";
+import { Spinner } from "../ui/shadcn-io/spinner";
+import { PostSkeleton } from "../skeleton/postListSkeleton";
 
 export function ReelsFeed() {
   const navigate = useNavigate();
@@ -81,8 +83,7 @@ export function ReelsFeed() {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
-          <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
-          <span className="text-sm font-medium">Loading reels...</span>
+          <Spinner className="text-emerald-600" size={44} />
         </div>
       </div>
     );
@@ -164,7 +165,7 @@ export function ReelsFeed() {
 
           {isFetchingNextPage ? (
             <div className="flex justify-center py-5 text-white/70">
-              <Loader2 className="h-6 w-6 animate-spin" />
+             <PostSkeleton />
             </div>
           ) : null}
         </div>

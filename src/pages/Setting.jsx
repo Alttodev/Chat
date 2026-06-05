@@ -278,32 +278,56 @@ function SettingsComponent() {
                 />
               </div>
             </div>
-            {/* <Separator /> */}
+            <Separator />
 
-            {/* <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <UserRoundSearch className="h-4 w-4 text-slate-500" />
-
-                  <label className="!text-sm font-medium">Profile Views</label>
+                  <label className="text-sm font-medium">Profile Views</label>
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  See who recently viewed your profile
+                  See who viewed your profile with Premium
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={() => navigate("/profileViews")}
-                  className="h-9 rounded-full  text-sm font-medium  text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
-                >
-                  Profile views
-                </Button>
-              </div>
-            </div> */}
+              {/* <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/subscription")}
+                className="h-9 rounded-full text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
+              >
+                Premium
+              </Button> */}
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => navigate("/subscription")}
+                className="
+    relative overflow-hidden
+    h-9 rounded-full
+    text-sm font-medium
+    text-emerald-700
+    hover:bg-emerald-50 hover:text-emerald-800
+    cursor-pointer
+
+    before:absolute
+    before:top-0
+    before:-left-full
+    before:h-full
+    before:w-3/4
+    before:skew-x-12
+    before:bg-gradient-to-r
+    before:from-transparent
+    before:via-slate-300/70
+    before:to-transparent
+    before:animate-[shimmer_2s_linear_infinite]
+  "
+              >
+                Premium
+              </Button>
+            </div>
 
             <Separator />
 
