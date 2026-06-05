@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EyeIcon, BadgeCheck, Lock, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfileViewSeen } from "@/hooks/profileViewHooks";
+import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { formatRelative } from "@/lib/dateHelpers";
 import { cn } from "@/lib/utils";
@@ -19,12 +20,12 @@ const getUserId = (user) => user?._id || user?.id || user?.userId;
 function ProfileViewsCard() {
   const navigate = useNavigate();
   const { data: profileData, isLoading } = useProfileViewSeen();
+  const { isSubscribed } = useSubscriptionStatus();
 
   const viewers = profileData?.viewers || [];
   const totalViews = profileData?.count ?? viewers.length;
-  const isPaid = true; // Set based on user subscription status
   const maxFreeViews = 5;
-  const canSeeAll = isPaid || totalViews <= maxFreeViews;
+  const canSeeAll = isSubscribed || totalViews <= maxFreeViews;
 
   const displayedViewers = canSeeAll ? viewers : viewers.slice(0, maxFreeViews);
   const hiddenViewerCount = totalViews - maxFreeViews;
@@ -189,3 +190,5 @@ function ProfileViewsCard() {
 }
 
 export default ProfileViewsCard;
+
+ 

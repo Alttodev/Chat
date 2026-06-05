@@ -3,10 +3,25 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {
+  createSubscriptionOrder,
+  handleRazorpayPayment,
+} from "@/api/subscription";
+import { useAuthStore } from "@/store/authStore";
 
 function SubscriptionCard() {
   const navigate = useNavigate();
   const [processingPlanId, setProcessingPlanId] = useState(null);
+  const [error, setError] = useState(null);
+  const { user } = useAuthStore();
+  const planType = user?.planType;
+  const expiryDate = user?.subscriptionEndDate
+    ? new Date(user.subscriptionEndDate).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
 
   const subscriptionPlans = [
     {
@@ -36,15 +51,39 @@ function SubscriptionCard() {
   ];
 
   const handleSubscribe = async (planId) => {
+    setError(null);
     setProcessingPlanId(planId);
-    try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // After successful subscription, redirect to profile views
-      navigate("/profileViews");
-    } catch (error) {
-      console.error("Subscription error:", error);
+    try {
+      // Step 1: Create order on backend
+      const orderResult = await createSubscriptionOrder(planId);
+
+      if (!orderResult.success) {
+        throw new Error(orderResult.error || "Failed to create order");
+      }
+
+      const orderData = orderResult.data;
+
+      // Step 2: Open Razorpay payment modal
+      const userEmail = user?.email || "";
+      const userName = user?.name || user?.fullName || "User";
+
+      const paymentResult = await handleRazorpayPayment(
+        orderData,
+        userEmail,
+        userName,
+      );
+
+      if (paymentResult.success) {
+        // Payment successful - redirect to profile views
+        setProcessingPlanId(null);
+        navigate("/profileViews");
+      } else {
+        throw new Error(paymentResult.error || "Payment failed");
+      }
+    } catch (err) {
+      console.error("Subscription error:", err);
+      setError(err.message);
       setProcessingPlanId(null);
     }
   };
@@ -58,60 +97,100 @@ function SubscriptionCard() {
         </h1>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 border border-red-200 dark:bg-red-500/10 dark:border-red-500/20">
+          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
       {/* Subscription Cards Grid */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {subscriptionPlans.map((plan) => (
-          <Card
-            key={plan.id}
-            className="relative overflow-hidden transition-all duration-300 hover:shadow-xl border-border"
-          >
-            {/* Card Header */}
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-bold text-foreground">
-                {plan.duration}
-              </CardTitle>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                {plan.description}
-              </p>
-            </CardHeader>
+        {subscriptionPlans.map((plan) => {
+          const isActivePlan = planType === plan.id;
 
-            {/* Card Content */}
-            <CardContent className="space-y-6">
-              {/* Price Section */}
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-foreground">
-                    {plan.price}
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {plan.period}
-                  </span>
+          return (
+            <Card
+              key={plan.id}
+              className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl ${
+                isActivePlan
+                  ? "border-2 border-emerald-500 shadow-lg shadow-emerald-500/20"
+                  : "border-border"
+              }`}
+            >
+              {isActivePlan && (
+                <div className="absolute right-3 top-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-medium text-white">
+                  Active Plan
                 </div>
-              </div>
+              )}
 
-              {/* Features List */}
-              <div className="space-y-3">
-                {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <Check className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                    <span className="text-sm text-foreground">{feature}</span>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl font-bold text-foreground">
+                  {plan.duration}
+                </CardTitle>
+
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  {plan.description}
+                </p>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Price */}
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-foreground">
+                      {plan.price}
+                    </span>
+
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {plan.period}
+                    </span>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {/* Subscribe Button */}
-              <Button
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={processingPlanId === plan.id}
-                className="w-full py-6 font-semibold transition-all duration-200 bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl disabled:opacity-50 cursor-pointer"
-              >
-                {processingPlanId === plan.id
-                  ? "Processing..."
-                  : "Subscribe Now"}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+                {/* Active Subscription Info */}
+                {isActivePlan && expiryDate && (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <p className="text-sm font-semibold text-emerald-700">
+                      Premium Membership Active
+                    </p>
+
+                    <p className="mt-1 text-xs text-emerald-600">
+                      Valid until {expiryDate}
+                    </p>
+                  </div>
+                )}
+
+                {/* Features */}
+                <div className="space-y-3">
+                  {plan.features.map((feature, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Check className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                      <span className="text-sm text-foreground">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Button */}
+                <Button
+                  onClick={() => handleSubscribe(plan.id)}
+                  disabled={isActivePlan || processingPlanId === plan.id}
+                  className={`w-full py-6 font-semibold transition-all duration-200 ${
+                    isActivePlan
+                      ? "cursor-not-allowed bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+                      : "cursor-pointer bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg hover:from-emerald-600 hover:to-teal-600 hover:shadow-xl"
+                  }`}
+                >
+                  {isActivePlan
+                    ? "Current Plan"
+                    : processingPlanId === plan.id
+                      ? "Processing..."
+                      : "Subscribe Now"}
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {/* FAQ Section */}
@@ -133,7 +212,17 @@ function SubscriptionCard() {
               What payment methods do you accept?
             </h4>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              We accept all major credit cards, PayPal, and digital wallets.
+              We accept all major credit cards, PayPal, and digital wallets via
+              Razorpay.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-medium text-foreground">
+              Can I upgrade or downgrade anytime?
+            </h4>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Yes, you can change your subscription plan anytime. Changes take
+              effect at the next billing cycle.
             </p>
           </div>
         </div>

@@ -292,19 +292,21 @@ function SettingsComponent() {
                 </p>
               </div>
 
-              {/* <Button
-                variant="outline"
-                type="button"
-                onClick={() => navigate("/subscription")}
-                className="h-9 rounded-full text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
-              >
-                Premium
-              </Button> */}
-              <Button
-                variant="outline"
-                type="button"
-                onClick={() => navigate("/subscription")}
-                className="
+              {userProfile?.profile?.subscription ? (
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => navigate("/subscription")}
+                  className="h-9 rounded-full text-sm font-medium text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 cursor-pointer"
+                >
+                  View
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => navigate("/subscription")}
+                  className="
     relative overflow-hidden
     h-9 rounded-full
     text-sm font-medium
@@ -324,9 +326,12 @@ function SettingsComponent() {
     before:to-transparent
     before:animate-[shimmer_2s_linear_infinite]
   "
-              >
-                Premium
-              </Button>
+                >
+                  Premium
+                </Button>
+              )}
+
+              {/*  */}
             </div>
 
             <Separator />
