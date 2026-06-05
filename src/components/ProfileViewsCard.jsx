@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EyeIcon, BadgeCheck, Lock, ArrowRight } from "lucide-react";
+import { EyeIcon, BadgeCheck, Lock, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfileViewSeen } from "@/hooks/profileViewHooks";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
@@ -31,56 +31,33 @@ function ProfileViewsCard() {
 
   return (
     <div className="space-y-8">
-      {/* Profile Views Stats Card */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="border-border">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 mx-auto mb-2">
-                <EyeIcon className="h-6 w-6" />
-              </div>
-              <p className="text-3xl font-bold text-foreground">{totalViews}</p>
-              <p className="text-sm text-muted-foreground">Total Views</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-700 mx-auto mb-2">
-                <BadgeCheck className="h-6 w-6" />
-              </div>
-              <p className="text-3xl font-bold text-foreground">
-                {viewers.filter((v) => v?.viewer?.isVerified).length}
-              </p>
-              <p className="text-sm text-muted-foreground">Verified Users</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 text-purple-700 mx-auto mb-2">
-                <Lock className="h-6 w-6" />
-              </div>
-              <p className="text-3xl font-bold text-foreground">
-                {isPaid ? "∞" : "5"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {isPaid ? "Unlimited" : "Free Views"}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Profile Views List Card */}
       <Card className="overflow-hidden border-border shadow-sm">
         <CardHeader className="border-b bg-gradient-to-r from-emerald-50 to-white dark:from-emerald-500/10 dark:to-background">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-start gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate(-1)}
+                className="
+    group
+    cursor-pointer
+    text-foreground
+    hover:bg-transparent
+    hover:text-foreground
+  "
+              >
+                <ArrowLeft
+                  className="
+      h-4 w-4
+      transition-transform
+      duration-300
+      group-hover:-translate-x-1
+    "
+                />
+              </Button>
+
               <div>
                 <CardTitle className="text-lg text-foreground flex items-center gap-2">
                   <EyeIcon className="h-5 w-5" />

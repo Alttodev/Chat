@@ -57,13 +57,21 @@ function PostLikes() {
                 size="icon"
                 onClick={() => navigate(-1)}
                 className="
+    group
     cursor-pointer
     text-foreground
     hover:bg-transparent
     hover:text-foreground
   "
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft
+                  className="
+      h-4 w-4
+      transition-transform
+      duration-300
+      group-hover:-translate-x-1
+    "
+                />
               </Button>
 
               <div>
@@ -138,7 +146,7 @@ function PostLikes() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1 truncate font-medium text-foreground">
                         {displayName}
-                          {user?.isVerified && (
+                        {user?.isVerified && (
                           <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
                         )}
                       </div>
