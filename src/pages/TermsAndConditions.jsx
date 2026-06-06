@@ -1,20 +1,24 @@
-import { Mail, Phone } from "lucide-react";
-
 export default function TermsAndConditions() {
   const lastUpdated = "June 2026";
 
   return (
     <div className="mx-auto max-w-4xl px-4 pb-20">
       <div className="mb-6">
-        <h1 className="text-2xl mb-2 font-semibold tracking-[0.1em] text-emerald-600 flex items-center ">
+        <h1 className="mb-2 flex items-center text-2xl font-semibold tracking-[0.1em] text-emerald-600">
           Terms & Conditions
         </h1>
-        <p className="text-sm text-gray-500">Last Updated: {lastUpdated}</p>
+
+        <p className="text-sm text-muted-foreground">
+          Last Updated: {lastUpdated}
+        </p>
       </div>
 
-      <div className="space-y-8 text-gray-700">
+      <div className="space-y-8 text-muted-foreground">
         <section>
-          <h2 className="mb-3 text-xl font-semibold">1. Acceptance of Terms</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            1. Acceptance of Terms
+          </h2>
+
           <p>
             By accessing or using our platform, you agree to be bound by these
             Terms & Conditions. If you do not agree with any part of these
@@ -23,7 +27,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">2. User Accounts</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            2. User Accounts
+          </h2>
+
           <p>
             Users are responsible for maintaining the confidentiality of their
             account credentials and for all activities that occur under their
@@ -32,7 +39,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">3. Acceptable Use</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            3. Acceptable Use
+          </h2>
+
           <ul className="list-disc space-y-2 pl-6">
             <li>Do not post unlawful, harmful, or abusive content.</li>
             <li>Do not impersonate other individuals or organizations.</li>
@@ -45,7 +55,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">4. User Content</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            4. User Content
+          </h2>
+
           <p>
             Users retain ownership of the content they post. By submitting
             content to the platform, you grant us a limited license to display,
@@ -55,9 +68,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
             5. Premium Subscriptions
           </h2>
+
           <p>
             We may offer premium plans that provide additional features and
             benefits. Subscription fees, billing periods, and available features
@@ -66,7 +80,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">6. Payments</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            6. Payments
+          </h2>
+
           <p>
             All payments are processed through secure third-party payment
             providers. By purchasing a premium plan, you authorize the
@@ -75,7 +92,7 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
             7. Refund & Cancellation Policy
           </h2>
 
@@ -87,9 +104,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
             8. Account Suspension and Termination
           </h2>
+
           <p>
             We reserve the right to suspend, restrict, or terminate accounts
             that violate these Terms & Conditions, community standards, or
@@ -98,9 +116,10 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
             9. Limitation of Liability
           </h2>
+
           <p>
             The platform is provided on an "as is" and "as available" basis. We
             are not liable for indirect, incidental, or consequential damages
@@ -109,40 +128,15 @@ export default function TermsAndConditions() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold">10. Changes to Terms</h2>
+          <h2 className="mb-3 text-xl font-semibold text-foreground">
+            10. Changes to Terms
+          </h2>
+
           <p>
             We may update these Terms & Conditions from time to time. Continued
             use of the platform after updates constitutes acceptance of the
             revised terms.
           </p>
-        </section>
-
-        <section>
-          <h2 className="mb-3 text-xl font-semibold">
-            11. Contact Information
-          </h2>
-
-          <div className="mt-3 rounded-lg border p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-emerald-600" />
-              <p>
-                <span className="font-medium">Email:</span>{" "}
-                <a href="mailto:alttoamal@gmail.com" className="text-blue-600 ">
-                  alttoamal@gmail.com
-                </a>
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-emerald-600" />
-              <p>
-                <span className="font-medium">Phone:</span>{" "}
-                <a href="tel:+919361249705" className="text-blue-600 ">
-                  +91 9361249705
-                </a>
-              </p>
-            </div>
-          </div>
         </section>
       </div>
     </div>

@@ -15,7 +15,7 @@ export default function ContactPage() {
               <h3 className="font-semibold">Email Support</h3>
               <a
                 href="mailto:alttoamal@gmail.com"
-                className="text-sm text-blue-600"
+                className="font-medium text-primary hover:underline"
               >
                 alttoamal@gmail.com
               </a>
@@ -28,7 +28,10 @@ export default function ContactPage() {
             <Phone className="h-5 w-5 text-green-600" />
             <div>
               <h3 className="font-semibold">Phone Support</h3>
-              <a href="tel:+919361249705" className="text-sm text-blue-600 ">
+              <a
+                href="tel:+919361249705"
+                className="font-medium text-primary hover:underline"
+              >
                 +91 9361249705
               </a>
             </div>
@@ -40,7 +43,7 @@ export default function ContactPage() {
             <Clock className="h-5 w-5 text-orange-600" />
             <div>
               <h3 className="font-semibold">Support Hours</h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-primary ">
                 Monday - Saturday, 9:00 AM - 6:00 PM IST
               </p>
             </div>
@@ -52,7 +55,7 @@ export default function ContactPage() {
             <MapPin className="h-5 w-5 text-emerald-600" />
             <div>
               <h3 className="font-semibold">Business Address</h3>
-              <p className="text-sm text-gray-600">Tamil Nadu, India</p>
+              <p className="text-sm text-primary ">Tamil Nadu, India</p>
             </div>
           </div>
         </div>
