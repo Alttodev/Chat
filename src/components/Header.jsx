@@ -184,7 +184,7 @@ export function SocialHeader() {
 
                 <DropdownMenuItem onClick={() => navigate("/terms")}>
                   <FileText className="w-4 h-4" />
-                  Terms & Conditions
+                  Terms
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
