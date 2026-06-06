@@ -10,7 +10,7 @@ export default function ContactPage() {
       <div className="space-y-5">
         <div className="rounded-xl border p-5">
           <div className="flex items-center gap-3">
-            <Mail className="h-5 w-5 text-blue-600" />
+            <Mail className="h-5 w-5 text-emerald-600" />
             <div>
               <h3 className="font-semibold">Email Support</h3>
               <a

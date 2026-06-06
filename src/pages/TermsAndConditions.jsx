@@ -1,3 +1,5 @@
+import { Mail, Phone } from "lucide-react";
+
 export default function TermsAndConditions() {
   const lastUpdated = "June 2026";
 
@@ -120,20 +122,26 @@ export default function TermsAndConditions() {
             11. Contact Information
           </h2>
 
-          <div className="mt-3 rounded-lg border p-4">
-            <p>
-              Email:{" "}
-              <a href="mailto:alttoamal@gmail.com" className="text-blue-600">
-                alttoamal@gmail.com
-              </a>
-            </p>
+          <div className="mt-3 rounded-lg border p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-emerald-600" />
+              <p>
+                <span className="font-medium">Email:</span>{" "}
+                <a href="mailto:alttoamal@gmail.com" className="text-blue-600 ">
+                  alttoamal@gmail.com
+                </a>
+              </p>
+            </div>
 
-            <p>
-              Phone:{" "}
-              <a href="tel:+919361249705" className="text-blue-600 ">
-                +91 9361249705
-              </a>
-            </p>
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-emerald-600" />
+              <p>
+                <span className="font-medium">Phone:</span>{" "}
+                <a href="tel:+919361249705" className="text-blue-600 ">
+                  +91 9361249705
+                </a>
+              </p>
+            </div>
           </div>
         </section>
       </div>
