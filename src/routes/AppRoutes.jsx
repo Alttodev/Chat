@@ -29,7 +29,7 @@ import Subscription from "@/pages/Subscription";
 import AboutPage from "@/pages/About";
 import ContactPage from "@/pages/Contact";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
-import TermsAndConditions from "@/pages/TermsandConditions";
+import TermsAndConditions from "@/pages/TermsAndConditions";
 
 function AppRoutes() {
   return (
