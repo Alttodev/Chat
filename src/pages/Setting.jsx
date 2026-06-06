@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -41,7 +40,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useThemeStore } from "@/lib/zustand";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
-import { markPublicAccount } from "@/api/axios";
+import { markPublicAccount, userAccountDelete } from "@/api/axios";
 import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
 import { DeleteAccountDialog } from "@/components/modals/DeleteAccountDialog";
 
@@ -136,10 +135,16 @@ function SettingsComponent() {
 
   const handleDeleteAccount = async () => {
     try {
-      // API call
-      console.log("Delete account");
+      const response = await userAccountDelete();
+
+      toastSuccess(response?.message || "Account deleted successfully");
+      if (response.success) {
+        localStorage.clear();
+
+        navigate("/");
+      }
     } catch (error) {
-      console.error(error);
+      toastError(error?.response?.data?.message || "Failed to delete account");
     } finally {
       setDeleteModalOpen(false);
     }
@@ -472,15 +477,17 @@ function SettingsComponent() {
           </CardHeader>
 
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Permanently delete your account and all associated data including
-              profile information, posts, comments, followers, and account
-              credentials. This action cannot be undone.
-            </p>
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <p className="text-sm text-muted-foreground">
+                  Permanently delete your account and all associated data. This
+                  action cannot be undone.
+                </p>
+              </div>
 
-            <Button
-              variant="destructive"
-              className="
+              <Button
+                variant="destructive"
+                className="
     bg-rose-500/10
     hover:bg-rose-500/20
     text-rose-600
@@ -501,10 +508,12 @@ function SettingsComponent() {
     items-center
     gap-2
   "
-              onClick={() => setDeleteModalOpen(true)}
-            >
-              Delete Account
-            </Button>
+                onClick={() => setDeleteModalOpen(true)}
+              >
+                Delete Account
+              </Button>
+              {/*  */}
+            </div>
           </CardContent>
         </Card>
       </div>

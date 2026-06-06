@@ -338,6 +338,12 @@ export const getUserFollowing = async (id, pageParam = 1, limit = 5) => {
 
 //delete
 
+export const userAccountDelete = async () => {
+  const { data } = await axiosInstance.delete(`/account/delete-account`);
+  return data;
+};
+
+
 export const userPostDelete = async (id) => {
   const { data } = await axiosInstance.delete(`/post/delete/${id}`);
   return data;
