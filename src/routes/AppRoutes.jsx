@@ -26,8 +26,10 @@ import ProfileRoute from "./profileRoute";
 import HashtagPosts from "@/pages/HashtagPosts";
 import BookmarkedPosts from "@/pages/BookmarkedPosts";
 import Subscription from "@/pages/Subscription";
-
-
+import AboutPage from "@/pages/About";
+import ContactPage from "@/pages/Contact";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsAndConditions from "@/pages/TermsandConditions";
 
 function AppRoutes() {
   return (
@@ -50,6 +52,10 @@ function AppRoutes() {
           <Route element={<ProtectedRoute />}>
             <Route element={<HomeLayout />}>
               <Route path="/home" element={<CenterFeed />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />
               <Route path="/following/:id" element={<UsersFollowingList />} />

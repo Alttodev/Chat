@@ -1,4 +1,14 @@
-import { Search, X, User, Settings, Gem } from "lucide-react";
+import {
+  Search,
+  X,
+  User,
+  Settings,
+  Gem,
+  Shield,
+  FileText,
+  Phone,
+  Info,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -140,28 +150,41 @@ export function SocialHeader() {
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => navigate("/profile")}
-                  className="mb-1"
-                >
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="w-4 h-4" />
                   Profile
                 </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={() => navigate("/subscription")}
-                  className="mb-1"
-                >
-                  <Gem  className="w-4 h-4" />
+                <DropdownMenuItem onClick={() => navigate("/subscription")}>
+                  <Gem className="w-4 h-4" />
                   Upgrade
                 </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={() => navigate("/settings")}
-                  className="mb-1"
-                >
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
                   <Settings className="w-4 h-4" />
                   Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => navigate("/about")}>
+                  <Info className="w-4 h-4" />
+                  About Us
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate("/contact")}>
+                  <Phone className="w-4 h-4" />
+                  Contact Us
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate("/privacy-policy")}>
+                  <Shield className="w-4 h-4" />
+                  Privacy Policy
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate("/terms")}>
+                  <FileText className="w-4 h-4" />
+                  Terms & Conditions
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

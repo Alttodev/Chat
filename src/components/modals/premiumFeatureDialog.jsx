@@ -31,8 +31,8 @@ function PremiumFeatureDialog({
       >
         <DialogHeader>
           <div className="flex justify-center mb-2">
-            <div className="rounded-full bg-amber-100 p-3">
-              <Gem className="h-6 w-6 text-amber-500" />
+            <div className="rounded-full bg-emerald-100 p-3">
+              <Gem className="h-6 w-6 text-emerald-600" />
             </div>
           </div>
 

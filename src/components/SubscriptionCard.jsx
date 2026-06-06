@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Gem } from "lucide-react";
 import { useState } from "react";
 import {
   createSubscriptionOrder,
@@ -39,6 +39,7 @@ function SubscriptionCard() {
       features: [
         "Priority support",
         "Profile view history",
+        "View Followers & Following Details",
         "30-day viewer history",
       ],
     },
@@ -51,6 +52,7 @@ function SubscriptionCard() {
       features: [
         "24/7 priority support",
         "Profile view history",
+        "View Followers & Following Details",
         "Unlimited viewer history",
       ],
     },
@@ -100,7 +102,8 @@ function SubscriptionCard() {
     <div className="space-y-4 sm:space-y-6">
       {/* Header Section */}
       <div className="text-start">
-        <h1 className="text-xl font-semibold uppercase tracking-[0.2em] text-emerald-600">
+        <h1 className="text-2xl font-semibold tracking-[0.1em] text-emerald-600 flex items-center gap-2">
+          <Gem className="h-5 w-5" />
           Premium Plans
         </h1>
       </div>
@@ -223,18 +226,42 @@ function SubscriptionCard() {
       </div>
 
       {/* FAQ Section */}
-      <div className="mt-12 rounded-lg border border-border bg-white/50 p-6 dark:bg-slate-950/50">
+      <div className="mt-6 rounded-lg border border-border bg-white/50 p-6 dark:bg-slate-950/50">
         <h3 className="mb-4 text-lg font-semibold text-foreground">
           Frequently Asked Questions
         </h3>
+
         <div className="space-y-4">
           <div>
             <h4 className="font-medium text-foreground">
               What payment methods do you accept?
             </h4>
+
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              We accept all major credit cards, PayPal, and digital wallets via
-              Razorpay.
+              We accept UPI, debit cards, credit cards, net banking, and digital
+              wallets through Razorpay.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-medium text-foreground">
+              Can I switch to another plan?
+            </h4>
+
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Plan changes are available after your current subscription period
+              expires.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-medium text-foreground">
+              What happens when my subscription expires?
+            </h4>
+
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              Premium features will be disabled automatically, and you can renew
+              or choose another plan at any time.
             </p>
           </div>
         </div>
