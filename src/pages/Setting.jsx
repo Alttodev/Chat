@@ -23,6 +23,7 @@ import {
   Globe,
   Lock,
   UserRoundSearch,
+  Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -42,6 +43,7 @@ import { ImageViewer } from "@/components/modals/imageViewer";
 import { SunMedium } from "lucide-react";
 import { markPublicAccount } from "@/api/axios";
 import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
+import { DeleteAccountDialog } from "@/components/modals/DeleteAccountDialog";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
@@ -54,6 +56,7 @@ function SettingsComponent() {
   const { data: profileData, isFetching } = useUserDetail();
   const queryClient = useQueryClient();
   const userProfile = useMemo(() => profileData, [profileData]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(
     userProfile?.profile?.isPublic ?? true,
   );
@@ -128,6 +131,17 @@ function SettingsComponent() {
       toastSuccess("Logout successful!");
     } catch (error) {
       toastError(error, "Failed to logout");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      // API call
+      console.log("Delete account");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeleteModalOpen(false);
     }
   };
 
@@ -448,8 +462,58 @@ function SettingsComponent() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="border-red-300 shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-600">
+              <Trash2 className="h-5 w-5" />
+              Delete Account
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Permanently delete your account and all associated data including
+              profile information, posts, comments, followers, and account
+              credentials. This action cannot be undone.
+            </p>
+
+            <Button
+              variant="destructive"
+              className="
+    bg-rose-500/10
+    hover:bg-rose-500/20
+    text-rose-600
+    border
+    border-rose-500/20
+    rounded-full
+    px-5
+    h-10
+    font-medium
+    text-sm
+    shadow-sm
+    hover:shadow-md
+    transition-all
+    duration-200
+    active:scale-95
+    cursor-pointer
+    flex
+    items-center
+    gap-2
+  "
+              onClick={() => setDeleteModalOpen(true)}
+            >
+              Delete Account
+            </Button>
+          </CardContent>
+        </Card>
       </div>
       <ImageViewer />
+      <DeleteAccountDialog
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onConfirm={handleDeleteAccount}
+      />
     </div>
   );
 }
