@@ -98,8 +98,10 @@ export function PostImageForm() {
       const postText = appendLocationMarker(trimmedText, selectedLocation);
 
       data.append("postText", postText);
-      if (formData.image) {
-        data.append("image", formData.image);
+      if (formData.image && formData.image.length > 0) {
+        formData.image.forEach((file) => {
+          data.append("image", file);
+        });
       }
 
       const res = await createPost(data);

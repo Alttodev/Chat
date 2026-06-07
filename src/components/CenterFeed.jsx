@@ -44,8 +44,6 @@ import PostContent from "./Post/PostContent";
 import { FollowSuggestions } from "./suggestions/FollowSuggestions";
 import { formatShortUsername } from "@/lib/shortUserName";
 
-
-
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
   const { openShareModal } = useZustandSharePopup();
@@ -299,12 +297,10 @@ export function CenterFeed() {
             <CardContent className="pt-0">
               <PostImageWithLikes
                 post={post}
-                likedUsers={post?.likedByUsers}
                 onImageClick={() => open(post.image)}
               />
 
               <PostContent text={post?.postText} className="mt-3 pl-2" />
-              
 
               <div className="mt-3 flex items-center gap-1">
                 <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
@@ -335,7 +331,10 @@ export function CenterFeed() {
                   </Button>
                 </div>
 
-                <PostBookmarkComponent post={post} className="ml-auto shrink-0" />
+                <PostBookmarkComponent
+                  post={post}
+                  className="ml-auto shrink-0"
+                />
               </div>
               {likeCount > 0 && visibleLiker && (
                 <Link
