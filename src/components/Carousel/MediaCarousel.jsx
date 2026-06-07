@@ -46,7 +46,7 @@ export function MediaCarousel({ images }) {
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all ${
-                i === current ? "w-4 bg-black" : "w-1.5 bg-gray-300"
+                i === current ? "w-4 bg-emerald-500" : "w-1.5 bg-emerald-300"
               }`}
             />
           ))}
