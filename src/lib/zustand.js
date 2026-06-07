@@ -32,11 +32,36 @@ export const useZustandSharePopup = create((set) => ({
 }));
 
 export const useImageModalStore = create((set) => ({
-  image: null,
+  media: [],
+  currentIndex: 0,
   isOpen: false,
 
-  open: (img) => set({ image: img, isOpen: true }),
-  close: () => set({ image: null, isOpen: false }),
+  open: (media, currentIndex = 0) =>
+    set({
+      media,
+      currentIndex,
+      isOpen: true,
+    }),
+
+  close: () =>
+    set({
+      media: [],
+      currentIndex: 0,
+      isOpen: false,
+    }),
+
+  next: () =>
+    set((state) => ({
+      currentIndex:
+        state.currentIndex < state.media.length - 1
+          ? state.currentIndex + 1
+          : state.currentIndex,
+    })),
+
+  prev: () =>
+    set((state) => ({
+      currentIndex: state.currentIndex > 0 ? state.currentIndex - 1 : 0,
+    })),
 }));
 
 export const useStatusViewerStore = create((set) => ({
@@ -62,7 +87,7 @@ export const useProfileEdit = create((set) => ({
   openProfile: (data) =>
     set({
       isOpen: true,
-      modalData: data, 
+      modalData: data,
     }),
 
   closeProfile: () =>

@@ -56,7 +56,7 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
   if (isMultipleImages) {
     return (
       <div className={cn("overflow-hidden rounded-lg", className)}>
-        <MediaCarousel images={media} />
+        <MediaCarousel images={media}   onImageClick={onImageClick}/>
       </div>
     );
   }

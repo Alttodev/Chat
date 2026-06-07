@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
-export function MediaCarousel({ images }) {
+export function MediaCarousel({ images, onImageClick }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
   const [current, setCurrent] = useState(0);
 
@@ -30,8 +30,9 @@ export function MediaCarousel({ images }) {
             <div key={i} className="min-w-full">
               <img
                 src={img}
+                onClick={onImageClick}
                 alt={`media-${i}`}
-                className="w-full aspect-square object-cover select-none"
+                className="w-full aspect-square object-cover select-none cursor-pointer"
                 loading="lazy"
               />
             </div>
@@ -46,7 +47,7 @@ export function MediaCarousel({ images }) {
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all ${
-                i === current ? "w-4 bg-emerald-500" : "w-1.5 bg-emerald-300"
+                i === current ? "w-4 bg-gray-500" : "w-1.5 bg-gray-400"
               }`}
             />
           ))}

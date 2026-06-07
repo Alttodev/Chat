@@ -25,15 +25,18 @@ export function ImageUpload({ name, control, rules }) {
       render={({ field: { value = [], onChange } }) => {
         const previewList = Array.isArray(value) ? createPreview(value) : [];
 
-        // SELECT FILES
         const handleImageSelect = (files) => {
           const fileArray = Array.from(files || []);
+
           if (!fileArray.length) return;
 
           onChange(fileArray);
+
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
         };
 
-        // REMOVE SINGLE FILE (FIXED)
         const handleImageRemove = (index) => {
           const updated = [...value];
           updated.splice(index, 1);
