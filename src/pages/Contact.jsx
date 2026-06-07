@@ -15,7 +15,7 @@ export default function ContactPage() {
               <h3 className="font-semibold">Email Support</h3>
               <a
                 href="mailto:alttoamal@gmail.com"
-                className="font-medium text-primary hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 alttoamal@gmail.com
               </a>
@@ -30,7 +30,7 @@ export default function ContactPage() {
               <h3 className="font-semibold">Phone Support</h3>
               <a
                 href="tel:+919361249705"
-                className="font-medium text-primary hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 +91 9361249705
               </a>
