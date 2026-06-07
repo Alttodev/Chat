@@ -3,7 +3,7 @@ import { toastError, toastSuccess } from "@/lib/toast";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { usePostCreate } from "@/hooks/postHooks";
-import { ImagePlus, MapPin, Sparkles, X } from "lucide-react";
+import { ImagePlus, Loader2, MapPin, Sparkles, X } from "lucide-react";
 import { useAIPromptStore, useZustandImagePopup } from "@/lib/zustand";
 import { useMemo, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -230,7 +230,14 @@ export function PostForm({ userProfile }) {
               disabled:cursor-not-allowed
             "
           >
-            Post
+            {isSubmitting? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Posting...
+              </>
+            ) : (
+              <>Post</>
+            )}
           </Button>
         </div>
 

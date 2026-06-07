@@ -27,10 +27,7 @@ function ActionButton({
     >
       <span className="flex h-10 w-10 items-center justify-center rounded-full bg-black/35 backdrop-blur-sm ring-1 ring-white/10 sm:h-11 sm:w-11">
         <Icon
-          className={cn(
-            "h-5 w-5",
-            active ? activeClassName : "text-white",
-          )}
+          className={cn("h-5 w-5", active ? activeClassName : "text-white")}
         />
       </span>
     </button>
@@ -55,7 +52,9 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
 
   const userInfo = post?.user || {};
 
-  const videoPoster = getVideoPosterUrl(post?.image || "");
+  const mediaUrl = Array.isArray(post?.image) ? post.image[0] : post?.image;
+
+  const videoPoster = getVideoPosterUrl(mediaUrl || "");
   const commentCount =
     post?.commentCount ||
     post?.commentsCount ||
@@ -69,7 +68,13 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
     setIsLiked(!!post?.likedByMe);
     setLikeCount(typeof post?.likes === "number" ? post.likes : 0);
     setIsBookmarked(Boolean(post?.bookmarkedByMe));
-  }, [post?._id, post?.image, post?.bookmarkedByMe, post?.likedByMe, post?.likes]);
+  }, [
+    post?._id,
+    post?.image,
+    post?.bookmarkedByMe,
+    post?.likedByMe,
+    post?.likes,
+  ]);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -166,7 +171,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
             "h-full w-full object-cover transition-opacity duration-300",
             isReady ? "opacity-100" : "opacity-0",
           )}
-          src={post?.image}
+          src={mediaUrl}
           poster={videoPoster || undefined}
           autoPlay
           loop
@@ -209,14 +214,14 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                     </span>
                   </div>
                   {post?.postText ? (
-                  <p
-                    className={cn(
-                      "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
-                      "opacity-100",
-                    )}
-                  >
-                    {post.postText}
-                  </p>
+                    <p
+                      className={cn(
+                        "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
+                        "opacity-100",
+                      )}
+                    >
+                      {post.postText}
+                    </p>
                   ) : null}
                 </div>
               </div>

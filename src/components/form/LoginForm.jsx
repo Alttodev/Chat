@@ -14,6 +14,7 @@ import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
+import { Loader2 } from "lucide-react";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
@@ -185,7 +186,14 @@ const LoginForm = () => {
     disabled:cursor-not-allowed
   "
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              <>Login</>
+            )}
           </Button>
         </form>
 

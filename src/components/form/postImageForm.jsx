@@ -6,7 +6,7 @@ import { ImageUpload } from "../form_inputs/ImageUpload";
 import { usePostCreate } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useMemo, useRef, useState } from "react";
-import { MapPin, Sparkles, X } from "lucide-react";
+import { Loader2, MapPin, Sparkles, X } from "lucide-react";
 import LocationPickerDialog from "../form_inputs/LocationPickerDialog";
 import { appendLocationMarker } from "@/lib/location";
 import axiosInstance from "@/api/axiosInstance";
@@ -216,7 +216,14 @@ export function PostImageForm() {
               disabled:cursor-not-allowed
             "
           >
-            Post
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Posting...
+              </>
+            ) : (
+              <>Post</>
+            )}
           </Button>
         </div>
 

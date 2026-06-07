@@ -9,6 +9,7 @@ import { PasswordInput } from "../form_inputs/PasswordInput";
 import { useUserResetPassword } from "@/hooks/authHooks";
 import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
+import { Loader2 } from "lucide-react";
 
 const ResetMailForm = () => {
   const navigate = useNavigate();
@@ -102,7 +103,14 @@ const ResetMailForm = () => {
     disabled:cursor-not-allowed
   "
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>Submit</>
+            )}
           </Button>
         </form>
 

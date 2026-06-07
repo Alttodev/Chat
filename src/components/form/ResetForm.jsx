@@ -9,6 +9,7 @@ import TextInput from "../form_inputs/TextInput";
 import { useUserReset } from "@/hooks/authHooks";
 import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
+import { Loader2 } from "lucide-react";
 
 const ResetForm = () => {
   const navigate = useNavigate();
@@ -92,7 +93,14 @@ const ResetForm = () => {
     disabled:cursor-not-allowed
   "
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>Submit</>
+            )}
           </Button>
         </form>
 

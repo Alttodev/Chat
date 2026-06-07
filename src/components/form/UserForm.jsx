@@ -12,7 +12,7 @@ import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/authStore";
 import messageBg from "@/assets/bgwallpaper.png";
-import { Camera } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
@@ -173,7 +173,14 @@ const ProfileCreateForm = () => {
     disabled:cursor-not-allowed
   "
             >
-              {isSubmitting ? "Creating..." : "Create"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>Create</>
+              )}
             </Button>
           </div>
         </form>

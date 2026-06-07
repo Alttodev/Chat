@@ -17,23 +17,30 @@ export const getMessageMediaMimeType = (message = {}) => {
 };
 
 export const isVideoMediaUrl = (url = "", mimeType = "") => {
+  if (typeof url !== "string") return false;
+
   return mimeType.startsWith("video/") || VIDEO_FILE_EXT_RE.test(url);
 };
 
 export const isAudioMediaUrl = (url = "", mimeType = "") => {
+  if (typeof url !== "string") return false;
+
   return mimeType.startsWith("audio/") || AUDIO_FILE_EXT_RE.test(url);
 };
 
 export const getVideoPosterUrl = (url = "") => {
+  if (typeof url !== "string") return "";
+
   if (!url || !CLOUDINARY_VIDEO_PATH_RE.test(url)) {
     return "";
   }
 
   const [baseUrl, query = ""] = url.split("?");
+
   const posterUrl = baseUrl
     .replace(
       CLOUDINARY_VIDEO_PATH_RE,
-      "/video/upload/so_1,c_fill,g_auto,w_320,h_320/",
+      "/video/upload/so_1,c_fill,g_auto,w_320,h_320/"
     )
     .replace(VIDEO_FILE_EXT_RE, ".jpg");
 

@@ -10,6 +10,7 @@ import TextInput from "../form_inputs/TextInput";
 import { useUserSignup } from "@/hooks/authHooks";
 import logo from "@/assets/logo.png";
 import messageBg from "@/assets/bgwallpaper.png";
+import { Loader2 } from "lucide-react";
 
 const SignupForm = () => {
   const navigate = useNavigate();
@@ -120,7 +121,14 @@ const SignupForm = () => {
     disabled:cursor-not-allowed
   "
           >
-            {isSubmitting ? "Creating account..." : "Sign Up"}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              <>Sign Up</>
+            )}
           </Button>
         </form>
 

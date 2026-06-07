@@ -7,7 +7,7 @@ import { useZustandPopup } from "@/lib/zustand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PostFormSkeleton } from "../skeleton/postFormSkeleton";
 import { appendLocationMarker, extractLocationMarker } from "@/lib/location";
-import { MapPin, X } from "lucide-react";
+import { Loader2, MapPin, X } from "lucide-react";
 
 export function PostUpdateForm({ userProfile }) {
   const { closeModal, modalData } = useZustandPopup();
@@ -150,7 +150,14 @@ export function PostUpdateForm({ userProfile }) {
     disabled:cursor-not-allowed
   "
         >
-          {isSubmitting ? "Updating..." : "Update"}
+        {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              <>Update</>
+            )}
         </Button>
       </div>
     </form>

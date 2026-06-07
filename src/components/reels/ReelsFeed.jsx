@@ -33,12 +33,16 @@ export function ReelsFeed() {
 
   const reels = useMemo(
     () =>
-      posts.filter((post) =>
-        isVideoMediaUrl(
-          post?.image || "",
+      posts.filter((post) => {
+        const mediaUrl = Array.isArray(post?.image)
+          ? post.image[0]
+          : post?.image;
+
+        return isVideoMediaUrl(
+          mediaUrl || "",
           post?.mimeType || post?.mimetype || "",
-        ),
-      ),
+        );
+      }),
     [posts],
   );
 
@@ -165,7 +169,7 @@ export function ReelsFeed() {
 
           {isFetchingNextPage ? (
             <div className="flex justify-center py-5 text-white/70">
-             <PostSkeleton />
+              <PostSkeleton />
             </div>
           ) : null}
         </div>

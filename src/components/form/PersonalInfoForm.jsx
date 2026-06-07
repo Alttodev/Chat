@@ -1,4 +1,4 @@
-import { User, Mail, MapPin, Camera, BadgeInfo, Sparkles } from "lucide-react";
+import { User, Mail, MapPin, Camera, BadgeInfo, Sparkles, Loader2 } from "lucide-react";
 import TextInput from "../form_inputs/TextInput";
 import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { useForm } from "react-hook-form";
@@ -251,7 +251,14 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                 sm:px-6
               "
             >
-              {isSubmitting ? "Saving..." : "Save"}
+             {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>Save</>
+            )}
             </Button>
           </div>
         )}
