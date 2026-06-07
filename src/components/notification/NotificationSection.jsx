@@ -28,6 +28,7 @@ import {
   useMarkNotificationRead,
   useNotifications,
   useNotificationSettings,
+  useClearNotifications,
 } from "@/hooks/notificationHooks";
 
 const formatTime = (value) => {
@@ -64,6 +65,7 @@ function NotificationSection() {
   const { data: notificationsData, isLoading, refetch } = useNotifications(30);
   const { data: notificationSettingsData } = useNotificationSettings();
   const { mutateAsync: markNotificationRead } = useMarkNotificationRead();
+  const { mutate: clearNotifications, isPending } = useClearNotifications();
 
   const pushNotificationsEnabled =
     notificationSettingsData?.settings?.enabled ?? true;
@@ -192,29 +194,6 @@ function NotificationSection() {
     [navigate, markAsSeen, profileId],
   );
 
-  const handleClearAllNotifications = useCallback(async () => {
-    if (!notifications.length) return;
-
-    try {
-      await Promise.all(
-        notifications.map(async (notification) => {
-          try {
-            await markAsSeen(notification);
-          } catch (error) {
-            console.error("Failed to mark notification seen:", error);
-          }
-        }),
-      );
-
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
-      refetch();
-    } catch (error) {
-      console.error("Failed to clear notifications:", error);
-    }
-  }, [notifications, markAsSeen, queryClient, refetch]);
-
-
   const badgeText = totalCount > 99 ? "99+" : totalCount;
 
   return (
@@ -260,10 +239,13 @@ function NotificationSection() {
             type="button"
             variant="ghost"
             className="h-8 px-3 flex items-center gap-2  dark:hover:bg-red-900/20 cursor-pointer"
-            onClick={handleClearAllNotifications}
-            disabled={notifications.length === 0}
+            onClick={() => clearNotifications()}
+            disabled={isPending || notifications.length === 0}
           >
-            <span className="text-sm font-medium">Clear all</span>
+            <span className="text-sm font-medium">
+              {" "}
+              {isPending ? "Clearing..." : "Clear All"}
+            </span>
           </Button>
         </div>
 

@@ -4,6 +4,7 @@ import {
   markNotificationRead,
   getNotificationSettings,
   updateNotificationSettings,
+  clearNotifications,
 } from "@/api/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -35,6 +36,23 @@ export const useMarkNotificationRead = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notification_counts"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
+export const useClearNotifications = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: clearNotifications,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notificationCounts"],
+      });
     },
   });
 };

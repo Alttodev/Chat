@@ -143,6 +143,14 @@ export const markNotificationRead = async (notificationId) => {
   return data;
 };
 
+export const clearNotifications = async () => {
+  const { data } = await axiosInstance.put(
+    "/notifications/clear-all"
+  );
+  return data;
+};
+
+
 export const getNotificationSettings = async () => {
   const { data } = await axiosInstance.get(`/profile/notification-settings`);
   return data;
