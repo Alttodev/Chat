@@ -25,7 +25,17 @@ export function ImageViewer() {
         if (!open) close();
       }}
     >
-      <DialogContent className="p-0 border-0 max-w-none w-screen h-screen">
+      <DialogContent
+        className="
+    p-0
+    border-0
+    max-w-screen
+    w-screen
+    h-screen
+    rounded-none
+    [&>button]:hidden
+  "
+      >
         <div className="relative w-full h-full bg-black flex items-center justify-center">
           {/* Close */}
           <button
