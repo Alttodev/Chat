@@ -138,10 +138,6 @@ const getMediaLabel = (message) => {
   return isVideo ? "Video" : "Photo";
 };
 
-const chatBackgroundStyle = {
-  backgroundColor: "rgba(248, 245, 238, 0.8)",
-};
-
 const TypingBubble = ({ typingUserName }) => (
   <div className="flex max-w-[80%] gap-3">
     <div className="flex flex-col items-start gap-1">
@@ -215,23 +211,27 @@ export default function MessagesList({
     });
   }, []);
 
-  const scrollMessageIntoView = useCallback((messageId, behavior = "smooth") => {
-    const container = scrollContainerRef.current;
-    if (!container || !messageId) return;
+  const scrollMessageIntoView = useCallback(
+    (messageId, behavior = "smooth") => {
+      const container = scrollContainerRef.current;
+      if (!container || !messageId) return;
 
-    const target = container.querySelector(
-      `[data-message-id="${CSS.escape(String(messageId))}"]`,
-    );
+      const target = container.querySelector(
+        `[data-message-id="${CSS.escape(String(messageId))}"]`,
+      );
 
-    target?.scrollIntoView({
-      behavior,
-      block: "center",
-      inline: "nearest",
-    });
-  }, []);
+      target?.scrollIntoView({
+        behavior,
+        block: "center",
+        inline: "nearest",
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
-    if (!renderedMessages.length || hasInitialScrollRef.current) return undefined;
+    if (!renderedMessages.length || hasInitialScrollRef.current)
+      return undefined;
 
     const frame = window.requestAnimationFrame(() => {
       scrollToBottom("auto");
@@ -242,7 +242,8 @@ export default function MessagesList({
   }, [renderedMessages.length, conversationId, scrollToBottom]);
 
   useEffect(() => {
-    if (!hasInitialScrollRef.current || !renderedMessages.length) return undefined;
+    if (!hasInitialScrollRef.current || !renderedMessages.length)
+      return undefined;
     if (!isAtBottomRef.current) return undefined;
 
     const frame = window.requestAnimationFrame(() => {
@@ -311,13 +312,15 @@ export default function MessagesList({
       !!normalizedMessage?.audio ||
       mediaType.startsWith("audio/") ||
       isAudioMediaUrl(mediaUrl, mediaType);
-    const isVideoMessage = !isAudioMessage && isVideoMediaUrl(mediaUrl, mediaType);
+    const isVideoMessage =
+      !isAudioMessage && isVideoMediaUrl(mediaUrl, mediaType);
     const status = isOwnMessage
       ? normalizedMessage?.seenBy?.length > 1
         ? "read"
         : "sent"
       : null;
-    const hasOnlyVisualMedia = !!mediaUrl && !normalizedMessage.text && !isAudioMessage;
+    const hasOnlyVisualMedia =
+      !!mediaUrl && !normalizedMessage.text && !isAudioMessage;
     const hasImageAndText = !!mediaUrl && !!normalizedMessage.text;
     const isDeleted =
       !!normalizedMessage?.isDeleted ||
@@ -428,7 +431,10 @@ export default function MessagesList({
                     <MoreVertical className="h-3.5 w-3.5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align={isOwnMessage ? "end" : "start"} sideOffset={8}>
+                <DropdownMenuContent
+                  align={isOwnMessage ? "end" : "start"}
+                  sideOffset={8}
+                >
                   <DropdownMenuItem
                     onClick={() => onReplyMessage?.(normalizedMessage)}
                     className="cursor-pointer"
@@ -460,21 +466,18 @@ export default function MessagesList({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {!isDeleted &&
-                mediaUrl &&
-                !isVideoMessage &&
-                !isAudioMessage && (
-                  <img
-                    onClick={() => open(mediaUrl)}
-                    onLoad={handleMediaLoad}
-                    className={cn(
-                      "max-h-72 w-full cursor-pointer rounded-2xl object-cover transition hover:scale-[1.01]",
-                      hasOnlyVisualMedia ? "" : "mb-2",
-                    )}
-                    src={mediaUrl}
-                    alt="message media"
-                  />
-                )}
+              {!isDeleted && mediaUrl && !isVideoMessage && !isAudioMessage && (
+                <img
+                  onClick={() => open(mediaUrl)}
+                  onLoad={handleMediaLoad}
+                  className={cn(
+                    "max-h-72 w-full cursor-pointer rounded-2xl object-cover transition hover:scale-[1.01]",
+                    hasOnlyVisualMedia ? "" : "mb-2",
+                  )}
+                  src={mediaUrl}
+                  alt="message media"
+                />
+              )}
               {!isDeleted && mediaUrl && isVideoMessage && (
                 <video
                   src={mediaUrl}
@@ -501,7 +504,9 @@ export default function MessagesList({
                 <p
                   className={cn(
                     "text-sm leading-relaxed",
-                    hasImageAndText && !isDeleted && "mt-2 rounded-2xl px-4 py-2",
+                    hasImageAndText &&
+                      !isDeleted &&
+                      "mt-2 rounded-2xl px-4 py-2",
                     hasImageAndText &&
                       !isDeleted &&
                       (isOwnMessage
@@ -523,7 +528,9 @@ export default function MessagesList({
 
             <div className="flex items-center gap-1">
               <span className="text-xs text-muted-foreground">
-                {formatTime(normalizedMessage.createdAt || normalizedMessage.timestamp)}
+                {formatTime(
+                  normalizedMessage.createdAt || normalizedMessage.timestamp,
+                )}
               </span>
               {isOwnMessage && getStatusIcon(status)}
             </div>
@@ -538,8 +545,7 @@ export default function MessagesList({
       <div className="relative flex flex-1 min-h-0 flex-col overflow-hidden bg-white md:bg-transparent">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={chatBackgroundStyle}
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#fafafa] via-[#f8f9fa] to-[#f5f5f5]"
         />
         <div className="relative z-10 flex-1 min-h-0 p-4 sm:p-5">
           <div className="space-y-3">
@@ -556,8 +562,7 @@ export default function MessagesList({
     <div className="relative flex flex-1 min-h-0 flex-col overflow-hidden bg-white md:bg-transparent">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={chatBackgroundStyle}
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#fafafa] via-[#f8f9fa] to-[#f5f5f5]"
       />
 
       <div
