@@ -38,7 +38,7 @@ export const useImageModalStore = create((set) => ({
 
   open: (media, currentIndex = 0) =>
     set({
-      media,
+    media: Array.isArray(media) ? media : [media],
       currentIndex,
       isOpen: true,
     }),
