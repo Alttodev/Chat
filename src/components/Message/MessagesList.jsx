@@ -401,6 +401,12 @@ export default function MessagesList({
               onTouchStart={() => handleTouchStart(normalizedMessage)}
               onTouchEnd={handleTouchEnd}
               onTouchMove={handleTouchEnd}
+              onContextMenu={(e) => e.preventDefault()}
+              style={{
+                WebkitUserSelect: "none",
+                userSelect: "none",
+                WebkitTouchCallout: "none",
+              }}
               className={cn(
                 "relative w-fit max-w-full overflow-hidden rounded-2xl border break-words whitespace-pre-wrap shadow-sm transition-transform duration-200",
                 isReplyTarget &&
