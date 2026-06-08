@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Check,
@@ -193,8 +193,24 @@ export default function MessagesList({
   const scrollContainerRef = useRef(null);
   const isAtBottomRef = useRef(true);
   const hasInitialScrollRef = useRef(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const longPressTimer = useRef(null);
 
   const renderedMessages = useMemo(() => messages || [], [messages]);
+
+  const handleTouchStart = (message) => {
+    longPressTimer.current = setTimeout(() => {
+      setSelectedMessage(message);
+      setMenuOpen(true);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
 
   useEffect(() => {
     hasInitialScrollRef.current = false;
@@ -382,6 +398,9 @@ export default function MessagesList({
               data-message-id={(
                 normalizedMessage._id || normalizedMessage.id
               )?.toString?.()}
+              onTouchStart={() => handleTouchStart(normalizedMessage)}
+              onTouchEnd={handleTouchEnd}
+              onTouchMove={handleTouchEnd}
               className={cn(
                 "relative w-fit max-w-full overflow-hidden rounded-2xl border break-words whitespace-pre-wrap shadow-sm transition-transform duration-200",
                 isReplyTarget &&
@@ -424,7 +443,7 @@ export default function MessagesList({
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="absolute right-0 -top-0 flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground/70 opacity-100 transition-all duration-200 hover:bg-black/5 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/25 sm:opacity-0 sm:group-hover:opacity-100 dark:hover:bg-white/10 dark:hover:text-slate-100 cursor-pointer"
+                    className="absolute right-0 top-0 hidden sm:flex h-5 w-5 items-center justify-center rounded-full text-muted-foreground/70 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-black/5 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/25 dark:hover:bg-white/10 dark:hover:text-slate-100 cursor-pointer"
                     aria-label="Message actions"
                     title="Message actions"
                   >
@@ -592,6 +611,54 @@ export default function MessagesList({
           />
         </div>
       </div>
+
+      {menuOpen && selectedMessage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-end sm:hidden"
+          onClick={() => setMenuOpen(false)}
+        >
+          <div
+            className="w-full rounded-t-3xl bg-background p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="flex w-full items-center gap-3 p-3 text-left"
+              onClick={() => {
+                onReplyMessage?.(selectedMessage);
+                setMenuOpen(false);
+              }}
+            >
+              <CornerDownLeft className="h-5 w-5" />
+              Reply
+            </button>
+
+            <button
+              className="flex w-full items-center gap-3 p-3 text-left"
+              onClick={() => {
+                onForwardMessage?.(selectedMessage);
+                setMenuOpen(false);
+              }}
+            >
+              <Forward className="h-5 w-5" />
+              Forward
+            </button>
+
+            {selectedMessage?.sender?._id?.toString() ===
+              currentUserId?.toString() && (
+              <button
+                className="flex w-full items-center gap-3 p-3 text-left text-red-500"
+                onClick={() => {
+                  onDeleteMessage?.(selectedMessage);
+                  setMenuOpen(false);
+                }}
+              >
+                <Trash2 className="h-5 w-5" />
+                Delete
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <ImageViewer />
     </div>
