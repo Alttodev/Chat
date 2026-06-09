@@ -615,6 +615,10 @@ export default function Message() {
   useEffect(() => {
     if (!socket) return;
 
+     socket.onAny((event, ...args) => {
+    console.log("SOCKET EVENT:", event, args);
+  });
+
     const handleNewMessage = (payload = {}) => {
       const conversationId =
         payload?.conversationId || payload?.conversation?._id;
@@ -627,33 +631,40 @@ export default function Message() {
       }
 
       queryClient.setQueryData(["chat_messages", conversationId], (oldData) => {
-        const currentMessages = Array.isArray(oldData?.messages)
-          ? oldData.messages
-          : Array.isArray(oldData?.chatMessages)
-            ? oldData.chatMessages
-            : Array.isArray(oldData?.data?.messages)
-              ? oldData.data.messages
-              : [];
+        console.log("SOCKET MESSAGE RECEIVED", message);
 
-        if (!currentMessages.length) {
-          return {
-            ...(oldData || {}),
-            messages: [message],
-          };
+        if (!oldData?.pages?.length) {
+          return oldData;
         }
+
+        const firstPage = oldData.pages[0];
+
+        const currentMessages = Array.isArray(firstPage?.messages)
+          ? firstPage.messages
+          : [];
 
         const exists = currentMessages.some(
           (item) => item?._id === message?._id,
         );
+
         if (exists) return oldData;
 
         return {
           ...oldData,
-          messages: [...currentMessages, message],
+          pages: [
+            {
+              ...firstPage,
+              messages: [...currentMessages, message],
+            },
+            ...oldData.pages.slice(1),
+          ],
         };
       });
 
       queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
+      socket.onAny((event, ...args) => {
+        console.log("SOCKET EVENT:", event, args);
+      });
 
       if (conversationId === selectedConversationId) {
         clearUnreadCount(conversationId);

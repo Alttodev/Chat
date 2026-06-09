@@ -20,17 +20,6 @@ export const useChatConversations = () => {
   });
 };
 
-// export const useChatMessages = (conversationId) => {
-//   return useQuery({
-//     queryKey: ["chat_messages", conversationId],
-//     queryFn: () => getChatMessages({ conversationId }),
-//     enabled: !!conversationId,
-//     refetchOnWindowFocus: true,
-//     refetchInterval: 5000,
-//     refetchIntervalInBackground: true,
-//   });
-// };
-
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 export const useChatMessages = (conversationId) => {
@@ -48,7 +37,8 @@ export const useChatMessages = (conversationId) => {
     getNextPageParam: (lastPage) => {
       return lastPage.hasMore ? lastPage.nextPage : undefined;
     },
-
+    refetchInterval: 3000,
+    refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
   });
 };
@@ -87,29 +77,27 @@ export const useSendChatMessage = () => {
         queryClient.setQueryData(
           ["chat_messages", conversationId],
           (oldData) => {
-            const currentMessages = Array.isArray(oldData?.messages)
-              ? oldData.messages
-              : Array.isArray(oldData?.chatMessages)
-                ? oldData.chatMessages
-                : Array.isArray(oldData?.data?.messages)
-                  ? oldData.data.messages
-                  : [];
-
-            if (!currentMessages.length) {
-              return {
-                ...(oldData || {}),
-                messages: [mergedMessage],
-              };
+            if (!oldData?.pages?.length) {
+              return oldData;
             }
 
-            const exists = currentMessages.some(
-              (item) => item?._id === mergedMessage?._id,
+            const firstPage = oldData.pages[0];
+
+            const exists = firstPage.messages.some(
+              (msg) => msg._id === mergedMessage._id,
             );
+
             if (exists) return oldData;
 
             return {
               ...oldData,
-              messages: [...currentMessages, mergedMessage],
+              pages: [
+                {
+                  ...firstPage,
+                  messages: [...firstPage.messages, mergedMessage],
+                },
+                ...oldData.pages.slice(1),
+              ],
             };
           },
         );

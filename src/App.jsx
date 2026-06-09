@@ -20,11 +20,11 @@ function App() {
 
       {/* OUTGOING CALL SCREEN */}
       {callState === "calling" && (
-        <CallingScreen
-          onCancel={endCall}
-          name={outgoingCall?.callerName || "Unknown"}
-          image={outgoingCall?.callerImage}
-        />
+       <CallingScreen
+    onCancel={endCall}
+    name={outgoingCall?.targetUserName || "Unknown"}   // ✦ was callerName
+    image={outgoingCall?.targetUserImage}
+  />
       )}
 
       {/* ACTIVE CALL SCREEN */}

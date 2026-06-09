@@ -36,6 +36,7 @@ export const WebRTCProvider = ({ children }) => {
   const [outgoingCall, setOutgoingCall] = useState(null);
   const [callState, setCallState] = useState(CALL_STATES.IDLE);
   const [isMuted, setIsMuted] = useState(false);
+  const pendingIceCandidates = useRef([]);
 
   // ---------------- MUTE ----------------
   const toggleMute = useCallback(() => {
@@ -170,16 +171,13 @@ export const WebRTCProvider = ({ children }) => {
       socket.emit("call:offer", {
         receiverId: targetUserId,
         offer,
-        callerName: user.userName,
-        callerImage: user.profileImage,
       });
-   
+
       setOutgoingCall({
         callerName: user.userName,
         callerImage: user.profileImage,
         targetUserId,
       });
-
 
       setCallState(CALL_STATES.CALLING);
     },
@@ -266,9 +264,18 @@ export const WebRTCProvider = ({ children }) => {
 
     const handleIce = async ({ candidate }) => {
       if (!peerRef.current) return;
-      await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-    };
 
+      if (!peerRef.current.remoteDescription) {
+        pendingIceCandidates.current.push(candidate);
+        return;
+      }
+
+      try {
+        await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (err) {
+        console.error("ICE add error", err);
+      }
+    };
     const handleEnd = () => cleanupCall();
 
     const handleBusy = () => {
