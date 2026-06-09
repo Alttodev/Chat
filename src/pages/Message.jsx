@@ -30,6 +30,7 @@ import {
   isAudioMediaUrl,
   isVideoMediaUrl,
 } from "@/lib/media";
+import { useUserProfiles } from "@/hooks/authHooks";
 
 const getLastMessagePreview = (message) => {
   if (!message) return "";
@@ -98,8 +99,8 @@ export default function Message() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
 
-  // const { data: profile } = useUserProfiles();
-  // const profileData = useMemo(() => profile, [profile]);
+  const { data: profile } = useUserProfiles();
+  const profileData = useMemo(() => profile, [profile]);
 
   const friendsData = useMemo(() => {
     return data?.pages?.flatMap((page) => page?.friends || []) || [];
@@ -975,6 +976,11 @@ export default function Message() {
       return;
     }
 
+    if (selectedContact.targetUserId.toString() === profileId?.toString()) {
+      toastError("You cannot call yourself");
+      return;
+    }
+
     if (!selectedContact?.isFriend) {
       toastError("Only accepted friends can call");
       return;
@@ -985,8 +991,22 @@ export default function Message() {
       return;
     }
 
+    const matchedProfile = profileData?.profiles?.find(
+      (item) =>
+        item?.id?.toString() === selectedContact?.targetUserId?.toString(),
+    );
+
+    // decide correct userId
+    const callUserId =
+      selectedContact?.callUserId ||
+      selectedContact?.userId ||
+      matchedProfile?.userId ||
+      selectedContact?.targetUserId;
+
     try {
-      await startAudioCall(selectedContact.targetUserId);
+      await startAudioCall({
+        targetUserId: callUserId,
+      });
       toastSuccess("Calling...");
     } catch (error) {
       toastError(error?.message || "Call failed");

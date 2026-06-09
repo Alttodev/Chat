@@ -11,6 +11,7 @@ import { SocketProvider } from "./lib/socket";
 import { WebRTCProvider } from "./lib/jitsiCall";
 import PushNotificationBootstrap from "./components/PushNotificationBootstrap";
 
+window.global = window;
 window.Buffer = Buffer;
 window.process = process;
 const queryClient = new QueryClient();

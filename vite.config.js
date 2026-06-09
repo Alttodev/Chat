@@ -10,7 +10,7 @@ export default defineConfig({
     global: "globalThis",
   },
   optimizeDeps: {
-    include: ["framer-motion"],
+    include: ["framer-motion", "simple-peer"],
   },
   resolve: {
     alias: {
