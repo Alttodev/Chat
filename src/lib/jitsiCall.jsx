@@ -6,7 +6,7 @@ import {
   useState,
   useCallback,
 } from "react";
-import Peer from "simple-peer";
+
 import { useSocket } from "@/lib/socket";
 
 const WebRTCContext = createContext(null);
@@ -17,13 +17,14 @@ export const WebRTCProvider = ({ children }) => {
   const peerRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteAudioRef = useRef(null);
+  const currentTargetUserRef = useRef(null);
 
   const [incomingCall, setIncomingCall] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
 
   const cleanupCall = useCallback(() => {
     if (peerRef.current) {
-      peerRef.current.destroy();
+      peerRef.current.close();
       peerRef.current = null;
     }
 
@@ -47,110 +48,145 @@ export const WebRTCProvider = ({ children }) => {
     return stream;
   };
 
-  const playRemoteStream = (remoteStream) => {
-    if (!remoteAudioRef.current) {
-      const audio = document.createElement("audio");
-      audio.autoplay = true;
-      remoteAudioRef.current = audio;
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const createPeer = useCallback((targetUserId) => {
+    const peer = new RTCPeerConnection({
+      iceServers: [
+        {
+          urls: "stun:stun.l.google.com:19302",
+        },
+      ],
+    });
 
-    remoteAudioRef.current.srcObject = remoteStream;
-  };
+    peer.onicecandidate = (event) => {
+      if (event.candidate && socket) {
+        console.log("ICE SENT");
+
+        socket.emit("call:ice-candidate", {
+          targetUserId,
+          candidate: event.candidate,
+        });
+      }
+    };
+
+    peer.ontrack = (event) => {
+      console.log("REMOTE AUDIO RECEIVED");
+
+      const remoteStream = event.streams[0];
+
+      if (!remoteAudioRef.current) {
+        const audio = document.createElement("audio");
+        audio.autoplay = true;
+        remoteAudioRef.current = audio;
+      }
+
+      remoteAudioRef.current.srcObject = remoteStream;
+    };
+
+    peer.onconnectionstatechange = () => {
+      console.log(
+        "CONNECTION STATE:",
+        peer.connectionState,
+      );
+    };
+
+    return peer;
+  });
 
   /**
    * START CALL
    */
   const startAudioCall = useCallback(
     async ({ targetUserId }) => {
-      if (!socket) return;
+      try {
+        console.log("START CALL");
+        console.log("TARGET:", targetUserId);
 
-      console.log("START CALL");
-      console.log("socket:", socket);
-      console.log("targetUserId:", targetUserId);
+        if (!socket) {
+          console.log("SOCKET NOT READY");
+          return;
+        }
 
-      const stream = await getLocalStream();
+        currentTargetUserRef.current = targetUserId;
 
-      const peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream,
-        config: {
-          iceServers: [
-            {
-              urls: "stun:stun.l.google.com:19302",
-            },
-          ],
-        },
-      });
+        const stream = await getLocalStream();
 
-      peerRef.current = peer;
+        const peer = createPeer(targetUserId);
 
-      peer.on("signal", (offer) => {
-         console.log("GENERATED OFFER", offer);
+        peerRef.current = peer;
+
+        stream.getTracks().forEach((track) => {
+          peer.addTrack(track, stream);
+        });
+
+        const offer = await peer.createOffer();
+
+        await peer.setLocalDescription(offer);
+
+        console.log("OFFER SENT");
+
         socket.emit("call:offer", {
           receiverId: targetUserId,
           offer,
         });
-      });
 
-      peer.on("stream", playRemoteStream);
-
-      peer.on("close", cleanupCall);
-
-      peer.on("error", (err) => {
+        setIsCalling(true);
+      } catch (err) {
+        console.error("START CALL ERROR");
         console.error(err);
-        cleanupCall();
-      });
-
-      setIsCalling(true);
+      }
     },
-    [socket, cleanupCall],
+    [createPeer, socket],
   );
 
   /**
    * ACCEPT CALL
    */
   const acceptCall = useCallback(async () => {
-    if (!incomingCall || !socket) return;
+    try {
+      if (!incomingCall || !socket) return;
 
-    const stream = await getLocalStream();
+      console.log("ACCEPTING CALL");
 
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream,
-      config: {
-        iceServers: [
-          {
-            urls: "stun:stun.l.google.com:19302",
-          },
-        ],
-      },
-    });
+      currentTargetUserRef.current =
+        incomingCall.callerId;
 
-    peerRef.current = peer;
+      const stream = await getLocalStream();
 
-    peer.on("signal", (answer) => {
+      const peer = createPeer(
+        incomingCall.callerId,
+      );
+
+      peerRef.current = peer;
+
+      stream.getTracks().forEach((track) => {
+        peer.addTrack(track, stream);
+      });
+
+      await peer.setRemoteDescription(
+        new RTCSessionDescription(
+          incomingCall.offer,
+        ),
+      );
+
+      const answer = await peer.createAnswer();
+
+      await peer.setLocalDescription(answer);
+
+      console.log("ANSWER SENT");
+
       socket.emit("call:answer", {
         callerId: incomingCall.callerId,
         answer,
       });
-    });
 
-    peer.on("stream", playRemoteStream);
-
-    peer.on("close", cleanupCall);
-
-    peer.on("error", (err) => {
+      setIncomingCall(null);
+      setIsCalling(true);
+    } catch (err) {
+      console.error("ACCEPT ERROR");
       console.error(err);
-      cleanupCall();
-    });
-
-    peer.signal(incomingCall.offer);
-
-    setIncomingCall(null);
-    setIsCalling(true);
-  }, [incomingCall, socket, cleanupCall]);
+    }
+  }, [createPeer, incomingCall, socket]);
 
   /**
    * REJECT CALL
@@ -163,9 +199,11 @@ export const WebRTCProvider = ({ children }) => {
    * END CALL
    */
   const endCall = useCallback(() => {
-    cleanupCall();
+    socket?.emit("call:end", {
+      targetUserId: currentTargetUserRef.current,
+    });
 
-    socket?.emit("call:end", {});
+    cleanupCall();
   }, [socket, cleanupCall]);
 
   /**
@@ -174,28 +212,73 @@ export const WebRTCProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleOffer = ({ callerId, offer }) => {
+    const handleOffer = ({
+      callerId,
+      offer,
+    }) => {
+      console.log("INCOMING CALL");
+
       setIncomingCall({
         callerId,
         offer,
       });
     };
 
-    const handleAnswer = ({ answer }) => {
-      peerRef.current?.signal(answer);
+    const handleAnswer = async ({
+      answer,
+    }) => {
+      try {
+        console.log("ANSWER RECEIVED");
+
+        if (!peerRef.current) return;
+
+        await peerRef.current.setRemoteDescription(
+          new RTCSessionDescription(answer),
+        );
+
+        console.log("CALL CONNECTED");
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const handleIceCandidate = async ({
+      candidate,
+    }) => {
+      try {
+        if (!peerRef.current) return;
+
+        await peerRef.current.addIceCandidate(
+          new RTCIceCandidate(candidate),
+        );
+
+        console.log("ICE RECEIVED");
+      } catch (err) {
+        console.error("ICE ERROR");
+        console.error(err);
+      }
     };
 
     const handleEnd = () => {
+      console.log("CALL ENDED");
       cleanupCall();
     };
 
     socket.on("call:offer", handleOffer);
     socket.on("call:answer", handleAnswer);
+    socket.on(
+      "call:ice-candidate",
+      handleIceCandidate,
+    );
     socket.on("call:end", handleEnd);
 
     return () => {
       socket.off("call:offer", handleOffer);
       socket.off("call:answer", handleAnswer);
+      socket.off(
+        "call:ice-candidate",
+        handleIceCandidate,
+      );
       socket.off("call:end", handleEnd);
     };
   }, [socket, cleanupCall]);
@@ -221,7 +304,9 @@ export const useWebRTC = () => {
   const context = useContext(WebRTCContext);
 
   if (!context) {
-    throw new Error("useWebRTC must be used inside WebRTCProvider");
+    throw new Error(
+      "useWebRTC must be used inside WebRTCProvider",
+    );
   }
 
   return context;
