@@ -2,13 +2,17 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
+import { Buffer } from "buffer";
+import process from "process";
 import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./lib/socket";
-import { JitsiCallProvider } from "./lib/jitsiCall";
+import { WebRTCProvider } from "./lib/jitsiCall";
 import PushNotificationBootstrap from "./components/PushNotificationBootstrap";
 
+window.Buffer = Buffer;
+window.process = process;
 const queryClient = new QueryClient();
 
 const themeStorage = JSON.parse(localStorage.getItem("chat-theme") || "{}");
@@ -25,7 +29,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <SocketProvider value={userId}>
       <QueryClientProvider client={queryClient}>
-        <JitsiCallProvider>
+        <WebRTCProvider>
           <Toaster
             position="top-center"
             richColors
@@ -41,7 +45,7 @@ createRoot(document.getElementById("root")).render(
 
           <PushNotificationBootstrap />
           <App />
-        </JitsiCallProvider>
+        </WebRTCProvider>
       </QueryClientProvider>
     </SocketProvider>
   </StrictMode>,

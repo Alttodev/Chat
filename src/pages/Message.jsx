@@ -20,10 +20,10 @@ import { useAuthStore } from "@/store/authStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useSocket } from "@/lib/socket";
-import { useJitsiCall } from "@/lib/jitsiCall";
+import { useWebRTC } from "@/lib/jitsiCall";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { useUserProfiles } from "@/hooks/authHooks";
+// import { useUserProfiles } from "@/hooks/authHooks";
 import {
   getMessageMediaMimeType,
   getMessageMediaUrl,
@@ -52,7 +52,7 @@ export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
   const queryClient = useQueryClient();
   const { socket } = useSocket();
-  const { startAudioCall } = useJitsiCall();
+  const { startAudioCall } = useWebRTC();
   const { profileId } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
@@ -70,7 +70,7 @@ export default function Message() {
     }
   });
   const [deletingMessageId, setDeletingMessageId] = useState(null);
-  const [isCalling, setIsCalling] = useState(false);
+  // const [isCalling, setIsCalling] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const typingStopTimeoutRef = useRef(null);
   const typingResetTimeoutRef = useRef(null);
@@ -98,8 +98,8 @@ export default function Message() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversations = conversationData?.conversations || [];
 
-  const { data: profile } = useUserProfiles();
-  const profileData = useMemo(() => profile, [profile]);
+  // const { data: profile } = useUserProfiles();
+  // const profileData = useMemo(() => profile, [profile]);
 
   const friendsData = useMemo(() => {
     return data?.pages?.flatMap((page) => page?.friends || []) || [];
@@ -922,10 +922,53 @@ export default function Message() {
     }
   };
 
+  // const handleAudioCall = async () => {
+  //   if (!selectedContact?.targetUserId) {
+  //     return;
+  //   }
+
+  //   if (selectedContact.targetUserId.toString() === profileId?.toString()) {
+  //     toastError("You cannot call yourself");
+  //     return;
+  //   }
+
+  //   if (!selectedContact?.isFriend) {
+  //     toastError("Only accepted friends can call");
+  //     return;
+  //   }
+
+  //   if (selectedContact?.isBlocked) {
+  //     toastError("User is blocked");
+  //     return;
+  //   }
+
+  //   const matchedProfile = profileData?.profiles?.find(
+  //     (item) =>
+  //       item?.id?.toString() === selectedContact?.targetUserId?.toString(),
+  //   );
+
+  //   // decide correct userId
+  //   const callUserId =
+  //     selectedContact?.callUserId ||
+  //     selectedContact?.userId ||
+  //     matchedProfile?.userId ||
+  //     selectedContact?.targetUserId;
+
+  //   try {
+  //     setIsCalling(true);
+  //     startAudioCall({
+  //       targetUserId: callUserId,
+  //     });
+
+  //     toastSuccess("Calling...");
+  //   } catch (error) {
+  //     toastError(error?.message || "Call failed");
+  //   } finally {
+  //     setIsCalling(false);
+  //   }
+  // };
   const handleAudioCall = async () => {
-    if (!selectedContact?.targetUserId) {
-      return;
-    }
+    if (!selectedContact?.targetUserId) return;
 
     if (selectedContact.targetUserId.toString() === profileId?.toString()) {
       toastError("You cannot call yourself");
@@ -942,29 +985,11 @@ export default function Message() {
       return;
     }
 
-    const matchedProfile = profileData?.profiles?.find(
-      (item) =>
-        item?.id?.toString() === selectedContact?.targetUserId?.toString(),
-    );
-
-    // decide correct userId
-    const callUserId =
-      selectedContact?.callUserId ||
-      selectedContact?.userId ||
-      matchedProfile?.userId ||
-      selectedContact?.targetUserId;
-
     try {
-      setIsCalling(true);
-      startAudioCall({
-        targetUserId: callUserId,
-      });
-
+      await startAudioCall(selectedContact.targetUserId);
       toastSuccess("Calling...");
     } catch (error) {
       toastError(error?.message || "Call failed");
-    } finally {
-      setIsCalling(false);
     }
   };
   if (conversationsLoading || friendsLoading) {
@@ -1019,7 +1044,7 @@ export default function Message() {
                 isBlocked={!!selectedContact?.isBlocked}
                 blockedByMe={!!selectedContact?.blockedByMe}
                 onAudioCall={handleAudioCall}
-                isCalling={isCalling}
+                // isCalling={isCalling}
               />
 
               {!selectedConversationId ? (

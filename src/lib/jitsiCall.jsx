@@ -1,181 +1,251 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
-  useMemo,
+  useRef,
   useState,
+  useCallback,
 } from "react";
-import { JitsiMeeting } from "@jitsi/react-sdk";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { toastError } from "@/lib/toast";
-import { useAuthStore } from "@/store/authStore";
+
+import Peer from "simple-peer";
 import { useSocket } from "@/lib/socket";
-import { useIncomingCallStore } from "@/lib/zustand";
-import { IncomingCallModal } from "@/components/modals/incomingCallModal";
-import { PhoneOff } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
-const JitsiCallContext = createContext(null);
+const WebRTCContext = createContext(null);
 
-const JITSI_DOMAIN = "meet.jit.si";
-
-const createRoomName = (currentUserId, targetUserId) => {
-  return `clix-${[currentUserId, targetUserId].map(String).sort().join("-")}`;
-};
-
-export const JitsiCallProvider = ({ children }) => {
-  const userId = useAuthStore((state) => state.user?._id);
-  const user = useAuthStore((state) => state.user);
-
+export const WebRTCProvider = ({ children }) => {
   const { socket } = useSocket();
-  const { openIncomingCall } = useIncomingCallStore();
-  const [meeting, setMeeting] = useState(null);
-  const isMobile = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  const closeCall = useCallback(() => {
-    setMeeting(null);
+  const user = useAuthStore((state) => state.user);
+  const userId = user?._id;
+
+  const peerRef = useRef(null);
+  const localStreamRef = useRef(null);
+  const remoteAudioRef = useRef(null);
+
+  const [isCalling, setIsCalling] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(null);
+
+  const cleanupCall = useCallback(() => {
+    if (peerRef.current) {
+      peerRef.current.destroy();
+      peerRef.current = null;
+    }
+
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+
+      localStreamRef.current = null;
+    }
+
+    setIsCalling(false);
+    setIncomingCall(null);
   }, []);
 
-  // Listen for socket events
+  const createLocalStream = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false,
+    });
+
+    localStreamRef.current = stream;
+
+    return stream;
+  };
+
+  /**
+   * START CALL
+   */
+  const startAudioCall = useCallback(
+    async ({ targetUserId }) => {
+      if (!socket || !targetUserId) return;
+
+      const stream = await createLocalStream();
+
+      const peer = new Peer({
+        initiator: true,
+        trickle: false,
+        stream,
+        config: {
+          iceServers: [
+            {
+              urls: "stun:stun.l.google.com:19302",
+            },
+          ],
+        },
+      });
+
+      peerRef.current = peer;
+
+      peer.on("signal", (signalData) => {
+        socket.emit("call:offer", {
+          callerId: userId,
+          receiverId: targetUserId,
+          callerName: user?.userName,
+          signalData,
+        });
+      });
+
+      peer.on("stream", (remoteStream) => {
+        if (!remoteAudioRef.current) {
+          const audio = new Audio();
+          audio.autoplay = true;
+          remoteAudioRef.current = audio;
+        }
+
+        remoteAudioRef.current.srcObject = remoteStream;
+      });
+
+      peer.on("close", cleanupCall);
+
+      peer.on("error", (err) => {
+        console.error(err);
+        cleanupCall();
+      });
+
+      setIsCalling(true);
+    },
+    [socket, userId, user, cleanupCall],
+  );
+
+  /**
+   * ACCEPT CALL
+   */
+  const acceptCall = useCallback(async () => {
+    if (!incomingCall || !socket) return;
+
+    const stream = await createLocalStream();
+
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream,
+      config: {
+        iceServers: [
+          {
+            urls: "stun:stun.l.google.com:19302",
+          },
+        ],
+      },
+    });
+
+    peerRef.current = peer;
+
+    peer.signal(incomingCall.signalData);
+
+    peer.on("signal", (answerSignal) => {
+      socket.emit("call:answer", {
+        callerId: incomingCall.callerId,
+        receiverId: userId,
+        answerSignal,
+      });
+    });
+
+    peer.on("stream", (remoteStream) => {
+      if (!remoteAudioRef.current) {
+        const audio = new Audio();
+        audio.autoplay = true;
+        remoteAudioRef.current = audio;
+      }
+
+      remoteAudioRef.current.srcObject = remoteStream;
+    });
+
+    peer.on("close", cleanupCall);
+
+    peer.on("error", (err) => {
+      console.error(err);
+      cleanupCall();
+    });
+
+    setIncomingCall(null);
+    setIsCalling(true);
+  }, [incomingCall, socket, userId, cleanupCall]);
+
+  /**
+   * REJECT CALL
+   */
+  const rejectCall = useCallback(() => {
+    if (!socket || !incomingCall) return;
+
+    socket.emit("call:reject", {
+      callerId: incomingCall.callerId,
+    });
+
+    setIncomingCall(null);
+  }, [socket, incomingCall]);
+
+  /**
+   * END CALL
+   */
+  const endCall = useCallback(() => {
+    if (!socket) return;
+
+    socket.emit("call:end");
+
+    cleanupCall();
+  }, [socket, cleanupCall]);
+
+  /**
+   * SOCKET LISTENERS
+   */
   useEffect(() => {
     if (!socket) return;
-    socket.on("call:incoming", (data) => {
-      openIncomingCall(data); // show modal
-    });
 
-    socket.on("call:accepted", ({ roomName, fromUserName }) => {
-      if (isMobile()) {
-        window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
-        return;
-      }
+    const handleOffer = (payload) => {
+      setIncomingCall(payload);
+    };
 
-      setTimeout(() => {
-        setMeeting({
-          roomName,
-          targetUserName: fromUserName,
-        });
-      }, 1500);
-    });
+    const handleAnswer = ({ answerSignal }) => {
+      peerRef.current?.signal(answerSignal);
+    };
 
-    socket.on("call:rejected", () => {
-      toastError("Call rejected");
-    });
+    const handleRejected = () => {
+      cleanupCall();
+      alert("Call rejected");
+    };
+
+    const handleEnded = () => {
+      cleanupCall();
+      alert("Call ended");
+    };
+
+    socket.on("call:offer", handleOffer);
+    socket.on("call:answer", handleAnswer);
+    socket.on("call:rejected", handleRejected);
+    socket.on("call:ended", handleEnded);
 
     return () => {
-      socket.off("call:incoming");
-      socket.off("call:accepted");
-      socket.off("call:rejected");
+      socket.off("call:offer", handleOffer);
+      socket.off("call:answer", handleAnswer);
+      socket.off("call:rejected", handleRejected);
+      socket.off("call:ended", handleEnded);
     };
-  }, [socket, openIncomingCall]);
+  }, [socket, cleanupCall]);
 
-  const startAudioCall = useCallback(
-    ({ targetUserId }) => {
-      if (!socket || !socket.connected) return;
-
-      const roomName = createRoomName(userId, targetUserId);
-
-      socket.emit("call:initiate", {
-        callerId: userId,
-        callerName: user?.userName || "User",
-        receiverId: targetUserId,
-        roomName,
-      });
-
-      if (isMobile()) {
-        window.open(`https://${JITSI_DOMAIN}/${roomName}`, "_blank");
-        return;
-      }
-
-      // DESKTOP → open inside app
-      setMeeting({
-        roomName,
-        targetUserName: "Calling...",
-      });
-    },
-    [userId, user, socket],
-  );
-  
- const meetingUserInfo = useMemo(
-  () => ({
-    displayName: user?.userName || "User",
-  }),
-  [user],
-);
   return (
-    <JitsiCallContext.Provider value={{ startAudioCall, closeCall }}>
+    <WebRTCContext.Provider
+      value={{
+        startAudioCall,
+        acceptCall,
+        rejectCall,
+        endCall,
+        incomingCall,
+        isCalling,
+      }}
+    >
       {children}
-
-      <IncomingCallModal />
-
-      <Dialog open={!!meeting} onOpenChange={(open) => !open && closeCall()}>
-        <DialogContent className="w-[calc(100%-1rem)] max-w-6xl overflow-hidden p-0 [&_button]:cursor-pointer">
-          <DialogHeader className="border-b px-4 py-3">
-            <DialogTitle className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-base font-semibold text-emerald-600">
-                  Call with {meeting?.targetUserName || "User"}
-                </div>
-                <div className="text-xs font-normal text-muted-foreground">
-                  Room: {meeting?.roomName}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={closeCall}
-                  className="cursor-pointer"
-                >
-                  <PhoneOff className="mr-2 h-4 w-4" />
-                  End
-                </Button>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
-
-          {meeting && (
-            <div className="h-[78vh] w-full">
-              <JitsiMeeting
-                domain={JITSI_DOMAIN}
-                roomName={meeting.roomName}
-                userInfo={meetingUserInfo}
-                configOverwrite={{
-                  prejoinPageEnabled: false,
-                  startWithAudioMuted: false,
-                  startWithVideoMuted: true,
-                  disableDeepLinking: true,
-                  enableWelcomePage: false,
-                  enableUserRolesBasedOnToken: false,
-                  enableLobby: false,
-                  disableModeratorIndicator: true,
-                  enableNoAudioDetection: false,
-                  enableNoisyMicDetection: false,
-                }}
-                interfaceConfigOverwrite={{
-                  DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
-                  MOBILE_APP_PROMO: false,
-                }}
-                onReadyToClose={closeCall}
-                getIFrameRef={(iframe) => {
-                  iframe.style.width = "100%";
-                  iframe.style.height = "100%";
-                  iframe.style.border = "0";
-                }}
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </JitsiCallContext.Provider>
+    </WebRTCContext.Provider>
   );
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useJitsiCall = () => useContext(JitsiCallContext);
+export const useWebRTC = () => {
+  const context = useContext(WebRTCContext);
+
+  if (!context) {
+    throw new Error("useWebRTC must be used inside WebRTCProvider");
+  }
+
+  return context;
+};
