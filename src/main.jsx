@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SocketProvider } from "./lib/socket";
-import { WebRTCProvider } from "./lib/jitsiCall";
+import { WebRTCProvider } from "./lib/webRTC";
 import PushNotificationBootstrap from "./components/PushNotificationBootstrap";
 
 window.Buffer = Buffer;
@@ -45,6 +45,7 @@ createRoot(document.getElementById("root")).render(
           />
 
           <PushNotificationBootstrap />
+          
           <App />
         </WebRTCProvider>
       </QueryClientProvider>

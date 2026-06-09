@@ -20,7 +20,7 @@ import { useAuthStore } from "@/store/authStore";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useSocket } from "@/lib/socket";
-import { useWebRTC } from "@/lib/jitsiCall";
+import { useWebRTC } from "@/lib/webRTC";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 // import { useUserProfiles } from "@/hooks/authHooks";
