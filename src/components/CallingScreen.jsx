@@ -1,14 +1,22 @@
 import React from "react";
 
-export default function CallingScreen({ name, onCancel }) {
-
+export default function CallingScreen({ name, onCancel, image }) {
   return (
     <div className="fixed inset-0 bg-black text-white flex flex-col z-50">
       {/* CENTER CONTENT */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 text-center">
         {/* avatar */}
-        <div className="w-28 h-28 rounded-full bg-gray-700 flex items-center justify-center text-3xl font-bold">
-          {name?.charAt(0)}
+
+        <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-700 flex items-center justify-center text-3xl font-bold">
+          {image ? (
+            <img
+              src={image}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span>{name?.charAt(0)}</span>
+          )}
         </div>
 
         {/* name */}

@@ -23,7 +23,7 @@ import { useSocket } from "@/lib/socket";
 import { useWebRTC } from "@/lib/webRTC";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-// import { useUserProfiles } from "@/hooks/authHooks";
+
 import {
   getMessageMediaMimeType,
   getMessageMediaUrl,
@@ -615,10 +615,6 @@ export default function Message() {
   useEffect(() => {
     if (!socket) return;
 
-     socket.onAny((event, ...args) => {
-    console.log("SOCKET EVENT:", event, args);
-  });
-
     const handleNewMessage = (payload = {}) => {
       const conversationId =
         payload?.conversationId || payload?.conversation?._id;
@@ -631,8 +627,6 @@ export default function Message() {
       }
 
       queryClient.setQueryData(["chat_messages", conversationId], (oldData) => {
-        console.log("SOCKET MESSAGE RECEIVED", message);
-
         if (!oldData?.pages?.length) {
           return oldData;
         }
@@ -662,9 +656,6 @@ export default function Message() {
       });
 
       queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
-      socket.onAny((event, ...args) => {
-        console.log("SOCKET EVENT:", event, args);
-      });
 
       if (conversationId === selectedConversationId) {
         clearUnreadCount(conversationId);
@@ -861,6 +852,14 @@ export default function Message() {
               }
             : prev,
         );
+
+        queryClient.invalidateQueries({
+          queryKey: ["chat_messages", res.conversationId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["chat_conversations"],
+        });
       }
       setNewMessage("");
       setSelectedImage(null);
@@ -934,51 +933,6 @@ export default function Message() {
     }
   };
 
-  // const handleAudioCall = async () => {
-  //   if (!selectedContact?.targetUserId) {
-  //     return;
-  //   }
-
-  //   if (selectedContact.targetUserId.toString() === profileId?.toString()) {
-  //     toastError("You cannot call yourself");
-  //     return;
-  //   }
-
-  //   if (!selectedContact?.isFriend) {
-  //     toastError("Only accepted friends can call");
-  //     return;
-  //   }
-
-  //   if (selectedContact?.isBlocked) {
-  //     toastError("User is blocked");
-  //     return;
-  //   }
-
-  //   const matchedProfile = profileData?.profiles?.find(
-  //     (item) =>
-  //       item?.id?.toString() === selectedContact?.targetUserId?.toString(),
-  //   );
-
-  //   // decide correct userId
-  //   const callUserId =
-  //     selectedContact?.callUserId ||
-  //     selectedContact?.userId ||
-  //     matchedProfile?.userId ||
-  //     selectedContact?.targetUserId;
-
-  //   try {
-  //     setIsCalling(true);
-  //     startAudioCall({
-  //       targetUserId: callUserId,
-  //     });
-
-  //     toastSuccess("Calling...");
-  //   } catch (error) {
-  //     toastError(error?.message || "Call failed");
-  //   } finally {
-  //     setIsCalling(false);
-  //   }
-  // };
   const handleAudioCall = async () => {
     if (!selectedContact?.targetUserId) return;
 
@@ -1007,7 +961,6 @@ export default function Message() {
         item?.id?.toString() === selectedContact?.targetUserId?.toString(),
     );
 
-    // decide correct userId
     const callUserId =
       selectedContact?.callUserId ||
       selectedContact?.userId ||
@@ -1017,6 +970,8 @@ export default function Message() {
     try {
       await startAudioCall({
         targetUserId: callUserId,
+        targetUserName: selectedContact?.name || "Unknown",
+        targetUserProfileImage: selectedContact?.profileImage || "",
       });
       toastSuccess("Calling...");
     } catch (error) {

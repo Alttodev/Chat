@@ -8,23 +8,24 @@ import CallScreen from "./components/CallScreen";
 import { useWebRTC } from "./lib/webRTC";
 
 function App() {
-  const { callState, endCall, incomingCall, outgoingCall, activeCall } = useWebRTC();
-  console.log(incomingCall,"APP COMPONENT CALL DATA");
+  const { callState, endCall, incomingCall, outgoingCall, activeCall } =
+    useWebRTC();
+
 
   return (
     <>
       <ThemeSync />
 
       {/* INCOMING CALL POPUP */}
-      <IncomingCallPopup  name={incomingCall?.callerName}/>
+      <IncomingCallPopup name={incomingCall?.callerName} />
 
       {/* OUTGOING CALL SCREEN */}
       {callState === "calling" && (
-       <CallingScreen
-    onCancel={endCall}
-    name={outgoingCall?.targetUserName || "Unknown"}   // ✦ was callerName
-    image={outgoingCall?.targetUserImage}
-  />
+        <CallingScreen
+          onCancel={endCall}
+          name={outgoingCall?.callerName || "Unknown"} // ✦ was callerName
+          image={outgoingCall?.callerImage}
+        />
       )}
 
       {/* ACTIVE CALL SCREEN */}

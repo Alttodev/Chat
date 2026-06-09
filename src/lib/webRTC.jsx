@@ -37,6 +37,7 @@ export const WebRTCProvider = ({ children }) => {
   const [callState, setCallState] = useState(CALL_STATES.IDLE);
   const [isMuted, setIsMuted] = useState(false);
   const pendingIceCandidates = useRef([]);
+  const outgoingCallRef = useRef(null);
 
   // ---------------- MUTE ----------------
   const toggleMute = useCallback(() => {
@@ -151,7 +152,7 @@ export const WebRTCProvider = ({ children }) => {
 
   // ---------------- START CALL ----------------
   const startAudioCall = useCallback(
-    async ({ targetUserId }) => {
+    async ({ targetUserId, targetUserName, targetUserProfileImage }) => {
       if (!socket || !user) return;
 
       currentTargetUserRef.current = targetUserId;
@@ -174,10 +175,11 @@ export const WebRTCProvider = ({ children }) => {
       });
 
       setOutgoingCall({
-        callerName: user.userName,
-        callerImage: user.profileImage,
+        callerName: targetUserName,
+        callerImage: targetUserProfileImage,
         targetUserId,
       });
+    
 
       setCallState(CALL_STATES.CALLING);
     },
@@ -240,8 +242,11 @@ export const WebRTCProvider = ({ children }) => {
   }, [socket, cleanupCall]);
 
   // ---------------- SOCKET EVENTS ----------------
+
   useEffect(() => {
     if (!socket) return;
+
+    outgoingCallRef.current = outgoingCall;
 
     const handleOffer = (data) => {
       setIncomingCall({
@@ -257,9 +262,18 @@ export const WebRTCProvider = ({ children }) => {
 
     const handleAnswer = async ({ answer }) => {
       if (!peerRef.current) return;
+
       await peerRef.current.setRemoteDescription(
         new RTCSessionDescription(answer),
       );
+
+      setActiveCall({
+        callerName: outgoingCallRef.current?.callerName,
+        callerImage: outgoingCallRef.current?.callerImage,
+        targetUserId: outgoingCallRef.current?.targetUserId,
+      });
+
+      setCallState(CALL_STATES.IN_CALL);
     };
 
     const handleIce = async ({ candidate }) => {
@@ -303,7 +317,7 @@ export const WebRTCProvider = ({ children }) => {
       socket.off("call:reject", handleReject);
       socket.off("call:busy", handleBusy);
     };
-  }, [socket, playRingtone, cleanupCall]);
+  }, [socket, playRingtone, cleanupCall, outgoingCall]);
 
   return (
     <WebRTCContext.Provider

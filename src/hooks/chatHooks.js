@@ -77,8 +77,17 @@ export const useSendChatMessage = () => {
         queryClient.setQueryData(
           ["chat_messages", conversationId],
           (oldData) => {
-            if (!oldData?.pages?.length) {
-              return oldData;
+            if (!oldData) {
+              return {
+                pages: [
+                  {
+                    messages: [mergedMessage],
+                    hasMore: false,
+                    nextPage: undefined,
+                  },
+                ],
+                pageParams: [1],
+              };
             }
 
             const firstPage = oldData.pages[0];

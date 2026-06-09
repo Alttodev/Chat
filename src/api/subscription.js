@@ -29,7 +29,7 @@ export const createSubscriptionOrder = async (planType) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error creating subscription order:", error);
+    
     return {
       success: false,
       error: error.response?.data?.message || "Failed to create order",
@@ -54,7 +54,7 @@ export const verifySubscriptionPayment = async (paymentDetails) => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error verifying payment:", error);
+  
     return {
       success: false,
       error: error.response?.data?.message || "Payment verification failed",
@@ -72,7 +72,7 @@ export const getSubscriptionStatus = async () => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error fetching subscription status:", error);
+   
     return {
       success: false,
       error: error.response?.data?.message || "Failed to fetch status",
@@ -90,7 +90,7 @@ export const cancelSubscription = async () => {
       data: response.data,
     };
   } catch (error) {
-    console.error("Error cancelling subscription:", error);
+
     return {
       success: false,
       error: error.response?.data?.message || "Failed to cancel subscription",
