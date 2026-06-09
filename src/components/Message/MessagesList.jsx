@@ -185,6 +185,10 @@ export default function MessagesList({
   onReplyMessage,
   onForwardMessage,
   replyTargetMessageId,
+  loadMoreRef,
+  isFetchingNextPage,
+  hasNextPage,
+  fetchNextPage,
 }) {
   const { open } = useImageModalStore();
   const messageMetaById = useChatMessageMetaStore(
@@ -297,8 +301,13 @@ export default function MessagesList({
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    if (container.scrollTop < 100 && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+
     const distanceFromBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight;
+
     isAtBottomRef.current = distanceFromBottom < 24;
   };
 
@@ -599,6 +608,13 @@ export default function MessagesList({
         <div className="flex min-h-full flex-col justify-end">
           {renderedMessages.length ? (
             <div className="space-y-1 pb-2 pt-1">
+              <div ref={loadMoreRef} className="h-8 flex justify-center">
+                {isFetchingNextPage && (
+                  <span className="text-xs text-muted-foreground">
+                    Loading older messages...
+                  </span>
+                )}
+              </div>
               {renderedMessages.map((message, index) => (
                 <div key={message?._id || message?.id || index}>
                   {renderMessageItem(message, index)}

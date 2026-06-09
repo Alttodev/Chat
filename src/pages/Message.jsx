@@ -74,7 +74,7 @@ export default function Message() {
   const [showChat, setShowChat] = useState(false);
   const typingStopTimeoutRef = useRef(null);
   const typingResetTimeoutRef = useRef(null);
-    const loadMoreRef = useRef(null);
+  const loadMoreRef = useRef(null);
   const targetUserIdFromUrl = searchParams.get("userId");
   const targetUserNameFromUrl = searchParams.get("name");
 
@@ -220,28 +220,26 @@ export default function Message() {
     );
   }, [blockedUsers]);
 
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return;
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0.1,
+      },
+    );
 
-useEffect(() => {
-  if (!loadMoreRef.current || !hasNextPage) return;
+    observer.observe(loadMoreRef.current);
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (entries[0]?.isIntersecting && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
-    {
-      root: null,
-      rootMargin: "200px",
-      threshold: 0.1,
-    },
-  );
-
-  observer.observe(loadMoreRef.current);
-
-  return () => observer.disconnect();
-}, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   const contactsWithTarget = useMemo(() => {
     if (!targetUserIdFromUrl || targetUserIdFromUrl === profileId) {
@@ -314,8 +312,7 @@ useEffect(() => {
 
   const forwardableContacts = useMemo(() => {
     return contactsWithTarget.filter(
-      (contact) =>
-        contact?.targetUserId?.toString() !== profileId?.toString(),
+      (contact) => contact?.targetUserId?.toString() !== profileId?.toString(),
     );
   }, [contactsWithTarget, profileId]);
 
@@ -424,21 +421,49 @@ useEffect(() => {
     return matchedConversation?._id || null;
   }, [selectedContact, conversations]);
 
-  const { data: messageData, isLoading: messagesLoading } = useChatMessages(
-    selectedConversationId,
-    {
-      enabled: !!selectedConversationId,
-    },
-  );
+  // const { data: messageData, isLoading: messagesLoading } = useChatMessages(
+  //   selectedConversationId,
+  //   {
+  //     enabled: !!selectedConversationId,
+  //   },
+  // );
+
+  const {
+    data: messageData,
+    isLoading: messagesLoading,
+    fetchNextPage: messageFetchNextPage,
+    hasNextPage: messageHasNextPage,
+    isFetchingNextPage: messageIsFetchingNextPage,
+  } = useChatMessages(selectedConversationId);
 
   const messages = useMemo(() => {
-    if (Array.isArray(messageData?.messages)) return messageData.messages;
-    if (Array.isArray(messageData?.chatMessages))
-      return messageData.chatMessages;
-    if (Array.isArray(messageData?.data?.messages))
-      return messageData.data.messages;
-    return [];
+    return (
+      messageData?.pages
+        ?.flatMap((page) => page.messages)
+        ?.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) || []
+    );
   }, [messageData]);
+
+  const messageLoadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (!messageLoadMoreRef.current || !messageHasNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !messageIsFetchingNextPage) {
+          messageFetchNextPage();
+        }
+      },
+      {
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(messageLoadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [messageFetchNextPage, messageHasNextPage, messageIsFetchingNextPage]);
 
   const clearUnreadCount = useCallback(
     (conversationId) => {
@@ -739,11 +764,7 @@ useEffect(() => {
               );
               const mimeType =
                 blob.type ||
-                (isAudio
-                  ? "audio/webm"
-                  : isVideo
-                    ? "video/mp4"
-                    : "image/jpeg");
+                (isAudio ? "audio/webm" : isVideo ? "video/mp4" : "image/jpeg");
               const extension =
                 mimeType.split("/")[1]?.split(";")[0] ||
                 (isAudio ? "webm" : isVideo ? "mp4" : "jpg");
@@ -772,7 +793,9 @@ useEffect(() => {
         setForwardingMessage(null);
         toastSuccess("Message forwarded");
       } catch (error) {
-        toastError(error?.response?.data?.message || "Could not forward message");
+        toastError(
+          error?.response?.data?.message || "Could not forward message",
+        );
       }
     },
     [forwardingMessage, profileId, sendMessage],
@@ -1016,6 +1039,10 @@ useEffect(() => {
                   onReplyMessage={handleReplyMessage}
                   onForwardMessage={handleForwardMessage}
                   replyTargetMessageId={replyToMessage?._id}
+                  loadMoreRef={messageLoadMoreRef}
+                  isFetchingNextPage={messageIsFetchingNextPage}
+                  hasNextPage={hasNextPage}
+                  fetchNextPage={messageFetchNextPage}
                 />
               )}
 

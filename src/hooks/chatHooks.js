@@ -20,17 +20,38 @@ export const useChatConversations = () => {
   });
 };
 
+// export const useChatMessages = (conversationId) => {
+//   return useQuery({
+//     queryKey: ["chat_messages", conversationId],
+//     queryFn: () => getChatMessages({ conversationId }),
+//     enabled: !!conversationId,
+//     refetchOnWindowFocus: true,
+//     refetchInterval: 5000,
+//     refetchIntervalInBackground: true,
+//   });
+// };
+
+import { useInfiniteQuery } from "@tanstack/react-query";
+
 export const useChatMessages = (conversationId) => {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["chat_messages", conversationId],
-    queryFn: () => getChatMessages({ conversationId }),
+
+    queryFn: ({ pageParam = 1 }) =>
+      getChatMessages({
+        conversationId,
+        page: pageParam,
+      }),
+
     enabled: !!conversationId,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasMore ? lastPage.nextPage : undefined;
+    },
+
     refetchOnWindowFocus: true,
-    refetchInterval: 5000,
-    refetchIntervalInBackground: true,
   });
 };
-
 export const useSendChatMessage = () => {
   const queryClient = useQueryClient();
 
@@ -47,7 +68,9 @@ export const useSendChatMessage = () => {
       const mergedMessage = chatMessage
         ? {
             ...chatMessage,
-            ...(meta.replyToMessage ? { replyToMessage: meta.replyToMessage } : {}),
+            ...(meta.replyToMessage
+              ? { replyToMessage: meta.replyToMessage }
+              : {}),
             ...(meta.forwardedMessage
               ? { forwardedMessage: meta.forwardedMessage }
               : {}),
@@ -80,7 +103,7 @@ export const useSendChatMessage = () => {
             }
 
             const exists = currentMessages.some(
-              (item) => item?._id === mergedMessage?._id
+              (item) => item?._id === mergedMessage?._id,
             );
             if (exists) return oldData;
 
@@ -88,7 +111,7 @@ export const useSendChatMessage = () => {
               ...oldData,
               messages: [...currentMessages, mergedMessage],
             };
-          }
+          },
         );
       }
 
