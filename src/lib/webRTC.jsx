@@ -132,19 +132,18 @@ export const WebRTCProvider = ({ children }) => {
         }
       };
 
-      peer.ontrack = async (event) => {
+      peer.ontrack = (event) => {
         const stream = event.streams[0];
 
-        const audioEl = remoteAudioRef.current;
-        if (!audioEl) return;
+        console.log("STREAM:", stream);
 
-        audioEl.srcObject = stream;
+        if (!remoteAudioRef.current) return;
 
-        try {
-          await audioEl.play();
-        } catch (err) {
-          console.warn(err);
-        }
+        remoteAudioRef.current.srcObject = stream;
+
+        remoteAudioRef.current.play().catch((err) => {
+          console.warn("Play blocked:", err);
+        });
       };
 
       peer.onconnectionstatechange = () => {
@@ -286,6 +285,17 @@ export const WebRTCProvider = ({ children }) => {
         new RTCSessionDescription(answer),
       );
 
+      // 🔥 ADD THIS FIX
+      for (const candidate of pendingIceCandidates.current) {
+        try {
+          await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.warn("Pending ICE error:", e);
+        }
+      }
+
+      pendingIceCandidates.current = [];
+
       setActiveCall({
         callerName: outgoingCallRef.current?.callerName,
         callerImage: outgoingCallRef.current?.callerImage,
@@ -294,14 +304,8 @@ export const WebRTCProvider = ({ children }) => {
 
       setCallState(CALL_STATES.IN_CALL);
     };
-
     const handleIce = async ({ candidate }) => {
       if (!peerRef.current) return;
-
-      if (!peerRef.current.remoteDescription) {
-        pendingIceCandidates.current.push(candidate);
-        return;
-      }
 
       try {
         await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
