@@ -116,12 +116,32 @@ export const WebRTCProvider = ({ children }) => {
     return stream;
   };
 
+  const flushIce = async (peer) => {
+    if (!peer.remoteDescription) return;
+
+    for (const candidate of pendingIceCandidates.current) {
+      try {
+        await peer.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (e) {
+        console.warn("ICE flush error:", e);
+      }
+    }
+
+    pendingIceCandidates.current = [];
+  };
+
   // ---------------- PEER ----------------
   const createPeer = useCallback(
     (targetUserId) => {
       const peer = new RTCPeerConnection({
         iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
       });
+
+      peer.onsignalingstatechange = () => {
+        if (peer.signalingState === "stable") {
+          flushIce(peer);
+        }
+      };
 
       peer.onicecandidate = (event) => {
         if (event.candidate) {
@@ -133,17 +153,12 @@ export const WebRTCProvider = ({ children }) => {
       };
 
       peer.ontrack = (event) => {
-        const stream = event.streams[0];
-
-        console.log("STREAM:", stream);
-
-        if (!remoteAudioRef.current) return;
+        const stream = event.streams?.[0];
+        if (!stream || !remoteAudioRef.current) return;
 
         remoteAudioRef.current.srcObject = stream;
 
-        remoteAudioRef.current.play().catch((err) => {
-          console.warn("Play blocked:", err);
-        });
+        remoteAudioRef.current.play().catch(() => {});
       };
 
       peer.onconnectionstatechange = () => {
@@ -224,6 +239,7 @@ export const WebRTCProvider = ({ children }) => {
     await peer.setRemoteDescription(
       new RTCSessionDescription(incomingCall.offer),
     );
+    await flushIce(peer);
 
     const answer = await peer.createAnswer();
     await peer.setLocalDescription(answer);
@@ -284,7 +300,7 @@ export const WebRTCProvider = ({ children }) => {
       await peerRef.current.setRemoteDescription(
         new RTCSessionDescription(answer),
       );
-
+      await flushIce(peerRef.current);
       // 🔥 ADD THIS FIX
       for (const candidate of pendingIceCandidates.current) {
         try {
@@ -304,15 +320,13 @@ export const WebRTCProvider = ({ children }) => {
 
       setCallState(CALL_STATES.IN_CALL);
     };
-    const handleIce = async ({ candidate }) => {
+    const handleIce = ({ candidate }) => {
       if (!peerRef.current) return;
 
-      try {
-        await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
-      } catch (err) {
-        console.error("ICE add error", err);
-      }
+      // ALWAYS store first
+      pendingIceCandidates.current.push(candidate);
     };
+
     const handleEnd = () => cleanupCall();
 
     const handleBusy = () => {
