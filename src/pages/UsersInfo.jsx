@@ -259,7 +259,7 @@ const UsersInfo = () => {
                       {countData?.totalFriends > 0 ? (
                         <button
                           onClick={() => {
-                            if (!subscription?.isActive) {
+                            if (!subscription?.isActive || !friends) {
                               setPremiumDialogOpen(true);
                               return;
                             }
@@ -287,7 +287,7 @@ const UsersInfo = () => {
                       {countData?.totalFollowing > 0 ? (
                         <button
                           onClick={() => {
-                            if (!subscription?.isActive) {
+                            if (!subscription?.isActive || !friends) {
                               setPremiumDialogOpen(true);
                               return;
                             }
