@@ -6,10 +6,6 @@ import {
   MessageCircle,
   Clapperboard,
   Gem,
-  Info,
-  Phone,
-  Shield,
-  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -25,10 +21,10 @@ export function LeftSidebar() {
     { icon: MessageCircle, label: "Chat", path: "/messages" },
     { icon: Gem, label: "Upgrade", path: "/subscription" },
     { icon: Settings, label: "Settings", path: "/settings" },
-    { icon: Info, label: "About Us", path: "/about" },
-    { icon: Phone, label: "Contact Us", path: "/contact" },
-    { icon: Shield, label: "Privacy Policy", path: "/privacy-policy" },
-    { icon: FileText, label: "Terms & Conditions", path: "/terms" },
+    // { icon: Info, label: "About Us", path: "/about" },
+    // { icon: Phone, label: "Contact Us", path: "/contact" },
+    // { icon: Shield, label: "Privacy Policy", path: "/privacy-policy" },
+    // { icon: FileText, label: "Terms & Conditions", path: "/terms" },
   ];
 
   return (

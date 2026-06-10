@@ -134,23 +134,16 @@ export const WebRTCProvider = ({ children }) => {
 
       peer.ontrack = async (event) => {
         const stream = event.streams[0];
-        console.log("🔥 TRACK EVENT:", event);
-        console.log("🔥 STREAMS:", event.streams);
-        if (!remoteAudioRef.current) {
-          const audio = document.createElement("audio");
-          audio.autoplay = true;
-          audio.playsInline = true;
-          audio.controls = false;
-          document.body.appendChild(audio);
-          remoteAudioRef.current = audio;
-        }
 
-        remoteAudioRef.current.srcObject = stream;
+        const audioEl = remoteAudioRef.current;
+        if (!audioEl) return;
+
+        audioEl.srcObject = stream;
 
         try {
-          await remoteAudioRef.current.play();
+          await audioEl.play();
         } catch (err) {
-          console.warn("Autoplay blocked:", err);
+          console.warn(err);
         }
       };
 
@@ -365,6 +358,7 @@ export const WebRTCProvider = ({ children }) => {
         toggleMute,
       }}
     >
+      <audio ref={remoteAudioRef} autoPlay playsInline />
       {children}
     </WebRTCContext.Provider>
   );

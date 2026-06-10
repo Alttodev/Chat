@@ -1,14 +1,4 @@
-import {
-  Search,
-  X,
-  User,
-  Settings,
-  Gem,
-  Shield,
-  FileText,
-  Phone,
-  Info,
-} from "lucide-react";
+import { Search, X, User, Settings, Gem } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -165,7 +155,7 @@ export function SocialHeader() {
                   Settings
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+                {/* <DropdownMenuSeparator />
 
                 <DropdownMenuItem onClick={() => navigate("/about")}>
                   <Info className="w-4 h-4" />
@@ -185,7 +175,7 @@ export function SocialHeader() {
                 <DropdownMenuItem onClick={() => navigate("/terms")}>
                   <FileText className="w-4 h-4" />
                   Terms
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
