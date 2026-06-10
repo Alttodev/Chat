@@ -134,7 +134,14 @@ export const WebRTCProvider = ({ children }) => {
   const createPeer = useCallback(
     (targetUserId) => {
       const peer = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        iceServers: [
+          { urls: "stun:stun.l.google.com:19302" },
+          {
+            urls: "turn:openrelay.metered.ca:80",
+            username: "openrelayproject",
+            credential: "openrelayproject",
+          },
+        ],
       });
 
       peer.onsignalingstatechange = () => {
