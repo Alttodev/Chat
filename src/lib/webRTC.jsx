@@ -374,12 +374,11 @@ export const WebRTCProvider = ({ children }) => {
     };
 
     const handleReject = () => {
+      cleanupCall();
       setCallState(CALL_STATES.REJECTED);
 
       setOutgoingCall(null); // 🔥 important
       setActiveCall(null);
-
-      cleanupCall();
     };
 
     socket.on("call:offer", handleOffer);
