@@ -39,11 +39,14 @@ export const WebRTCProvider = ({ children }) => {
   const pendingIceCandidates = useRef([]);
   const outgoingCallRef = useRef(null);
 
-  const unlockAudio = () => {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (AudioContext) {
-      const ctx = new AudioContext();
-      ctx.resume();
+  const unlockAudio = async () => {
+    try {
+      const audio = new Audio();
+      audio.muted = true;
+      await audio.play();
+      audio.pause();
+    } catch (e) {
+      console.warn("Audio unlock failed", e);
     }
   };
 
@@ -321,6 +324,10 @@ export const WebRTCProvider = ({ children }) => {
 
     const handleReject = () => {
       setCallState(CALL_STATES.REJECTED);
+
+      setOutgoingCall(null); // 🔥 important
+      setActiveCall(null);
+
       cleanupCall();
     };
 
@@ -339,7 +346,7 @@ export const WebRTCProvider = ({ children }) => {
       socket.off("call:reject", handleReject);
       socket.off("call:busy", handleBusy);
     };
-  }, [socket, playRingtone, cleanupCall,outgoingCall]);
+  }, [socket, playRingtone, cleanupCall, outgoingCall]);
 
   return (
     <WebRTCContext.Provider

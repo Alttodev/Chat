@@ -957,7 +957,6 @@ export default function Message() {
         targetUserName: selectedContact?.name || "Unknown",
         targetUserProfileImage: selectedContact?.profileImage || "",
       });
-      toastSuccess("Calling...");
     } catch (error) {
       toastError(error?.message || "Call failed");
     }

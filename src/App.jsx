@@ -11,7 +11,6 @@ function App() {
   const { callState, endCall, incomingCall, outgoingCall, activeCall } =
     useWebRTC();
 
-
   return (
     <>
       <ThemeSync />
@@ -38,7 +37,7 @@ function App() {
       )}
 
       {callState === "busy" && <BusyScreen name="User" />}
-
+     
       {/* MAIN APP ROUTES */}
       <AppRoutes />
     </>
