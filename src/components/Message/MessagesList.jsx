@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ImageViewer } from "../modals/imageViewer";
-import { useChatMessageMetaStore, useImageModalStore } from "@/lib/zustand";
+import { useImageModalStore } from "@/lib/zustand";
 import {
   getMessageMediaMimeType,
   getMessageMediaUrl,
@@ -95,37 +95,55 @@ const parseMessageLinks = (text) => {
   });
 };
 
-const getMessageReference = (message) => {
-  const replySource =
-    message?.replyTo ||
-    message?.replyMessage ||
-    message?.replyToMessage ||
-    message?.quotedMessage ||
-    null;
+// const getMessageReference = (message) => {
+//   const replySource =
+//     message?.replyTo ||
+//     message?.replyMessage ||
+//     message?.replyToMessage ||
+//     message?.quotedMessage ||
+//     null;
 
-  if (replySource) {
+//   if (replySource) {
+//     return {
+//       kind: "reply",
+//       message: replySource,
+//     };
+//   }
+
+//   const forwardedSource =
+//     message?.forwardedMessage ||
+//     message?.forwardedFromMessage ||
+//     message?.forwardedFrom ||
+//     null;
+
+//   if (forwardedSource) {
+//     return {
+//       kind: "forward",
+//       message: forwardedSource,
+//     };
+//   }
+
+//   return null;
+// };
+const getMessageReference = (message) => {
+  if (!message) return null;
+
+  if (message.replyToMessage) {
     return {
       kind: "reply",
-      message: replySource,
+      message: message.replyToMessage,
     };
   }
 
-  const forwardedSource =
-    message?.forwardedMessage ||
-    message?.forwardedFromMessage ||
-    message?.forwardedFrom ||
-    null;
-
-  if (forwardedSource) {
+  if (message.forwardedMessage) {
     return {
       kind: "forward",
-      message: forwardedSource,
+      message: message.forwardedMessage,
     };
   }
 
   return null;
 };
-
 const getMediaLabel = (message) => {
   const mediaUrl = getMessageMediaUrl(message);
   if (!mediaUrl) return "";
@@ -191,9 +209,9 @@ export default function MessagesList({
   fetchNextPage,
 }) {
   const { open } = useImageModalStore();
-  const messageMetaById = useChatMessageMetaStore(
-    (state) => state.messageMetaById,
-  );
+  // const messageMetaById = useChatMessageMetaStore(
+  //   (state) => state.messageMetaById,
+  // );
   const scrollContainerRef = useRef(null);
   const isAtBottomRef = useRef(true);
   const hasInitialScrollRef = useRef(false);
@@ -312,15 +330,20 @@ export default function MessagesList({
   };
 
   const renderMessageItem = (message, index) => {
-    const localMeta = messageMetaById?.[message?._id || message?.id] || null;
+    // const localMeta = messageMetaById?.[message?._id || message?.id] || null;
+    // const normalizedMessage = {
+    //   ...message,
+    //   ...(localMeta?.replyToMessage
+    //     ? { replyToMessage: localMeta.replyToMessage }
+    //     : {}),
+    //   ...(localMeta?.forwardedMessage
+    //     ? { forwardedMessage: localMeta.forwardedMessage }
+    //     : {}),
+    // };
     const normalizedMessage = {
       ...message,
-      ...(localMeta?.replyToMessage
-        ? { replyToMessage: localMeta.replyToMessage }
-        : {}),
-      ...(localMeta?.forwardedMessage
-        ? { forwardedMessage: localMeta.forwardedMessage }
-        : {}),
+      replyToMessage: message.replyToMessage || null,
+      forwardedMessage: message.forwardedMessage || null,
     };
     const dayLabel = getDayLabel(message?.createdAt || message?.timestamp);
     const previousMessage = renderedMessages[index - 1];

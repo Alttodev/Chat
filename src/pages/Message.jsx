@@ -71,7 +71,6 @@ export default function Message() {
     }
   });
   const [deletingMessageId, setDeletingMessageId] = useState(null);
-  // const [isCalling, setIsCalling] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const typingStopTimeoutRef = useRef(null);
   const typingResetTimeoutRef = useRef(null);
@@ -618,53 +617,38 @@ export default function Message() {
     const handleNewMessage = (payload = {}) => {
       const conversationId =
         payload?.conversationId || payload?.conversation?._id;
-      const message =
-        payload?.message || payload?.chatMessage || payload?.data?.message;
 
-      if (!conversationId || !message?._id) {
-        queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
-        return;
-      }
+      const message = payload?.message;
 
-      queryClient.setQueryData(["chat_messages", conversationId], (oldData) => {
-        if (!oldData?.pages?.length) {
-          return oldData;
-        }
+      if (!conversationId || !message?._id) return;
 
-        const firstPage = oldData.pages[0];
+      const normalizedMessage = {
+        ...message,
+        replyToMessage: message.replyToMessage || null,
+        forwardedMessage: message.forwardedMessage || null,
+      };
 
-        const currentMessages = Array.isArray(firstPage?.messages)
-          ? firstPage.messages
-          : [];
+      queryClient.setQueryData(["chat_messages", conversationId], (old) => {
+        if (!old?.pages?.length) return old;
 
-        const exists = currentMessages.some(
-          (item) => item?._id === message?._id,
+        const firstPage = old.pages[0];
+        const exists = firstPage.messages?.some(
+          (m) => m._id === normalizedMessage._id,
         );
 
-        if (exists) return oldData;
+        if (exists) return old;
 
         return {
-          ...oldData,
+          ...old,
           pages: [
             {
               ...firstPage,
-              messages: [...currentMessages, message],
+              messages: [...firstPage.messages, normalizedMessage],
             },
-            ...oldData.pages.slice(1),
+            ...old.pages.slice(1),
           ],
         };
       });
-
-      queryClient.invalidateQueries({ queryKey: ["chat_conversations"] });
-
-      if (conversationId === selectedConversationId) {
-        clearUnreadCount(conversationId);
-        markSeen(conversationId)
-          .then(() => {
-            refreshNotificationQueries();
-          })
-          .catch(() => {});
-      }
     };
 
     const handleMessageSeen = ({ conversationId, seenBy }) => {
