@@ -134,7 +134,8 @@ export const WebRTCProvider = ({ children }) => {
 
       peer.ontrack = async (event) => {
         const stream = event.streams[0];
-
+        console.log("🔥 TRACK EVENT:", event);
+        console.log("🔥 STREAMS:", event.streams);
         if (!remoteAudioRef.current) {
           const audio = document.createElement("audio");
           audio.autoplay = true;
