@@ -154,11 +154,23 @@ export const WebRTCProvider = ({ children }) => {
 
       peer.ontrack = (event) => {
         const stream = event.streams?.[0];
-        if (!stream || !remoteAudioRef.current) return;
+        if (!stream) return;
 
+        // 🔥 CREATE AUDIO ONLY ON FIRST TRACK
+        if (!remoteAudioRef.current) {
+          remoteAudioRef.current = new Audio();
+          remoteAudioRef.current.autoplay = true;
+          remoteAudioRef.current.playsInline = true;
+          remoteAudioRef.current.controls = false;
+          remoteAudioRef.current.volume = 1;
+        }
+
+        // 🔥 ATTACH STREAM
         remoteAudioRef.current.srcObject = stream;
 
-        remoteAudioRef.current.play().catch(() => {});
+        remoteAudioRef.current.play().catch((err) => {
+          console.warn("Audio play blocked:", err);
+        });
       };
 
       peer.onconnectionstatechange = () => {
