@@ -39,6 +39,27 @@ export const WebRTCProvider = ({ children }) => {
   const pendingIceCandidates = useRef([]);
   const outgoingCallRef = useRef(null);
 
+  let wakeLock = null;
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const requestWakeLock = async () => {
+    try {
+      if ("wakeLock" in navigator) {
+        wakeLock = await navigator.wakeLock.request("screen");
+      }
+    } catch (e) {
+      console.log("Wake lock failed", e);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const releaseWakeLock = async () => {
+    if (wakeLock) {
+      await wakeLock.release();
+      wakeLock = null;
+    }
+  };
+
   const unlockAudio = async () => {
     try {
       const audio = new Audio();
@@ -96,14 +117,14 @@ export const WebRTCProvider = ({ children }) => {
     }
 
     stopRingtone();
-
+    releaseWakeLock();
     setIncomingCall(null);
     setOutgoingCall(null);
     setActiveCall(null);
 
     setCallState(CALL_STATES.IDLE);
     setIsMuted(false);
-  }, [stopRingtone]);
+  }, [releaseWakeLock, stopRingtone]);
 
   // ---------------- LOCAL STREAM ----------------
   const getLocalStream = async () => {
@@ -163,23 +184,21 @@ export const WebRTCProvider = ({ children }) => {
         const stream = event.streams?.[0];
         if (!stream) return;
 
-        // 🔥 CREATE AUDIO ONLY ON FIRST TRACK
         if (!remoteAudioRef.current) {
           remoteAudioRef.current = new Audio();
           remoteAudioRef.current.autoplay = true;
           remoteAudioRef.current.playsInline = true;
-          remoteAudioRef.current.controls = false;
           remoteAudioRef.current.volume = 1;
         }
 
-        // 🔥 ATTACH STREAM
         remoteAudioRef.current.srcObject = stream;
 
-        remoteAudioRef.current.play().catch((err) => {
-          console.warn("Audio play blocked:", err);
+        remoteAudioRef.current.play().catch(() => {
+          setTimeout(() => {
+            remoteAudioRef.current.play().catch(() => {});
+          }, 500);
         });
       };
-
       peer.onconnectionstatechange = () => {
         if (peer.connectionState === "connected") {
           setCallState(CALL_STATES.IN_CALL);
@@ -204,6 +223,7 @@ export const WebRTCProvider = ({ children }) => {
     async ({ targetUserId, targetUserName, targetUserProfileImage }) => {
       if (!socket || !user) return;
       unlockAudio();
+      await requestWakeLock();
 
       currentTargetUserRef.current = targetUserId;
 
@@ -235,7 +255,7 @@ export const WebRTCProvider = ({ children }) => {
 
       setCallState(CALL_STATES.CALLING);
     },
-    [socket, user, createPeer],
+    [socket, user, requestWakeLock, createPeer],
   );
 
   // ---------------- ACCEPT CALL ----------------
