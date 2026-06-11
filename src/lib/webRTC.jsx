@@ -43,6 +43,7 @@ export const WebRTCProvider = ({ children }) => {
   const [isVideoCall, setIsVideoCall] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
+  const [facingMode, setFacingMode] = useState("user");
 
   const wakeLockRef = useRef(null);
 
@@ -80,6 +81,15 @@ export const WebRTCProvider = ({ children }) => {
     } catch (e) {
       console.warn("Audio unlock failed", e);
     }
+  };
+
+  const getCameraStream = async (mode = "user") => {
+    return await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: {
+        facingMode: mode,
+      },
+    });
   };
 
   // ---------------- MUTE ----------------
@@ -136,6 +146,33 @@ export const WebRTCProvider = ({ children }) => {
     setCallState(CALL_STATES.IDLE);
     setIsMuted(false);
   }, [releaseWakeLock, stopRingtone]);
+
+  const toggleCamera = async () => {
+    try {
+      const newMode = facingMode === "user" ? "environment" : "user";
+      setFacingMode(newMode);
+
+      const newStream = await getCameraStream(newMode);
+
+      // stop old stream
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+
+      localStreamRef.current = newStream;
+      setLocalStream(newStream);
+
+      // replace track in peer connection (IMPORTANT)
+      const videoTrack = newStream.getVideoTracks()[0];
+      const sender = peerRef.current
+        ?.getSenders()
+        .find((s) => s.track?.kind === "video");
+
+      if (sender && videoTrack) {
+        sender.replaceTrack(videoTrack);
+      }
+    } catch (err) {
+      console.error("Camera switch failed:", err);
+    }
+  };
 
   // ---------------- LOCAL STREAM ----------------
   const getLocalStream = async () => {
@@ -272,11 +309,10 @@ export const WebRTCProvider = ({ children }) => {
       currentTargetUserRef.current = targetUserId;
 
       // VIDEO + AUDIO
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
+      const stream = await getCameraStream(facingMode);
 
+      localStreamRef.current = stream;
+      setLocalStream(stream);
       localStreamRef.current = stream;
 
       // Show local camera
@@ -308,7 +344,7 @@ export const WebRTCProvider = ({ children }) => {
       setActiveCall(callData);
       setCallState(CALL_STATES.CALLING);
     },
-    [socket, user, requestWakeLock, createPeer],
+    [socket, user, facingMode, createPeer],
   );
 
   // ---------------- ACCEPT CALL ----------------
@@ -324,18 +360,13 @@ export const WebRTCProvider = ({ children }) => {
     let stream;
 
     if (incomingCall.callType === "video") {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      localStreamRef.current = stream;
+      stream = await getCameraStream(facingMode);
     } else {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: false,
       });
     }
-
     localStreamRef.current = stream;
     setLocalStream(stream);
 
@@ -365,7 +396,7 @@ export const WebRTCProvider = ({ children }) => {
     setActiveCall(incomingCall);
     setIncomingCall(null);
     setCallState(CALL_STATES.IN_CALL);
-  }, [incomingCall, socket, createPeer, stopRingtone, requestWakeLock]);
+  }, [incomingCall, socket, stopRingtone, createPeer, facingMode]);
 
   // ---------------- REJECT CALL ----------------
   const rejectCall = useCallback(() => {
@@ -500,6 +531,7 @@ export const WebRTCProvider = ({ children }) => {
         activeCall,
         isMuted,
         toggleMute,
+        toggleCamera,
       }}
     >
       <audio ref={remoteAudioRef} autoPlay playsInline />

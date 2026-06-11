@@ -8,7 +8,7 @@ import {
   useUploadStatus,
 } from "@/hooks/statusHooks";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
-import { toastError } from "@/lib/toast";
+import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
@@ -173,7 +173,8 @@ export function StatusStrip({
       formData.append("image", selectedFile);
       formData.append("caption", caption || "");
 
-      await uploadStatus(formData);
+      const res = await uploadStatus(formData);
+      toastSuccess(res?.message);
       handleCancelDraft();
     } catch (error) {
       toastError(error?.response?.data?.message || "Failed to upload status");
@@ -227,7 +228,7 @@ export function StatusStrip({
             <StatusBubble
               highlight
               hasMedia={Boolean(myStatus?.image)}
-              label={isUploading ? "Posting..." : "Your status"}
+              label={isUploading ? "Posting..." : "Your story"}
               image={myStatusImage}
               fallback={currentUser?.userName?.charAt(0).toUpperCase() || "Y"}
               compact={compact}

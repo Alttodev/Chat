@@ -46,7 +46,7 @@ function HomeLayout() {
             aria-label="Show status section"
           >
             <Eye className="h-4 w-4" />
-            Show status
+            Show story
           </button>
         </div>
       ) : null}

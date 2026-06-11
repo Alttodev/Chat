@@ -54,7 +54,7 @@ export function StatusDraftModal({
       >
         <DialogHeader className="border-b px-4 py-4 sm:px-6">
           <DialogTitle className="text-base sm:text-lg">
-            Add Status
+            Add Story
           </DialogTitle>
         </DialogHeader>
 
@@ -107,7 +107,7 @@ export function StatusDraftModal({
                   disabled={isUploading}
                   className="w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto cursor-pointer"
                 >
-                  {isUploading ? "Posting..." : "Post Status"}
+                  {isUploading ? "Posting..." : "Post Story"}
                 </Button>
               </div>
             </div>

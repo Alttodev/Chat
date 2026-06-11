@@ -93,7 +93,7 @@ export function StatusViewer() {
     try {
       const res = await deleteStatus();
       closeStatus();
-      toastSuccess(res?.message || "Status deleted");
+      toastSuccess(res?.data.message || "Story deleted Successfully");
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
