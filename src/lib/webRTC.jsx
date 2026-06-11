@@ -171,6 +171,14 @@ export const WebRTCProvider = ({ children }) => {
         }
       };
 
+      peer.onconnectionstatechange = () => {
+        console.log("CONNECTION:", peer.connectionState);
+      };
+
+      peer.oniceconnectionstatechange = () => {
+        console.log("ICE:", peer.iceConnectionState);
+      };
+
       peer.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("call:ice-candidate", {
@@ -387,6 +395,14 @@ export const WebRTCProvider = ({ children }) => {
     socket.on("call:end", handleEnd);
     socket.on("call:reject", handleReject);
     socket.on("call:busy", handleBusy);
+
+    socket.on("disconnect", () => {
+      console.log("SOCKET DISCONNECTED");
+    });
+
+    socket.on("connect", () => {
+      console.log("SOCKET CONNECTED");
+    });
 
     return () => {
       socket.off("call:offer", handleOffer);
