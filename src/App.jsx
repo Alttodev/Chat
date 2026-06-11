@@ -2,11 +2,13 @@ import "./App.css";
 import { ThemeSync } from "@/components/ThemeSync";
 import AppRoutes from "./routes/AppRoutes";
 
-import IncomingCallPopup from "./components/IncomingCallPopup";
-import CallingScreen from "./components/CallingScreen";
-import CallScreen from "./components/CallScreen";
+import IncomingCallPopup from "./components/Message/IncomingCallPopup";
+
 import { useWebRTC } from "./lib/webRTC";
-import VideoCallScreen from "./components/VideoScreen";
+import VideoCallScreen from "./components/Message/VideoScreen";
+import CallingScreen from "./components/Message/CallingScreen";
+import CallScreen from "./components/Message/CallScreen";
+import BusyScreen from "./components/Message/BusyScreen";
 
 function App() {
   const {

@@ -41,6 +41,7 @@ export const WebRTCProvider = ({ children }) => {
   const pendingIceCandidates = useRef([]);
   const outgoingCallRef = useRef(null);
   const [isVideoCall, setIsVideoCall] = useState(false);
+  const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
 
   const wakeLockRef = useRef(null);
@@ -193,8 +194,6 @@ export const WebRTCProvider = ({ children }) => {
       peer.ontrack = (event) => {
         const stream = event.streams[0];
 
-        console.log("REMOTE STREAM:", stream);
-
         setRemoteStream(stream);
 
         if (remoteAudioRef.current) {
@@ -281,20 +280,8 @@ export const WebRTCProvider = ({ children }) => {
       localStreamRef.current = stream;
 
       // Show local camera
-      if (localVideoRef.current) {
-         console.log("LOCAL VIDEO REF:", localVideoRef.current);
-        localVideoRef.current.srcObject = stream;
-      }
-
-      console.log(
-        "LOCAL TRACKS:",
-        stream.getTracks().map((t) => ({
-          kind: t.kind,
-          enabled: t.enabled,
-          readyState: t.readyState,
-        })),
-      );
-
+      localStreamRef.current = stream;
+      setLocalStream(stream);
       const peer = createPeer(targetUserId);
       peerRef.current = peer;
 
@@ -349,16 +336,8 @@ export const WebRTCProvider = ({ children }) => {
       });
     }
 
-    console.log(
-      "LOCAL TRACKS:",
-      stream.getTracks().map((t) => ({
-        kind: t.kind,
-        enabled: t.enabled,
-        readyState: t.readyState,
-      })),
-    );
-
     localStreamRef.current = stream;
+    setLocalStream(stream);
 
     const peer = createPeer(incomingCall.callerId);
 
@@ -437,7 +416,6 @@ export const WebRTCProvider = ({ children }) => {
         new RTCSessionDescription(answer),
       );
       await flushIce(peerRef.current);
-      // 🔥 ADD THIS FIX
       for (const candidate of pendingIceCandidates.current) {
         try {
           await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
@@ -481,7 +459,7 @@ export const WebRTCProvider = ({ children }) => {
       cleanupCall();
       setCallState(CALL_STATES.REJECTED);
 
-      setOutgoingCall(null); // 🔥 important
+      setOutgoingCall(null);
       setActiveCall(null);
     };
 
@@ -511,6 +489,7 @@ export const WebRTCProvider = ({ children }) => {
         rejectCall,
         isVideoCall,
         endCall,
+        localStream,
         remoteStream,
         localVideoRef,
         localStreamRef,

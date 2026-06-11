@@ -15,26 +15,28 @@ const formatLastSeen = (value) => {
   const date = new Date(value);
   const now = new Date();
 
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
+  const isToday = date.toDateString() === now.toDateString();
+
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+
+  if (date.toDateString() === yesterday.toDateString()) {
+    return "Yesterday";
+  }
 
   if (isToday) {
     return date.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
-      hour12: true, // AM/PM
+      hour12: true,
     });
   }
 
   return date.toLocaleDateString("en-US", {
-    month: "short", // May
-    day: "numeric", // 1
-    year: "numeric", // 2025
+    month: "short",
+    day: "numeric",
   });
 };
-
 export default function ChatHeader({
   contact,
   setShowChat,
@@ -42,7 +44,7 @@ export default function ChatHeader({
   isTogglingBlock,
   blockedByMe,
   onAudioCall,
-  onVideoCall
+  onVideoCall,
 }) {
   return (
     <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/70 bg-background/90 px-4 py-3 backdrop-blur">
@@ -74,10 +76,11 @@ export default function ChatHeader({
             }`}
           />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="truncate font-semibold text-foreground">
             {contact.name}
           </h3>
+
           <p className="truncate text-sm text-muted-foreground">
             {contact.isOnline
               ? "Online"
@@ -85,7 +88,7 @@ export default function ChatHeader({
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <Button
           variant="ghost"
           size="icon"

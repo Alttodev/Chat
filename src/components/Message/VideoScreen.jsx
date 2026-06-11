@@ -2,20 +2,19 @@ import { useEffect } from "react";
 import { useWebRTC } from "@/lib/webRTC";
 
 export default function VideoCallScreen({ onEnd }) {
-  const { localVideoRef, remoteVideoRef, remoteStream } = useWebRTC();
+  const { localVideoRef, remoteVideoRef, localStream, remoteStream } =
+    useWebRTC();
 
   useEffect(() => {
-    const video = remoteVideoRef.current;
-
-    if (!video || !remoteStream) return;
-
-    if (video.srcObject !== remoteStream) {
-      video.srcObject = remoteStream;
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
     }
+  }, [localStream, localVideoRef]);
 
-    video.onloadedmetadata = () => {
-      video.play().catch(() => {});
-    };
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
   }, [remoteStream, remoteVideoRef]);
 
   return (
@@ -32,7 +31,7 @@ export default function VideoCallScreen({ onEnd }) {
         autoPlay
         muted
         playsInline
-        className="absolute top-4 right-4 w-32 h-44 rounded-lg border"
+        className="absolute top-4 right-4 w-32 h-44 rounded-lg border border-white"
       />
 
       <button
