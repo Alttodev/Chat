@@ -282,6 +282,7 @@ export const WebRTCProvider = ({ children }) => {
 
       // Show local camera
       if (localVideoRef.current) {
+         console.log("LOCAL VIDEO REF:", localVideoRef.current);
         localVideoRef.current.srcObject = stream;
       }
 
