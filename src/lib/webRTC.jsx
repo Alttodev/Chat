@@ -39,27 +39,33 @@ export const WebRTCProvider = ({ children }) => {
   const pendingIceCandidates = useRef([]);
   const outgoingCallRef = useRef(null);
 
-  let wakeLock = null;
+  const wakeLockRef = useRef(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const requestWakeLock = async () => {
     try {
-      if ("wakeLock" in navigator) {
-        wakeLock = await navigator.wakeLock.request("screen");
+      if ("wakeLock" in navigator && !wakeLockRef.current) {
+        wakeLockRef.current = await navigator.wakeLock.request("screen");
+
+        wakeLockRef.current.addEventListener("release", () => {
+          console.log("Wake Lock released");
+        });
       }
     } catch (e) {
       console.log("Wake lock failed", e);
     }
   };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const releaseWakeLock = async () => {
-    if (wakeLock) {
-      await wakeLock.release();
-      wakeLock = null;
+    try {
+      if (wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
-
   const unlockAudio = async () => {
     try {
       const audio = new Audio();
@@ -171,14 +177,6 @@ export const WebRTCProvider = ({ children }) => {
         }
       };
 
-      peer.onconnectionstatechange = () => {
-        console.log("CONNECTION:", peer.connectionState);
-      };
-
-      peer.oniceconnectionstatechange = () => {
-        console.log("ICE:", peer.iceConnectionState);
-      };
-
       peer.onicecandidate = (event) => {
         if (event.candidate) {
           socket?.emit("call:ice-candidate", {
@@ -207,8 +205,9 @@ export const WebRTCProvider = ({ children }) => {
           }, 500);
         });
       };
-      peer.onconnectionstatechange = () => {
+      peer.onconnectionstatechange = async () => {
         if (peer.connectionState === "connected") {
+          await requestWakeLock();
           setCallState(CALL_STATES.IN_CALL);
           stopRingtone();
         }
@@ -271,6 +270,7 @@ export const WebRTCProvider = ({ children }) => {
     if (!incomingCall || !socket) return;
     unlockAudio();
     stopRingtone();
+    await requestWakeLock();
 
     currentTargetUserRef.current = incomingCall.callerId;
 
@@ -395,14 +395,6 @@ export const WebRTCProvider = ({ children }) => {
     socket.on("call:end", handleEnd);
     socket.on("call:reject", handleReject);
     socket.on("call:busy", handleBusy);
-
-    socket.on("disconnect", () => {
-      console.log("SOCKET DISCONNECTED");
-    });
-
-    socket.on("connect", () => {
-      console.log("SOCKET CONNECTED");
-    });
 
     return () => {
       socket.off("call:offer", handleOffer);
