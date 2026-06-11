@@ -29,6 +29,8 @@ export const WebRTCProvider = ({ children }) => {
   const peerRef = useRef(null);
   const localStreamRef = useRef(null);
   const remoteAudioRef = useRef(null);
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
   const currentTargetUserRef = useRef(null);
   const ringtoneRef = useRef(null);
   const [activeCall, setActiveCall] = useState(null);
@@ -38,6 +40,8 @@ export const WebRTCProvider = ({ children }) => {
   const [isMuted, setIsMuted] = useState(false);
   const pendingIceCandidates = useRef([]);
   const outgoingCallRef = useRef(null);
+  const [isVideoCall, setIsVideoCall] = useState(false);
+  const [remoteStream, setRemoteStream] = useState(null);
 
   const wakeLockRef = useRef(null);
 
@@ -121,7 +125,7 @@ export const WebRTCProvider = ({ children }) => {
       remoteAudioRef.current.pause();
       remoteAudioRef.current.srcObject = null;
     }
-
+    setIsVideoCall(false);
     stopRingtone();
     releaseWakeLock();
     setIncomingCall(null);
@@ -187,23 +191,17 @@ export const WebRTCProvider = ({ children }) => {
       };
 
       peer.ontrack = (event) => {
-        const stream = event.streams?.[0];
-        if (!stream) return;
+        const stream = event.streams[0];
 
-        if (!remoteAudioRef.current) {
-          remoteAudioRef.current = new Audio();
-          remoteAudioRef.current.autoplay = true;
-          remoteAudioRef.current.playsInline = true;
-          remoteAudioRef.current.volume = 1;
+        console.log("REMOTE STREAM:", stream);
+
+        setRemoteStream(stream);
+
+        if (remoteAudioRef.current) {
+          remoteAudioRef.current.srcObject = stream;
+
+          remoteAudioRef.current.play().catch(() => {});
         }
-
-        remoteAudioRef.current.srcObject = stream;
-
-        remoteAudioRef.current.play().catch(() => {
-          setTimeout(() => {
-            remoteAudioRef.current.play().catch(() => {});
-          }, 500);
-        });
       };
       peer.onconnectionstatechange = async () => {
         if (peer.connectionState === "connected") {
@@ -256,7 +254,7 @@ export const WebRTCProvider = ({ children }) => {
         callerImage: targetUserProfileImage,
         targetUserId,
       };
-
+      setIsVideoCall(false);
       setOutgoingCall(callData);
       setActiveCall(callData);
 
@@ -265,16 +263,102 @@ export const WebRTCProvider = ({ children }) => {
     [socket, user, requestWakeLock, createPeer],
   );
 
+  const startVideoCall = useCallback(
+    async ({ targetUserId, targetUserName, targetUserProfileImage }) => {
+      if (!socket || !user) return;
+
+      unlockAudio();
+      await requestWakeLock();
+
+      currentTargetUserRef.current = targetUserId;
+
+      // VIDEO + AUDIO
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+
+      localStreamRef.current = stream;
+
+      // Show local camera
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      console.log(
+        "LOCAL TRACKS:",
+        stream.getTracks().map((t) => ({
+          kind: t.kind,
+          enabled: t.enabled,
+          readyState: t.readyState,
+        })),
+      );
+
+      const peer = createPeer(targetUserId);
+      peerRef.current = peer;
+
+      stream.getTracks().forEach((track) => {
+        peer.addTrack(track, stream);
+      });
+
+      const offer = await peer.createOffer();
+      await peer.setLocalDescription(offer);
+
+      socket.emit("call:offer", {
+        receiverId: targetUserId,
+        offer,
+        callType: "video", // important
+      });
+
+      const callData = {
+        callerName: targetUserName,
+        callerImage: targetUserProfileImage,
+        targetUserId,
+      };
+      setIsVideoCall(true);
+      setOutgoingCall(callData);
+      setActiveCall(callData);
+      setCallState(CALL_STATES.CALLING);
+    },
+    [socket, user, requestWakeLock, createPeer],
+  );
+
   // ---------------- ACCEPT CALL ----------------
   const acceptCall = useCallback(async () => {
     if (!incomingCall || !socket) return;
+
     unlockAudio();
     stopRingtone();
     await requestWakeLock();
 
     currentTargetUserRef.current = incomingCall.callerId;
 
-    const stream = await getLocalStream();
+    let stream;
+
+    if (incomingCall.callType === "video") {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+      localStreamRef.current = stream;
+    } else {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+    }
+
+    console.log(
+      "LOCAL TRACKS:",
+      stream.getTracks().map((t) => ({
+        kind: t.kind,
+        enabled: t.enabled,
+        readyState: t.readyState,
+      })),
+    );
+
+    localStreamRef.current = stream;
+
     const peer = createPeer(incomingCall.callerId);
 
     peerRef.current = peer;
@@ -286,19 +370,22 @@ export const WebRTCProvider = ({ children }) => {
     await peer.setRemoteDescription(
       new RTCSessionDescription(incomingCall.offer),
     );
+
     await flushIce(peer);
 
     const answer = await peer.createAnswer();
+
     await peer.setLocalDescription(answer);
 
     socket.emit("call:answer", {
       callerId: incomingCall.callerId,
       answer,
     });
+
     setActiveCall(incomingCall);
     setIncomingCall(null);
     setCallState(CALL_STATES.IN_CALL);
-  }, [incomingCall, socket, createPeer, stopRingtone]);
+  }, [incomingCall, socket, createPeer, stopRingtone, requestWakeLock]);
 
   // ---------------- REJECT CALL ----------------
   const rejectCall = useCallback(() => {
@@ -335,8 +422,9 @@ export const WebRTCProvider = ({ children }) => {
         callerName: data.callerName,
         callerImage: data.callerImage,
         offer: data.offer,
+        callType: data.callType,
       });
-
+      setIsVideoCall(data.callType === "video");
       setCallState(CALL_STATES.RINGING);
       playRingtone();
     };
@@ -367,11 +455,18 @@ export const WebRTCProvider = ({ children }) => {
 
       setCallState(CALL_STATES.IN_CALL);
     };
-    const handleIce = ({ candidate }) => {
+    const handleIce = async ({ candidate }) => {
       if (!peerRef.current) return;
 
-      // ALWAYS store first
-      pendingIceCandidates.current.push(candidate);
+      try {
+        if (peerRef.current.remoteDescription) {
+          await peerRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+        } else {
+          pendingIceCandidates.current.push(candidate);
+        }
+      } catch (err) {
+        console.error("ICE error:", err);
+      }
     };
 
     const handleEnd = () => cleanupCall();
@@ -410,10 +505,15 @@ export const WebRTCProvider = ({ children }) => {
     <WebRTCContext.Provider
       value={{
         startAudioCall,
+        startVideoCall,
         acceptCall,
         rejectCall,
+        isVideoCall,
         endCall,
-
+        remoteStream,
+        localVideoRef,
+        localStreamRef,
+        remoteVideoRef,
         incomingCall,
         outgoingCall,
         callState,
@@ -423,6 +523,7 @@ export const WebRTCProvider = ({ children }) => {
       }}
     >
       <audio ref={remoteAudioRef} autoPlay playsInline />
+
       {children}
     </WebRTCContext.Provider>
   );

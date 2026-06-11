@@ -53,7 +53,7 @@ export default function Message() {
   const BLOCKED_USERS_STORAGE_KEY = "chat-blocked-users";
   const queryClient = useQueryClient();
   const { socket } = useSocket();
-  const { startAudioCall } = useWebRTC();
+  const { startAudioCall, startVideoCall } = useWebRTC();
   const { profileId } = useAuthStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [newMessage, setNewMessage] = useState("");
@@ -961,6 +961,46 @@ export default function Message() {
       toastError(error?.message || "Call failed");
     }
   };
+
+  const handleVideoCall = async () => {
+    if (!selectedContact?.targetUserId) return;
+
+    if (selectedContact.targetUserId.toString() === profileId?.toString()) {
+      toastError("You cannot call yourself");
+      return;
+    }
+
+    if (!selectedContact?.isFriend) {
+      toastError("Only accepted friends can call");
+      return;
+    }
+
+    if (selectedContact?.isBlocked) {
+      toastError("User is blocked");
+      return;
+    }
+
+    const matchedProfile = profileData?.profiles?.find(
+      (item) =>
+        item?.id?.toString() === selectedContact?.targetUserId?.toString(),
+    );
+
+    const callUserId =
+      selectedContact?.callUserId ||
+      selectedContact?.userId ||
+      matchedProfile?.userId ||
+      selectedContact?.targetUserId;
+
+    try {
+      await startVideoCall({
+        targetUserId: callUserId,
+        targetUserName: selectedContact?.name || "Unknown",
+        targetUserProfileImage: selectedContact?.profileImage || "",
+      });
+    } catch (error) {
+      toastError(error?.message || "Video call failed");
+    }
+  };
   if (conversationsLoading || friendsLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
@@ -1013,6 +1053,7 @@ export default function Message() {
                 isBlocked={!!selectedContact?.isBlocked}
                 blockedByMe={!!selectedContact?.blockedByMe}
                 onAudioCall={handleAudioCall}
+                onVideoCall={handleVideoCall}
                 // isCalling={isCalling}
               />
 

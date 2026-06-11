@@ -4,16 +4,17 @@ import { useWebRTC } from "@/lib/webRTC";
 
 export default function IncomingCallPopup() {
   const { incomingCall, acceptCall, rejectCall } = useWebRTC();
+ 
 
   if (!incomingCall) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      
-      <div className="w-100 rounded-xl border border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-2xl">
-        
-        <h2 className="text-lg font-semibold text-center text-gray-900 dark:text-white">
-          Incoming Audio Call
+      <div className="w-[calc(100%-2rem)] max-w-[500px] rounded-lg  sm:rounded-xl border border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-2xl">
+        <h2 className="text-lg font-semibold text-center">
+          {incomingCall?.callType === "video"
+            ? "Incoming Video Call"
+            : "Incoming Audio Call"}
         </h2>
 
         <p className="mt-2 text-center text-gray-600 dark:text-gray-300">
@@ -21,7 +22,6 @@ export default function IncomingCallPopup() {
         </p>
 
         <div className="mt-6 flex justify-center gap-6">
-          
           {/* REJECT */}
           <Button
             variant="destructive"
@@ -40,7 +40,6 @@ export default function IncomingCallPopup() {
           >
             <Phone />
           </Button>
-
         </div>
       </div>
     </div>

@@ -6,11 +6,18 @@ import IncomingCallPopup from "./components/IncomingCallPopup";
 import CallingScreen from "./components/CallingScreen";
 import CallScreen from "./components/CallScreen";
 import { useWebRTC } from "./lib/webRTC";
+import VideoCallScreen from "./components/VideoScreen";
 
 function App() {
-  const { callState, endCall, incomingCall, outgoingCall, activeCall } =
-    useWebRTC();
-  console.log(callState,"callState")
+  const {
+    callState,
+    endCall,
+    incomingCall,
+    outgoingCall,
+    activeCall,
+    isVideoCall,
+  } = useWebRTC();
+
   return (
     <>
       <ThemeSync />
@@ -18,6 +25,9 @@ function App() {
       {/* INCOMING CALL POPUP */}
       <IncomingCallPopup name={incomingCall?.callerName} />
 
+      {callState === "in_call" && isVideoCall && (
+        <VideoCallScreen onEnd={endCall} />
+      )}
       {/* OUTGOING CALL SCREEN */}
       {callState === "calling" && (
         <CallingScreen
@@ -27,7 +37,7 @@ function App() {
         />
       )}
       {/* ACTIVE CALL SCREEN */}
-      {callState === "in_call" && (
+      {callState === "in_call" && !isVideoCall && (
         <CallScreen
           onEnd={endCall}
           name={activeCall?.callerName || "Unknown"}

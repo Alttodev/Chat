@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MoreVertical, Ban, Phone } from "lucide-react";
+import { ArrowLeft, MoreVertical, Ban, Phone, Video } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ export default function ChatHeader({
   isTogglingBlock,
   blockedByMe,
   onAudioCall,
-
+  onVideoCall
 }) {
   return (
     <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/70 bg-background/90 px-4 py-3 backdrop-blur">
@@ -96,9 +96,14 @@ export default function ChatHeader({
           <Phone className="w-4 h-4 text-emerald-600" />
         </Button>
 
-        {/* <Button variant="ghost" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="cursor-pointer"
+          onClick={onVideoCall}
+        >
           <Video className="w-4 h-4 text-emerald-600" />
-        </Button> */}
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="cursor-pointer">
