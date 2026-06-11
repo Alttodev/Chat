@@ -147,33 +147,43 @@ export const WebRTCProvider = ({ children }) => {
     setIsMuted(false);
   }, [releaseWakeLock, stopRingtone]);
 
-  const toggleCamera = async () => {
-    try {
-      const newMode = facingMode === "user" ? "environment" : "user";
-      setFacingMode(newMode);
+const toggleCamera = async () => {
+  try {
+    const newMode = facingMode === "user" ? "environment" : "user";
+    setFacingMode(newMode);
 
-      const newStream = await getCameraStream(newMode);
+    const newStream = await getCameraStream(newMode);
 
-      // stop old stream
-      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+    const videoTrack = newStream.getVideoTracks()[0];
 
-      localStreamRef.current = newStream;
-      setLocalStream(newStream);
+    const oldStream = localStreamRef.current;
 
-      // replace track in peer connection (IMPORTANT)
-      const videoTrack = newStream.getVideoTracks()[0];
-      const sender = peerRef.current
-        ?.getSenders()
-        .find((s) => s.track?.kind === "video");
+    // stop old tracks properly
+    oldStream?.getVideoTracks().forEach((t) => t.stop());
 
-      if (sender && videoTrack) {
-        sender.replaceTrack(videoTrack);
-      }
-    } catch (err) {
-      console.error("Camera switch failed:", err);
+    localStreamRef.current = newStream;
+    setLocalStream(newStream);
+
+    const peer = peerRef.current;
+    if (!peer) return;
+
+    const senders = peer.getSenders();
+
+    const videoSender = senders.find(
+      (s) => s.track && s.track.kind === "video"
+    );
+
+    if (videoSender && videoTrack) {
+      await videoSender.replaceTrack(videoTrack);
+    } else {
+      // fallback: re-add track
+      peer.addTrack(videoTrack, newStream);
     }
-  };
 
+  } catch (err) {
+    console.error("Camera switch failed:", err);
+  }
+};
   // ---------------- LOCAL STREAM ----------------
   const getLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
