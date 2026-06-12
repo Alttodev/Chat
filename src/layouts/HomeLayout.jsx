@@ -55,7 +55,8 @@ function HomeLayout() {
       <WelcomePostDialog />
       <ProfileImageReminderDialog />
       <ThemeModeDialog />
-      <MobileMenuBar />
+       <MobileMenuBar />
+    
 
       <div className="flex flex-1">
         {/* Left Sidebar */}

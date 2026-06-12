@@ -77,7 +77,6 @@ export default function Message() {
   const loadMoreRef = useRef(null);
   const targetUserIdFromUrl = searchParams.get("userId");
   const targetUserNameFromUrl = searchParams.get("name");
-  
 
   const { data: conversationData, isLoading: conversationsLoading } =
     useChatConversations();
@@ -931,7 +930,7 @@ export default function Message() {
       return;
     }
 
-    console.log(selectedContact?.isFriend,"fuck")
+    console.log(selectedContact?.isFriend, "fuck");
 
     if (!selectedContact?.isFriend) {
       toastError("Only accepted friends can call");
@@ -1013,7 +1012,7 @@ export default function Message() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-8rem)] min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100dvh-4rem)]">
+    <div className="flex h-[calc(100dvh-4rem)] min-h-0 w-full flex-col overflow-hidden pt-3 ">
       <ForwardMessageSheet
         open={!!forwardingMessage}
         onOpenChange={(open) => {
