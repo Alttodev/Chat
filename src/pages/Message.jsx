@@ -931,6 +931,8 @@ export default function Message() {
       return;
     }
 
+    console.log(selectedContact?.isFriend,"fuck")
+
     if (!selectedContact?.isFriend) {
       toastError("Only accepted friends can call");
       return;
