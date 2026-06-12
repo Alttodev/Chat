@@ -43,7 +43,6 @@ export const WebRTCProvider = ({ children }) => {
   const [isVideoCall, setIsVideoCall] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
-  // const [facingMode, setFacingMode] = useState("user");
   const [videoDevices, setVideoDevices] = useState([]);
   const [currentDeviceId, setCurrentDeviceId] = useState(null);
 
@@ -84,15 +83,6 @@ export const WebRTCProvider = ({ children }) => {
       console.warn("Audio unlock failed", e);
     }
   };
-
-  // const getCameraStream = async (mode = "user") => {
-  //   return await navigator.mediaDevices.getUserMedia({
-  //     audio: true,
-  //     video: {
-  //       facingMode: mode,
-  //     },
-  //   });
-  // };
 
   const initDevices = async () => {
     await navigator.mediaDevices.getUserMedia({ video: true, audio: true });

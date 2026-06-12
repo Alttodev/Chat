@@ -1010,7 +1010,7 @@ export default function Message() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-8rem)] min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100dvh-4rem)]">
+    <div className="flex h-[calc(100dvh-6.8rem)] min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100dvh-4rem)]">
       <ForwardMessageSheet
         open={!!forwardingMessage}
         onOpenChange={(open) => {
