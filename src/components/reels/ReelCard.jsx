@@ -151,7 +151,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
   };
 
   return (
-    <section className="relative h-[calc(100dvh-13rem)] min-h-[26rem] w-full overflow-hidden rounded-[18px] border border-white/10 bg-black shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:h-[calc(100vh-8.5rem)] sm:min-h-[32rem]">
+    <section className="relative h-full  w-full overflow-hidden rounded-[18px]  md:h-[calc(100vh-8.5rem)] md:min-h-[32rem]">
       <div
         role="button"
         tabIndex={0}

@@ -17,11 +17,12 @@ function HomeLayout() {
   const isHome = pathname === "/home";
   const isReels = pathname === "/reels";
   const isMessages = pathname === "/messages";
+
   const [showDesktopStatusStrip, setShowDesktopStatusStrip] = useState(true);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <div className={cn(isMessages ? "hidden md:block" : "block")}>
+      <div className={cn(isMessages || isReels ? "hidden md:block" : "block")}>
         <SocialHeader />
       </div>
 
@@ -71,7 +72,7 @@ function HomeLayout() {
             isMessages
               ? "pt-0 pb-0 sm:pt-16"
               : isReels
-                ? "pt-20 sm:pt-24 px-2 sm:px-4"
+                ? "pt-2 pb-0 sm:pt-20"
                 : isHome
                   ? showDesktopStatusStrip
                     ? "pt-50 sm:pt-60"
