@@ -1,21 +1,22 @@
-import { Clapperboard, Home, MessageCircle, Users } from "lucide-react";
+import { Home, MessageCircle, Play, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 
 export function MobileMenuBar() {
   const location = useLocation();
-  const isHome = location.pathname === "/home";
+  const isReels = location.pathname === "/reels";
+  const isMessage=location.pathname === "/messages";
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
-    { icon: Clapperboard, label: "Reels", path: "/reels" },
+     { icon: Play, label: "Reels", path: "/reels" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: MessageCircle, label: "Chat", path: "/messages" },
   ];
 
   return (
     <>
-      {isHome && (
+      {!isReels && !isMessage && (
         <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-background border-t border-border shadow-sm">
           <nav className="grid grid-cols-4 gap-1 px-3 py-2">
             {menuItems.map((item) => {
@@ -33,9 +34,8 @@ export function MobileMenuBar() {
                     aria-label={item.label}
                   >
                     <item.icon className="w-5 h-5" />
-                    <span className="text-[10px] font-medium leading-none tracking-tight">
-                      {item.label}
-                    </span>
+                    
+                  
                   </Button>
                 </Link>
               );

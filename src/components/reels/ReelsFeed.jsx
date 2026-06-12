@@ -82,10 +82,6 @@ export function ReelsFeed() {
   return (
     <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
       <div className="overflow-hidden  ">
-        {/* <div
-          ref={scrollRef}
-          className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory"
-        > */}
         <div
           ref={scrollRef}
           className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
