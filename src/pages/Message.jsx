@@ -77,7 +77,7 @@ export default function Message() {
   const loadMoreRef = useRef(null);
   const targetUserIdFromUrl = searchParams.get("userId");
   const targetUserNameFromUrl = searchParams.get("name");
-  const [vh, setVh] = useState(window.innerHeight);
+  
 
   const { data: conversationData, isLoading: conversationsLoading } =
     useChatConversations();
@@ -422,21 +422,12 @@ export default function Message() {
     return matchedConversation?._id || null;
   }, [selectedContact, conversations]);
 
-  useEffect(() => {
-    const updateHeight = () => {
-      setVh(window.innerHeight);
-    };
-
-    updateHeight();
-
-    window.addEventListener("resize", updateHeight);
-    window.visualViewport?.addEventListener("resize", updateHeight);
-
-    return () => {
-      window.removeEventListener("resize", updateHeight);
-      window.visualViewport?.removeEventListener("resize", updateHeight);
-    };
-  }, []);
+  // const { data: messageData, isLoading: messagesLoading } = useChatMessages(
+  //   selectedConversationId,
+  //   {
+  //     enabled: !!selectedConversationId,
+  //   },
+  // );
 
   const {
     data: messageData,
@@ -1020,10 +1011,7 @@ export default function Message() {
   }
 
   return (
-    <div
-      className="flex min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100vh-4rem)]"
-      style={{ height: `${vh - 64}px` }}
-    >
+    <div className="flex h-[calc(100dvh-8rem)] min-h-0 w-full flex-col overflow-hidden pt-3 sm:h-[calc(100dvh-4rem)]">
       <ForwardMessageSheet
         open={!!forwardingMessage}
         onOpenChange={(open) => {
