@@ -72,7 +72,7 @@ function HomeLayout() {
             isMessages
               ? "pt-0 pb-0 sm:pt-16"
               : isReels
-                ? "pt-2 pb-0 sm:pt-20"
+                ? "px-0 sm:px-4 pt-2 pb-0 sm:pt-20"
                 : isHome
                   ? showDesktopStatusStrip
                     ? "pt-50 sm:pt-60"
