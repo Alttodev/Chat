@@ -5,7 +5,8 @@ import { Link, useLocation } from "react-router-dom";
 export function MobileMenuBar() {
   const location = useLocation();
   const isReels = location.pathname === "/reels";
-  const isMessage=location.pathname === "/messages";
+  const isMessage = location.pathname === "/messages";
+  console.log(location)
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
@@ -17,6 +18,7 @@ export function MobileMenuBar() {
   return (
     <>
       {!isReels && !isMessage && (
+
         <div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden bg-background border-t border-border shadow-sm">
           <nav className="grid grid-cols-4 gap-1 px-3 py-2">
             {menuItems.map((item) => {
