@@ -43,7 +43,9 @@ export const WebRTCProvider = ({ children }) => {
   const [isVideoCall, setIsVideoCall] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
-  const [facingMode, setFacingMode] = useState("user");
+  // const [facingMode, setFacingMode] = useState("user");
+  const [videoDevices, setVideoDevices] = useState([]);
+  const [currentDeviceId, setCurrentDeviceId] = useState(null);
 
   const wakeLockRef = useRef(null);
 
@@ -83,15 +85,32 @@ export const WebRTCProvider = ({ children }) => {
     }
   };
 
-  const getCameraStream = async (mode = "user") => {
+  // const getCameraStream = async (mode = "user") => {
+  //   return await navigator.mediaDevices.getUserMedia({
+  //     audio: true,
+  //     video: {
+  //       facingMode: mode,
+  //     },
+  //   });
+  // };
+
+  const initDevices = async () => {
+    await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const cameras = devices.filter((d) => d.kind === "videoinput");
+
+    setVideoDevices(cameras);
+    setCurrentDeviceId(cameras[0]?.deviceId);
+  };
+  const getCameraStreamByDevice = async (deviceId) => {
     return await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: {
-        facingMode: mode,
+        deviceId: deviceId ? { exact: deviceId } : undefined,
       },
     });
   };
-
   // ---------------- MUTE ----------------
   const toggleMute = useCallback(() => {
     const stream = localStreamRef.current;
@@ -147,43 +166,42 @@ export const WebRTCProvider = ({ children }) => {
     setIsMuted(false);
   }, [releaseWakeLock, stopRingtone]);
 
-const toggleCamera = async () => {
-  try {
-    const newMode = facingMode === "user" ? "environment" : "user";
-    setFacingMode(newMode);
+  const toggleCamera = async () => {
+    try {
+      if (!videoDevices.length) return;
 
-    const newStream = await getCameraStream(newMode);
+      const currentTrack = localStreamRef.current?.getVideoTracks()[0];
 
-    const videoTrack = newStream.getVideoTracks()[0];
+      const currentId =
+        currentTrack?.getSettings()?.deviceId || currentDeviceId;
 
-    const oldStream = localStreamRef.current;
+      const nextCamera = videoDevices.find((d) => d.deviceId !== currentId);
 
-    // stop old tracks properly
-    oldStream?.getVideoTracks().forEach((t) => t.stop());
+      if (!nextCamera) return;
 
-    localStreamRef.current = newStream;
-    setLocalStream(newStream);
+      const newStream = await getCameraStreamByDevice(nextCamera.deviceId);
 
-    const peer = peerRef.current;
-    if (!peer) return;
+      const videoTrack = newStream.getVideoTracks()[0];
 
-    const senders = peer.getSenders();
+      const peer = peerRef.current;
 
-    const videoSender = senders.find(
-      (s) => s.track && s.track.kind === "video"
-    );
+      const sender = peer?.getSenders().find((s) => s.track?.kind === "video");
 
-    if (videoSender && videoTrack) {
-      await videoSender.replaceTrack(videoTrack);
-    } else {
-      // fallback: re-add track
-      peer.addTrack(videoTrack, newStream);
+      if (sender && videoTrack) {
+        await sender.replaceTrack(videoTrack);
+      }
+
+      // stop old stream
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+
+      localStreamRef.current = newStream;
+      setLocalStream(newStream);
+
+      setCurrentDeviceId(nextCamera.deviceId);
+    } catch (err) {
+      console.error("Camera toggle failed:", err);
     }
-
-  } catch (err) {
-    console.error("Camera switch failed:", err);
-  }
-};
+  };
   // ---------------- LOCAL STREAM ----------------
   const getLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -273,6 +291,7 @@ const toggleCamera = async () => {
   const startAudioCall = useCallback(
     async ({ targetUserId, targetUserName, targetUserProfileImage }) => {
       if (!socket || !user) return;
+
       unlockAudio();
       await requestWakeLock();
 
@@ -314,12 +333,13 @@ const toggleCamera = async () => {
       if (!socket || !user) return;
 
       unlockAudio();
+      await initDevices();
       await requestWakeLock();
 
       currentTargetUserRef.current = targetUserId;
 
       // VIDEO + AUDIO
-      const stream = await getCameraStream(facingMode);
+      const stream = await getCameraStreamByDevice(videoDevices[0]?.deviceId);
 
       localStreamRef.current = stream;
       setLocalStream(stream);
@@ -354,7 +374,7 @@ const toggleCamera = async () => {
       setActiveCall(callData);
       setCallState(CALL_STATES.CALLING);
     },
-    [socket, user, facingMode, createPeer],
+    [socket, user, videoDevices, createPeer],
   );
 
   // ---------------- ACCEPT CALL ----------------
@@ -362,6 +382,7 @@ const toggleCamera = async () => {
     if (!incomingCall || !socket) return;
 
     unlockAudio();
+    await initDevices();
     stopRingtone();
     await requestWakeLock();
 
@@ -370,7 +391,7 @@ const toggleCamera = async () => {
     let stream;
 
     if (incomingCall.callType === "video") {
-      stream = await getCameraStream(facingMode);
+      stream = await getCameraStreamByDevice(videoDevices[0]?.deviceId);
     } else {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -406,7 +427,7 @@ const toggleCamera = async () => {
     setActiveCall(incomingCall);
     setIncomingCall(null);
     setCallState(CALL_STATES.IN_CALL);
-  }, [incomingCall, socket, stopRingtone, createPeer, facingMode]);
+  }, [incomingCall, socket, stopRingtone, createPeer, videoDevices]);
 
   // ---------------- REJECT CALL ----------------
   const rejectCall = useCallback(() => {
