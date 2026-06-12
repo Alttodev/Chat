@@ -67,13 +67,18 @@ function HomeLayout() {
 
         {/* Main Content */}
         <main
-          className={cn("min-w-0 flex-1 px-4 md:ml-64 md:mr-80", {
-            "pt-0 pb-0": isMessages,
-            "px-0 sm:px-4 pt-2 pb-0 sm:pt-20": isReels,
-            "pt-50 sm:pt-60 pb-8": isHome && showDesktopStatusStrip,
-            "pt-50 sm:pt-28 pb-8": isHome && !showDesktopStatusStrip,
-            "pt-20 sm:pt-24 pb-8": !isMessages && !isReels && !isHome,
-          })}
+          className={cn(
+            "min-w-0 flex-1 pb-8 px-4 md:ml-64 md:mr-80",
+            isMessages
+              ? "pt-0 pb-0 sm:pt-16"
+              : isReels
+                ? "px-0 sm:px-4 pt-2 pb-0 sm:pt-20"
+                : isHome
+                  ? showDesktopStatusStrip
+                    ? "pt-50 sm:pt-60"
+                    : "pt-50 sm:pt-28"
+                  : "pt-20 sm:pt-24",
+          )}
         >
           <Outlet />
         </main>
