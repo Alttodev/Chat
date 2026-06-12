@@ -12,7 +12,6 @@ import { Eye } from "lucide-react";
 import React, { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-
 function HomeLayout() {
   const { pathname } = useLocation();
   const isHome = pathname === "/home";
@@ -22,8 +21,10 @@ function HomeLayout() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <SocialHeader />
-     
+      <div className={cn(isMessages ? "hidden md:block" : "block")}>
+        <SocialHeader />
+      </div>
+
       {/* Mobile status strip only on home */}
       {isHome && !isReels ? <StatusStrip className="md:hidden" /> : null}
 
@@ -55,8 +56,7 @@ function HomeLayout() {
       <WelcomePostDialog />
       <ProfileImageReminderDialog />
       <ThemeModeDialog />
-       <MobileMenuBar />
-    
+      <MobileMenuBar />
 
       <div className="flex flex-1">
         {/* Left Sidebar */}
@@ -69,14 +69,14 @@ function HomeLayout() {
           className={cn(
             "min-w-0 flex-1 pb-8 px-4 md:ml-64 md:mr-80",
             isMessages
-              ? "pt-16 pb-0 sm:pt-16"
+              ? "pt-0 pb-0 sm:pt-16"
               : isReels
-              ? "pt-20 sm:pt-24 px-2 sm:px-4"
-              : isHome
-                ? showDesktopStatusStrip
-                  ? "pt-50 sm:pt-60"
-                  : "pt-50 sm:pt-28"
-                : "pt-20 sm:pt-24",
+                ? "pt-20 sm:pt-24 px-2 sm:px-4"
+                : isHome
+                  ? showDesktopStatusStrip
+                    ? "pt-50 sm:pt-60"
+                    : "pt-50 sm:pt-28"
+                  : "pt-20 sm:pt-24",
           )}
         >
           <Outlet />

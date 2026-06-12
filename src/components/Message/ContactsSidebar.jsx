@@ -4,6 +4,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { SkeletonComment } from "../skeleton/commentSkeleton";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 export default function ContactsSidebar({
   contacts,
@@ -14,6 +17,7 @@ export default function ContactsSidebar({
   loadMoreRef,
   isLoadingMore,
 }) {
+  const navigate = useNavigate();
   return (
     <Card
       className={cn(
@@ -21,11 +25,23 @@ export default function ContactsSidebar({
         showChat ? "hidden md:flex" : "flex",
       )}
     >
-      <div className="bg-background/90 px-4 py-4  ">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">
-          Messages
-        </h2>
-        <p className="text-sm text-muted-foreground">Pick a chat to continue</p>
+      <div className="flex flex-row gap-2 bg-background/90 px-4 py-4  ">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="w-5 h-5 text-emerald-600" />
+        </Button>
+        <div>
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            Messages
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Pick a chat to continue
+          </p>
+        </div>
       </div>
       <ScrollArea
         className="flex-1 min-h-0"
