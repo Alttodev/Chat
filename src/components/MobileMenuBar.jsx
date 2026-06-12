@@ -6,7 +6,6 @@ export function MobileMenuBar() {
   const location = useLocation();
   const isReels = location.pathname === "/reels";
   const isMessage = location.pathname === "/messages";
-  console.log(location)
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
