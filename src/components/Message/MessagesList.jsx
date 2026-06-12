@@ -600,10 +600,11 @@ export default function MessagesList({
 
   if (isLoading) {
     return (
-      <div className="relative flex flex-1 min-h-0 flex-col overflow-hidden bg-white md:bg-transparent">
+      <div className="relative flex flex-1 min-h-0 flex-col overflow-hidden bg-transparent">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#fafafa] via-[#f8f9fa] to-[#f5f5f5]"
+          className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.4] dark:opacity-[0.2]"
+          style={{ backgroundImage: `url(${chatBg})` }}
         />
         <div className="relative z-10 flex-1 min-h-0 p-4 sm:p-5">
           <div className="space-y-3">
