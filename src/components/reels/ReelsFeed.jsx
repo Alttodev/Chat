@@ -3,11 +3,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Clapperboard,
-  Loader2,
   Sparkles,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { usePostListVideos } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
@@ -125,13 +123,10 @@ export function ReelsFeed() {
         </div>
       </div>
 
-      <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-slate-950 via-black to-slate-900 p-2 shadow-[0_24px_90px_rgba(15,23,42,0.3)] sm:p-3">
+      <div className="rounded-[12px] overflow-hidden border border-white/10 bg-gradient-to-b from-slate-950 via-black to-slate-900 shadow-[0_24px_90px_rgba(15,23,42,0.3)]">
         <div
           ref={scrollRef}
-          className={cn(
-            "no-scrollbar h-[calc(100vh-14rem)] overflow-y-auto scroll-smooth snap-y snap-mandatory",
-            "sm:h-[calc(100vh-13rem)]",
-          )}
+          className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory"
         >
           {reels.map((post, index) => (
             <div
@@ -140,7 +135,7 @@ export function ReelsFeed() {
                 itemRefs.current[index] = node;
               }}
               data-index={index}
-              className="snap-start px-0 py-2 sm:px-10 sm:py-3"
+              className="snap-start h-[100dvh]"
             >
               <ReelCard
                 post={post}
@@ -172,6 +167,16 @@ export function ReelsFeed() {
               <PostSkeleton />
             </div>
           ) : null}
+
+          {!hasNextPage && reels.length > 0 && (
+            <div className="snap-start h-[100dvh] flex items-center justify-center">
+              <div className="text-center text-white">
+                <Sparkles className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
+                <h3 className="text-lg font-semibold">No more reels</h3>
+                <p className="text-sm text-white/60">You've reached the end.</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
