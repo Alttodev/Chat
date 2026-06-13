@@ -9,11 +9,9 @@ import {
 import { useRequestList, useRecommendedConnections } from "@/hooks/postHooks";
 import { cn } from "@/lib/utils";
 import {
-  ArrowLeft,
   ArrowRight,
-  Compass,
   MoreHorizontal,
-  Sparkles,
+  UserPlus,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -118,8 +116,8 @@ export function FollowSuggestions({ compact = false, className }) {
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-emerald-600" />
-              <h2 className="text-sm font-semibold text-foreground sm:text-base">
+              <UserPlus className="h-4 w-4 text-emerald-600" />
+              <h2 className="text-sm pt-1 font-semibold text-foreground sm:text-base">
                 Suggested for you
               </h2>
             </div>
