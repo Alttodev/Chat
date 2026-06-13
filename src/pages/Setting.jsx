@@ -28,10 +28,6 @@ import { useNavigate } from "react-router-dom";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { useUserDetail } from "@/hooks/authHooks";
-import {
-  useNotificationSettings,
-  useUpdateNotificationSettings,
-} from "@/hooks/notificationHooks";
 import dayjs from "dayjs";
 import { formatDate, formatRelative } from "@/lib/dateHelpers";
 import { useSocket } from "@/lib/socket";
@@ -92,14 +88,14 @@ function SettingsComponent() {
     : "Never changed";
 
   // Notification settings from API
-  const { data: notificationSettingsData } = useNotificationSettings();
-  const {
-    mutateAsync: updateNotificationSettings,
-    isPending: isUpdatingNotification,
-  } = useUpdateNotificationSettings();
+  // const { data: notificationSettingsData } = useNotificationSettings();
+  // const {
+  //   mutateAsync: updateNotificationSettings,
+  //   isPending: isUpdatingNotification,
+  // } = useUpdateNotificationSettings();
 
-  const pushNotificationsEnabled =
-    notificationSettingsData?.settings?.enabled ?? true;
+  // const pushNotificationsEnabled =
+  //   notificationSettingsData?.settings?.enabled ?? true;
 
   const recentActivity = [
     { action: "Changed password", time: changedPassword, type: "security" },
@@ -400,7 +396,7 @@ function SettingsComponent() {
 
             <Separator />
 
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <Bell className="h-4 w-4" />
@@ -427,8 +423,8 @@ function SettingsComponent() {
                 }}
                 disabled={isUpdatingNotification}
               />
-            </div>
-            <Separator />
+            </div> */}
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">

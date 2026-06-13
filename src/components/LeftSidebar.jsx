@@ -6,6 +6,7 @@ import {
   MessageCircle,
   Clapperboard,
   Gem,
+  Send,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -18,7 +19,7 @@ export function LeftSidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: Clapperboard, label: "Reels", path: "/reels" },
     { icon: Users, label: "Friends", path: "/friends" },
-    { icon: MessageCircle, label: "Chat", path: "/messages" },
+    { icon: Send, label: "Chat", path: "/messages" },
     { icon: Gem, label: "Upgrade", path: "/subscription" },
     { icon: Settings, label: "Settings", path: "/settings" },
     // { icon: Info, label: "About Us", path: "/about" },

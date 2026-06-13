@@ -17,6 +17,7 @@ function HomeLayout() {
   const isMessages = pathname === "/messages";
   const isHome = pathname === "/home";
 
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className={cn(isMessages || isReels ? "hidden md:block" : "block")}>

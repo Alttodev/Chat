@@ -1,11 +1,9 @@
-import { Search, X, User, Settings, Gem } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search, X, User, Settings, Gem, Send, Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
 import { useMemo, useState, useEffect } from "react";
 import { OnlineStatus } from "./onlineStatus";
-import NotificationSection from "./notification/NotificationSection";
 import { useSearchUsers } from "@/hooks/searchHooks";
 import { SearchResults } from "./SearchResults";
 import {
@@ -17,11 +15,18 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
+import { CommandDialog, CommandInput, CommandList } from "./ui/command";
+import { useNotificationCounts } from "@/hooks/notificationHooks";
 
 export function SocialHeader() {
   const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
   const { data: profileData } = useUserDetail();
   const userProfile = useMemo(() => profileData, [profileData]);
+  const { data: countsData } = useNotificationCounts();
+
+  const totalCount = countsData?.counts?.total || 0;
+  const badgeText = totalCount > 99 ? "99+" : totalCount;
 
   const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
   const userId = storedData?.state?.user?._id;
@@ -40,45 +45,43 @@ export function SocialHeader() {
   }, [searchQuery]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background border-b border-border shadow-sm">
-      <div className="flex h-full items-center justify-between gap-2 px-3 sm:px-4 max-w-full">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-background  ">
+      <div className="flex h-full items-center justify-between gap-2 px-3 sm:px-4 max-w-full shadow-xs">
         {/* Left section - Logo + Search */}
         <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
           {/* Logo */}
           <Link to="/home" className="flex items-center gap-2">
             <img src={logo} alt="Clix Logo" className="w-8 h-8" />
-            <span className="hidden sm:block text-xl md:text-2xl font-bold text-emerald-600">
+            <span className=" text-xl md:text-2xl font-bold text-emerald-600">
               Clix
             </span>
           </Link>
-          {/* Search Bar */}
-          <div className="relative flex-1 min-w-0 w-full max-w-none sm:max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" />
-            <Input
-              placeholder="Search ..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 bg-muted border-0 focus:bg-background text-sm sm:text-base"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-            <SearchResults
-              data={searchResults}
-              isLoading={isLoading}
-              query={debouncedQuery}
-            />
-          </div>
         </div>
 
         {/* Right section */}
-        <div className="flex items-center gap-2 flex-none sm:flex-1 justify-end">
-          <NotificationSection />
+        <div className="flex items-center gap-4 flex-none sm:flex-1 justify-end">
+          <Search
+            style={{ width: 19, height: 19 }}
+            className="text-muted-foreground cursor-pointer"
+            onClick={() => setSearchOpen(true)}
+          />
+
+          <div
+            className="relative cursor-pointer"
+            onClick={() => navigate("/notification")}
+          >
+            <Bell
+              className=" text-muted-foreground"
+              style={{ width: 19, height: 19 }}
+            />
+
+            {totalCount > 0 && (
+              <span className="absolute -top-3 -right-3 min-w-5 h-5 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                {badgeText}
+              </span>
+            )}
+          </div>
+
           <div className="relative hidden sm:block">
             <Avatar className="w-8 h-8">
               <AvatarImage
@@ -181,6 +184,22 @@ export function SocialHeader() {
           </div>
         </div>
       </div>
+      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
+        <CommandInput
+          placeholder="Search users..."
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+        />
+
+        <CommandList>
+          <SearchResults
+            data={searchResults}
+            isLoading={isLoading}
+            query={debouncedQuery}
+            onClose={() => setSearchOpen(false)}
+          />
+        </CommandList>
+      </CommandDialog>
     </header>
   );
 }

@@ -26,6 +26,7 @@ import ProfileRoute from "./profileRoute";
 import HashtagPosts from "@/pages/HashtagPosts";
 import BookmarkedPosts from "@/pages/BookmarkedPosts";
 import Subscription from "@/pages/Subscription";
+import NotificationPage from "@/pages/Notification";
 
 function AppRoutes() {
   return (
@@ -52,6 +53,7 @@ function AppRoutes() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsAndConditions />} /> */}
+              <Route path="/notification" element={<NotificationPage/>}/>
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />
               <Route path="/following/:id" element={<UsersFollowingList />} />

@@ -15,7 +15,7 @@ const buildToneBuffer = () => {
     { duration: 0.09, frequency: 880, amplitude: 0.55 },
     { duration: 0.04, frequency: 0, amplitude: 0 },
     { duration: 0.09, frequency: 660, amplitude: 0.5 },
-    { duration: 0.10, frequency: 0, amplitude: 0 },
+    { duration: 0.1, frequency: 0, amplitude: 0 },
   ];
 
   const totalSamples = segments.reduce(
@@ -52,7 +52,9 @@ const buildToneBuffer = () => {
       const value =
         segment.frequency === 0
           ? 0
-          : Math.sin((2 * Math.PI * segment.frequency * sampleIndex) / sampleRate) *
+          : Math.sin(
+              (2 * Math.PI * segment.frequency * sampleIndex) / sampleRate,
+            ) *
             segment.amplitude *
             envelope;
 
