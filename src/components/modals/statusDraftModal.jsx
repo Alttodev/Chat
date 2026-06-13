@@ -5,15 +5,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { isVideoMediaUrl } from "@/lib/media";
 import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
 
 export function StatusDraftModal({
   open,
   onOpenChange,
   file,
-  onCancel,
   onPost,
   isUploading = false,
 }) {
@@ -47,13 +46,17 @@ export function StatusDraftModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={cn(
-          "w-[94vw] max-w-3xl overflow-hidden rounded-2xl p-0",
-          "max-h-[92vh] sm:max-h-[88vh]",
-        )}
+        className="
+  w-[calc(100%-2rem)] 
+  max-w-[550px] 
+  rounded-lg 
+  p-4
+  sm:rounded-xl
+  [&_button]:cursor-pointer
+"
       >
-        <DialogHeader className="border-b px-4 py-4 sm:px-6">
-          <DialogTitle className="text-base sm:text-lg">
+        <DialogHeader className=" px-4 py-4 sm:px-6">
+          <DialogTitle className="text-emerald-600 flex justify-center">
             Add Story
           </DialogTitle>
         </DialogHeader>
@@ -61,7 +64,7 @@ export function StatusDraftModal({
         <div className="max-h-[calc(92vh-72px)] overflow-y-auto p-4 sm:max-h-[calc(88vh-72px)] sm:p-6">
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="w-full shrink-0 md:w-1/2">
-              <div className="flex h-[45vh] w-full items-center justify-center overflow-hidden rounded-2xl bg-black sm:h-[50vh] md:h-[60vh]">
+              <div className="flex h-[35vh] w-full items-center justify-center overflow-hidden rounded-2xl  sm:h-[50vh] md:h-[60vh]">
                 {isVideo ? (
                   <video
                     src={previewUrl}
@@ -88,26 +91,25 @@ export function StatusDraftModal({
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder="Write a caption..."
-                rows={6}
-                className="min-h-[140px] w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                rows={4}
+                className="min-h-[50px] w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               />
 
               <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
-                <Button
-                  type="button"
-                  onClick={onCancel}
-                  className="w-full rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition-all duration-200 hover:bg-red-100 hover:text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 sm:w-auto cursor-pointer"
-                >
-                  Cancel
-                </Button>
-
                 <Button
                   type="button"
                   onClick={handlePost}
                   disabled={isUploading}
                   className="w-full rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto cursor-pointer"
                 >
-                  {isUploading ? "Posting..." : "Post Story"}
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Posting...
+                    </>
+                  ) : (
+                    <>Post Story</>
+                  )}
                 </Button>
               </div>
             </div>

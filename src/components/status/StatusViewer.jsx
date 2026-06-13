@@ -271,7 +271,7 @@ export function StatusViewer() {
           onClick={() => setIsPaused((p) => !p)}
           className="flex flex-1 items-center justify-center px-4 pb-8"
         >
-          <div className="relative flex h-[75vh] w-full max-w-[92vw] items-center justify-center overflow-hidden rounded-3xl bg-black sm:max-w-[84vw] md:max-w-[720px] lg:max-w-[820px]">
+          <div className="relative flex h-[75vh] w-full max-w-[92vw] items-center justify-center overflow-hidden rounded-3xl  md:max-w-[720px] lg:max-w-[820px]">
             {isVideo ? (
               <video
                 ref={videoRef}
