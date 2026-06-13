@@ -68,7 +68,7 @@ function HomeLayout() {
         {/* Main Content */}
         <main
           className={cn(
-            "min-w-0 flex-1 pb-8 px-4 md:ml-64 md:mr-80",
+            "min-w-0 flex-1  px-4 md:ml-64 md:mr-80",
             isMessages
               ? "pt-0 pb-0 sm:pt-16"
               : isReels
