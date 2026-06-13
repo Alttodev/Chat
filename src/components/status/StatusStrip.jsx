@@ -49,7 +49,7 @@ function StatusBubble({
           onClick={onClick}
           className={cn(
             "relative ml-1 mt-1 flex cursor-pointer items-center justify-center rounded-full transition-all duration-300",
-            compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
+            compact ? "h-14 w-14 md:h-16 md:w-16" : "h-20 w-20",
 
             "p-[1px] ring-1",
 
