@@ -1,8 +1,6 @@
 import {
-  Bell,
+  Clapperboard,
   Home,
-  MessageCircle,
-  Play,
   Plus,
   Send,
   Users,
@@ -20,7 +18,7 @@ export function MobileMenuBar() {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
-    { icon: Play, label: "Reels", path: "/reels" },
+    { icon: Clapperboard, label: "Reels", path: "/reels" },
     null,
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: Send, label: "Message", path: "/messages" },
@@ -44,7 +42,7 @@ export function MobileMenuBar() {
                       className="h-13 w-13 p-0 bg-transparent hover:bg-transparent"
                     >
                       <div className="flex items-center justify-center w-8 h-8 border-2  dark:border-white rounded-md">
-                        <Plus className="w-5 h-5 text-muted-foreground dark:text-white stroke-[2.5]" />
+                        <Plus className="w-8 h-8 text-muted-foreground dark:text-white stroke-[2.5]" />
                       </div>
                     </Button>
                   </div>
@@ -62,7 +60,7 @@ export function MobileMenuBar() {
                         isActive ? "text-emerald-600" : "text-muted-foreground"
                       }`}
                     >
-                      <item.icon style={{ width: 19, height: 19 }} />
+                      <item.icon style={{ width: 20, height: 20 }} />
                     </Button>
                   </Link>
                 </div>

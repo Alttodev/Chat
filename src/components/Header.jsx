@@ -184,7 +184,7 @@ export function SocialHeader() {
           </div>
         </div>
       </div>
-      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
+      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen} >
         <CommandInput
           placeholder="Search users..."
           value={searchQuery}

@@ -23,13 +23,18 @@ const CommandDialog = ({ children, ...props }) => {
     <Dialog {...props}>
       <DialogContent
         className="
-  w-[calc(100%-2rem)] 
-  max-w-[550px] 
-  rounded-lg 
-  p-4
-  sm:rounded-xl
-  [&_button]:cursor-pointer
-"
+    fixed
+    top-16
+    left-1/2
+    -translate-x-1/2
+    translate-y-0
+    w-[calc(100%-1rem)]
+    max-w-[600px]
+    rounded-xl
+    p-0
+    overflow-hidden
+    [&_button]:cursor-pointer
+  "
       >
         <Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
           {children}

@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const formatTime = (value) => {
   const date = value ? new Date(value) : null;
@@ -90,7 +89,6 @@ function NotificationPage() {
       window.removeEventListener("keydown", handleUnlock);
     };
   }, []);
-
 
   const markAsSeen = useCallback(
     async (notification) => {
@@ -166,8 +164,8 @@ function NotificationPage() {
       <ScrollArea className="h-[220px]">
         <div className="p-2">
           {isLoading ? (
-            <div className="flex py-8 text-center justify-center text-sm text-muted-foreground">
-              <Spinner className="text-emerald-600" size={44} />
+            <div className="py-8 text-center text-sm text-muted-foreground">
+              Loading notifications...
             </div>
           ) : notifications.length === 0 ? (
             <div className="py-10 text-center text-sm text-muted-foreground">
