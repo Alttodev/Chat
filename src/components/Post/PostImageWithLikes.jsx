@@ -56,7 +56,7 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
   if (isMultipleImages) {
     return (
       <div className={cn("overflow-hidden rounded-lg", className)}>
-        <MediaCarousel images={media}   onImageClick={onImageClick}/>
+        <MediaCarousel images={media} onImageClick={onImageClick} />
       </div>
     );
   }
@@ -98,9 +98,9 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
           {/* MUTE */}
           <button
             onClick={handleMuteToggle}
-            className="absolute top-3 right-3 bg-black/60 p-2 rounded-full text-white"
+            className="absolute top-3 right-3 bg-black/60 p-1 rounded-full text-white cursor-pointer"
           >
-            {isMuted ? <VolumeX /> : <Volume2 />}
+            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
 
           {/* EXPAND */}
@@ -112,7 +112,7 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
               }}
               className="absolute bottom-3 right-3 bg-black/60 p-2 rounded-full text-white"
             >
-              <Expand />
+              <Expand size={16} />
             </button>
           )}
         </div>

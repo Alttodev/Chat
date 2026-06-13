@@ -67,11 +67,10 @@ const UsersInfo = () => {
     useProfileFollow();
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
-  
-   const { data:subscriptionData } = useSubscriptionStatus();
-  
+
+  const { data: subscriptionData } = useSubscriptionStatus();
+
   const subscription = subscriptionData?.subscription;
- 
 
   const { data: count } = useUserInfoCount(id);
   const countData = useMemo(() => count, [count]);
