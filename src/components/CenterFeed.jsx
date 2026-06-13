@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   MessageCircle,
   Send,
@@ -43,6 +43,7 @@ import { PostImageWithLikes } from "./Post/PostImageWithLikes";
 import PostContent from "./Post/PostContent";
 import { FollowSuggestions } from "./suggestions/FollowSuggestions";
 import { formatShortUsername } from "@/lib/shortUserName";
+import StatusStrip from "./status/StatusStrip";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -172,6 +173,16 @@ export function CenterFeed() {
     setTargetPostOverride((prev) => (prev ? patchPost(prev) : prev));
   };
 
+  const shouldShowSuggestion = (index) => {
+    // after 2nd post (index 1 if 0-based)
+    if (index === 1) return true;
+
+    // after every 10 posts starting from 12th post
+    if (index > 1 && (index - 1) % 10 === 0) return true;
+
+    return false;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-90 flex items-center justify-center">
@@ -181,166 +192,169 @@ export function CenterFeed() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-0  mt-2 space-y-4 pb-20">
-      <Card id="create-post">
-        <CardContent className="p-3">
-          <PostForm userProfile={userProfile} />
-        </CardContent>
-      </Card>
+    <>
+      <div className="w-full  mx-auto px-0  space-y-4 ">
+        <StatusStrip />
+      </div>
+      <div className="w-full max-w-3xl mx-auto px-0 mt-1  md:mt-8 space-y-4 pb-20">
+        <Card id="create-post" className="hidden lg:block">
+          <CardContent className="p-3">
+            <PostForm userProfile={userProfile} />
+          </CardContent>
+        </Card>
 
-      {showMobileSuggestions ? <FollowSuggestions compact /> : null}
+        {displayPosts.map((post, index) => {
+          const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+          const currentUserId = userProfile?.profile?.id
+            ? String(userProfile.profile.id)
+            : null;
+          const likedByUsers = Array.isArray(post?.likedByUsers)
+            ? post.likedByUsers
+            : [];
+          const visibleLiker = likedByUsers.find((user) => {
+            const likerId = String(user?._id ?? user?.id ?? user?.userId ?? "");
+            return likerId && likerId !== currentUserId;
+          });
 
-      {displayPosts.map((post) => {
-        const likeCount = typeof post?.likes === "number" ? post.likes : 0;
-        const currentUserId = userProfile?.profile?.id
-          ? String(userProfile.profile.id)
-          : null;
-        const likedByUsers = Array.isArray(post?.likedByUsers)
-          ? post.likedByUsers
-          : [];
-        const visibleLiker = likedByUsers.find((user) => {
-          const likerId = String(user?._id ?? user?.id ?? user?.userId ?? "");
-          return likerId && likerId !== currentUserId;
-        });
+          return (
+            <Fragment key={post._id}>
+              <Card
+                key={post._id}
+                id={`post-${post._id}`}
+                className="overflow-hidden scroll-mt-28"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <Avatar className="w-10 h-10 text-emerald-600">
+                        <AvatarImage
+                          onClick={() => open(post?.user?.profileImage)}
+                          className="h-full w-full cursor-pointer object-cover object-top"
+                          src={post?.user?.profileImage || "/placeholder.svg"}
+                        />
+                        <AvatarFallback>
+                          {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
+                        </AvatarFallback>
+                      </Avatar>
 
-        return (
-          <Card
-            key={post._id}
-            id={`post-${post._id}`}
-            className="overflow-hidden scroll-mt-28"
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex min-w-0 flex-1 items-center gap-3">
-                  <Avatar className="w-10 h-10 text-emerald-600">
-                    <AvatarImage
-                      onClick={() => open(post?.user?.profileImage)}
-                      className="h-full w-full cursor-pointer object-cover object-top"
-                      src={post?.user?.profileImage || "/placeholder.svg"}
-                    />
-                    <AvatarFallback>
-                      {post?.user?.userName?.charAt(0).toUpperCase() || "-"}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className="min-w-0">
-                    {userProfile?.profile?.id === post?.user?._id ? (
-                      <div className="flex items-center gap-1">
-                        <span className="truncate text-sm font-medium sm:text-base">
-                          {post?.user?.userName}
-                        </span>
-                        {post?.user?.isVerified && (
-                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                      <div className="min-w-0">
+                        {userProfile?.profile?.id === post?.user?._id ? (
+                          <div className="flex items-center gap-1">
+                            <span className="truncate text-sm font-medium sm:text-base">
+                              {post?.user?.userName}
+                            </span>
+                            {post?.user?.isVerified && (
+                              <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            to={`/users/${post?.user?._id}`}
+                            className="flex items-center gap-1 cursor-pointer"
+                          >
+                            <span className="truncate text-sm font-medium sm:text-base">
+                              {post?.user?.userName}
+                            </span>
+                            {post?.user?.isVerified && (
+                              <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                            )}
+                          </Link>
                         )}
+
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {formatRelative(post?.createdAt)}
+                        </p>
                       </div>
-                    ) : (
-                      <Link
-                        to={`/users/${post?.user?._id}`}
-                        className="flex items-center gap-1 cursor-pointer"
-                      >
-                        <span className="truncate text-sm font-medium sm:text-base">
-                          {post?.user?.userName}
-                        </span>
-                        {post?.user?.isVerified && (
-                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
-                        )}
-                      </Link>
+                    </div>
+
+                    {post?.isOwner && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle user menu</span>
+                          </span>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                          align="end"
+                          className="mt-1 w-full border-slate-200 shadow-lg"
+                          sideOffset={8}
+                        >
+                          <DropdownMenuItem
+                            className="cursor-pointer transition-colors duration-200"
+                            onClick={() =>
+                              openModal({ userProfile, postId: post._id })
+                            }
+                          >
+                            <SquarePen className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-600" />
+                            <span className="font-medium text-emerald-700">
+                              Edit Post
+                            </span>
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            className="mt-1 cursor-pointer transition-colors duration-200"
+                            onClick={() => handleDelete(post._id)}
+                          >
+                            <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
+                            <span className="font-medium text-red-500">
+                              Delete Post
+                            </span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
-
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {formatRelative(post?.createdAt)}
-                    </p>
                   </div>
-                </div>
+                </CardHeader>
 
-                {post?.isOwner && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle user menu</span>
-                      </span>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent
-                      align="end"
-                      className="mt-1 w-full border-slate-200 shadow-lg"
-                      sideOffset={8}
-                    >
-                      <DropdownMenuItem
-                        className="cursor-pointer transition-colors duration-200"
-                        onClick={() =>
-                          openModal({ userProfile, postId: post._id })
-                        }
-                      >
-                        <SquarePen className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-600" />
-                        <span className="font-medium text-emerald-700">
-                          Edit Post
-                        </span>
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem
-                        className="mt-1 cursor-pointer transition-colors duration-200"
-                        onClick={() => handleDelete(post._id)}
-                      >
-                        <Trash2 className="mr-1 h-4 w-4 text-slate-500 transition-colors duration-200" />
-                        <span className="font-medium text-red-500">
-                          Delete Post
-                        </span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </div>
-            </CardHeader>
-
-            <CardContent className="pt-0">
-              <PostImageWithLikes
-                post={post}
-                onImageClick={() => open(post.image)}
-              />
-
-              <PostContent text={post?.postText} className="mt-3 pl-2" />
-
-              <div className="mt-3 flex items-center gap-1">
-                <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                  <PostLikeComponent
+                <CardContent className="pt-0">
+                  <PostImageWithLikes
                     post={post}
-                    currentUserId={userProfile?.profile?.id}
-                    onLikeChange={handleLikeChange}
+                    onImageClick={() => open(post.image)}
                   />
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleComments(post._id)}
-                    className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
-                    aria-label="Comment on post"
-                  >
-                    <MessageCircle style={{ width: 18, height: 18 }} />
-                  </Button>
+                  <PostContent text={post?.postText} className="mt-3 pl-2" />
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openShareModal(post._id)}
-                    className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
-                    aria-label="Share post"
-                  >
-                    <Send style={{ width: 18, height: 18 }} />
-                  </Button>
-                </div>
+                  <div className="mt-3 flex items-center gap-1">
+                    <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
+                      <PostLikeComponent
+                        post={post}
+                        currentUserId={userProfile?.profile?.id}
+                        onLikeChange={handleLikeChange}
+                      />
 
-                <PostBookmarkComponent
-                  post={post}
-                  className="ml-auto shrink-0"
-                />
-              </div>
-              {likeCount > 0 && visibleLiker && (
-                <Link
-                  to={`/posts/${post._id}/liked-users`}
-                  title={visibleLiker?.userName || ""}
-                  className="
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComments(post._id)}
+                        className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
+                        aria-label="Comment on post"
+                      >
+                        <MessageCircle style={{ width: 18, height: 18 }} />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openShareModal(post._id)}
+                        className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
+                        aria-label="Share post"
+                      >
+                        <Send style={{ width: 18, height: 18 }} />
+                      </Button>
+                    </div>
+
+                    <PostBookmarkComponent
+                      post={post}
+                      className="ml-auto shrink-0"
+                    />
+                  </div>
+                  {likeCount > 0 && visibleLiker && (
+                    <Link
+                      to={`/posts/${post._id}/liked-users`}
+                      title={visibleLiker?.userName || ""}
+                      className="
       inline-flex ml-2 max-w-[180px] items-center truncate
       text-[13px] font-medium
       text-slate-500
@@ -349,44 +363,54 @@ export function CenterFeed() {
       dark:text-slate-400
       dark:hover:text-slate-200
     "
-                >
-                  {likeCount === 1
-                    ? `Liked by ${formatShortUsername(visibleLiker?.userName)}`
-                    : `Liked by ${formatShortUsername(
-                        visibleLiker?.userName,
-                      )} and others`}
-                </Link>
-              )}
-              {openPostId === post._id && (
-                <div className="mt-3">
-                  <CommentSection
-                    postId={post._id}
-                    userProfile={userProfile?.profile}
-                    highlightCommentId={
-                      targetPostId === post._id ? targetCommentId : undefined
-                    }
-                  />
+                    >
+                      {likeCount === 1
+                        ? `Liked by ${formatShortUsername(visibleLiker?.userName)}`
+                        : `Liked by ${formatShortUsername(
+                            visibleLiker?.userName,
+                          )} and others`}
+                    </Link>
+                  )}
+                  {openPostId === post._id && (
+                    <div className="mt-3">
+                      <CommentSection
+                        postId={post._id}
+                        userProfile={userProfile?.profile}
+                        highlightCommentId={
+                          targetPostId === post._id
+                            ? targetCommentId
+                            : undefined
+                        }
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {shouldShowSuggestion(index) && (
+                <div className="my-4">
+                  {showMobileSuggestions ? <FollowSuggestions compact /> : null}
                 </div>
               )}
-            </CardContent>
-          </Card>
-        );
-      })}
+            </Fragment>
+          );
+        })}
 
-      <PostDialog />
-      <PostImageDialog />
-      <ShareDialog />
-      <ImageViewer />
+        <PostDialog />
+        <PostImageDialog />
+        <ShareDialog />
+        <ImageViewer />
 
-      <div ref={loadMoreRef} style={{ height: "20px" }} />
-      {isFetchingNextPage && <PostSkeleton />}
-      {!hasNextPage && (
-        <div className="flex justify-center">
-          <span className="px-3 text-sm text-muted-foreground">
-            No more posts
-          </span>
-        </div>
-      )}
-    </div>
+        <div ref={loadMoreRef} style={{ height: "20px" }} />
+        {isFetchingNextPage && <PostSkeleton />}
+        {!hasNextPage && (
+          <div className="flex justify-center">
+            <span className="px-3 text-sm text-muted-foreground">
+              No more posts
+            </span>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

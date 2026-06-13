@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import { BadgeCheck, Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getVideoPosterUrl } from "@/lib/media";
 import { usePostBookmark, usePostLike } from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 function ActionButton({
   icon,
@@ -36,6 +38,7 @@ function ActionButton({
 
 export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
   const videoRef = useRef(null);
+  const { profileId } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
@@ -209,9 +212,28 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-semibold sm:text-base">
-                      {userInfo?.userName || "User"}
-                    </span>
+                    {profileId === post?.user?._id ? (
+                      <div className="flex items-center gap-1">
+                        <span className="truncate text-sm font-medium sm:text-base">
+                          {post?.user?.userName}
+                        </span>
+                        {post?.user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        to={`/users/${post?.user?._id}`}
+                        className="flex items-center gap-1 cursor-pointer"
+                      >
+                        <span className="truncate text-sm font-medium sm:text-base">
+                          {post?.user?.userName}
+                        </span>
+                        {post?.user?.isVerified && (
+                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                        )}
+                      </Link>
+                    )}
                   </div>
                   {post?.postText ? (
                     <p

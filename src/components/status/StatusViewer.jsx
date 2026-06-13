@@ -215,7 +215,7 @@ export function StatusViewer() {
         <button
           type="button"
           onClick={closeStatus}
-          className="absolute left-4 top-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75"
+          className="absolute left-2 top-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition hover:bg-black/75"
           aria-label="Back"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -254,7 +254,7 @@ export function StatusViewer() {
                         handleDelete();
                         setShowMenu(false);
                       }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-gray-100"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete

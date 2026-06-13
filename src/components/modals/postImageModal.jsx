@@ -1,5 +1,5 @@
 import { useZustandImagePopup } from "@/lib/zustand";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { PostImageForm } from "../form/postImageForm";
 
 export function PostImageDialog() {
@@ -21,6 +21,9 @@ export function PostImageDialog() {
   [&_button]:cursor-pointer
 "
       >
+        <DialogTitle className="text-emerald-600 flex justify-center">
+          Add Post
+        </DialogTitle>
         <PostImageForm />
       </DialogContent>
     </Dialog>

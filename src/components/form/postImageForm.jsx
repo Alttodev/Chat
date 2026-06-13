@@ -13,9 +13,11 @@ import axiosInstance from "@/api/axiosInstance";
 
 import { useAIPromptStore } from "@/lib/zustand";
 import AIPromptDialog from "../modals/aiPromptDialog";
+import { useAuthStore } from "@/store/authStore";
 
 export function PostImageForm() {
   const { closeImageModal } = useZustandImagePopup();
+  const userId = useAuthStore((state) => state.user?.userName);
   const { mutateAsync: createPost } = usePostCreate();
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -133,8 +135,8 @@ export function PostImageForm() {
                 <Textarea
                   {...field}
                   ref={textareaRef}
-                  placeholder="Enter description....."
-                  className={`min-h-[85px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
+                  placeholder={`What's on your mind, ${userId}?`}
+                  className={`min-h-[120px] resize-none border-0 bg-muted focus:bg-background text-sm sm:text-base overflow-y-auto thin-scrollbar ${
                     selectedLocation?.name ? "pb-14" : ""
                   } `}
                 />

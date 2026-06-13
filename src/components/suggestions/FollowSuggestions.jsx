@@ -111,7 +111,7 @@ export function FollowSuggestions({ compact = false, className }) {
     return (
       <section
         className={cn(
-          "w-full min-w-0 max-w-full overflow-hidden rounded-3xl border border-border/70 bg-card p-4 shadow-sm",
+          "w-full min-w-0 max-w-full overflow-hidden  p-4 ",
           className,
         )}
       >

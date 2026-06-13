@@ -50,9 +50,12 @@ function StatusBubble({
           className={cn(
             "relative ml-1 mt-1 flex cursor-pointer items-center justify-center rounded-full transition-all duration-300",
             compact ? "h-14 w-14 md:h-16 md:w-16" : "h-16 w-16 md:h-20 md:w-20",
+
+            "p-[1px] ring-1",
+
             hasMedia
-              ? "p-[2px] bg-emerald-500 ring-2 ring-emerald-200/60 dark:ring-emerald-500/20"
-              : "p-0 bg-transparent",
+              ? "bg-emerald-500 ring-emerald-400/60 dark:ring-emerald-500/30"
+              : "bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
           )}
         >
           {!highlight ? (
@@ -116,12 +119,7 @@ function StatusBubble({
   );
 }
 
-export function StatusStrip({
-  compact = false,
-  className,
-  showDismissButton = false,
-  onDismiss,
-}) {
+export function StatusStrip({ compact = false, className }) {
   const { data: profileData } = useUserDetail();
   const { data: myStatusData } = useMyStatus();
   const { data: feedData } = useStatusFeed();
@@ -193,23 +191,7 @@ export function StatusStrip({
 
   return (
     <>
-      <section
-        className={cn(
-          "fixed left-2 right-2 top-16 z-40 mx-auto w-auto rounded-2xl border border-emerald-100/80 bg-background/95 p-3 shadow-[0_14px_40px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:left-4 sm:right-4 sm:p-4 md:left-64 md:right-80 md:mx-4 md:w-auto md:rounded-sm md:border md:border-emerald-100/70 md:bg-white/80 md:p-4 md:shadow-[0_14px_40px_rgba(15,23,42,0.08)] lg:p-5 dark:border-white/10 dark:bg-black/95 dark:md:bg-black/90 dark:md:shadow-[0_14px_40px_rgba(0,0,0,0.55)]",
-          className,
-        )}
-      >
-        {showDismissButton ? (
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="absolute right-2 top-2 z-10 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-emerald-100 bg-background/90 text-muted-foreground shadow-sm transition hover:bg-emerald-50 hover:text-foreground sm:right-3 sm:top-3 md:right-4 md:top-4 dark:border-white/10 dark:bg-black/80 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white"
-            aria-label="Hide status section"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
-
+      <section className={cn("relative z-40 mx-auto w-auto  p-2 ", className)}>
         <input
           ref={fileInputRef}
           type="file"
@@ -221,7 +203,6 @@ export function StatusStrip({
         <div
           className={cn(
             "overflow-x-auto overflow-y-hidden pb-2 no-scrollbar md:pb-1",
-            showDismissButton ? "pr-10" : "",
           )}
         >
           <div className="flex w-max min-w-max snap-x snap-mandatory gap-3 pr-6 md:gap-4">
