@@ -84,7 +84,7 @@ export function ReelsFeed() {
       <div className="overflow-hidden  ">
         <div
           ref={scrollRef}
-          className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
+          className="no-scrollbar h-[100svh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
         >
           {reels.map((post, index) => (
             <div
@@ -93,7 +93,7 @@ export function ReelsFeed() {
                 itemRefs.current[index] = node;
               }}
               data-index={index}
-              className="snap-start h-[100dvh] pb-3 sm:pb-0"
+              className="snap-start h-[100svh]"
             >
               <ReelCard
                 post={post}
