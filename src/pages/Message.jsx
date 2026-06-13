@@ -1044,7 +1044,7 @@ export default function Message() {
               No conversations yet
             </div>
           ) : (
-          <div className="flex flex-col min-h-full">
+          <div className="flex h-[100dvh] flex-col overflow-hidden">
               <ChatHeader
                 contact={selectedContact}
                 setShowChat={setShowChat}
