@@ -151,7 +151,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
   };
 
   return (
-    <section className="relative h-full  w-full overflow-hidden rounded-[18px]  md:h-[calc(100vh-8.5rem)] md:min-h-[32rem]">
+    <section className="relative h-full  w-full overflow-hidden md:rounded-[18px]  md:h-[calc(100vh-8.5rem)] md:min-h-[32rem]">
       <div
         role="button"
         tabIndex={0}
@@ -193,7 +193,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
           aria-hidden="true"
         />
 
-        <div className="absolute inset-x-0 bottom-0 z-10 p-3 sm:p-6">
+        <div className="absolute inset-x-0 bottom-3 z-10 p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-none space-y-2 pr-20 text-left text-white sm:max-w-[65%] sm:space-y-3 sm:pr-0">
               <div className="flex items-start gap-3 sm:items-center">
