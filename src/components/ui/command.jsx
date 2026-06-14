@@ -24,7 +24,7 @@ const CommandDialog = ({ children, ...props }) => {
       <DialogContent
         className="
     fixed
-    top-5
+    top-10
     left-1/2
     -translate-x-1/2
     translate-y-0
