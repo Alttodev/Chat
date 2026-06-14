@@ -39,7 +39,6 @@ function SubscriptionCard() {
       features: [
         "Priority support",
         "Profile view history",
-        "View Followers & Following Details",
         "30-day viewer history",
       ],
     },
@@ -52,7 +51,6 @@ function SubscriptionCard() {
       features: [
         "24/7 priority support",
         "Profile view history",
-        "View Followers & Following Details",
         "Unlimited viewer history",
       ],
     },

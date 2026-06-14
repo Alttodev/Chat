@@ -1,12 +1,4 @@
-import {
-  BadgeCheck,
-  ImageIcon,
-  Lock,
-  MapPin,
-  MessageCircle,
-  Send,
-  ShieldCheck,
-} from "lucide-react";
+import { BadgeCheck, Lock, MapPin, MessageCircle, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -45,12 +37,10 @@ import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { formatShortUsername } from "@/lib/shortUserName";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
-import PremiumFeatureDialog from "@/components/modals/premiumFeatureDialog";
-import { useSubscriptionStatus } from "@/hooks/subscriptionHooks";
+
 
 const UsersInfo = () => {
   const navigate = useNavigate();
-  const [premiumDialogOpen, setPremiumDialogOpen] = useState(false);
   const { openShareModal } = useZustandSharePopup();
   const { profileId } = useAuthStore();
   const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
@@ -67,10 +57,6 @@ const UsersInfo = () => {
     useProfileFollow();
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
-
-  const { data: subscriptionData } = useSubscriptionStatus();
-
-  const subscription = subscriptionData?.subscription;
 
   const { data: count } = useUserInfoCount(id);
   const countData = useMemo(() => count, [count]);
@@ -188,196 +174,7 @@ const UsersInfo = () => {
   return (
     <div className="w-full max-w-3xl mx-auto  space-y-8 pb-20">
       {/* Header */}
-      {/* <Card className="border-border shadow-sm">
-        <CardContent className="pt-3">
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            <div className="relative">
-              <Avatar className="h-24 w-24">
-                <AvatarImage
-                  onClick={() => open(user?.profileImage)}
-                  className="w-full h-full object-cover object-top cursor-pointer"
-                  src={user?.profileImage || "/placeholder.svg"}
-                />
-                <AvatarFallback className="text-2xl font-semibold text-emerald-700">
-                  {user?.userName?.charAt(0).toUpperCase() || "-"}
-                </AvatarFallback>
-              </Avatar>
 
-              <ImageViewer />
-
-              <div className="absolute bottom-2 right-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-3 w-3 rounded-full ${
-                      user?.isOnline ? "bg-green-500" : "bg-yellow-500"
-                    }`}
-                  ></span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-2">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <div className="text-md font-bold text-balance flex items-center gap-1">
-                    {user?.userName || "-"}
-                    {user?.isVerified && (
-                      <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
-                    )}
-                  </div>
-
-                  <div className="flex gap-2 items-center text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{user?.address || "-"}</span>
-                  </div>
-                  <div
-                    className="
-    mt-2
-    max-w-full
-    sm:max-w-[420px]
-    break-words
-    text-sm
-    leading-5
-    text-slate-700
-    dark:text-slate-300
-  "
-                  >
-                    {user?.bio}
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex flex-col mt-1">
-                      <span className="text-lg font-semibold text-foreground">
-                        {totalPosts}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {totalPosts <= 1 ? "Post" : "Posts"}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col mt-1">
-                      {countData?.totalFriends > 0 ? (
-                        <button
-                          onClick={() => {
-                            if (!subscription?.isActive || !friends) {
-                              setPremiumDialogOpen(true);
-                              return;
-                            }
-
-                            navigate(`/friends/${user?._id}`);
-                          }}
-                          className="text-lg text-start font-semibold text-foreground cursor-pointer"
-                        >
-                          {countData?.totalFriends}
-                        </button>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFriends}
-                        </span>
-                      )}
-
-                      <span className="text-sm text-muted-foreground">
-                        {countData?.totalFriends <= 1
-                          ? "Follower"
-                          : "Followers"}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col mt-1">
-                      {countData?.totalFollowing > 0 ? (
-                        <button
-                          onClick={() => {
-                            if (!subscription?.isActive || !friends) {
-                              setPremiumDialogOpen(true);
-                              return;
-                            }
-
-                            navigate(`/following/${user?._id}`);
-                          }}
-                          className="text-lg text-start font-semibold text-foreground cursor-pointer"
-                        >
-                          {countData?.totalFollowing}
-                        </button>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFollowing}
-                        </span>
-                      )}
-
-                      <span className="text-sm text-muted-foreground">
-                        Following
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start self-start md:items-center md:self-center">
-              {reqStatus === "pending" ? (
-                <Button
-                  className="
-                    bg-rose-500/10
-                    hover:bg-rose-500/15
-                    text-rose-600
-                    border
-                    border-rose-500/20
-                    rounded-full
-                    px-4
-                    h-8
-                    text-xs
-                    font-medium
-                    flex
-                    items-center
-                    gap-1.5
-                    cursor-default
-                    shadow-sm
-                  "
-                >
-                  Pending
-                </Button>
-              ) : (
-                profileId !== id && (
-                  <Button
-                    onClick={() =>
-                      friends ? handleUnfollow() : handleFollow(user?._id)
-                    }
-                    disabled={isFollowing || isUnfollowing}
-                    className={`
-                      rounded-full
-                      px-4
-                      h-8
-                      text-xs
-                      font-medium
-                      cursor-pointer
-                      transition-all
-                      duration-200
-                      active:scale-95
-                      shadow-sm
-                      ${
-                        friends
-                          ? `
-                            bg-zinc-100
-                            hover:bg-zinc-200
-                            text-zinc-700
-                            border
-                            border-zinc-200
-                          `
-                          : `
-                            bg-emerald-600
-                            hover:bg-emerald-700
-                            text-white
-                          `
-                      }
-                    `}
-                  >
-                    {friends ? "Unfollow" : "Follow"}
-                  </Button>
-                )
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card> */}
       <Card className="border-border shadow-sm overflow-hidden">
         <CardContent className="pt-5 pb-0 px-4">
           {/* Row 1: Avatar  +  Stats */}
@@ -418,18 +215,12 @@ const UsersInfo = () => {
               {/* Followers */}
               <div className="flex flex-col items-center gap-0.5">
                 {countData?.totalFriends > 0 ? (
-                  <button
-                    onClick={() => {
-                      if (!subscription?.isActive || !friends) {
-                        setPremiumDialogOpen(true);
-                        return;
-                      }
-                      navigate(`/friends/${user?._id}`);
-                    }}
+                  <Link
+                    to={`/friends/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFriends}
-                  </button>
+                  </Link>
                 ) : (
                   <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFriends ?? 0}
@@ -443,18 +234,12 @@ const UsersInfo = () => {
               {/* Following */}
               <div className="flex flex-col items-center gap-0.5">
                 {countData?.totalFollowing > 0 ? (
-                  <button
-                    onClick={() => {
-                      if (!subscription?.isActive || !friends) {
-                        setPremiumDialogOpen(true);
-                        return;
-                      }
-                      navigate(`/following/${user?._id}`);
-                    }}
+                  <Link
+                    to={`/following/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFollowing}
-                  </button>
+                  </Link>
                 ) : (
                   <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFollowing ?? 0}
@@ -678,11 +463,7 @@ const UsersInfo = () => {
 
           <ShareDialog />
           <ImageViewer />
-          <PremiumFeatureDialog
-            open={premiumDialogOpen}
-            onOpenChange={setPremiumDialogOpen}
-          />
-
+         
           <div ref={loadMoreRef} style={{ height: "20px" }} />
 
           {isFetchingNextPage && <PostSkeleton />}
