@@ -542,30 +542,17 @@ const UsersInfo = () => {
           )}
         </>
       ) : (
-        <Card className="border-2 border-dashed border-emerald-200 bg-gradient-to-br from-emerald-50 to-white dark:border-zinc-800 dark:from-black dark:to-zinc-950">
-          <CardContent className="py-8">
-            <div className="flex flex-col items-center justify-center text-center">
-              <div className="mb-6">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10 ring-1 ring-emerald-500/15 backdrop-blur-sm dark:bg-emerald-500/10">
-                  <Lock className="h-9 w-9 text-emerald-600 dark:text-emerald-400" />
-                </div>
-              </div>
+        <div className="flex flex-col items-center justify-center py-2 text-center">
+          <div className="mb-4 flex h-18 w-18 items-center justify-center rounded-full border-2 border-slate-300 dark:border-zinc-700">
+            <Lock className="h-10 w-10" />
+          </div>
 
-              <h3 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-zinc-100">
-                This Account is Private
-              </h3>
+          <h2 className="text-2xl font-semibold">This Account is Private</h2>
 
-              <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground dark:text-zinc-400">
-                Posts, media, and profile activity are only accessible to
-                permitted users.
-              </p>
-
-              <div className="mt-6 rounded-full border border-emerald-500/15 bg-emerald-500/10 px-4 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                Private Profile
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            Follow this account to see their photos, videos, and activity.
+          </p>
+        </div>
       )}
     </div>
   );
