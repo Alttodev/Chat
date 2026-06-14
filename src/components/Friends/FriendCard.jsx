@@ -121,16 +121,7 @@ export const FriendCard = ({ tabValue }) => {
                       `/messages?userId=${item?.from?._id}&name=${item?.from?.userName}`,
                     );
                   }}
-                  className="
-                      h-8 rounded-full
-                      px-3
-                      text-xs font-medium
-                      text-emerald-600
-                      transition-all duration-200
-                      hover:bg-emerald-50
-                      hover:text-emerald-700
-                      cursor-pointer
-                    "
+                  className="w-28 h-8 rounded-lg text-xs font-semibold shadow-none cursor-pointer"
                 >
                   Message
                 </Button>

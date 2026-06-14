@@ -389,7 +389,6 @@ function SettingsComponent() {
       shadow-sm
     "
               >
-                <Bookmark className="h-4 w-4" />
                 Saved
               </Button>
             </div>

@@ -188,7 +188,7 @@ const UsersInfo = () => {
   return (
     <div className="w-full max-w-3xl mx-auto  space-y-8 pb-20">
       {/* Header */}
-      <Card className="border-border shadow-sm">
+      {/* <Card className="border-border shadow-sm">
         <CardContent className="pt-3">
           <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="relative">
@@ -377,6 +377,160 @@ const UsersInfo = () => {
             </div>
           </div>
         </CardContent>
+      </Card> */}
+      <Card className="border-border shadow-sm overflow-hidden">
+        <CardContent className="pt-5 pb-0 px-4">
+          {/* Row 1: Avatar  +  Stats */}
+          <div className="flex items-center gap-6 sm:gap-10">
+            {/* Avatar with story-ring gradient */}
+            <div className="relative shrink-0">
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
+                <AvatarImage
+                  onClick={() => open(user?.profileImage)}
+                  className="w-full h-full object-cover object-top cursor-pointer rounded-full"
+                  src={user?.profileImage || "/placeholder.svg"}
+                />
+                <AvatarFallback className="text-2xl font-semibold text-emerald-700 rounded-full">
+                  {user?.userName?.charAt(0).toUpperCase() || "-"}
+                </AvatarFallback>
+              </Avatar>
+
+              {/* Online indicator */}
+              <span
+                className={`absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-950 ${
+                  user?.isOnline ? "bg-green-500" : "bg-yellow-400"
+                }`}
+              />
+            </div>
+
+            {/* Stats: Posts / Followers / Following */}
+            <div className="flex flex-1 justify-around">
+              {/* Posts */}
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  {totalPosts ?? 0}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {totalPosts <= 1 ? "Post" : "Posts"}
+                </span>
+              </div>
+
+              {/* Followers */}
+              <div className="flex flex-col items-center gap-0.5">
+                {countData?.totalFriends > 0 ? (
+                  <button
+                    onClick={() => {
+                      if (!subscription?.isActive || !friends) {
+                        setPremiumDialogOpen(true);
+                        return;
+                      }
+                      navigate(`/friends/${user?._id}`);
+                    }}
+                    className="text-sm sm:text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                  >
+                    {countData?.totalFriends}
+                  </button>
+                ) : (
+                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                    {countData?.totalFriends ?? 0}
+                  </span>
+                )}
+                <span className="text-sm text-muted-foreground">
+                  {countData?.totalFriends <= 1 ? "Follower" : "Followers"}
+                </span>
+              </div>
+
+              {/* Following */}
+              <div className="flex flex-col items-center gap-0.5">
+                {countData?.totalFollowing > 0 ? (
+                  <button
+                    onClick={() => {
+                      if (!subscription?.isActive || !friends) {
+                        setPremiumDialogOpen(true);
+                        return;
+                      }
+                      navigate(`/following/${user?._id}`);
+                    }}
+                    className="text-sm sm:text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                  >
+                    {countData?.totalFollowing}
+                  </button>
+                ) : (
+                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                    {countData?.totalFollowing ?? 0}
+                  </span>
+                )}
+                <span className="text-sm text-muted-foreground">Following</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Username + Bio + Location */}
+          <div className="mt-3 space-y-1">
+            <div className="text-md font-bold text-balance flex items-center gap-1">
+              {user?.userName || "-"}
+              {user?.isVerified && (
+                <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+              )}
+            </div>
+
+            {user?.address && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span>{user.address}</span>
+              </div>
+            )}
+
+            {user?.bio && (
+              <p className="text-sm leading-snug text-foreground break-words max-w-sm">
+                {user.bio}
+              </p>
+            )}
+          </div>
+
+          {/* Row 3: Action buttons */}
+          <div className="mt-3 mb-4 flex items-center gap-2">
+            {reqStatus === "pending" ? (
+              <Button className="w-28 h-8 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/15 text-rose-600 border border-rose-500/20 cursor-default shadow-none">
+                Pending
+              </Button>
+            ) : profileId !== id ? (
+              <>
+                <Button
+                  onClick={() =>
+                    friends ? handleUnfollow() : handleFollow(user?._id)
+                  }
+                  disabled={isFollowing || isUnfollowing}
+                  className={`w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
+          ${
+            friends
+              ? "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700"
+              : "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent"
+          }
+        `}
+                >
+                  {friends ? "Unfollow" : "Follow"}
+                </Button>
+
+                {friends && (
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate(`/messages?userId=${id}&name=${user?.userName}`);
+                    }}
+                    className="w-28 h-8 rounded-lg text-xs font-semibold shadow-none cursor-pointer"
+                  >
+                    Message
+                  </Button>
+                )}
+              </>
+            ) : null}
+          </div>
+        </CardContent>
+
+        <ImageViewer />
       </Card>
 
       {user?.isPublic || friends ? (

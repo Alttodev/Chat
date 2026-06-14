@@ -231,7 +231,11 @@ function RightUserCard({
 
           <div className="flex w-full sm:w-auto">
             {reqStatus === "pending" ? (
-              <Button className="h-8 w-full cursor-default rounded-full border border-rose-500/20 bg-rose-500/10 px-4 text-xs font-medium text-rose-600 shadow-sm hover:bg-rose-500/15 sm:w-auto">
+              <Button
+                className=" w-18 h-8 rounded-lg 
+                  cursor-default
+                  border-rose-500/20 bg-rose-500/10 px-4 text-xs font-medium text-rose-600 shadow-sm hover:bg-rose-500/15 sm:w-auto"
+              >
                 Pending
               </Button>
             ) : (
@@ -239,7 +243,7 @@ function RightUserCard({
                 <Button
                   onClick={friends ? handleUnfollow : handleFollow}
                   disabled={isFollowing || isUnfollowing}
-                  className={`h-8 w-full rounded-full px-4 text-xs font-medium cursor-pointer transition-all duration-200 active:scale-95 shadow-sm sm:w-auto ${
+                  className={`w-18 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer sm:w-auto ${
                     friends
                       ? "border border-zinc-200 bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
                       : "bg-emerald-600 text-white hover:bg-emerald-700"

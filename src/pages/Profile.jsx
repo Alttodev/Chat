@@ -174,81 +174,112 @@ const Profile = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto  space-y-8 pb-20">
-      <Card className="border-border shadow-sm">
-        <CardContent className="pt-4">
-          <div className="flex flex-col md:flex-row items-start gap-6">
-            {/* PROFILE AVATAR */}
-            <div className="relative shrink-0 self-start">
-              <div
-                onClick={() =>
-                  userProfile?.profile?.profileImage &&
-                  open(userProfile?.profile?.profileImage)
-                }
-                className={
-                  userProfile?.profile?.profileImage ? "cursor-pointer" : ""
-                }
-              >
-                <Avatar className="h-24 w-24 ring-2 ring-slate-100 dark:ring-slate-800">
+      <Card className="border-border shadow-sm overflow-hidden">
+        <CardContent className="pt-5 pb-0 px-4">
+          {/* Row 1: Avatar + Stats */}
+          <div className="flex items-center gap-6 sm:gap-10">
+            {/* Avatar with story-ring gradient + edit button */}
+            <div className="relative shrink-0">
+              {/* <div
+                className="rounded-full p-[2.5px]"
+                style={{
+                  background:
+                    "conic-gradient(#f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
+                }}
+              > */}
+              <div className="rounded-full p-[2px] bg-white dark:bg-zinc-950">
+                <Avatar
+                  className="h-20 w-20 sm:h-24 sm:w-24"
+                  onClick={() =>
+                    userProfile?.profile?.profileImage &&
+                    open(userProfile?.profile?.profileImage)
+                  }
+                >
                   <AvatarImage
-                    className="h-full w-full object-cover object-top"
+                    className={`h-full w-full object-cover object-top rounded-full ${
+                      userProfile?.profile?.profileImage ? "cursor-pointer" : ""
+                    }`}
                     src={
                       userProfile?.profile?.profileImage || "/placeholder.svg"
                     }
                   />
-
-                  <AvatarFallback className="text-2xl font-semibold text-emerald-700">
+                  <AvatarFallback className="text-2xl font-semibold text-emerald-700 rounded-full">
                     {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
                       "-"}
                   </AvatarFallback>
                 </Avatar>
               </div>
-
-              {/* EDIT PROFILE ICON */}
-              <button
-                onClick={() =>
-                  openProfile({
-                    userProfile,
-                    isEditing: true,
-                    closeEditing: closeProfile,
-                  })
-                }
-                className="
-            absolute bottom-0 right-0
-            flex h-7 w-7 items-center justify-center
-            rounded-full
-            border-2 border-white
-            bg-emerald-600
-            text-white
-            shadow-lg
-            transition-all duration-200
-            hover:bg-emerald-700
-            active:scale-95
-            cursor-pointer
-          "
-              >
-                <Edit3 className="h-3 w-3" />
-              </button>
+              {/* </div> */}
             </div>
 
-            {/* PROFILE DETAILS */}
-            <div className="flex-1 space-y-3">
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div className="min-w-0">
-                  {/* USERNAME */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1 text-lg font-bold text-foreground">
-                      {userProfile?.profile?.userName}
+            {/* Stats: Posts / Followers / Following */}
+            <div className="flex flex-1 justify-around">
+              {/* Posts */}
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  {totalPosts ?? 0}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  {totalPosts <= 1 ? "Post" : "Posts"}
+                </span>
+              </div>
 
-                      {userProfile?.profile?.isVerified && (
-                        <BadgeCheck className="h-5 w-5 fill-blue-500 text-white" />
-                      )}
-                    </div>
+              {/* Followers */}
+              <div className="flex flex-col items-center gap-0.5">
+                {countData?.totalFriends > 0 ? (
+                  <Link
+                    to={`/friends/${userProfile?.profile?.id}`}
+                    className="text-sm sm:text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
+                  >
+                    {countData?.totalFriends}
+                  </Link>
+                ) : (
+                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                    {countData?.totalFriends ?? 0}
+                  </span>
+                )}
+                <span className="text-sm text-muted-foreground">
+                  {countData?.totalFriends <= 1 ? "Follower" : "Followers"}
+                </span>
+              </div>
 
-                    {!userProfile?.profile?.isVerified && (
-                      <button
-                        onClick={handleVerificationRequest}
-                        disabled={verificationLoading}
-                        className="
+              {/* Following */}
+              <div className="flex flex-col items-center gap-0.5">
+                {countData?.totalFollowing > 0 ? (
+                  <Link
+                    to={`/following/${userProfile?.profile?.id}`}
+                    className="text-sm sm:text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
+                  >
+                    {countData?.totalFollowing}
+                  </Link>
+                ) : (
+                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                    {countData?.totalFollowing ?? 0}
+                  </span>
+                )}
+                <span className="text-sm text-muted-foreground">Following</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Username + Verify badge + Location + Bio */}
+          <div className="mt-3 space-y-1">
+            {/* Username + verified badge / get verified button */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-foreground">
+                  {userProfile?.profile?.userName}
+                </span>
+                {userProfile?.profile?.isVerified && (
+                  <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
+                )}
+              </div>
+
+              {!userProfile?.profile?.isVerified && (
+                <button
+                  onClick={handleVerificationRequest}
+                  disabled={verificationLoading}
+                  className="
                     inline-flex items-center gap-1
                     rounded-full
                     bg-[#1DA1F2]
@@ -259,109 +290,59 @@ const Profile = () => {
                     disabled:opacity-50
                     cursor-pointer
                   "
-                      >
-                        {verificationLoading ? (
-                          <>
-                            <Loader2 className="h-3 w-3 animate-spin" />
-                            verifying...
-                          </>
-                        ) : (
-                          <>
-                            <BadgeCheck className="h-3 w-3" />
-                            Get Verified
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* ADDRESS */}
-                  <div className="mt-1 flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 shrink-0" />
-
-                    <span className="truncate max-w-[240px]">
-                      {userProfile?.profile?.address}
-                    </span>
-                  </div>
-
-                  {/* BIO */}
-                  <div
-                    className="
-                mt-2
-                max-w-full
-                sm:max-w-[420px]
-                break-words
-                text-sm
-                leading-5
-                text-slate-700
-                dark:text-slate-300
-              "
-                  >
-                    {userProfile?.profile?.bio}
-                  </div>
-
-                  {/* COUNTS */}
-                  <div className="mt-4 flex gap-6">
-                    {/* POSTS */}
-                    <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-foreground">
-                        {totalPosts}
-                      </span>
-
-                      <span className="text-sm text-muted-foreground">
-                        {totalPosts <= 1 ? "Post" : "Posts"}
-                      </span>
-                    </div>
-
-                    {/* FOLLOWERS */}
-                    <div className="flex flex-col">
-                      {countData?.totalFriends > 0 ? (
-                        <Link
-                          to={`/friends/${userProfile?.profile?.id}`}
-                          className="text-lg font-semibold text-foreground"
-                        >
-                          {countData?.totalFriends}
-                        </Link>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFriends}
-                        </span>
-                      )}
-
-                      <span className="text-sm text-muted-foreground">
-                        {countData?.totalFriends <= 1
-                          ? "Follower"
-                          : "Followers"}
-                      </span>
-                    </div>
-
-                    {/* FOLLOWING */}
-                    <div className="flex flex-col">
-                      {countData?.totalFollowing > 0 ? (
-                        <Link
-                          to={`/following/${userProfile?.profile?.id}`}
-                          className="text-lg font-semibold text-foreground"
-                        >
-                          {countData?.totalFollowing}
-                        </Link>
-                      ) : (
-                        <span className="text-lg font-semibold text-foreground">
-                          {countData?.totalFollowing}
-                        </span>
-                      )}
-
-                      <span className="text-sm text-muted-foreground">
-                        Following
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* RIGHT SIDE BUTTON */}
-              </div>
+                >
+                  {verificationLoading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <BadgeCheck className="h-3 w-3" />
+                      Get Verified
+                    </>
+                  )}
+                </button>
+              )}
             </div>
+
+            {/* Location */}
+            {userProfile?.profile?.address && (
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 shrink-0" />
+                <span className="truncate max-w-[240px]">
+                  {userProfile?.profile?.address}
+                </span>
+              </div>
+            )}
+
+            {/* Bio */}
+            {userProfile?.profile?.bio && (
+              <p className="text-sm leading-snug text-foreground break-words max-w-sm">
+                {userProfile?.profile?.bio}
+              </p>
+            )}
+          </div>
+
+          {/* Row 3: Edit Profile button */}
+          <div className="mt-3 mb-4">
+            <Button
+              onClick={() =>
+                openProfile({
+                  userProfile,
+                  isEditing: true,
+                  closeEditing: closeProfile,
+                })
+              }
+              variant="outline"
+              className="w-28 h-8 rounded-lg text-xs font-semibold shadow-none cursor-pointer"
+            >
+              Edit profile
+            </Button>
           </div>
         </CardContent>
+
+        <ImageViewer />
       </Card>
 
       {displayPosts.map((post) => {
@@ -485,7 +466,10 @@ const Profile = () => {
                   </Button>
                 </div>
 
-                <PostBookmarkComponent post={post} className="ml-auto shrink-0" />
+                <PostBookmarkComponent
+                  post={post}
+                  className="ml-auto shrink-0"
+                />
               </div>
               {likeCount > 0 && visibleLiker && (
                 <Link
