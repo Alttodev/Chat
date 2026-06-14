@@ -27,11 +27,13 @@ import HashtagPosts from "@/pages/HashtagPosts";
 import BookmarkedPosts from "@/pages/BookmarkedPosts";
 import Subscription from "@/pages/Subscription";
 import NotificationPage from "@/pages/Notification";
+import ScrollToTop from "@/components/ScrolltoTop";
 
 function AppRoutes() {
   return (
     <div>
       <Router>
+        <ScrollToTop />
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/" element={<LoginFormComponent />} />
@@ -53,7 +55,7 @@ function AppRoutes() {
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<TermsAndConditions />} /> */}
-              <Route path="/notification" element={<NotificationPage/>}/>
+              <Route path="/notification" element={<NotificationPage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />
               <Route path="/following/:id" element={<UsersFollowingList />} />
