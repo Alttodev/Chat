@@ -12,6 +12,11 @@ export function PostImageDialog() {
     >
       <DialogContent
         className="
+         fixed
+    top-5
+    left-1/2
+    -translate-x-1/2
+    translate-y-0
   w-[calc(100%-2rem)] 
   max-w-[550px] 
   rounded-lg 
