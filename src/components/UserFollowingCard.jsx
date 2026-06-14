@@ -143,11 +143,7 @@ function UserFollowingCard({ user, profileId }) {
               <Button
                 disabled={isFetching}
                 className="
-                  h-7 sm:h-8
-                  rounded-full
-                  px-3 sm:px-4
-                  text-[11px] sm:text-xs
-                  font-medium
+                 w-28 h-8 rounded-lg text-xs font-medium
                   cursor-default
                   shadow-sm
                   border border-rose-500/20
@@ -164,16 +160,10 @@ function UserFollowingCard({ user, profileId }) {
                   onClick={friends ? handleUnfollow : handleFollow}
                   disabled={isFetching || isFollowing || isUnfollowing}
                   className={`
-                    h-7 sm:h-8
-                    rounded-full
-                    px-3 sm:px-4
-                    text-[11px] sm:text-xs
-                    font-medium
-                    cursor-pointer
-                    transition-all
+                     w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
+                    
                     duration-200
-                    active:scale-95
-                    shadow-sm
+                   
                     ${
                       friends
                         ? `

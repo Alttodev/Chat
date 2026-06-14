@@ -407,7 +407,7 @@ const UsersInfo = () => {
             <div className="flex flex-1 justify-around">
               {/* Posts */}
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                <span className="text-lg font-semibold text-foreground leading-none">
                   {totalPosts ?? 0}
                 </span>
                 <span className="text-sm text-muted-foreground">
@@ -426,12 +426,12 @@ const UsersInfo = () => {
                       }
                       navigate(`/friends/${user?._id}`);
                     }}
-                    className="text-sm sm:text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFriends}
                   </button>
                 ) : (
-                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFriends ?? 0}
                   </span>
                 )}
@@ -451,12 +451,12 @@ const UsersInfo = () => {
                       }
                       navigate(`/following/${user?._id}`);
                     }}
-                    className="text-sm sm:text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFollowing}
                   </button>
                 ) : (
-                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFollowing ?? 0}
                   </span>
                 )}
@@ -467,7 +467,7 @@ const UsersInfo = () => {
 
           {/* Row 2: Username + Bio + Location */}
           <div className="mt-3 space-y-1">
-            <div className="text-md font-bold text-balance flex items-center gap-1">
+            <div className="text-md pl-1 font-bold text-balance flex items-center gap-1">
               {user?.userName || "-"}
               {user?.isVerified && (
                 <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />

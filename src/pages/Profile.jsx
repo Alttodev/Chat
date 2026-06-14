@@ -216,7 +216,7 @@ const Profile = () => {
             <div className="flex flex-1 justify-around">
               {/* Posts */}
               <div className="flex flex-col items-center gap-0.5">
-                <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                <span className="text-lg font-semibold text-foreground leading-none">
                   {totalPosts ?? 0}
                 </span>
                 <span className="text-sm text-muted-foreground">
@@ -229,12 +229,12 @@ const Profile = () => {
                 {countData?.totalFriends > 0 ? (
                   <Link
                     to={`/friends/${userProfile?.profile?.id}`}
-                    className="text-sm sm:text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFriends}
                   </Link>
                 ) : (
-                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFriends ?? 0}
                   </span>
                 )}
@@ -248,12 +248,12 @@ const Profile = () => {
                 {countData?.totalFollowing > 0 ? (
                   <Link
                     to={`/following/${userProfile?.profile?.id}`}
-                    className="text-sm sm:text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFollowing}
                   </Link>
                 ) : (
-                  <span className="text-sm sm:text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFollowing ?? 0}
                   </span>
                 )}
@@ -267,7 +267,7 @@ const Profile = () => {
             {/* Username + verified badge / get verified button */}
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-1">
-                <span className="text-sm font-semibold text-foreground">
+                <span className="text-md pl-1 font-semibold text-foreground">
                   {userProfile?.profile?.userName}
                 </span>
                 {userProfile?.profile?.isVerified && (

@@ -20,7 +20,7 @@ function UserFriendCard({ user, profileId }) {
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
 
-  const { data: requestStatus,isFetching } = useRequestListInfo({
+  const { data: requestStatus, isFetching } = useRequestListInfo({
     fromId: profileId,
     toId: userId,
   });
@@ -140,12 +140,7 @@ function UserFriendCard({ user, profileId }) {
               <Button
                 disabled={isFetching}
                 className="
-                  h-7 sm:h-8
-                  rounded-full
-                  px-3 sm:px-4
-                  text-[11px] sm:text-xs
-                  font-medium
-                  flex items-center gap-1.5
+                 w-28 h-8 rounded-lg text-xs font-medium
                   cursor-default
                   shadow-sm
                   border border-rose-500/20
@@ -160,18 +155,10 @@ function UserFriendCard({ user, profileId }) {
               profileId !== userId && (
                 <Button
                   onClick={friends ? handleUnfollow : handleFollow}
-                  disabled={isFetching ||isFollowing || isUnfollowing}
+                  disabled={isFetching || isFollowing || isUnfollowing}
                   className={`
-                    h-7 sm:h-8
-                    rounded-full
-                    px-3 sm:px-4
-                    text-[11px] sm:text-xs
-                    font-medium
-                    cursor-pointer
-                    transition-all
-                    duration-200
-                    active:scale-95
-                    shadow-sm
+                  w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
+                  
                     ${
                       friends
                         ? `

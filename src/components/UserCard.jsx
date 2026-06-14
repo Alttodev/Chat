@@ -120,7 +120,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                     )}
                   </div>
 
-                  <div className="flex min-w-0 items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                  <div className="flex min-w-0 items-center gap-1 pt-1 text-xs sm:text-sm text-muted-foreground">
                     <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
                     <span className="truncate">{user?.address || "-"}</span>
                   </div>
@@ -133,7 +133,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                         break-words
                         text-[11px] sm:text-sm
                         leading-4
-                        text-muted-foreground
+                        text-black
                       "
                     >
                       {recommendedByLabel}
@@ -183,7 +183,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                         break-words
                         text-[11px] sm:text-sm
                         leading-4
-                        text-muted-foreground
+                        text-black
                       "
                     >
                       {recommendedByLabel}
