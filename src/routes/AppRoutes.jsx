@@ -28,6 +28,7 @@ import BookmarkedPosts from "@/pages/BookmarkedPosts";
 import Subscription from "@/pages/Subscription";
 import NotificationPage from "@/pages/Notification";
 import ScrollToTop from "@/components/ScrolltoTop";
+import ProfilePostFeed from "@/pages/ProfilePostFeed";
 
 function AppRoutes() {
   return (
@@ -71,6 +72,7 @@ function AppRoutes() {
               <Route path="/posts/:id/likes" element={<PostLikes />} />
               <Route path="/posts/:id/liked-users" element={<PostLikes />} />
               <Route path="/hashtags/:tag" element={<HashtagPosts />} />
+              <Route path="/profile/posts/:postId" element={<ProfilePostFeed />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

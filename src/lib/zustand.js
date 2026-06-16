@@ -166,3 +166,13 @@ export const useChatMessageMetaStore = create(
     },
   ),
 );
+
+
+export const useProfilePostStore = create((set) => ({
+  posts: [],
+  userProfile: null,
+  currentUser: null,
+  setPosts: (posts) => set({ posts }),
+  setUserProfile: (userProfile) => set({ userProfile }),
+  setCurrentUser: (currentUser) => set({ currentUser }),
+}));
