@@ -6,6 +6,7 @@ export default {
         brand: "#1E40AF",
         danger: "#DC2626",
       },
+      
     },
   },
   plugins: [],

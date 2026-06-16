@@ -51,7 +51,7 @@ function StatusBubble({
             "relative ml-1 mt-1 flex cursor-pointer items-center justify-center rounded-full transition-all duration-300",
             compact ? "h-14 w-14 md:h-16 md:w-16" : "h-20 w-20",
 
-            "p-[1px] ring-1",
+            "ring-3",
 
             hasMedia
               ? "bg-emerald-500 ring-emerald-400/60 dark:ring-emerald-500/30"

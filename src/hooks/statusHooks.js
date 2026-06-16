@@ -2,6 +2,7 @@ import {
   deleteMyStatus,
   getMyStatus,
   getStatusFeed,
+  getUserStatus,
   markStatusSeen,
   uploadUserStatus,
 } from "@/api/axios";
@@ -22,6 +23,14 @@ export const useStatusFeed = () => {
     queryFn: () => getStatusFeed(),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useUserStatus = (userId) => {
+  return useQuery({
+    queryKey: ["user-status", userId],
+    queryFn: () => getUserStatus(userId),
+    enabled: !!userId,
   });
 };
 

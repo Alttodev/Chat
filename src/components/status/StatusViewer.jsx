@@ -53,7 +53,7 @@ export function StatusViewer() {
 
   const userName = user?.userName || "Status";
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
-  const statusId = status?.status?.id || status?.id;
+  const statusId = status?.status?._id || status?._id;
 
   const isOwner = user?._id === currentUserId || user?.id === currentUserId;
 

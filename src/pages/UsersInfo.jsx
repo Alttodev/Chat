@@ -37,6 +37,8 @@ import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { formatShortUsername } from "@/lib/shortUserName";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
+import StatusUserStrip from "@/components/status/StatusUserStrip";
+import StatusViewer from "@/components/status/StatusViewer";
 
 
 const UsersInfo = () => {
@@ -180,7 +182,7 @@ const UsersInfo = () => {
           {/* Row 1: Avatar  +  Stats */}
           <div className="flex items-center gap-6 sm:gap-10">
             {/* Avatar with story-ring gradient */}
-            <div className="relative shrink-0">
+            {/* <div className="relative shrink-0">
               <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
                 <AvatarImage
                   onClick={() => open(user?.profileImage)}
@@ -192,13 +194,15 @@ const UsersInfo = () => {
                 </AvatarFallback>
               </Avatar>
 
-              {/* Online indicator */}
+             
               <span
                 className={`absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-950 ${
                   user?.isOnline ? "bg-green-500" : "bg-yellow-400"
                 }`}
               />
-            </div>
+            </div> */}
+            <StatusUserStrip user={user} />
+          
 
             {/* Stats: Posts / Followers / Following */}
             <div className="flex flex-1 justify-around">

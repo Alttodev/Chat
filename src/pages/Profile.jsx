@@ -51,6 +51,7 @@ import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 import { formatShortUsername } from "@/lib/shortUserName";
 import { ProfileEditDialog } from "@/components/modals/profileEditModal";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
+import StatusMeStrip from "@/components/status/StatusMeStrip";
 
 const Profile = () => {
   const { openModal } = useZustandPopup();
@@ -179,38 +180,7 @@ const Profile = () => {
           {/* Row 1: Avatar + Stats */}
           <div className="flex items-center gap-6 sm:gap-10">
             {/* Avatar with story-ring gradient + edit button */}
-            <div className="relative shrink-0">
-              {/* <div
-                className="rounded-full p-[2.5px]"
-                style={{
-                  background:
-                    "conic-gradient(#f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)",
-                }}
-              > */}
-              <div className="rounded-full p-[2px] bg-white dark:bg-zinc-950">
-                <Avatar
-                  className="h-20 w-20 sm:h-24 sm:w-24"
-                  onClick={() =>
-                    userProfile?.profile?.profileImage &&
-                    open(userProfile?.profile?.profileImage)
-                  }
-                >
-                  <AvatarImage
-                    className={`h-full w-full object-cover object-top rounded-full ${
-                      userProfile?.profile?.profileImage ? "cursor-pointer" : ""
-                    }`}
-                    src={
-                      userProfile?.profile?.profileImage || "/placeholder.svg"
-                    }
-                  />
-                  <AvatarFallback className="text-2xl font-semibold text-emerald-700 rounded-full">
-                    {userProfile?.profile?.userName?.charAt(0).toUpperCase() ||
-                      "-"}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              {/* </div> */}
-            </div>
+            <StatusMeStrip user={userProfile?.profile} />
 
             {/* Stats: Posts / Followers / Following */}
             <div className="flex flex-1 justify-around">

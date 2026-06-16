@@ -89,6 +89,11 @@ export const getStatusFeed = async () => {
   return data;
 };
 
+export const getUserStatus = async (userId) => {
+  const { data } = await axiosInstance.get(`/status/user/feed/${userId}`);
+  return data;
+};
+
 export const userFollowRequest = async (id) => {
   const { data } = await axiosInstance.post(`/follow/send/${id}`);
   return data;
