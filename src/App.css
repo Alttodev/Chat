@@ -184,4 +184,61 @@
   }
 }
 
+.status-ring {
+  position: relative;
+}
 
+.status-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 3px;
+
+  background: conic-gradient(
+    transparent,
+    #10b981,
+    transparent
+  );
+
+  animation: status-spin 3s linear forwards;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.status-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 3px;
+  background: #10b981;
+  opacity: 0;
+
+  animation: show-solid-ring 0s 3s forwards;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes status-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes show-solid-ring {
+  to {
+    opacity: 1;
+  }
+}

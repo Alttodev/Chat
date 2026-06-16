@@ -1,10 +1,4 @@
-import {
-  Clapperboard,
-  Home,
-  Plus,
-  Send,
-  Users,
-} from "lucide-react";
+import { Clapperboard, Home, Plus, Send, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useZustandImagePopup } from "@/lib/zustand";
@@ -41,8 +35,8 @@ export function MobileMenuBar() {
                       variant="ghost"
                       className="h-13 w-13 p-0 bg-transparent hover:bg-transparent"
                     >
-                      <div className="flex items-center justify-center w-8 h-8 border-2  dark:border-white rounded-md">
-                        <Plus className="w-8 h-8 text-muted-foreground dark:text-white stroke-[2.5]" />
+                      <div className="flex items-center justify-center w-8 h-8 border-2 border-current rounded-md text-muted-foreground dark:text-white">
+                        <Plus className="w-5 h-5 stroke-[3]" />
                       </div>
                     </Button>
                   </div>

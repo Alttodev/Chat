@@ -40,7 +40,6 @@ import PostBookmarkComponent from "@/components/Post/PostBookmark";
 import StatusUserStrip from "@/components/status/StatusUserStrip";
 import StatusViewer from "@/components/status/StatusViewer";
 
-
 const UsersInfo = () => {
   const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
@@ -180,29 +179,8 @@ const UsersInfo = () => {
       <Card className="border-border shadow-sm overflow-hidden">
         <CardContent className="pt-5 pb-0 px-4">
           {/* Row 1: Avatar  +  Stats */}
-          <div className="flex items-center gap-6 sm:gap-10">
-            {/* Avatar with story-ring gradient */}
-            {/* <div className="relative shrink-0">
-              <Avatar className="h-20 w-20 sm:h-24 sm:w-24">
-                <AvatarImage
-                  onClick={() => open(user?.profileImage)}
-                  className="w-full h-full object-cover object-top cursor-pointer rounded-full"
-                  src={user?.profileImage || "/placeholder.svg"}
-                />
-                <AvatarFallback className="text-2xl font-semibold text-emerald-700 rounded-full">
-                  {user?.userName?.charAt(0).toUpperCase() || "-"}
-                </AvatarFallback>
-              </Avatar>
-
-             
-              <span
-                className={`absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-950 ${
-                  user?.isOnline ? "bg-green-500" : "bg-yellow-400"
-                }`}
-              />
-            </div> */}
+          <div className="flex items-center gap-3 sm:gap-10">
             <StatusUserStrip user={user} />
-          
 
             {/* Stats: Posts / Followers / Following */}
             <div className="flex flex-1 justify-around">
@@ -467,7 +445,7 @@ const UsersInfo = () => {
 
           <ShareDialog />
           <ImageViewer />
-         
+
           <div ref={loadMoreRef} style={{ height: "20px" }} />
 
           {isFetchingNextPage && <PostSkeleton />}

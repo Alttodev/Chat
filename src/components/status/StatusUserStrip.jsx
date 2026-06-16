@@ -12,7 +12,6 @@ function StatusBubble({
   online,
   image,
   fallback,
-  compact = false,
   onClick,
   open,
   user,
@@ -29,15 +28,13 @@ function StatusBubble({
             type="button"
             onClick={onClick}
             className={cn(
-              "relative  mt-1 flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer",
-              compact ? "h-14 w-14 md:h-16 md:w-16" : "h-20 w-20",
-              " ring-3",
+              "relative mt-1 flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer h-24 w-24",
               hasMedia
-                ? "bg-emerald-500 ring-emerald-400/60 dark:ring-emerald-500/30"
-                : "bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
+                ? "status-ring"
+                : "ring-3 bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
             )}
           >
-            <Avatar className="h-full w-full border-2 border-background">
+            <Avatar className="relative z-10 h-[calc(100%-6px)] w-[calc(100%-6px)] border-2 border-background">
               {isVideoPreview ? (
                 <div className="h-full w-full overflow-hidden rounded-full">
                   <img
@@ -80,7 +77,7 @@ function StatusBubble({
           </Avatar>
         )}
         <div
-          className={`absolute bottom-1 right-2 h-4 w-4 rounded-full border-2 border-background ${
+          className={`absolute bottom-1 right-1 h-4 w-4 rounded-full border-2 border-background ${
             online ? "bg-green-500" : "bg-yellow-500"
           }`}
         />
@@ -89,7 +86,7 @@ function StatusBubble({
   );
 }
 
-export function StatusUserStrip({ compact = false, className, user }) {
+export function StatusUserStrip({ className, user }) {
   const { id } = useParams();
   const { data: statusData } = useUserStatus(id);
 
@@ -113,7 +110,6 @@ export function StatusUserStrip({ compact = false, className, user }) {
             online={user?.isOnline}
             image={user?.profileImage}
             fallback={user?.userName?.charAt(0).toUpperCase() || "Y"}
-            compact={compact}
             open={open}
             user={user}
             onClick={() => {

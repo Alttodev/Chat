@@ -178,7 +178,7 @@ const Profile = () => {
       <Card className="border-border shadow-sm overflow-hidden">
         <CardContent className="pt-5 pb-0 px-4">
           {/* Row 1: Avatar + Stats */}
-          <div className="flex items-center gap-6 sm:gap-10">
+          <div className="flex items-center gap-3 sm:gap-10">
             {/* Avatar with story-ring gradient + edit button */}
             <StatusMeStrip user={userProfile?.profile} />
 

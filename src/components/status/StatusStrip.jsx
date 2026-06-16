@@ -48,21 +48,13 @@ function StatusBubble({
           type="button"
           onClick={onClick}
           className={cn(
-            "relative ml-1 mt-1 flex cursor-pointer items-center justify-center rounded-full transition-all duration-300",
-            compact ? "h-14 w-14 md:h-16 md:w-16" : "h-20 w-20",
-
-            "ring-3",
-
+            "relative mt-1 flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer h-24 w-24",
             hasMedia
-              ? "bg-emerald-500 ring-emerald-400/60 dark:ring-emerald-500/30"
-              : "bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
+              ? "status-ring"
+              : " bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
           )}
         >
-          {!highlight ? (
-            <span className="absolute inset-0 rounded-full bg-white/20 blur-md" />
-          ) : null}
-
-          <Avatar className="h-full w-full border-2 border-background">
+          <Avatar className="relative z-10 h-[calc(100%-6px)] w-[calc(100%-6px)] border-2 border-background">
             {isVideoPreview ? (
               <div className="h-full w-full overflow-hidden rounded-full">
                 <img
