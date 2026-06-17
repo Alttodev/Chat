@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthStore } from "@/store/authStore";
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
 
@@ -8,39 +9,36 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const storedData = JSON.parse(localStorage.getItem("chat-storage") || "{}");
-    const token = storedData?.state?.token;
+    const token = useAuthStore.getState().token;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Don't set Content-Type for FormData - let axios handle it
     if (config.data instanceof FormData) {
       delete config.headers["Content-Type"];
     }
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       const onLoginPage = window.location.pathname === "/";
+
       localStorage.removeItem("chat-storage");
+
       if (!onLoginPage) {
         window.location.replace("/");
       }
     }
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

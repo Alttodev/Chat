@@ -32,8 +32,7 @@ const GoogleAuthSuccess = () => {
         setToken(token);
         setUser(user);
         connectSocket(user?._id);
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        // Fetch profile to get profileId — same as normal login
+
         const resp = await getProfile();
         const profileId = resp?.profile?.id;
 
