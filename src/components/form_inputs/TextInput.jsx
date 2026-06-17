@@ -2,7 +2,15 @@ import React from "react";
 import { Controller } from "react-hook-form";
 import { Input } from "../ui/input";
 
-function TextInput({ name, control, placeholder, type, disabled,rules ,className}) {
+function TextInput({
+  name,
+  control,
+  placeholder,
+  type,
+  disabled,
+  rules,
+  className,
+}) {
   return (
     <div>
       <Controller
@@ -13,7 +21,7 @@ function TextInput({ name, control, placeholder, type, disabled,rules ,className
           <Input
             {...field}
             placeholder={placeholder}
-            className={`text-gray-700 ${className}`}
+            className={`text-sm sm:text-base placeholder:text-sm text-gray-700 ${className}`}
             type={type}
             disabled={disabled}
           />

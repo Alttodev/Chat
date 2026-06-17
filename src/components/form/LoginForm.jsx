@@ -113,7 +113,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex justify-center md:items-center bg-gray-50 px-4 pt-6 pb-6 md:py-0">
       <div
         className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.56]"
         style={{ backgroundImage: `url(${messageBg})` }}

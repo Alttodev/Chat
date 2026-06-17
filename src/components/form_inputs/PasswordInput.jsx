@@ -20,7 +20,7 @@ const PasswordInput = ({ name, control, placeholder, disabled, className }) => {
             <Input
               {...field}
               type={showPassword ? 'text' : 'password'}
-              className={cn('hide-password-toggle pr-10 text-gray-700', className)}
+              className={cn('hide-password-toggle pr-10 text-sm sm:text-base placeholder:text-sm text-gray-700', className)}
               placeholder={placeholder}
               disabled={disabled}
             />
