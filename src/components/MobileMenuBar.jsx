@@ -54,7 +54,12 @@ export function MobileMenuBar() {
                         isActive ? "text-emerald-600" : "text-muted-foreground"
                       }`}
                     >
-                      <item.icon style={{ width: 20, height: 20 }} />
+                      <item.icon
+                        style={{
+                          width: item.icon === PlaySquare ? 24 : 20,
+                          height: item.icon === PlaySquare ? 24 : 20,
+                        }}
+                      />
                     </Button>
                   </Link>
                 </div>
