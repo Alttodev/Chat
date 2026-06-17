@@ -1,11 +1,6 @@
-import { BadgeCheck, Lock, MapPin, MessageCircle, Send } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  useCommentStore,
-  useImageModalStore,
-  useZustandSharePopup,
-} from "@/lib/zustand";
+import { BadgeCheck, Lock, MapPin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCommentStore } from "@/lib/zustand";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useProfileFollow,
@@ -13,12 +8,10 @@ import {
   useRequestListInfo,
   useUserInfoCount,
   useUserPostList,
+  usePostInfo,
 } from "@/hooks/postHooks";
-import { formatRelative } from "@/lib/dateHelpers";
 import { ShareDialog } from "@/components/modals/shareModal";
-import PostLikeComponent from "@/components/Post/PostLike";
 import { Button } from "@/components/ui/button";
-import { CommentSection } from "@/components/Post/CommentSection";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import {
   Link,
@@ -29,30 +22,26 @@ import {
 import { toastError } from "@/lib/toast";
 import { useAuthStore } from "@/store/authStore";
 import { ImageViewer } from "@/components/modals/imageViewer";
-import { usePostInfo } from "@/hooks/postHooks";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
-import { PostImageWithLikes } from "@/components/Post/PostImageWithLikes";
-import PostContent from "@/components/Post/PostContent";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
-import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
-import { formatShortUsername } from "@/lib/shortUserName";
-import PostBookmarkComponent from "@/components/Post/PostBookmark";
 import StatusUserStrip from "@/components/status/StatusUserStrip";
 import StatusViewer from "@/components/status/StatusViewer";
+import { UserPostGridView } from "@/components/Post/UserPostGridView";
+import { useUserPostStore } from "@/lib/zustand";
+import { PostGridSkeleton } from "@/components/skeleton/postGridSkeleton";
 
 const UsersInfo = () => {
   const navigate = useNavigate();
-  const { openShareModal } = useZustandSharePopup();
+
   const { profileId } = useAuthStore();
-  const { openPostId, toggleComments, setOpenPostId } = useCommentStore();
+  const { setOpenPostId } = useCommentStore();
   const { mutateAsync: markProfileViewSeen } = useMarkProfileViewSeen();
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
-  const { open } = useImageModalStore();
+
   const [searchParams] = useSearchParams();
   const targetPostId = searchParams.get("postId");
-  const targetCommentId = searchParams.get("commentId");
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
     useProfileFollow();
@@ -97,8 +86,22 @@ const UsersInfo = () => {
 
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
-
   const totalPosts = data?.pages?.[0]?.totalPosts;
+
+  // Store posts for the grid feed page
+  const { setPosts, setUserInfo, setCurrentUser } = useUserPostStore();
+
+  useEffect(() => {
+    if (displayPosts.length) setPosts(displayPosts);
+  }, [displayPosts, setPosts]);
+
+  useEffect(() => {
+    if (user) setUserInfo(user);
+  }, [user, setUserInfo]);
+
+  useEffect(() => {
+    if (currentUser) setCurrentUser(currentUser);
+  }, [currentUser, setCurrentUser]);
 
   useEffect(() => {
     if (id && id !== profileId) {
@@ -120,7 +123,6 @@ const UsersInfo = () => {
       }
     });
     observer.observe(loadMoreRef.current);
-
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
@@ -134,34 +136,10 @@ const UsersInfo = () => {
 
   const handleUnfollow = async () => {
     try {
-      await unfollowRequest({
-        fromId: profileId,
-        toId: id,
-      });
+      await unfollowRequest({ fromId: profileId, toId: id });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
-  };
-
-  const handleLikeChange = (postId, updated) => {
-    const patchPost = (post) => {
-      if (post._id !== postId) return post;
-
-      return {
-        ...post,
-        likedBy: Array.isArray(updated?.likedBy)
-          ? updated.likedBy
-          : post.likedBy,
-        likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
-        myReaction:
-          typeof updated?.myReaction !== "undefined"
-            ? updated.myReaction
-            : post.myReaction,
-        likedByMe: Boolean(updated?.likedByMe ?? updated?.myReaction),
-      };
-    };
-
-    setLocalPosts((prev) => prev.map(patchPost));
   };
 
   if (isLoading) {
@@ -173,18 +151,13 @@ const UsersInfo = () => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto  space-y-8 pb-20">
-      {/* Header */}
-
+    <div className="w-full max-w-3xl mx-auto space-y-4 pb-20">
       <Card className="border-border shadow-sm overflow-hidden">
         <CardContent className="pt-5 pb-0 px-4">
-          {/* Row 1: Avatar  +  Stats */}
-          <div className="flex items-center gap-3 sm:gap-10">
+          <div className="flex items-center gap-6 sm:gap-10">
             <StatusUserStrip user={user} />
 
-            {/* Stats: Posts / Followers / Following */}
             <div className="flex flex-1 justify-around">
-              {/* Posts */}
               <div className="flex flex-col items-center gap-0.5">
                 <span className="text-lg font-semibold text-foreground leading-none">
                   {totalPosts ?? 0}
@@ -199,12 +172,12 @@ const UsersInfo = () => {
                 {countData?.totalFriends > 0 ? (
                   <Link
                     to={`/friends/${user?._id}`}
-                    className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFriends}
                   </Link>
                 ) : (
-                  <span className="text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg sm:text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFriends ?? 0}
                   </span>
                 )}
@@ -218,12 +191,12 @@ const UsersInfo = () => {
                 {countData?.totalFollowing > 0 ? (
                   <Link
                     to={`/following/${user?._id}`}
-                    className="text-lg font-semibold text-foreground leading-none cursor-pointer hover:opacity-70 transition-opacity"
+                    className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
                   >
                     {countData?.totalFollowing}
                   </Link>
                 ) : (
-                  <span className="text-lg font-semibold text-foreground leading-none">
+                  <span className="text-lg sm:text-lg font-semibold text-foreground leading-none">
                     {countData?.totalFollowing ?? 0}
                   </span>
                 )}
@@ -232,12 +205,14 @@ const UsersInfo = () => {
             </div>
           </div>
 
-          {/* Row 2: Username + Bio + Location */}
+          {/* Row 2: Username + Location + Bio */}
           <div className="mt-3 space-y-1">
-            <div className="text-md pl-1 font-bold text-balance flex items-center gap-1">
-              {user?.userName || "-"}
+            <div className="flex items-center gap-1">
+              <span className="text-md font-semibold text-foreground">
+                {user?.userName || "-"}
+              </span>
               {user?.isVerified && (
-                <BadgeCheck className="w-5 h-5 fill-blue-500 text-white" />
+                <BadgeCheck className="w-4 h-4 fill-blue-500 text-white shrink-0" />
               )}
             </div>
 
@@ -255,7 +230,6 @@ const UsersInfo = () => {
             )}
           </div>
 
-          {/* Row 3: Action buttons */}
           <div className="mt-3 mb-4 flex items-center gap-2">
             {reqStatus === "pending" ? (
               <Button className="w-28 h-8 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/15 text-rose-600 border border-rose-500/20 cursor-default shadow-none">
@@ -269,12 +243,12 @@ const UsersInfo = () => {
                   }
                   disabled={isFollowing || isUnfollowing}
                   className={`w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
-          ${
-            friends
-              ? "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700"
-              : "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent"
-          }
-        `}
+                    ${
+                      friends
+                        ? "bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:text-zinc-100 dark:border-zinc-700"
+                        : "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent"
+                    }
+                  `}
                 >
                   {friends ? "Unfollow" : "Follow"}
                 </Button>
@@ -302,155 +276,16 @@ const UsersInfo = () => {
 
       {user?.isPublic || friends ? (
         <>
-          {displayPosts.map((post) => {
-            const likeCount = typeof post?.likes === "number" ? post.likes : 0;
-            const currentUserId = user?._id ? String(user._id) : null;
-            const likedByUsers = Array.isArray(post?.likedByUsers)
-              ? post.likedByUsers
-              : [];
-            const visibleLiker = likedByUsers.find((user) => {
-              const likerId = String(
-                user?._id ?? user?.id ?? user?.userId ?? "",
-              );
-              return likerId && likerId !== currentUserId;
-            });
-            return (
-              <Card
-                key={post._id}
-                id={`post-${post._id}`}
-                className="overflow-hidden scroll-mt-28"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10 text-emerald-600">
-                        <AvatarImage
-                          onClick={() => open(user?.profileImage)}
-                          className="h-full w-full cursor-pointer object-cover object-top"
-                          src={user?.profileImage || "/placeholder.svg"}
-                        />
-                        <AvatarFallback>
-                          {user?.userName?.charAt(0).toUpperCase() || "-"}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div>
-                        <p className="text-sm font-medium sm:text-base">
-                          {user?.userName}
-                        </p>
-                        <p className="text-xs text-muted-foreground sm:text-sm">
-                          {formatRelative(post?.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="pt-0">
-                  <PostImageWithLikes
-                    post={post}
-                    likedUsers={post?.likedByUsers}
-                    onImageClick={() => open(post.image)}
-                  />
-
-                  <PostContent
-                    text={post?.postText}
-                    className="mt-3 mb-4 pl-2"
-                  />
-
-                  <div className="mt-3 flex items-center gap-1">
-                    <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                      <PostLikeComponent
-                        post={post}
-                        currentUserId={currentUser?.id}
-                        onLikeChange={handleLikeChange}
-                      />
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleComments(post?._id)}
-                        className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
-                        aria-label="Comment on post"
-                      >
-                        <MessageCircle
-                          style={{
-                            width: 18,
-                            height: 18,
-                          }}
-                        />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openShareModal(post?._id)}
-                        className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent  hover:text-muted-foreground"
-                        aria-label="Share post"
-                      >
-                        <Send
-                          style={{
-                            width: 18,
-                            height: 18,
-                          }}
-                        />
-                      </Button>
-                    </div>
-
-                    <PostBookmarkComponent
-                      post={post}
-                      className="ml-auto shrink-0"
-                    />
-                  </div>
-
-                  {likeCount > 0 && visibleLiker && (
-                    <Link
-                      to={`/posts/${post._id}/liked-users`}
-                      title={visibleLiker?.userName || ""}
-                      className="
-                        inline-flex ml-2 max-w-[180px] items-center truncate
-                        text-[13px] font-medium
-                        text-slate-500
-                        transition-colors duration-200
-                        hover:text-slate-700
-                        dark:text-slate-400
-                        dark:hover:text-slate-200
-                      "
-                    >
-                      {likeCount === 1
-                        ? `Liked by ${formatShortUsername(visibleLiker?.userName)}`
-                        : `Liked by ${formatShortUsername(
-                            visibleLiker?.userName,
-                          )} and others`}
-                    </Link>
-                  )}
-
-                  {openPostId === post._id && (
-                    <div className="mt-3">
-                      <CommentSection
-                        postId={post._id}
-                        userProfile={currentUser}
-                        highlightCommentId={
-                          targetPostId === post._id
-                            ? targetCommentId
-                            : undefined
-                        }
-                      />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
+          <UserPostGridView posts={displayPosts} userId={id} />
 
           <ShareDialog />
           <ImageViewer />
 
           <div ref={loadMoreRef} style={{ height: "20px" }} />
 
-          {isFetchingNextPage && <PostSkeleton />}
+          {isFetchingNextPage && <PostGridSkeleton count={3} />}
 
-          {!hasNextPage && (
+          {!hasNextPage && displayPosts.length > 0 && (
             <div className="flex justify-center">
               <span className="px-3 text-sm text-muted-foreground">
                 No more posts
@@ -459,18 +294,18 @@ const UsersInfo = () => {
           )}
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center py-2 text-center">
+        <div className="flex flex-col items-center justify-center py-10 text-center">
           <div className="mb-4 flex h-18 w-18 items-center justify-center rounded-full border-2 border-slate-300 dark:border-zinc-700">
             <Lock className="h-10 w-10" />
           </div>
-
           <h2 className="text-2xl font-semibold">This Account is Private</h2>
-
           <p className="mt-2 max-w-sm text-sm text-muted-foreground">
             Follow this account to see their photos, videos, and activity.
           </p>
         </div>
       )}
+
+      <StatusViewer />
     </div>
   );
 };

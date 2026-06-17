@@ -176,3 +176,12 @@ export const useProfilePostStore = create((set) => ({
   setUserProfile: (userProfile) => set({ userProfile }),
   setCurrentUser: (currentUser) => set({ currentUser }),
 }));
+
+export const useUserPostStore = create((set) => ({
+  posts: [],
+  userInfo: null,
+  currentUser: null,
+  setPosts: (posts) => set({ posts }),
+  setUserInfo: (userInfo) => set({ userInfo }),
+  setCurrentUser: (currentUser) => set({ currentUser }),
+}));
