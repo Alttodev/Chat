@@ -14,10 +14,17 @@ export const useAuthStore = create()(
       openEditing: () => set({ isEditing: true }),
       closeEditing: () => set({ isEditing: false }),
       clearToken: () => set({ token: null }),
+      resetAuth: () =>
+        set({
+          token: null,
+          user: null,
+          profileId: null,
+          isEditing: false,
+        }),
     }),
     {
       name: "chat-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

@@ -43,7 +43,8 @@ import { DeleteAccountDialog } from "@/components/modals/DeleteAccountDialog";
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
 function SettingsComponent() {
-  const { clearToken, closeEditing, user, setProfileId } = useAuthStore();
+  const { clearToken, closeEditing, user, setProfileId, resetAuth } =
+    useAuthStore();
   const { disconnectSocket } = useSocket();
 
   const { theme, toggleTheme } = useThemeStore();
@@ -133,11 +134,13 @@ function SettingsComponent() {
     try {
       const response = await userAccountDelete();
 
-      toastSuccess(response?.message || "Account deleted successfully");
-      if (response.success) {
+      if (response?.success) {
+        resetAuth();
         localStorage.clear();
 
-        navigate("/");
+        toastSuccess(response?.message || "Account deleted successfully");
+
+        navigate("/", { replace: true });
       }
     } catch (error) {
       toastError(error?.response?.data?.message || "Failed to delete account");

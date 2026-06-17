@@ -47,7 +47,7 @@ const GoogleAuthSuccess = () => {
               userName: resp?.profile?.userName || user?.userName || "there",
             }),
           );
-          toastSuccess("Logged in with Google!");
+          toastSuccess("Logged in with Google");
           navigate("/home", { replace: true });
         } else {
           setProfileId(null);
