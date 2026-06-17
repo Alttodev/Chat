@@ -36,7 +36,7 @@ const ResetForm = () => {
   };
 
   return (
-   <div className="flex justify-center bg-gray-50 px-4 py-4 md:min-h-screen md:items-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div
         className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.56]"
         style={{ backgroundImage: `url(${messageBg})` }}
