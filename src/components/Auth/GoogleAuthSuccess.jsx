@@ -36,7 +36,7 @@ const GoogleAuthSuccess = () => {
       toastError("Something went wrong. Please try again.");
       navigate("/", { replace: true });
     }
-  }, []);
+  }, [navigate, searchParams, setAuth]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
