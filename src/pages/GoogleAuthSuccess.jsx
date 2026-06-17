@@ -28,7 +28,6 @@ const GoogleAuthSuccess = () => {
       try {
         const user = JSON.parse(decodeURIComponent(userRaw));
 
-        // Set token + user — same as normal login
         setToken(token);
         setUser(user);
         connectSocket(user?._id);
