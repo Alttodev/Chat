@@ -1,4 +1,4 @@
-import { Clapperboard, Home, Plus, Send, Users } from "lucide-react";
+import { Home, PlaySquare, Plus, Send, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useZustandImagePopup } from "@/lib/zustand";
@@ -12,7 +12,7 @@ export function MobileMenuBar() {
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
-    { icon: Clapperboard, label: "Reels", path: "/reels" },
+    { icon: PlaySquare, label: "Reels", path: "/reels" },
     null,
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: Send, label: "Message", path: "/messages" },

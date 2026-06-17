@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -10,11 +10,15 @@ const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
 const GoogleAuthSuccess = () => {
   const [searchParams] = useSearchParams();
+  const hasRun = useRef(false);
   const navigate = useNavigate();
   const { setToken, setUser, setProfileId } = useAuthStore();
   const { connectSocket } = useSocket();
 
   useEffect(() => {
+    if (hasRun.current) return;
+
+    hasRun.current = true;
     const token = searchParams.get("token");
     const userRaw = searchParams.get("user");
 
