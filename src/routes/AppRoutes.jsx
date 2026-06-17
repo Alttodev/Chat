@@ -30,6 +30,7 @@ import NotificationPage from "@/pages/Notification";
 import ScrollToTop from "@/components/ScrolltoTop";
 import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
+import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 
 function AppRoutes() {
   return (
@@ -41,6 +42,7 @@ function AppRoutes() {
             <Route path="/" element={<LoginFormComponent />} />
             <Route path="/signup" element={<SignupFormComponent />} />
             <Route path="/reset" element={<ResetFormComponent />} />
+            <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
             <Route
               path="/reset-password"
               element={<ResetMailFormComponent />}
