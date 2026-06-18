@@ -133,7 +133,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                         break-words
                         text-[11px] sm:text-sm
                         leading-4
-                        text-black
+                       text-muted-foreground
                       "
                     >
                       {recommendedByLabel}
@@ -183,7 +183,7 @@ function UserCard({ user, profileId, recommendedUser }) {
                         break-words
                         text-[11px] sm:text-sm
                         leading-4
-                        text-black
+                        text-muted-foreground
                       "
                     >
                       {recommendedByLabel}
