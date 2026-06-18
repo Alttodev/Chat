@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {  Play, Pause, Check, Loader2, Music } from "lucide-react";
+import { Play, Pause, Check, Loader2, Music } from "lucide-react";
 import { useSongs } from "@/hooks/useSongHook";
 
 export function MusicPickerModal({
@@ -126,7 +126,10 @@ export function MusicPickerModal({
                   {/* Info */}
                   <div
                     className="min-w-0 flex-1"
-                    onClick={() => handleSelect(song)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelect(song);
+                    }}
                   >
                     <p className="truncate text-sm font-medium text-foreground">
                       {song.title}
@@ -141,7 +144,10 @@ export function MusicPickerModal({
 
                   {/* Preview button */}
                   <button
-                    onClick={() => togglePreview(song)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      togglePreview(song);
+                    }}
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 transition cursor-pointer"
                     aria-label={isPreviewing ? "Pause preview" : "Preview song"}
                   >

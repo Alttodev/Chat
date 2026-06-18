@@ -49,8 +49,6 @@ export function StatusDraftModal({
     onPost?.({ caption: caption.trim(), backgroundSong: selectedSong ?? null });
   };
 
- 
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,7 +126,7 @@ export function StatusDraftModal({
                         </div>
                         <button
                           onClick={() => setMusicModalOpen(true)}
-                          className="shrink-0 text-xs text-emerald-600 hover:underline cursor-pointer"
+                          className="shrink-0 text-xs text-emerald-600  cursor-pointer"
                         >
                           Change
                         </button>
