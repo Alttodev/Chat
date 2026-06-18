@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Eye, Trash2, MoreVertical } from "lucide-react";
+import { ArrowLeft, Eye, Trash2, MoreVertical, Music2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
@@ -13,6 +13,22 @@ import { toastError, toastSuccess } from "@/lib/toast";
 
 const STATUS_DURATION = 5000;
 const MAX_VIDEO_DURATION = 60000;
+
+function SongTicker({ song }) {
+  const text = `${song.title}  •  ${song.artist}`;
+
+  return (
+    <div className="flex items-center gap-2  px-4 py-2 backdrop-blur-md w-full max-w-[480px] overflow-hidden">
+      <Music2 className="h-3.5 w-3.5 shrink-0 text-white animate-spin [animation-duration:3s]" />
+
+      <div className="overflow-hidden flex-1">
+        <p className="text-xs text-white font-medium whitespace-nowrap animate-marquee">
+          {text}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export function StatusViewer() {
   const { isOpen, status, closeStatus } = useStatusViewerStore();
@@ -30,6 +46,7 @@ export function StatusViewer() {
   const accumulatedProgressRef = useRef(0);
   const statusKeyRef = useRef("");
   const videoRef = useRef(null);
+  const bgAudioRef = useRef(null);
 
   const { mutate: markSeen } = useMarkStatusSeen();
   const { mutate: deleteStatus } = useDeleteStatus();
@@ -50,6 +67,10 @@ export function StatusViewer() {
   const videoPoster = getVideoPosterUrl(mediaUrl);
   const caption = status?.status?.caption || status?.caption || "";
   const user = status?.status?.user || status?.user || {};
+
+  const backgroundSong =
+    status?.status?.backgroundSong || status?.backgroundSong || null;
+  const hasSong = backgroundSong?.src && !isVideo;
 
   const userName = user?.userName || "Status";
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
@@ -81,6 +102,36 @@ export function StatusViewer() {
       ? mediaDuration
       : MAX_VIDEO_DURATION
     : STATUS_DURATION;
+
+  const stopAudio = () => {
+    if (bgAudioRef.current) {
+      bgAudioRef.current.pause();
+      bgAudioRef.current.currentTime = 0;
+      bgAudioRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    if (!isOpen || !hasSong) return;
+
+    bgAudioRef.current = new Audio(backgroundSong.src);
+    bgAudioRef.current.loop = true;
+    bgAudioRef.current.volume = 0.6;
+    bgAudioRef.current.play().catch(() => {});
+
+    return () => stopAudio();
+  }, [isOpen, hasSong, backgroundSong?.src]);
+
+  useEffect(() => {
+    if (!bgAudioRef.current) return;
+    if (isPaused) {
+      bgAudioRef.current.pause();
+    } else {
+      bgAudioRef.current.play().catch(() => {});
+    }
+  }, [isPaused]);
+
+  useEffect(() => () => stopAudio(), []);
 
   useEffect(() => {
     if (isOpen && statusId && !hasMarkedSeenRef.current) {
@@ -237,7 +288,8 @@ export function StatusViewer() {
             </div>
           </div>
 
-          <div className="relative flex items-center gap-4">
+          {/* menu */}
+          <div className="relative flex items-center">
             {isOwner && (
               <div className="relative">
                 <button
@@ -266,12 +318,19 @@ export function StatusViewer() {
           </div>
         </header>
 
+        {/* ── Song ticker row ── */}
+        {hasSong && (
+          <div className="flex items-center justify-center px-4 pb-2">
+            <SongTicker song={backgroundSong} />
+          </div>
+        )}
+
         {/* Media */}
         <button
           onClick={() => setIsPaused((p) => !p)}
           className="flex flex-1 items-center justify-center px-4 pb-8"
         >
-          <div className="relative flex h-[75vh] w-full max-w-[92vw] items-center justify-center overflow-hidden  md:max-w-[720px] lg:max-w-[820px]">
+          <div className="relative flex h-[75vh] w-full max-w-[92vw] items-center justify-center overflow-hidden md:max-w-[720px] lg:max-w-[820px]">
             {isVideo ? (
               <video
                 ref={videoRef}

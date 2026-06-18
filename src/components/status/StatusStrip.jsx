@@ -155,13 +155,16 @@ export function StatusStrip({ compact = false, className }) {
     }
   };
 
-  const handlePostStatus = async (caption) => {
+  const handlePostStatus = async ({ caption, backgroundSong }) => {
     if (!selectedFile) return;
 
     try {
       const formData = new FormData();
       formData.append("image", selectedFile);
       formData.append("caption", caption || "");
+      if (backgroundSong) {
+        formData.append("backgroundSong", JSON.stringify(backgroundSong));
+      }
 
       const res = await uploadStatus(formData);
       toastSuccess(res?.message);
