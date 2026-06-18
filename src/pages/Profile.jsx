@@ -1,4 +1,4 @@
-import { BadgeCheck, Loader2, MapPin } from "lucide-react";
+import { BadgeCheck, Loader2, LoaderCircle, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useProfileEdit, useProfilePostStore } from "@/lib/zustand";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -19,7 +19,7 @@ import { ProfileEditDialog } from "@/components/modals/profileEditModal";
 import StatusMeStrip from "@/components/status/StatusMeStrip";
 import { PostGridView } from "@/components/Post/PostGridView";
 import { Button } from "@/components/ui/button";
-import { PostGridSkeleton } from "@/components/skeleton/postGridSkeleton";
+
 
 const Profile = () => {
   const { openProfile, closeProfile } = useProfileEdit();
@@ -238,7 +238,11 @@ const Profile = () => {
       <ProfileEditDialog />
 
       <div ref={loadMoreRef} />
-      {isFetchingNextPage && <PostGridSkeleton count={3} />}
+      {isFetchingNextPage && (
+        <div className=" flex items-center justify-center">
+          <LoaderCircle className="w-12 h-12 text-emerald-600 animate-spin" />
+        </div>
+      )}
       {!hasNextPage && displayPosts.length > 0 && (
         <div className="flex justify-center">
           <span className="px-3 text-sm text-muted-foreground">

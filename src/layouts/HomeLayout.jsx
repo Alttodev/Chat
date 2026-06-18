@@ -4,8 +4,7 @@ import { MobileMenuBar } from "@/components/MobileMenuBar";
 import { RightSidebar } from "@/components/RightSidebar";
 import StatusViewer from "@/components/status/StatusViewer";
 import { WelcomePostDialog } from "@/components/modals/welcomePostModal";
-import { ProfileImageReminderDialog } from "@/components/modals/profileImageReminderModal";
-import { ThemeModeDialog } from "@/components/modals/themeModeModal";
+
 import { cn } from "@/lib/utils";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -17,7 +16,6 @@ function HomeLayout() {
   const isMessages = pathname === "/messages";
   const isHome = pathname === "/home";
 
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className={cn(isMessages || isReels ? "hidden md:block" : "block")}>
@@ -26,8 +24,7 @@ function HomeLayout() {
 
       <StatusViewer />
       <WelcomePostDialog />
-      <ProfileImageReminderDialog />
-      <ThemeModeDialog />
+
       <MobileMenuBar />
 
       <div className="flex flex-1">

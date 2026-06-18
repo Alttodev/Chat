@@ -1,4 +1,4 @@
-import { BadgeCheck, Lock, MapPin } from "lucide-react";
+import { BadgeCheck, LoaderCircle, Lock, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCommentStore } from "@/lib/zustand";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -28,7 +28,7 @@ import StatusUserStrip from "@/components/status/StatusUserStrip";
 import StatusViewer from "@/components/status/StatusViewer";
 import { UserPostGridView } from "@/components/Post/UserPostGridView";
 import { useUserPostStore } from "@/lib/zustand";
-import { PostGridSkeleton } from "@/components/skeleton/postGridSkeleton";
+
 
 const UsersInfo = () => {
   const navigate = useNavigate();
@@ -281,9 +281,13 @@ const UsersInfo = () => {
           <ShareDialog />
           <ImageViewer />
 
-          <div ref={loadMoreRef} style={{ height: "20px" }} />
+          <div ref={loadMoreRef} />
 
-          {isFetchingNextPage && <PostGridSkeleton count={3} />}
+          {isFetchingNextPage && (
+            <div className=" flex items-center justify-center">
+              <LoaderCircle className="w-12 h-12 text-emerald-600 animate-spin" />
+            </div>
+          )}
 
           {!hasNextPage && displayPosts.length > 0 && (
             <div className="flex justify-center">
