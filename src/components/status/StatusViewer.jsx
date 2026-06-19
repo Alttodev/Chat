@@ -11,7 +11,7 @@ import { useMarkStatusSeen, useDeleteStatus } from "@/hooks/statusHooks";
 import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
 
-const STATUS_DURATION = 30000;
+const STATUS_DURATION = 20000;
 const MAX_VIDEO_DURATION = 60000;
 
 function SongTicker({ song }) {
