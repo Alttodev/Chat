@@ -79,12 +79,7 @@ export function StatusViewer() {
   const isOwner = user?._id === currentUserId || user?.id === currentUserId;
 
   const statusTime =
-    formatRelative(
-      status?.status?.updatedAt ||
-        status?.status?.createdAt ||
-        status?.updatedAt ||
-        status?.createdAt,
-    ) || "";
+    formatRelative(status?.status?.createdAt || status?.createdAt) || "";
 
   const fallback = useMemo(() => {
     return userName?.charAt(0)?.toUpperCase() || "S";
