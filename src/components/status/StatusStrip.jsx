@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Plus, X } from "lucide-react";
+import { Plus, X, EyeOff } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserDetail } from "@/hooks/authHooks";
 import {
@@ -13,6 +13,7 @@ import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { useStatusViewerStore } from "@/lib/zustand";
 import { StatusDraftModal } from "../modals/statusDraftModal";
+import HiddenStatusModal from "../modals/hiddenStatusModal";
 
 const STATUS_UPLOAD_ACCEPT = "image/*,video/mp4";
 
@@ -33,6 +34,7 @@ function StatusBubble({
   image,
   fallback,
   highlight = false,
+  isHiddenTile = false,
   compact = false,
   onClick,
   onAddClick,
@@ -49,13 +51,19 @@ function StatusBubble({
           onClick={onClick}
           className={cn(
             "relative mt-1 flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer h-24 w-24",
-            hasMedia
-              ? "status-ring"
-              : " bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
+            isHiddenTile
+              ? "bg-gray-300 opacity-70 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600"
+              : hasMedia
+                ? "status-ring"
+                : " bg-gray-300 ring-gray-200 dark:bg-gray-700 dark:ring-gray-600",
           )}
         >
           <Avatar className="relative z-10 h-[calc(100%-6px)] w-[calc(100%-6px)] border-2 border-background">
-            {isVideoPreview ? (
+            {isHiddenTile ? (
+              <AvatarFallback className="bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                <EyeOff className="h-7 w-7" />
+              </AvatarFallback>
+            ) : isVideoPreview ? (
               <div className="h-full w-full overflow-hidden rounded-full">
                 <img
                   className="h-full w-full object-cover object-top"
@@ -90,7 +98,7 @@ function StatusBubble({
           >
             <Plus className="h-3 w-3" />
           </button>
-        ) : (
+        ) : isHiddenTile ? null : (
           <div
             className={`absolute -bottom-0 right-1 h-4 w-4 rounded-full border-2 border-background ${
               online ? "bg-green-500" : "bg-yellow-500"
@@ -123,10 +131,12 @@ export function StatusStrip({ compact = false, className }) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDraftOpen, setIsDraftOpen] = useState(false);
+  const [isHiddenModalOpen, setIsHiddenModalOpen] = useState(false);
 
   const currentUser = profileData?.profile;
   const myStatus = myStatusData?.status || null;
   const statuses = feedData?.statuses || [];
+  const hiddenStatuses = feedData?.hiddenStatuses || [];
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -252,6 +262,15 @@ export function StatusStrip({ compact = false, className }) {
                 />
               );
             })}
+
+            {hiddenStatuses.length > 0 && (
+              <StatusBubble
+                isHiddenTile
+                label="Hidden"
+                compact={compact}
+                onClick={() => setIsHiddenModalOpen(true)}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -263,6 +282,12 @@ export function StatusStrip({ compact = false, className }) {
         onCancel={handleCancelDraft}
         onPost={handlePostStatus}
         isUploading={isUploading}
+      />
+
+      <HiddenStatusModal
+        show={isHiddenModalOpen}
+        onClose={() => setIsHiddenModalOpen(false)}
+        hiddenStatuses={hiddenStatuses}
       />
     </>
   );

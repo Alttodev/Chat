@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Eye, Trash2, MoreVertical, Music2 } from "lucide-react";
+import { ArrowLeft, Eye, MoreVertical, Music2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatRelative } from "@/lib/dateHelpers";
 import { getVideoPosterUrl, isVideoMediaUrl } from "@/lib/media";
@@ -8,8 +8,15 @@ import { useStatusViewerStore } from "@/lib/zustand";
 
 import StatusSeenList from "./StatusSeenList";
 import { useMarkStatusSeen, useDeleteStatus } from "@/hooks/statusHooks";
+import { useHideStatusUser } from "@/hooks/statusHideHooks";
 import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const STATUS_DURATION = 20000;
 const MAX_VIDEO_DURATION = 60000;
@@ -37,7 +44,6 @@ export function StatusViewer() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [mediaDuration, setMediaDuration] = useState(STATUS_DURATION);
 
   const animationFrameRef = useRef(null);
@@ -50,6 +56,7 @@ export function StatusViewer() {
 
   const { mutate: markSeen } = useMarkStatusSeen();
   const { mutate: deleteStatus } = useDeleteStatus();
+  const { mutate: hideStatusUser, isPending: isHiding } = useHideStatusUser();
   const hasMarkedSeenRef = useRef(false);
 
   const currentUserId = useAuthStore((state) => state.profileId);
@@ -75,6 +82,7 @@ export function StatusViewer() {
   const userName = user?.userName || "Status";
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
   const statusId = status?.status?._id || status?._id;
+  const statusUserId = user?._id || user?.id;
 
   const isOwner = user?._id === currentUserId || user?.id === currentUserId;
 
@@ -143,6 +151,20 @@ export function StatusViewer() {
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
+  };
+
+  const handleHide = () => {
+    if (!statusUserId || isHiding) return;
+
+    hideStatusUser(statusUserId, {
+      onSuccess: (res) => {
+        closeStatus();
+        toastSuccess(res?.data?.message || "Story hidden");
+      },
+      onError: (err) => {
+        toastError(err?.response?.data?.message || "Something went wrong");
+      },
+    });
   };
 
   useEffect(() => {
@@ -285,31 +307,33 @@ export function StatusViewer() {
 
           {/* menu */}
           <div className="relative flex items-center">
-            {isOwner && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowMenu((prev) => !prev)}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center"
-                >
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex h-10 w-10 cursor-pointer items-center justify-center">
                   <MoreVertical className="h-5 w-5" />
                 </button>
+              </DropdownMenuTrigger>
 
-                {showMenu && (
-                  <div className="absolute right-0 z-50 mt-2 w-32 rounded-md border bg-white shadow-md">
-                    <button
-                      onClick={() => {
-                        handleDelete();
-                        setShowMenu(false);
-                      }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 cursor-pointer"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Delete
-                    </button>
-                  </div>
+              <DropdownMenuContent align="end" className="w-26">
+                {isOwner && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </DropdownMenuItem>
                 )}
-              </div>
-            )}
+                {!isOwner && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    disabled={isHiding}
+                    onClick={handleHide}
+                  >
+                    Hide
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
