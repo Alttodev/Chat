@@ -1,4 +1,4 @@
-import { Search, X, User, Settings, Gem, Send, Bell } from "lucide-react";
+import { Search, X, User, Settings, Gem, Send, Bell, TrendingUp } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -65,6 +65,15 @@ export function SocialHeader() {
             className="text-muted-foreground cursor-pointer"
             onClick={() => setSearchOpen(true)}
           />
+          <div
+            className="cursor-pointer"
+            onClick={() => navigate("/inprogress")}
+          >
+            <TrendingUp
+              className=" text-muted-foreground"
+              style={{ width: 19, height: 19 }}
+            />
+          </div>
 
           <div
             className="relative cursor-pointer"
@@ -184,7 +193,7 @@ export function SocialHeader() {
           </div>
         </div>
       </div>
-      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen} >
+      <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
         <CommandInput
           placeholder="Search users..."
           value={searchQuery}
