@@ -18,7 +18,6 @@ export default function HiddenStatusModal({
     try {
       const res = await unhideUser(userId);
       toastSuccess(res?.data?.message || "Story unhidden");
-      onClose();
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
