@@ -26,6 +26,7 @@ import {
   userRequestDelete,
   getHashtagPosts,
   getUserPostVideos,
+  getTrendingPosts,
 } from "@/api/axios";
 import {
   useInfiniteQuery,
@@ -177,6 +178,23 @@ export const useBookmarkedPosts = () => {
     queryKey: ["bookmarked_posts"],
     initialPageParam: 1,
     queryFn: ({ pageParam = 1 }) => getBookmarkedPosts(pageParam, 5),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+
+      const currentPage = Number(lastPage.currentPage || 1);
+      const totalPages = Number(lastPage.totalPages || 1);
+
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useTrendingPosts = () => {
+  return useInfiniteQuery({
+    queryKey: ["trending_posts"],
+    initialPageParam: 1,
+    queryFn: ({ pageParam = 1 }) => getTrendingPosts(pageParam, 5),
     getNextPageParam: (lastPage) => {
       if (!lastPage) return undefined;
 

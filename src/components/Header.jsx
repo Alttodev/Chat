@@ -67,7 +67,7 @@ export function SocialHeader() {
           />
           <div
             className="cursor-pointer"
-            onClick={() => navigate("/inprogress")}
+            onClick={() => navigate("/trending")}
           >
             <TrendingUp
               className=" text-muted-foreground"

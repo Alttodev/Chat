@@ -31,6 +31,7 @@ import ScrollToTop from "@/components/ScrolltoTop";
 import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
+import TrendingPosts from "@/pages/Trending";
 
 function AppRoutes() {
   return (
@@ -42,7 +43,10 @@ function AppRoutes() {
             <Route path="/" element={<LoginFormComponent />} />
             <Route path="/signup" element={<SignupFormComponent />} />
             <Route path="/reset" element={<ResetFormComponent />} />
-            <Route path="/auth/google/success" element={<GoogleAuthSuccess />} />
+            <Route
+              path="/auth/google/success"
+              element={<GoogleAuthSuccess />}
+            />
             <Route
               path="/reset-password"
               element={<ResetMailFormComponent />}
@@ -75,8 +79,15 @@ function AppRoutes() {
               <Route path="/posts/:id/likes" element={<PostLikes />} />
               <Route path="/posts/:id/liked-users" element={<PostLikes />} />
               <Route path="/hashtags/:tag" element={<HashtagPosts />} />
-              <Route path="/profile/posts/:postId" element={<ProfilePostFeed />} />
-              <Route path="/user/:userId/posts/:postId" element={<UserPostFeed />} />
+              <Route
+                path="/profile/posts/:postId"
+                element={<ProfilePostFeed />}
+              />
+              <Route
+                path="/user/:userId/posts/:postId"
+                element={<UserPostFeed />}
+              />
+              <Route path="/trending" element={<TrendingPosts/>} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
