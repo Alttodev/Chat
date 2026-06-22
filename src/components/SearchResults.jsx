@@ -45,7 +45,7 @@ export function SearchResults({ data, isLoading, query, onClose }) {
           className="cursor-pointer"
         >
           <div className="relative">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 text-emerald-600">
               <AvatarImage
                 src={user?.profileImage || "/placeholder.svg"}
                 className="object-cover object-top"
