@@ -35,7 +35,10 @@ export function DeleteAccountDialog({
           </AlertDialogCancel>
 
           <AlertDialogAction
-            onClick={onConfirm}
+            onClick={(e) => {
+              e.preventDefault();
+              onConfirm();
+            }}
             className="w-1/2 bg-red-600 hover:bg-red-700 sm:w-auto"
           >
             {loading ? (
