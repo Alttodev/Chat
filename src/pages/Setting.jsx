@@ -441,7 +441,7 @@ function SettingsComponent() {
               </div>
 
               <Button
-                variant="ghost"
+               variant="destructive"
                 onClick={handleLogout}
                 className="
     bg-rose-500/10
