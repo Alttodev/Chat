@@ -137,15 +137,17 @@ function SettingsComponent() {
       const response = await userAccountDelete();
 
       if (response?.success) {
-        navigate("/", { replace: true });
         resetAuth();
         localStorage.clear();
+
         toastSuccess(response?.message || "Account deleted successfully");
+
+        setDeleteModalOpen(false);
+        navigate("/", { replace: true });
       }
     } catch (error) {
       toastError(error?.response?.data?.message || "Failed to delete account");
     } finally {
-      setDeleteModalOpen(false);
       setLoading(false);
     }
   };
