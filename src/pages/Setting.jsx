@@ -53,6 +53,7 @@ function SettingsComponent() {
   const queryClient = useQueryClient();
   const userProfile = useMemo(() => profileData, [profileData]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [loading,setLoading]=useState(false)
   const [isPublic, setIsPublic] = useState(
     userProfile?.profile?.isPublic ?? true,
   );
@@ -133,7 +134,7 @@ function SettingsComponent() {
   const handleDeleteAccount = async () => {
     try {
       const response = await userAccountDelete();
-
+       setLoading(true)
       if (response?.success) {
         resetAuth();
         localStorage.clear();
@@ -146,6 +147,7 @@ function SettingsComponent() {
       toastError(error?.response?.data?.message || "Failed to delete account");
     } finally {
       setDeleteModalOpen(false);
+      setLoading(false)
     }
   };
 
@@ -522,6 +524,7 @@ function SettingsComponent() {
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}
         onConfirm={handleDeleteAccount}
+        loading={loading}
       />
     </div>
   );

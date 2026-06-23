@@ -8,8 +8,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
-export function DeleteAccountDialog({ open, onOpenChange, onConfirm }) {
+export function DeleteAccountDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  loading,
+}) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="z-[90] w-[calc(100%-2rem)] max-w-[500px] rounded-lg p-4 sm:rounded-xl [&_button]:cursor-pointer">
@@ -32,7 +38,14 @@ export function DeleteAccountDialog({ open, onOpenChange, onConfirm }) {
             onClick={onConfirm}
             className="w-1/2 bg-red-600 hover:bg-red-700 sm:w-auto"
           >
-            Delete Account
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                deleting...
+              </>
+            ) : (
+              <>Delete Account</>
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
