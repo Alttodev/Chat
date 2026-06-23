@@ -9,6 +9,7 @@ import {
   useUserInfoCount,
   useUserPostList,
   usePostInfo,
+  useTrendingCreators,
 } from "@/hooks/postHooks";
 import { ShareDialog } from "@/components/modals/shareModal";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,6 @@ import StatusViewer from "@/components/status/StatusViewer";
 import { UserPostGridView } from "@/components/Post/UserPostGridView";
 import { useUserPostStore } from "@/lib/zustand";
 
-
 const UsersInfo = () => {
   const navigate = useNavigate();
 
@@ -39,6 +39,10 @@ const UsersInfo = () => {
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
+
+  const { data: trendingCreatorsData } = useTrendingCreators(id);
+
+  const trendingRank = trendingCreatorsData?.creators?.[0]?.rank || null;
 
   const [searchParams] = useSearchParams();
   const targetPostId = searchParams.get("postId");
@@ -213,6 +217,28 @@ const UsersInfo = () => {
               </span>
               {user?.isVerified && (
                 <BadgeCheck className="w-4 h-4 fill-blue-500 text-white shrink-0" />
+              )}
+
+              {[1, 2, 3].includes(trendingRank) && (
+                <button
+                  onClick={() => navigate("/trending")}
+                  className="ml-3 inline-flex items-center gap-2 rounded-full px-3 py-1 shadow-sm transition-all hover:scale-105 cursor-pointer"
+                  style={{
+                    backgroundColor: "#FFF8E6",
+                    border: "1px solid #F5B942",
+                  }}
+                >
+                  <span className="text-sm">🔥</span>
+
+                  <span
+                    className="text-xs font-semibold tracking-wide"
+                    style={{
+                      color: "#B7791F",
+                    }}
+                  >
+                    Trending Creator
+                  </span>
+                </button>
               )}
             </div>
 

@@ -298,6 +298,13 @@ export const getTrendingPosts = async (page = 1, limit = 5) => {
   return data;
 };
 
+export const getTrendingCreators = async (userId) => {
+  const { data } = await axiosInstance.get(`/post/trending-creators`, {
+    params: userId ? { userId } : {},
+  });
+  return data;
+};
+
 export const getPostLikedUsers = async (id) => {
   const { data } = await axiosInstance.get(`/post/${id}/liked-users`);
   return data;

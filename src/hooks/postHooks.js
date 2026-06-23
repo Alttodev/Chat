@@ -27,6 +27,7 @@ import {
   getHashtagPosts,
   getUserPostVideos,
   getTrendingPosts,
+  getTrendingCreators,
 } from "@/api/axios";
 import {
   useInfiniteQuery,
@@ -204,6 +205,15 @@ export const useTrendingPosts = () => {
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
     refetchOnWindowFocus: false,
+  });
+};
+
+
+export const useTrendingCreators = (userId) => {
+  return useQuery({
+    queryKey: ["trending_creators", userId || "self"],
+    queryFn: () => getTrendingCreators(userId),
+    staleTime: 5 * 60 * 1000,
   });
 };
 
