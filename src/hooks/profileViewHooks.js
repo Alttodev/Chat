@@ -1,4 +1,8 @@
-import { getProfileViewSeen, markProfileViewSeen } from "@/api/axios";
+import {
+  claimBirthdayReward,
+  getProfileViewSeen,
+  markProfileViewSeen,
+} from "@/api/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useMarkProfileViewSeen = () => {
@@ -13,12 +17,21 @@ export const useMarkProfileViewSeen = () => {
   });
 };
 
-
 export const useProfileViewSeen = () => {
   return useQuery({
     queryKey: ["profileviews"],
-    queryFn: () =>getProfileViewSeen(),
+    queryFn: () => getProfileViewSeen(),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useClaimBirthdayReward = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: claimBirthdayReward,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 };

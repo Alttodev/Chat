@@ -1,4 +1,13 @@
-import { Search, X, User, Settings, Gem, Send, Bell, TrendingUp } from "lucide-react";
+import {
+  Search,
+  X,
+  User,
+  Settings,
+  Gem,
+  Send,
+  Bell,
+  TrendingUp,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -17,6 +26,9 @@ import {
 import logo from "@/assets/logo.png";
 import { CommandDialog, CommandInput, CommandList } from "./ui/command";
 import { useNotificationCounts } from "@/hooks/notificationHooks";
+import { isBirthdayClaimedThisYear, isBirthdayToday } from "@/lib/birthday";
+import { BirthdayBadge } from "./birthday/BirthdayBadge";
+import { BirthdayCelebration } from "./birthday/BirthdayCelebration";
 
 export function SocialHeader() {
   const navigate = useNavigate();
@@ -24,6 +36,17 @@ export function SocialHeader() {
   const { data: profileData } = useUserDetail();
   const userProfile = useMemo(() => profileData, [profileData]);
   const { data: countsData } = useNotificationCounts();
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const [claimedReward, setClaimedReward] = useState(null);
+
+  const showBirthdayBadge =
+    isBirthdayToday(userProfile?.profile?.dateOfBirth) &&
+    !isBirthdayClaimedThisYear(userProfile?.profile?.birthdayReward);
+
+  const handleClaimed = (reward) => {
+    setClaimedReward(reward);
+    setCelebrationOpen(true);
+  };
 
   const totalCount = countsData?.counts?.total || 0;
   const badgeText = totalCount > 99 ? "99+" : totalCount;
@@ -65,16 +88,19 @@ export function SocialHeader() {
             className="text-muted-foreground cursor-pointer"
             onClick={() => setSearchOpen(true)}
           />
-          <div
-            className="cursor-pointer"
-            onClick={() => navigate("/trending")}
-          >
+          <div className="cursor-pointer" onClick={() => navigate("/trending")}>
             <TrendingUp
               className=" text-muted-foreground"
               style={{ width: 19, height: 19 }}
             />
           </div>
 
+          {showBirthdayBadge && <BirthdayBadge onClaimed={handleClaimed} />}
+          <BirthdayCelebration
+            open={celebrationOpen}
+            reward={claimedReward}
+            onClose={() => setCelebrationOpen(false)}
+          />
           <div
             className="relative cursor-pointer"
             onClick={() => navigate("/notification")}

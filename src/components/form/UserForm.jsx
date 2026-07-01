@@ -32,6 +32,7 @@ const ProfileCreateForm = () => {
       userName: "",
       address: "",
       email: "",
+      dateOfBirth: "",
       profileImage: null,
     },
   });
@@ -42,6 +43,7 @@ const ProfileCreateForm = () => {
       formData.append("userName", data.userName);
       formData.append("email", data.email);
       formData.append("address", data.address);
+      formData.append("dateOfBirth", data.dateOfBirth);
 
       // Add profile image as binary if present
       if (data.profileImage) {
@@ -148,6 +150,20 @@ const ProfileCreateForm = () => {
             />
             {errors.address?.message && (
               <p className="text-red-500 text-sm">{errors.address?.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1 mt-2">
+            <label className="!text-sm">Date of Birth</label>
+            <TextInput
+              name="dateOfBirth"
+              type="date"
+              control={control}
+              disabled={isSubmitting}
+            />
+            {errors.dateOfBirth?.message && (
+              <p className="text-red-500 text-sm">
+                {errors.dateOfBirth?.message}
+              </p>
             )}
           </div>
           <div className="mb-3">

@@ -242,6 +242,11 @@ export const getProfile = async () => {
   return data;
 };
 
+export const claimBirthdayReward = async () => {
+  const res = await axiosInstance.post("/profile/claim-birthday-reward");
+  return res.data;
+};
+
 export const getAllProfiles = async () => {
   const { data } = await axiosInstance.get(`/profile/userProfiles`);
   return data;

@@ -1,4 +1,13 @@
-import { User, Mail, MapPin, Camera, BadgeInfo, Sparkles, Loader2 } from "lucide-react";
+import {
+  User,
+  Mail,
+  MapPin,
+  Camera,
+  BadgeInfo,
+  Sparkles,
+  Loader2,
+  Calendar,
+} from "lucide-react";
 import TextInput from "../form_inputs/TextInput";
 import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { useForm } from "react-hook-form";
@@ -33,6 +42,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       address: "",
       userName: "",
       bio: "",
+      dateOfBirth: "",
       profileImage: null,
     },
   });
@@ -73,6 +83,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       formData.append("email", data.email);
       formData.append("address", data.address);
       formData.append("bio", data.bio);
+      formData.append("dateOfBirth", data.dateOfBirth);
 
       // only send if user selected a new file
       if (data.profileImage instanceof File) {
@@ -100,6 +111,9 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
         address: userProfile?.profile?.address || "",
         email: userProfile?.profile?.email || "",
         bio: userProfile?.profile?.bio || "",
+        dateOfBirth: userProfile?.profile?.dateOfBirth
+          ? userProfile.profile.dateOfBirth.slice(0, 10)
+          : "",
         profileImage: null,
       });
       isProfileImageRemovedRef.current = false;
@@ -190,6 +204,27 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
               <p className="text-sm text-red-500">{errors.address.message}</p>
             )}
           </div>
+          <div className="space-y-2">
+            <label
+              htmlFor="dateOfBirth"
+              className="flex items-center gap-2 text-sm font-medium text-foreground"
+            >
+              <Calendar className="h-4 w-4 text-emerald-600" />
+              Date of Birth
+            </label>
+            <TextInput
+              name="dateOfBirth"
+              type="date"
+              control={control}
+              disabled={!isEditing}
+              className="bg-background"
+            />
+            {errors.dateOfBirth?.message && (
+              <p className="text-sm text-red-500">
+                {errors.dateOfBirth.message}
+              </p>
+            )}
+          </div>
 
           <div className="space-y-2">
             <label
@@ -251,14 +286,14 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
                 sm:px-6
               "
             >
-             {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>Save</>
-            )}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>Save</>
+              )}
             </Button>
           </div>
         )}
