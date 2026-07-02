@@ -35,21 +35,23 @@ const ResetForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-emerald-50 via-white to-green-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
-      <div className="relative z-0 w-full max-w-md bg-white shadow-lg  rounded-[32px] p-6">
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-green-100 px-3 py-3 sm:px-6 sm:py-6 lg:px-8 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="w-full max-w-md rounded-[32px] border border-white/70 bg-white/95 p-4 shadow-2xl shadow-emerald-100/70 backdrop-blur-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
         {/* Logo */}
-        <div className="flex justify-center mb-2">
+        <div className="mb-2 flex justify-center">
           <img src={logo} alt="Clix Logo" className="w-12 h-12" />
         </div>
 
         {/* Heading */}
-        <div className="text-center mb-5">
+        <div className="mb-4 text-center sm:mb-5">
           <p className="text-xl font-bold text-emerald-600">Reset</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-3 sm:space-y-4"
+        >
           <div>
             <label className="block !text-sm font-medium text-gray-700 mb-1">
               Email
@@ -100,7 +102,7 @@ const ResetForm = () => {
           </Button>
         </form>
 
-        <div className="flex justify-between mt-6">
+        <div className="mt-4 flex justify-between sm:mt-6">
           <div className="text-sm text-gray-600">
             Back to &nbsp;
             <Link to="/" className="text-emerald-600">
