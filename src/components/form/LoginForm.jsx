@@ -13,13 +13,10 @@ import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import logo from "@/assets/logo.png";
-import messageBg from "@/assets/bgwallpaper.png";
 import { Loader2 } from "lucide-react";
-import GoogleIcon from "@/lib/googleSvg"
+import GoogleIcon from "@/lib/googleSvg";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
-
-
 
 const LoginForm = () => {
   const RECAPTCHA_SITE_KEY = import.meta.env.VITE_GOOGLE_CAPTCHA_SITE_KEY;
@@ -98,11 +95,8 @@ const LoginForm = () => {
 
   return (
     <div className="flex justify-center bg-gray-50 px-4 py-4 md:min-h-screen md:items-center">
-      <div
-        className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.56]"
-        style={{ backgroundImage: `url(${messageBg})` }}
-      />
-      <div className="relative z-0 w-full max-w-md bg-white shadow-lg rounded-xl p-6">
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-emerald-50 via-white to-green-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950" />
+      <div className="relative z-0 w-full max-w-md bg-white shadow-lg rounded-[32px] p-6">
         {/* Logo */}
         <div className="flex justify-center mb-2">
           <img src={logo} alt="Clix Logo" className="w-12 h-12" />
