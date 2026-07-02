@@ -166,7 +166,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 hidden">
             <label
               htmlFor="email"
               className="flex items-center gap-2 text-sm font-medium text-foreground"
@@ -188,11 +188,11 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
 
           <div className="space-y-2">
             <label
-              htmlFor="address"
+              htmlFor="location"
               className="flex items-center gap-2 text-sm font-medium text-foreground"
             >
               <MapPin className="h-4 w-4 text-emerald-600" />
-              Address
+              Location
             </label>
             <TextInput
               name="address"
@@ -204,7 +204,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
               <p className="text-sm text-red-500">{errors.address.message}</p>
             )}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 hidden">
             <label
               htmlFor="dateOfBirth"
               className="flex items-center gap-2 text-sm font-medium text-foreground"

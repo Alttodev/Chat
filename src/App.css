@@ -274,3 +274,44 @@
 .animate-pop-in {
   animation: pop-in 0.25s ease-out;
 }
+
+@keyframes cake-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scale(1) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.12) rotate(3deg);
+  }
+}
+
+.animate-cake-bounce {
+  animation: cake-bounce 1.4s ease-in-out infinite;
+}
+
+.animate-flame-flicker {
+  animation: flame-flicker 0.5s ease-in-out infinite;
+}
+
+@keyframes ribbon-in {
+  0% {
+    transform: translateY(-8px) scaleX(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scaleX(1);
+    opacity: 1;
+  }
+}
+
+.animate-ribbon-in {
+  animation: ribbon-in 0.35s ease-out;
+}

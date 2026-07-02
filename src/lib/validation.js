@@ -54,7 +54,7 @@ export const userSchema = z.object({
   userName: z.string().min(1, { message: "UserName is required" }),
   dateOfBirth: z
     .string()
-    .optional()
+     .min(1, { message: "Date of Birth is required." })
     .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: "Invalid date",
     }),
@@ -62,7 +62,7 @@ export const userSchema = z.object({
     .string()
     .min(1, { message: "Email is required." })
     .email("Please enter a valid email."),
-  address: z.string().min(1, { message: "Address is required" }),
+  address: z.string().min(1, { message: "Location is required" }),
   profileImage: z.any().optional(),
   bio: z
     .string()

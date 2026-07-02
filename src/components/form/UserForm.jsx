@@ -110,7 +110,7 @@ const ProfileCreateForm = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 mt-4">
           <div className="flex flex-col gap-1 ">
             <label className="!text-sm">Name</label>
             <TextInput
@@ -141,11 +141,11 @@ const ProfileCreateForm = () => {
           </div>
 
           <div className="flex flex-col gap-1 mt-2">
-            <label className="!text-sm">Address</label>
+            <label className="!text-sm">Location</label>
             <TextInput
               name="address"
               control={control}
-              placeholder="Address"
+              placeholder="Location"
               disabled={isSubmitting}
             />
             {errors.address?.message && (
