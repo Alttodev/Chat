@@ -13,7 +13,7 @@ import ProfileImageUpload from "../form_inputs/ProfileImageUpload";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toastError, toastSuccess } from "@/lib/toast";
-import { userSchema } from "@/lib/validation";
+import { userUpdateSchema } from "@/lib/validation";
 import { useUserUpdate } from "@/hooks/authHooks";
 import { useEffect, useRef } from "react";
 import { Button } from "../ui/button";
@@ -35,14 +35,11 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(userUpdateSchema),
     defaultValues: {
-      email: "",
-      password: "",
       address: "",
       userName: "",
       bio: "",
-      dateOfBirth: "",
       profileImage: null,
     },
   });
@@ -80,10 +77,8 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
     try {
       const formData = new FormData();
       formData.append("userName", data.userName);
-      formData.append("email", data.email);
       formData.append("address", data.address);
       formData.append("bio", data.bio);
-      formData.append("dateOfBirth", data.dateOfBirth);
 
       // only send if user selected a new file
       if (data.profileImage instanceof File) {
@@ -109,11 +104,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
       reset({
         userName: userProfile?.profile?.userName || "",
         address: userProfile?.profile?.address || "",
-        email: userProfile?.profile?.email || "",
         bio: userProfile?.profile?.bio || "",
-        dateOfBirth: userProfile?.profile?.dateOfBirth
-          ? userProfile.profile.dateOfBirth.slice(0, 10)
-          : "",
         profileImage: null,
       });
       isProfileImageRemovedRef.current = false;
@@ -153,7 +144,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
               className="flex items-center gap-2 text-sm font-medium text-foreground"
             >
               <User className="h-4 w-4 text-emerald-600" />
-              Full Name
+              Username
             </label>
             <TextInput
               name="userName"
@@ -163,26 +154,6 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             />
             {errors.userName?.message && (
               <p className="text-sm text-red-500">{errors.userName.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2 hidden">
-            <label
-              htmlFor="email"
-              className="flex items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <Mail className="h-4 w-4 text-emerald-600" />
-              Email
-            </label>
-            <TextInput
-              name="email"
-              type="email"
-              control={control}
-              disabled={!isEditing}
-              className="bg-background"
-            />
-            {errors.email?.message && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 
@@ -202,27 +173,6 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
             />
             {errors.address?.message && (
               <p className="text-sm text-red-500">{errors.address.message}</p>
-            )}
-          </div>
-          <div className="space-y-2 hidden">
-            <label
-              htmlFor="dateOfBirth"
-              className="flex items-center gap-2 text-sm font-medium text-foreground"
-            >
-              <Calendar className="h-4 w-4 text-emerald-600" />
-              Date of Birth
-            </label>
-            <TextInput
-              name="dateOfBirth"
-              type="date"
-              control={control}
-              disabled={!isEditing}
-              className="bg-background"
-            />
-            {errors.dateOfBirth?.message && (
-              <p className="text-sm text-red-500">
-                {errors.dateOfBirth.message}
-              </p>
             )}
           </div>
 

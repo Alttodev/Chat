@@ -43,7 +43,7 @@ import { DeleteAccountDialog } from "@/components/modals/DeleteAccountDialog";
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
 
 function SettingsComponent() {
-  const { clearToken, closeEditing, user, setProfileId, resetAuth } =
+  const { clearToken, closeEditing, user, setProfileId } =
     useAuthStore();
   const { disconnectSocket } = useSocket();
 
@@ -133,17 +133,14 @@ function SettingsComponent() {
 
   const handleDeleteAccount = async () => {
     setLoading(true);
+
     try {
       const response = await userAccountDelete();
 
       if (response?.success) {
-        resetAuth();
-        localStorage.clear();
-
-        toastSuccess(response?.message || "Account deleted successfully");
-
         setDeleteModalOpen(false);
-        navigate("/", { replace: true });
+
+        navigate("/goodbye", { replace: true });
       }
     } catch (error) {
       toastError(error?.response?.data?.message || "Failed to delete account");
@@ -441,7 +438,7 @@ function SettingsComponent() {
               </div>
 
               <Button
-               variant="destructive"
+                variant="destructive"
                 onClick={handleLogout}
                 className="
     bg-rose-500/10

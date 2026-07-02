@@ -51,17 +51,19 @@ export const resetMailSchema = z.object({
 });
 
 export const userSchema = z.object({
-  userName: z.string().min(1, { message: "UserName is required" }),
+  userName: z.string().min(1, { message: "Username is required" }),
   dateOfBirth: z
     .string()
-     .min(1, { message: "Date of Birth is required." })
+    .min(1, { message: "Date of Birth is required." })
     .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: "Invalid date",
     }),
-  email: z
-    .string()
-    .min(1, { message: "Email is required." })
-    .email("Please enter a valid email."),
+  address: z.string().min(1, { message: "Location is required" }),
+  profileImage: z.any().optional(),
+});
+
+export const userUpdateSchema = z.object({
+  userName: z.string().min(1, { message: "Username is required" }),
   address: z.string().min(1, { message: "Location is required" }),
   profileImage: z.any().optional(),
   bio: z

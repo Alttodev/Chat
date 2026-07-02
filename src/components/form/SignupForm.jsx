@@ -35,7 +35,7 @@ const SignupForm = () => {
       toastSuccess(res?.message);
       navigate("/");
     } catch (error) {
-      toastError(error?.response?.data?.message || "Something went wrong");
+      toastError(error?.response?.data?.msg || "Something went wrong");
     }
   };
 

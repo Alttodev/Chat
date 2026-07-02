@@ -32,6 +32,7 @@ import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 import TrendingPosts from "@/pages/Trending";
+import GoodbyePage from "@/pages/GoodbyePage";
 
 function AppRoutes() {
   return (
@@ -87,11 +88,12 @@ function AppRoutes() {
                 path="/user/:userId/posts/:postId"
                 element={<UserPostFeed />}
               />
-              <Route path="/trending" element={<TrendingPosts/>} />
+              <Route path="/trending" element={<TrendingPosts />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
           <Route path="/inprogress" element={<InProgress />} />
+          <Route path="/goodbye" element={<GoodbyePage />} />
         </Routes>
       </Router>
     </div>

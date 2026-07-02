@@ -31,7 +31,6 @@ const ProfileCreateForm = () => {
     defaultValues: {
       userName: "",
       address: "",
-      email: "",
       dateOfBirth: "",
       profileImage: null,
     },
@@ -41,7 +40,6 @@ const ProfileCreateForm = () => {
     try {
       const formData = new FormData();
       formData.append("userName", data.userName);
-      formData.append("email", data.email);
       formData.append("address", data.address);
       formData.append("dateOfBirth", data.dateOfBirth);
 
@@ -112,31 +110,15 @@ const ProfileCreateForm = () => {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 mt-4">
           <div className="flex flex-col gap-1 ">
-            <label className="!text-sm">Name</label>
+            <label className="!text-sm">Username</label>
             <TextInput
               name="userName"
               control={control}
-              placeholder="Name"
+              placeholder="Username"
               disabled={isSubmitting}
             />
             {errors.userName?.message && (
               <p className="text-red-500 text-sm">{errors.userName?.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block !text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <TextInput
-              name="email"
-              control={control}
-              placeholder="Enter your email"
-              disabled={isSubmitting}
-            />
-            {errors.email?.message && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.email?.message}
-              </p>
             )}
           </div>
 
@@ -154,12 +136,14 @@ const ProfileCreateForm = () => {
           </div>
           <div className="flex flex-col gap-1 mt-2">
             <label className="!text-sm">Date of Birth</label>
-            <TextInput
-              name="dateOfBirth"
-              type="date"
-              control={control}
-              disabled={isSubmitting}
-            />
+            <div className="dob-field-wrapper">
+              <TextInput
+                name="dateOfBirth"
+                type="date"
+                control={control}
+                disabled={isSubmitting}
+              />
+            </div>
             {errors.dateOfBirth?.message && (
               <p className="text-red-500 text-sm">
                 {errors.dateOfBirth?.message}
