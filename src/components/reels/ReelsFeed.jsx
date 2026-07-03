@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usePostListVideos } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
-import { useZustandSharePopup } from "@/lib/zustand";
+import { useZustandImagePopup, useZustandSharePopup } from "@/lib/zustand";
 import { ReelCommentsDialog } from "./ReelCommentsDialog";
 import { Spinner } from "../ui/shadcn-io/spinner";
 import { PostSkeleton } from "../skeleton/postListSkeleton";
+import { PostImageDialog } from "../modals/postImageModal";
 
 export function ReelsFeed() {
   const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
+  const { openImageModal } = useZustandImagePopup();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     usePostListVideos();
   const scrollRef = useRef(null);
@@ -80,95 +82,99 @@ export function ReelsFeed() {
   }
 
   return (
-    <>
-      <div className="sticky top-0 z-20 bg-gradient-to-r from-white to-white/95 dark:from-slate-900 dark:to-slate-900/95 backdrop-blur-md">
-        <div className="max-w-5xl mx-auto px-4 py-1 sm:py-2 flex items-center justify-between">
-          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-            Reels
-          </h1>
-          <div className="flex gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-            <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+    <div className="min-h-screen bg-slate-950 dark:bg-slate-950">
+      <>
+        <div className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 to-slate-900/95 dark:from-slate-900 dark:to-slate-900/95 backdrop-blur-md">
+          <div className="max-w-5xl mx-auto px-4 py-1 sm:py-2 flex items-center justify-between">
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r text-white bg-clip-text ">
+              Reels
+            </h1>
+            <button
+              onClick={openImageModal}
+              className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+            >
+              <Camera className="w-6 h-6 text-white  transition-colors" />
+            </button>
           </div>
         </div>
-      </div>
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
-        <div
-          ref={scrollRef}
-          className="no-scrollbar h-[95dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
-        >
-          {reels.map((post, index) => (
-            <div
-              key={post?._id || `reel-${index}`}
-              ref={(node) => {
-                itemRefs.current[index] = node;
-              }}
-              data-index={index}
-              className="snap-start h-full"
-            >
-              <ReelCard
-                post={post}
-                index={index}
-                isActive={index === activeIndex}
-                onLikes={(selectedPost) =>
-                  navigate(`/posts/${selectedPost?._id}/liked-users`)
-                }
-                onComment={() => setSelectedCommentPost(post)}
-                onShare={() => openShareModal(post?._id)}
-              />
-            </div>
-          ))}
-
-          {!reels.length ? (
-            <div className="flex h-[60vh] flex-col items-center justify-center gap-3 rounded-[28px] border border-dashed border-border bg-background text-center">
-              <Sparkles className="h-10 w-10 text-emerald-400" />
-
-              <div>
-                <p className="text-lg font-semibold text-black dark:text-white">
-                  No reels yet
-                </p>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-white/65">
-                  Video posts will appear here once they are uploaded.
-                </p>
+        <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
+          <div
+            ref={scrollRef}
+            className="no-scrollbar h-[95dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
+          >
+            {reels.map((post, index) => (
+              <div
+                key={post?._id || `reel-${index}`}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
+                data-index={index}
+                className="snap-start h-full"
+              >
+                <ReelCard
+                  post={post}
+                  index={index}
+                  isActive={index === activeIndex}
+                  onLikes={(selectedPost) =>
+                    navigate(`/posts/${selectedPost?._id}/liked-users`)
+                  }
+                  onComment={() => setSelectedCommentPost(post)}
+                  onShare={() => openShareModal(post?._id)}
+                />
               </div>
-            </div>
-          ) : null}
+            ))}
 
-          {isFetchingNextPage ? (
-            <div className="flex justify-center py-5 text-white/70">
-              <PostSkeleton />
-            </div>
-          ) : null}
+            {!reels.length ? (
+              <div className="flex h-[60vh] flex-col items-center justify-center gap-3 rounded-[28px] border border-dashed border-border bg-background text-center">
+                <Sparkles className="h-10 w-10 text-emerald-400" />
 
-          {!hasNextPage && reels.length > 0 && (
-            <div className="snap-start h-[100dvh] flex items-center justify-center">
-              <div className="text-center">
-                <Sparkles className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
+                <div>
+                  <p className="text-lg font-semibold text-black dark:text-white">
+                    No reels yet
+                  </p>
 
-                <h3 className="text-lg font-semibold text-foreground">
-                  No more reels
-                </h3>
-
-                <p className="text-sm text-muted-foreground">
-                  You've reached the end.
-                </p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-white/65">
+                    Video posts will appear here once they are uploaded.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            ) : null}
+
+            {isFetchingNextPage ? (
+              <div className="flex justify-center py-5 text-white/70">
+                <PostSkeleton />
+              </div>
+            ) : null}
+
+            {!hasNextPage && reels.length > 0 && (
+              <div className="snap-start h-[100dvh] flex items-center justify-center">
+                <div className="text-center">
+                  <Sparkles className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
+
+                  <h3 className="text-lg font-semibold text-foreground">
+                    No more reels
+                  </h3>
+
+                  <p className="text-sm text-muted-foreground">
+                    You've reached the end.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-
-      <ReelCommentsDialog
-        post={selectedCommentPost}
-        open={Boolean(selectedCommentPost)}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedCommentPost(null);
-          }
-        }}
-      />
-    </>
+        <PostImageDialog />
+        <ReelCommentsDialog
+          post={selectedCommentPost}
+          open={Boolean(selectedCommentPost)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedCommentPost(null);
+            }
+          }}
+        />
+      </>
+    </div>
   );
 }
 

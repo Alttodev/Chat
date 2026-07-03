@@ -40,7 +40,7 @@ function HomeLayout() {
             isMessages
               ? "pt-0 pb-0 py-0 mt-0 sm:pt-16"
               : isReels
-                ? "px-0 sm:px-4 pt-2 pb-0 sm:pt-20"
+                ? "px-0  pt-0 pb-0 sm:pt-15"
                 : isHome
                   ? "pt-16"
                   : "pt-20 sm:pt-24",

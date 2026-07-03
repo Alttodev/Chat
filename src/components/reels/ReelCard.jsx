@@ -196,7 +196,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
           aria-hidden="true"
         />
 
-        <div className="absolute inset-x-0 bottom-3 z-10 p-3 sm:p-6">
+        <div className="absolute inset-x-0 bottom-5 z-10 p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-none space-y-2 pr-20 text-left text-white sm:max-w-[65%] sm:space-y-3 sm:pr-0">
               <div className="flex items-start gap-3 sm:items-center">
