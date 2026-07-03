@@ -37,7 +37,13 @@ function ActionButton({
   );
 }
 
-export function ReelCard({ post, isActive, onComment, onShare }) {
+export function ReelCard({
+  post,
+  isActive,
+  commentCount: commentCountProp,
+  onComment,
+  onShare,
+}) {
   const videoRef = useRef(null);
   const { profileId } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
@@ -60,11 +66,13 @@ export function ReelCard({ post, isActive, onComment, onShare }) {
 
   const videoPoster = getVideoPosterUrl(mediaUrl || "");
   const commentCount =
-    post?.commentCount ||
-    post?.commentsCount ||
-    post?.totalComments ||
-    post?.comments?.length ||
-    0;
+    typeof commentCountProp === "number"
+      ? commentCountProp
+      : post?.commentCount ||
+        post?.commentsCount ||
+        post?.totalComments ||
+        post?.comments?.length ||
+        0;
 
   useEffect(() => {
     setIsPlaying(true);

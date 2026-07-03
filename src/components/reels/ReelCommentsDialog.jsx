@@ -38,7 +38,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
 
-export function ReelCommentsDialog({ post, open, onOpenChange }) {
+export function ReelCommentsDialog({
+  post,
+  open,
+  onOpenChange,
+  onCommentAdded,
+  onCommentRemoved,
+}) {
   const { profileId } = useAuthStore();
   const theme = useThemeStore((state) => state.theme);
   const navigate = useNavigate();
@@ -58,9 +64,12 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
     setExpandedReplies({});
   }, [open, post?._id]);
 
-  const handleDelete = async ({ postId, commentId }) => {
+  const handleDelete = async ({ postId, commentId, shouldUpdateCount }) => {
     try {
       await deleteComment({ postId, commentId });
+      if (shouldUpdateCount) {
+        onCommentRemoved?.();
+      }
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -214,6 +223,7 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
                         handleDelete({
                           postId: post?._id,
                           commentId: comment._id,
+                          shouldUpdateCount: !isNested,
                         })
                       }
                     >
@@ -459,18 +469,6 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
                   </p>
                 </div>
               </div>
-
-              <div
-                className={cn(
-                  "mt-4 flex items-center gap-4 text-xs",
-                  isDark ? "text-white/60" : "text-slate-500",
-                )}
-              >
-                <span>
-                  {typeof post?.likes === "number" ? post.likes : 0} likes
-                </span>
-                <span>{comments.length} comments</span>
-              </div>
             </div>
           </div>
 
@@ -560,6 +558,7 @@ export function ReelCommentsDialog({ post, open, onOpenChange }) {
                   : "bg-emerald-600 hover:bg-emerald-700",
               )}
               placeholder="Write a comment for this reel..."
+              onSuccess={onCommentAdded}
             />
           </div>
         </div>

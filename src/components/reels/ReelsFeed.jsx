@@ -18,6 +18,7 @@ export function ReelsFeed() {
   const itemRefs = useRef([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCommentPost, setSelectedCommentPost] = useState(null);
+  const [commentCounts, setCommentCounts] = useState({});
 
   const posts = useMemo(
     () => data?.pages?.flatMap((page) => page.posts) || [],
@@ -38,6 +39,28 @@ export function ReelsFeed() {
       }),
     [posts],
   );
+
+  const getInitialCommentCount = (post) =>
+    post?.commentCount ||
+    post?.commentsCount ||
+    post?.totalComments ||
+    post?.comments?.length ||
+    0;
+
+  const handleCommentCountChange = (postId, delta) => {
+    if (!postId || !delta) return;
+
+    setCommentCounts((prev) => {
+      const currentPost = reels.find((post) => post._id === postId);
+      const currentCount =
+        prev[postId] ?? getInitialCommentCount(currentPost) ?? 0;
+
+      return {
+        ...prev,
+        [postId]: Math.max(0, currentCount + delta),
+      };
+    });
+  };
 
   useEffect(() => {
     if (!scrollRef.current) return;
@@ -114,6 +137,7 @@ export function ReelsFeed() {
                 post={post}
                 index={index}
                 isActive={index === activeIndex}
+                commentCount={commentCounts[post._id] ?? getInitialCommentCount(post)}
                 onComment={() => setSelectedCommentPost(post)}
                 onShare={() => openShareModal(post?._id)}
               />
@@ -147,6 +171,18 @@ export function ReelsFeed() {
       <ReelCommentsDialog
         post={selectedCommentPost}
         open={Boolean(selectedCommentPost)}
+        commentCount={
+          selectedCommentPost?._id
+            ? commentCounts[selectedCommentPost._id] ??
+              getInitialCommentCount(selectedCommentPost)
+            : 0
+        }
+        onCommentAdded={() =>
+          handleCommentCountChange(selectedCommentPost?._id, 1)
+        }
+        onCommentRemoved={() =>
+          handleCommentCountChange(selectedCommentPost?._id, -1)
+        }
         onOpenChange={(open) => {
           if (!open) {
             setSelectedCommentPost(null);
