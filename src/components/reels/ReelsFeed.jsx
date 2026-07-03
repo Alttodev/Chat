@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Sparkles, Camera } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { usePostListVideos } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
@@ -11,7 +10,6 @@ import { PostSkeleton } from "../skeleton/postListSkeleton";
 import { PostImageDialog } from "../modals/postImageModal";
 
 export function ReelsFeed() {
-  const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { openImageModal } = useZustandImagePopup();
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
@@ -82,98 +80,79 @@ export function ReelsFeed() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 dark:bg-slate-950">
-      <>
-        <div className="sticky top-0 z-20 bg-gradient-to-r from-slate-900 to-slate-900/95 dark:from-slate-900 dark:to-slate-900/95 backdrop-blur-md">
-          <div className="max-w-5xl mx-auto px-4 py-1 sm:py-2 flex items-center justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r text-white bg-clip-text ">
+    <div className="min-h-screen ">
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
+        <div className="absolute inset-x-0 top-0  z-30 pointer-events-none">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
+            <h1 className="pointer-events-auto text-xl font-bold text-white drop-shadow-md sm:text-2xl">
               Reels
             </h1>
+
             <button
               onClick={openImageModal}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+              className="pointer-events-auto rounded-full p-2 hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <Camera className="w-6 h-6 text-white  transition-colors" />
+              <Camera className="h-6 w-6 text-white drop-shadow-md" />
             </button>
           </div>
         </div>
-        <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
-          <div
-            ref={scrollRef}
-            className="no-scrollbar h-[95dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
-          >
-            {reels.map((post, index) => (
-              <div
-                key={post?._id || `reel-${index}`}
-                ref={(node) => {
-                  itemRefs.current[index] = node;
-                }}
-                data-index={index}
-                className="snap-start h-full"
-              >
-                <ReelCard
-                  post={post}
-                  index={index}
-                  isActive={index === activeIndex}
-                  onLikes={(selectedPost) =>
-                    navigate(`/posts/${selectedPost?._id}/liked-users`)
-                  }
-                  onComment={() => setSelectedCommentPost(post)}
-                  onShare={() => openShareModal(post?._id)}
-                />
+
+        <div
+          ref={scrollRef}
+          className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
+        >
+          {reels.map((post, index) => (
+            <div
+              key={post?._id || `reel-${index}`}
+              ref={(node) => {
+                itemRefs.current[index] = node;
+              }}
+              data-index={index}
+              className="snap-start h-full"
+            >
+              <ReelCard
+                post={post}
+                index={index}
+                isActive={index === activeIndex}
+                onComment={() => setSelectedCommentPost(post)}
+                onShare={() => openShareModal(post?._id)}
+              />
+            </div>
+          ))}
+
+          {!reels.length ? (
+            <div className="flex h-[60vh] flex-col items-center justify-center gap-3 rounded-[28px] border border-dashed border-border bg-background text-center">
+              <Sparkles className="h-10 w-10 text-emerald-400" />
+
+              <div>
+                <p className="text-lg font-semibold text-black dark:text-white">
+                  No reels yet
+                </p>
+
+                <p className="mt-1 text-sm text-gray-600 dark:text-white/65">
+                  Video posts will appear here once they are uploaded.
+                </p>
               </div>
-            ))}
+            </div>
+          ) : null}
 
-            {!reels.length ? (
-              <div className="flex h-[60vh] flex-col items-center justify-center gap-3 rounded-[28px] border border-dashed border-border bg-background text-center">
-                <Sparkles className="h-10 w-10 text-emerald-400" />
-
-                <div>
-                  <p className="text-lg font-semibold text-black dark:text-white">
-                    No reels yet
-                  </p>
-
-                  <p className="mt-1 text-sm text-gray-600 dark:text-white/65">
-                    Video posts will appear here once they are uploaded.
-                  </p>
-                </div>
-              </div>
-            ) : null}
-
-            {isFetchingNextPage ? (
-              <div className="flex justify-center py-5 text-white/70">
-                <PostSkeleton />
-              </div>
-            ) : null}
-
-            {!hasNextPage && reels.length > 0 && (
-              <div className="snap-start h-[100dvh] flex items-center justify-center">
-                <div className="text-center">
-                  <Sparkles className="mx-auto mb-3 h-10 w-10 text-emerald-400" />
-
-                  <h3 className="text-lg font-semibold text-foreground">
-                    No more reels
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground">
-                    You've reached the end.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          {isFetchingNextPage ? (
+            <div className="flex justify-center py-5 text-white/70">
+              <PostSkeleton />
+            </div>
+          ) : null}
         </div>
-        <PostImageDialog />
-        <ReelCommentsDialog
-          post={selectedCommentPost}
-          open={Boolean(selectedCommentPost)}
-          onOpenChange={(open) => {
-            if (!open) {
-              setSelectedCommentPost(null);
-            }
-          }}
-        />
-      </>
+      </div>
+      <PostImageDialog />
+      <ReelCommentsDialog
+        post={selectedCommentPost}
+        open={Boolean(selectedCommentPost)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedCommentPost(null);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -176,7 +176,7 @@ const TrendingPosts = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate(-1)}
               className="cursor-pointer text-foreground hover:bg-transparent hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />

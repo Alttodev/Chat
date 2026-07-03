@@ -42,6 +42,7 @@ export const usePostCreate = () => {
     mutationFn: (formData) => userPost(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user_post"] });
+      queryClient.invalidateQueries({ queryKey: ["user_post_videos"] });
     },
   });
 };
@@ -126,8 +127,6 @@ export const usePostList = () => {
   });
 };
 
-
-
 export const usePostListVideos = () => {
   return useInfiniteQuery({
     queryKey: ["user_post_videos"],
@@ -140,7 +139,6 @@ export const usePostListVideos = () => {
     refetchOnWindowFocus: false,
   });
 };
-
 
 export const useUserPostList = (id) => {
   return useInfiniteQuery({
@@ -208,7 +206,6 @@ export const useTrendingPosts = () => {
   });
 };
 
-
 export const useTrendingCreators = (userId) => {
   return useQuery({
     queryKey: ["trending_creators", userId || "self"],
@@ -269,8 +266,7 @@ export const useFriendsList = () => {
     queryKey: ["friends"],
     initialPageParam: 1,
 
-    queryFn: ({ pageParam = 1 }) =>
-      getFriendsList(pageParam, 10),
+    queryFn: ({ pageParam = 1 }) => getFriendsList(pageParam, 10),
 
     getNextPageParam: (lastPage) => {
       if (!lastPage) return undefined;
@@ -278,16 +274,12 @@ export const useFriendsList = () => {
       const currentPage = Number(lastPage.currentPage || 1);
       const totalPages = Number(lastPage.totalPages || 1);
 
-      return currentPage < totalPages
-        ? currentPage + 1
-        : undefined;
+      return currentPage < totalPages ? currentPage + 1 : undefined;
     },
 
     refetchOnWindowFocus: false,
   });
 };
-
-
 
 export const useUserFollowers = (id) => {
   return useInfiniteQuery({

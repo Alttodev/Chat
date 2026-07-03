@@ -7,6 +7,7 @@ import { usePostBookmark, usePostLike } from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { formatCount } from "@/lib/formatCount";
 
 function ActionButton({
   icon,
@@ -36,7 +37,7 @@ function ActionButton({
   );
 }
 
-export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
+export function ReelCard({ post, isActive, onComment, onShare }) {
   const videoRef = useRef(null);
   const { profileId } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
@@ -238,7 +239,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                   {post?.postText ? (
                     <p
                       className={cn(
-                        "mt-1 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
+                        "mt-2 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
                         "opacity-100",
                       )}
                     >
@@ -247,46 +248,32 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                   ) : null}
                 </div>
               </div>
-
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-white/75 sm:text-xs">
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onLikes?.(post);
-                  }}
-                  className="rounded-full transition cursor-pointer"
-                  aria-label="View reel likes"
-                >
-                  {likeCount} {likeCount === 1 ? "like" : "likes"}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onComment?.(post);
-                  }}
-                  className="rounded-full transition  cursor-pointer"
-                  aria-label="View reel comments"
-                >
-                  {commentCount} {commentCount === 1 ? "comment" : "comments"}
-                </button>
-              </div>
             </div>
 
             <div className="absolute bottom-8 right-3 z-20 flex flex-col items-center gap-3 sm:static sm:bottom-auto sm:right-auto sm:gap-4">
-              <ActionButton
-                icon={Heart}
-                label="Like reel"
-                active={isLiked}
-                onClick={handleLike}
-              />
-              <ActionButton
-                icon={MessageCircle}
-                label="Comment on reel"
-                onClick={onComment}
-              />
+              <div className="flex flex-col items-center">
+                <ActionButton
+                  icon={Heart}
+                  label="Like reel"
+                  active={isLiked}
+                  onClick={handleLike}
+                />
+                <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
+                  {formatCount(likeCount)}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <ActionButton
+                  icon={MessageCircle}
+                  label="Comment on reel"
+                  onClick={onComment}
+                />
+                <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
+                  {formatCount(commentCount)}
+                </span>
+              </div>
+
               <ActionButton
                 icon={Bookmark}
                 label={isBookmarked ? "Remove bookmark" : "Save reel"}
@@ -294,6 +281,7 @@ export function ReelCard({ post, isActive, onLikes, onComment, onShare }) {
                 activeClassName="fill-current text-emerald-400"
                 onClick={handleBookmark}
               />
+
               <ActionButton icon={Send} label="Share reel" onClick={onShare} />
             </div>
           </div>
