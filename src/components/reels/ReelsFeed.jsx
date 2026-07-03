@@ -137,7 +137,9 @@ export function ReelsFeed() {
                 post={post}
                 index={index}
                 isActive={index === activeIndex}
-                commentCount={commentCounts[post._id] ?? getInitialCommentCount(post)}
+                commentCount={
+                  commentCounts[post._id] ?? getInitialCommentCount(post)
+                }
                 onComment={() => setSelectedCommentPost(post)}
                 onShare={() => openShareModal(post?._id)}
               />
@@ -173,8 +175,8 @@ export function ReelsFeed() {
         open={Boolean(selectedCommentPost)}
         commentCount={
           selectedCommentPost?._id
-            ? commentCounts[selectedCommentPost._id] ??
-              getInitialCommentCount(selectedCommentPost)
+            ? (commentCounts[selectedCommentPost._id] ??
+              getInitialCommentCount(selectedCommentPost))
             : 0
         }
         onCommentAdded={() =>

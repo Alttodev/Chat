@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { BadgeCheck, Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { getVideoPosterUrl } from "@/lib/media";
-import { usePostBookmark, usePostLike } from "@/hooks/postHooks";
+import {
+  usePostBookmark,
+  usePostLike,
+  useProfileFollow,
+  useRequestDelete,
+  useRequestListInfo,
+} from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -50,6 +57,10 @@ export function ReelCard({
   const [isPlaying, setIsPlaying] = useState(true);
   const { mutateAsync: postLike } = usePostLike();
   const { mutateAsync: postBookmark } = usePostBookmark();
+  const { mutateAsync: followRequest, isPending: isFollowing } =
+    useProfileFollow();
+  const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
+    useRequestDelete();
   const [isBookmarked, setIsBookmarked] = useState(
     Boolean(post?.bookmarkedByMe),
   );
@@ -59,6 +70,16 @@ export function ReelCard({
   const [likeCount, setLikeCount] = useState(
     typeof post?.likes === "number" ? post.likes : 0,
   );
+  const userId = post?.user?._id;
+  const canFollowUser = Boolean(profileId && userId && profileId !== userId);
+  const { data: requestStatus, isFetching: isRequestFetching } =
+    useRequestListInfo({
+      fromId: profileId,
+      toId: userId,
+      enabled: canFollowUser,
+    });
+  const reqStatus = requestStatus?.request?.status;
+  const friends = requestStatus?.request?.isFriends;
 
   const userInfo = post?.user || {};
 
@@ -158,6 +179,29 @@ export function ReelCard({
     }
   };
 
+  const handleFollow = async (event) => {
+    event.stopPropagation();
+
+    try {
+      await followRequest(userId);
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  const handleUnfollow = async (event) => {
+    event.stopPropagation();
+
+    try {
+      await unfollowRequest({
+        fromId: profileId,
+        toId: userId,
+      });
+    } catch (error) {
+      toastError(error?.response?.data?.message || "Something went wrong");
+    }
+  };
+
   const handleVideoEnded = () => {
     setIsPlaying(false);
   };
@@ -208,8 +252,8 @@ export function ReelCard({
         <div className="absolute inset-x-0 bottom-5 z-10 p-3 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-none space-y-2 pr-20 text-left text-white sm:max-w-[65%] sm:space-y-3 sm:pr-0">
-              <div className="flex items-start gap-3 sm:items-center">
-                <Avatar className="h-10 w-10 border border-white/20">
+              <div className="flex items-start gap-3">
+                <Avatar className="h-10 w-10 shrink-0 border border-white/20">
                   <AvatarImage
                     className="h-full w-full object-cover object-top"
                     src={userInfo?.profileImage || "/placeholder.svg"}
@@ -219,38 +263,69 @@ export function ReelCard({
                     {userInfo?.userName?.charAt(0).toUpperCase() || "-"}
                   </AvatarFallback>
                 </Avatar>
+
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    {profileId === post?.user?._id ? (
-                      <div className="flex items-center gap-1">
-                        <span className="truncate text-sm font-medium sm:text-base">
-                          {post?.user?.userName}
-                        </span>
-                        {post?.user?.isVerified && (
-                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                  <div className="flex items-start  gap-6 ">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        {profileId === post?.user?._id ? (
+                          <div className="flex min-w-0 items-center gap-1">
+                            <span className="truncate text-sm font-medium sm:text-base">
+                              {post?.user?.userName}
+                            </span>
+                            {post?.user?.isVerified && (
+                              <BadgeCheck className="h-6 w-6 shrink-0 fill-blue-500 text-white" />
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            to={`/users/${post?.user?._id}`}
+                            className="flex min-w-0 items-center gap-1 cursor-pointer"
+                          >
+                            <span className="truncate text-sm font-medium sm:text-base">
+                              {post?.user?.userName}
+                            </span>
+                            {post?.user?.isVerified && (
+                              <BadgeCheck className="h-4 w-4 shrink-0 fill-blue-500 text-white" />
+                            )}
+                          </Link>
                         )}
                       </div>
-                    ) : (
-                      <Link
-                        to={`/users/${post?.user?._id}`}
-                        className="flex items-center gap-1 cursor-pointer"
-                      >
-                        <span className="truncate text-sm font-medium sm:text-base">
-                          {post?.user?.userName}
-                        </span>
-                        {post?.user?.isVerified && (
-                          <BadgeCheck className="h-4 w-4 fill-blue-500 text-white flex-shrink-0" />
+                    </div>
+
+                    {canFollowUser ? (
+                      <div className="shrink-0">
+                        {reqStatus === "pending" ? (
+                          <Button
+                            type="button"
+                            disabled
+                            className="h-8 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 text-xs font-medium text-rose-500 shadow-sm cursor-pointer"
+                          >
+                            Pending
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            onClick={friends ? handleUnfollow : handleFollow}
+                            disabled={
+                              isRequestFetching || isFollowing || isUnfollowing
+                            }
+                            className={cn(
+                              "h-8 rounded-full px-3 text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer",
+                              friends
+                                ? "border border-zinc-200 bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+                                : "bg-emerald-600 text-white hover:bg-emerald-700",
+                            )}
+                          >
+                            {friends ? "Unfollow" : "Follow"}
+                          </Button>
                         )}
-                      </Link>
-                    )}
+                      </div>
+                    ) : null}
                   </div>
+
                   {post?.postText ? (
-                    <p
-                      className={cn(
-                        "mt-2 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm",
-                        "opacity-100",
-                      )}
-                    >
+                    <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm">
                       {post.postText}
                     </p>
                   ) : null}
