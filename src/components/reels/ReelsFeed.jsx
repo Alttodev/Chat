@@ -80,11 +80,22 @@ export function ReelsFeed() {
   }
 
   return (
-    <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
-      <div className="overflow-hidden  ">
+    <>
+      <div className="sticky top-0 z-20 bg-gradient-to-r from-white to-white/95 dark:from-slate-900 dark:to-slate-900/95 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto px-4 py-1 sm:py-2 flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+            Reels
+          </h1>
+          <div className="flex gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+            <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+          </div>
+        </div>
+      </div>
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
         <div
           ref={scrollRef}
-          className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
+          className="no-scrollbar h-[95dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
         >
           {reels.map((post, index) => (
             <div
@@ -93,7 +104,7 @@ export function ReelsFeed() {
                 itemRefs.current[index] = node;
               }}
               data-index={index}
-             className="snap-start h-full"
+              className="snap-start h-full"
             >
               <ReelCard
                 post={post}
@@ -157,7 +168,7 @@ export function ReelsFeed() {
           }
         }}
       />
-    </div>
+    </>
   );
 }
 
