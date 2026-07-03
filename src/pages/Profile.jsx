@@ -270,7 +270,7 @@ const Profile = () => {
         </div>
       )}
       {!hasNextPage && displayPosts.length > 0 && (
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-15">
           <span className="px-3 text-sm text-muted-foreground">
             No more posts
           </span>
