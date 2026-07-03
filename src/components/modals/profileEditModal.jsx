@@ -13,9 +13,9 @@ export function ProfileEditDialog() {
     max-w-[550px]
     max-h-[98vh]
     overflow-y-auto
-    rounded-lg
+    rounded-3xl
     p-4
-    sm:rounded-xl
+    sm:rounded-[28px]
     [&_button]:cursor-pointer
 
     [scrollbar-width:none]

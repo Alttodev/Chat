@@ -19,10 +19,10 @@ export function PostImageDialog() {
     translate-y-0
   w-[calc(100%-2rem)] 
   max-w-[550px] 
-  rounded-lg 
+  rounded-3xl 
   p-4
   overflow-visible
-  sm:rounded-xl
+  sm:rounded-[28px]
   [&_button]:cursor-pointer
 "
       >
