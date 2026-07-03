@@ -20,11 +20,10 @@ export default function GoodbyePage() {
   }, [navigate, resetAuth]);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-sky-50 px-4 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-4 dark:bg-slate-950">
       {/* Background Blur */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-20 top-0 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl dark:bg-emerald-500/10" />
-        <div className="absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-sky-400/20 blur-3xl dark:bg-sky-500/10" />
+        <div className="absolute right-0 bottom-0 h-80 w-80 rounded-full" />
       </div>
 
       <div className="relative z-10 w-full max-w-lg rounded-3xl border border-slate-200/70 bg-white/80 p-8 text-center shadow-2xl backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/80 sm:p-10">
@@ -47,7 +46,11 @@ export default function GoodbyePage() {
         </p>
 
         <div className="mt-8">
-          <Button  variant="outline" asChild  className="h-12 rounded-full text-foreground hover:bg-accent hover:text-accent-foreground px-6">
+          <Button
+            variant="outline"
+            asChild
+            className="h-12 rounded-full text-foreground hover:bg-accent hover:text-accent-foreground px-6"
+          >
             <Link to="/">
               <Home className="mr-2 h-4 w-4" />
               Go to Login

@@ -44,8 +44,8 @@ const SignupForm = () => {
   };
 
   return (
-    <div className="relative flex h-[100dvh] w-full items-center justify-center overflow-y-auto bg-gradient-to-br from-emerald-50 via-white to-green-100 px-3 py-3 sm:px-6 sm:py-6 lg:px-8 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-      <div className="w-full max-w-md rounded-[32px] border border-white/70 bg-white/95 p-4 shadow-2xl shadow-emerald-100/70 backdrop-blur-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
+    <div className="relative flex h-[100dvh] w-full items-center justify-center overflow-y-auto bg-white px-3 py-3 sm:px-6 sm:py-6 lg:px-8 dark:bg-slate-950">
+      <div className="w-full max-w-md rounded-[32px] border border-white/70 bg-white/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.12),0_8px_24px_rgba(16,185,129,0.15)] backdrop-blur-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
         {/* Logo */}
         <div className="mb-2 flex justify-center">
           <img src={logo} alt="Clix Logo" className="w-12 h-12" />
