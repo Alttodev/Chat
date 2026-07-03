@@ -6,14 +6,13 @@ import {
   useFriendsCount,
   useUserPostList,
   usePostInfo,
-  useTrendingCreators,
 } from "@/hooks/postHooks";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { useAuthStore } from "@/store/authStore";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { useUserDetail } from "@/hooks/authHooks";
 import { ImageViewer } from "@/components/modals/imageViewer";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 import { ProfileEditDialog } from "@/components/modals/profileEditModal";
@@ -22,17 +21,12 @@ import { PostGridView } from "@/components/Post/PostGridView";
 import { Button } from "@/components/ui/button";
 
 const Profile = () => {
-  const navigate = useNavigate();
   const { openProfile, closeProfile } = useProfileEdit();
   const { profileId } = useAuthStore();
   const loadMoreRef = useRef(null);
 
   const [searchParams] = useSearchParams();
   const targetPostId = searchParams.get("postId");
-
-  const { data: trendingCreatorsData } = useTrendingCreators();
-
-  const trendingRank = trendingCreatorsData?.creators?.[0]?.rank || null;
 
   const { mutateAsync: requestVerifiedBadge, isPending: verificationLoading } =
     useRequestVerifiedBadge();
@@ -180,27 +174,6 @@ const Profile = () => {
                   <BadgeCheck className="h-4 w-4 fill-blue-500 text-white shrink-0" />
                 )}
               </div>
-              {[1, 2, 3].includes(trendingRank) && (
-                <button
-                  onClick={() => navigate("/trending")}
-                  className="inline-flex items-center gap-2 rounded-full px-3 py-1 shadow-sm transition-all hover:scale-105 cursor-pointer"
-                  style={{
-                    backgroundColor: "#FFF8E6",
-                    border: "1px solid #F5B942",
-                  }}
-                >
-                  <span className="text-sm">🔥</span>
-
-                  <span
-                    className="text-xs font-semibold tracking-wide"
-                    style={{
-                      color: "#B7791F",
-                    }}
-                  >
-                    Trending Creator
-                  </span>
-                </button>
-              )}
 
               {!userProfile?.profile?.isVerified && (
                 <button
