@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PostDialog } from "@/components/modals/postModal";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
+import { formatCount } from "@/lib/formatCount";
 
 const HashtagPosts = () => {
   const { tag } = useParams();
@@ -66,6 +67,7 @@ const HashtagPosts = () => {
   const posts = useMemo(() => data?.posts || [], [data]);
 
   const [localPosts, setLocalPosts] = useState([]);
+  const [commentCounts, setCommentCounts] = useState({});
 
   useEffect(() => {
     setLocalPosts(posts);
@@ -131,6 +133,28 @@ const HashtagPosts = () => {
     setLocalPosts((prev) => prev.map(patchPost));
   };
 
+  const getInitialCommentCount = (post) =>
+    post?.commentCount ??
+    post?.commentsCount ??
+    post?.totalComments ??
+    post?.comments?.length ??
+    0;
+
+  const handleCommentCountChange = (postId, delta) => {
+    if (!postId || !delta) return;
+
+    setCommentCounts((prev) => {
+      const currentPost = displayPosts.find((post) => post._id === postId);
+      const currentCount =
+        prev[postId] ?? getInitialCommentCount(currentPost) ?? 0;
+
+      return {
+        ...prev,
+        [postId]: Math.max(0, currentCount + delta),
+      };
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-90 items-center justify-center">
@@ -189,6 +213,8 @@ const HashtagPosts = () => {
       {displayPosts.length > 0 ? (
         displayPosts.map((post) => {
           const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+          const commentCount =
+            commentCounts[post._id] ?? getInitialCommentCount(post);
           const likedByUsers = Array.isArray(post?.likedByUsers)
             ? post.likedByUsers
             : [];
@@ -297,22 +323,30 @@ const HashtagPosts = () => {
                 <PostContent text={post?.postText} className="mb-4 mt-3 pl-2" />
 
                 <div className="mt-3 flex items-center gap-1">
-                  <div className="flex flex-wrap items-center gap-1 sm:flex-nowrap">
+                  <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                     <PostLikeComponent
                       post={post}
                       currentUserId={post?.user?._id}
                       onLikeChange={handleLikeChange}
                     />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {formatCount(likeCount)}
+                    </span>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleComments(post?._id)}
-                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
-                      aria-label="Comment on post"
-                    >
-                      <MessageCircle style={{ width: 18, height: 18 }} />
-                    </Button>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComments(post?._id)}
+                        className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
+                        aria-label="Comment on post"
+                      >
+                        <MessageCircle style={{ width: 18, height: 18 }} />
+                      </Button>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {formatCount(commentCount)}
+                      </span>
+                    </div>
 
                     <Button
                       variant="ghost"
@@ -360,6 +394,12 @@ const HashtagPosts = () => {
                       postId={post._id}
                       highlightCommentId={
                         targetPostId === post._id ? targetCommentId : undefined
+                      }
+                      onCommentAdded={() =>
+                        handleCommentCountChange(post._id, 1)
+                      }
+                      onCommentRemoved={() =>
+                        handleCommentCountChange(post._id, -1)
                       }
                     />
                   </div>

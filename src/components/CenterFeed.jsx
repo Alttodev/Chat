@@ -44,6 +44,7 @@ import PostContent from "./Post/PostContent";
 import { FollowSuggestions } from "./suggestions/FollowSuggestions";
 import { formatShortUsername } from "@/lib/shortUserName";
 import StatusStrip from "./status/StatusStrip";
+import { formatCount } from "@/lib/formatCount";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -74,6 +75,7 @@ export function CenterFeed() {
 
   const [localPosts, setLocalPosts] = useState([]);
   const [targetPostOverride, setTargetPostOverride] = useState(null);
+  const [commentCounts, setCommentCounts] = useState({});
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 767px)");
@@ -173,6 +175,28 @@ export function CenterFeed() {
     setTargetPostOverride((prev) => (prev ? patchPost(prev) : prev));
   };
 
+  const getInitialCommentCount = (post) =>
+    post?.commentCount ??
+    post?.commentsCount ??
+    post?.totalComments ??
+    post?.comments?.length ??
+    0;
+
+  const handleCommentCountChange = (postId, delta) => {
+    if (!postId || !delta) return;
+
+    setCommentCounts((prev) => {
+      const currentPost = displayPosts.find((post) => post._id === postId);
+      const currentCount =
+        prev[postId] ?? getInitialCommentCount(currentPost) ?? 0;
+
+      return {
+        ...prev,
+        [postId]: Math.max(0, currentCount + delta),
+      };
+    });
+  };
+
   const shouldShowSuggestion = (index) => {
     // after 2nd post (index 1 if 0-based)
     if (index === 1) return true;
@@ -205,6 +229,8 @@ export function CenterFeed() {
 
         {displayPosts.map((post, index) => {
           const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+          const commentCount =
+            commentCounts[post._id] ?? getInitialCommentCount(post);
           const currentUserId = userProfile?.profile?.id
             ? String(userProfile.profile.id)
             : null;
@@ -320,28 +346,38 @@ export function CenterFeed() {
                   <PostContent text={post?.postText} className="mt-3 pl-2" />
 
                   <div className="mt-3 flex items-center gap-1">
-                    <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
-                      <PostLikeComponent
-                        post={post}
-                        currentUserId={userProfile?.profile?.id}
-                        onLikeChange={handleLikeChange}
-                      />
+                    <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <PostLikeComponent
+                          post={post}
+                          currentUserId={userProfile?.profile?.id}
+                          onLikeChange={handleLikeChange}
+                        />
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {formatCount(likeCount)}
+                        </span>
+                      </div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleComments(post._id)}
-                        className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
-                        aria-label="Comment on post"
-                      >
-                        <MessageCircle style={{ width: 18, height: 18 }} />
-                      </Button>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleComments(post._id)}
+                          className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
+                          aria-label="Comment on post"
+                        >
+                          <MessageCircle style={{ width: 18, height: 18 }} />
+                        </Button>
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {formatCount(commentCount)}
+                        </span>
+                      </div>
 
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => openShareModal(post._id)}
-                        className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground "
+                        className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
                         aria-label="Share post"
                       >
                         <Send style={{ width: 18, height: 18 }} />
@@ -374,14 +410,20 @@ export function CenterFeed() {
                           )} and others`}
                     </Link>
                   )}
-                  {openPostId === post._id && (
-                    <div className="mt-3">
-                      <CommentSection
-                        postId={post._id}
-                        userProfile={userProfile?.profile}
-                        highlightCommentId={
-                          targetPostId === post._id
-                            ? targetCommentId
+                {openPostId === post._id && (
+                  <div className="mt-3">
+                    <CommentSection
+                      postId={post._id}
+                      userProfile={userProfile?.profile}
+                      onCommentAdded={() =>
+                        handleCommentCountChange(post._id, 1)
+                      }
+                      onCommentRemoved={() =>
+                        handleCommentCountChange(post._id, -1)
+                      }
+                      highlightCommentId={
+                        targetPostId === post._id
+                          ? targetCommentId
                             : undefined
                         }
                       />

@@ -28,7 +28,13 @@ import { useAuthStore } from "@/store/authStore";
 import { renderMentionText } from "@/lib/mentionText";
 import { cn } from "@/lib/utils";
 
-export function CommentSection({ postId, userProfile, highlightCommentId }) {
+export function CommentSection({
+  postId,
+  userProfile,
+  highlightCommentId,
+  onCommentAdded,
+  onCommentRemoved,
+}) {
   const { profileId } = useAuthStore();
   const navigate = useNavigate();
   const { data: activeComments, isLoading } = usePostComments(postId);
@@ -56,9 +62,12 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
     commentElement.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [activeComments?.comments, highlightCommentId]);
 
-  const handleDelete = async ({ postId, commentId }) => {
+  const handleDelete = async ({ postId, commentId, shouldUpdateCount }) => {
     try {
       await deleteComment({ postId: postId, commentId: commentId });
+      if (shouldUpdateCount) {
+        onCommentRemoved?.();
+      }
       // toastSuccess(res?.message);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
@@ -156,7 +165,7 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
               </div>
 
               {comment?.editable && (
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <span className="relative cursor-pointer border-0 rounded-full p-1 hover:bg-slate-100 transition-colors duration-200">
                       <MoreHorizontal className="w-4 h-4" />
@@ -165,7 +174,7 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
                     align="end"
-                    className=" mt-1 border-slate-200 shadow-lg"
+                    className="mt-1 w-fit min-w-[6.5rem] border-slate-200 shadow-lg"
                     sideOffset={8}
                   >
                     <DropdownMenuItem
@@ -174,6 +183,7 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
                         handleDelete({
                           postId,
                           commentId: comment._id,
+                          shouldUpdateCount: !isNested,
                         })
                       }
                     >
@@ -316,7 +326,11 @@ export function CommentSection({ postId, userProfile, highlightCommentId }) {
       <div className="text-sm text-muted-foreground">
         Comments {activeComments?.comments?.length}
       </div>
-      <CommentForm userProfile={userProfile} postId={postId} />
+      <CommentForm
+        userProfile={userProfile}
+        postId={postId}
+        onSuccess={onCommentAdded}
+      />
 
       {/* Comments List */}
       <div className="space-y-3">

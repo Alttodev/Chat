@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { MessageCircle, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -19,28 +19,73 @@ import PostContent from "@/components/Post/PostContent";
 import PostBookmarkComponent from "@/components/Post/PostBookmark";
 import { ImageViewer } from "@/components/modals/imageViewer";
 import { ShareDialog } from "@/components/modals/shareModal";
+import { formatCount } from "@/lib/formatCount";
 
 export default function UserPostFeed() {
-  const { postId } = useParams();
-
   const { posts, userInfo, currentUser } = useUserPostStore();
-
-  // Start from the tapped post downward
-  const startIndex = posts.findIndex((p) => p._id === postId);
-  const slicedPosts = startIndex >= 0 ? posts.slice(startIndex) : posts;
 
   const { openPostId, toggleComments } = useCommentStore();
   const { open } = useImageModalStore();
   const { openShareModal } = useZustandSharePopup();
 
   const firstPostRef = useRef(null);
+  const [localPosts, setLocalPosts] = useState([]);
+  const [commentCounts, setCommentCounts] = useState({});
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
+
   const user = userInfo;
   const currentUserId = user?._id ? String(user._id) : null;
+  const displayPosts = useMemo(() => localPosts, [localPosts]);
+
+  const handleLikeChange = (postId, updated) => {
+    const patchPost = (post) => {
+      if (post._id !== postId) return post;
+
+      return {
+        ...post,
+        likedBy: Array.isArray(updated?.likedBy)
+          ? updated.likedBy
+          : post.likedBy,
+        likes: typeof updated?.likes === "number" ? updated.likes : post.likes,
+        myReaction:
+          typeof updated?.myReaction !== "undefined"
+            ? updated.myReaction
+            : post.myReaction,
+        likedByMe: Boolean(updated?.likedByMe ?? updated?.myReaction),
+      };
+    };
+
+    setLocalPosts((prev) => prev.map(patchPost));
+  };
+
+  const getInitialCommentCount = (post) =>
+    post?.commentCount ??
+    post?.commentsCount ??
+    post?.totalComments ??
+    post?.comments?.length ??
+    0;
+
+  const handleCommentCountChange = (postId, delta) => {
+    if (!postId || !delta) return;
+
+    setCommentCounts((prev) => {
+      const currentPost = displayPosts.find((post) => post._id === postId);
+      const currentCount =
+        prev[postId] ?? getInitialCommentCount(currentPost) ?? 0;
+
+      return {
+        ...prev,
+        [postId]: Math.max(0, currentCount + delta),
+      };
+    });
+  };
 
   if (!posts.length) {
     return (
@@ -53,8 +98,10 @@ export default function UserPostFeed() {
   return (
     <div className="w-full max-w-3xl mx-auto space-y-4 pb-20">
       <div className="space-y-4 pt-4 px-2">
-        {slicedPosts.map((post, i) => {
+        {displayPosts.map((post, i) => {
           const likeCount = typeof post?.likes === "number" ? post.likes : 0;
+          const commentCount =
+            commentCounts[post._id] ?? getInitialCommentCount(post);
           const likedByUsers = Array.isArray(post?.likedByUsers)
             ? post.likedByUsers
             : [];
@@ -102,21 +149,29 @@ export default function UserPostFeed() {
                 <PostContent text={post?.postText} className="mt-3 pl-2" />
 
                 <div className="mt-3 flex items-center gap-1">
-                  <div className="flex items-center gap-1 flex-wrap sm:flex-nowrap">
+                  <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
                     <PostLikeComponent
                       post={post}
                       currentUserId={currentUser?.id}
-                      onLikeChange={() => {}}
+                      onLikeChange={handleLikeChange}
                     />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleComments(post?._id)}
-                      className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
-                      aria-label="Comment on post"
-                    >
-                      <MessageCircle style={{ width: 18, height: 18 }} />
-                    </Button>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {formatCount(likeCount)}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComments(post?._id)}
+                        className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
+                        aria-label="Comment on post"
+                      >
+                        <MessageCircle style={{ width: 18, height: 18 }} />
+                      </Button>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {formatCount(commentCount)}
+                      </span>
+                    </div>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -149,6 +204,12 @@ export default function UserPostFeed() {
                     <CommentSection
                       postId={post._id}
                       userProfile={currentUser}
+                      onCommentAdded={() =>
+                        handleCommentCountChange(post._id, 1)
+                      }
+                      onCommentRemoved={() =>
+                        handleCommentCountChange(post._id, -1)
+                      }
                     />
                   </div>
                 )}

@@ -192,7 +192,7 @@ export function ReelCommentsDialog({
               </div>
 
               {comment?.editable ? (
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
@@ -210,7 +210,7 @@ export function ReelCommentsDialog({
                   <DropdownMenuContent
                     align="end"
                     className={cn(
-                      "shadow-lg",
+                      "w-fit min-w-[6.5rem] shadow-lg",
                       isDark
                         ? "border-white/10 bg-slate-950 text-white"
                         : "border-slate-200 bg-white text-slate-900",
