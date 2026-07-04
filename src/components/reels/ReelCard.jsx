@@ -325,7 +325,7 @@ export function ReelCard({
                   </div>
 
                   {post?.postText ? (
-                    <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm">
+                    <p className="line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm">
                       {post.postText}
                     </p>
                   ) : null}
