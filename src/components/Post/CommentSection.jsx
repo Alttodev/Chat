@@ -7,6 +7,7 @@ import {
   usePostComments,
 } from "@/hooks/postHooks";
 import { SkeletonComment } from "../skeleton/commentSkeleton";
+import { ScrollArea } from "../ui/scroll-area";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -322,21 +323,27 @@ export function CommentSection({
   }
 
   return (
-    <div className="space-y-3   pt-5">
+    <div className="flex h-[min(70vh,44rem)] min-h-0 flex-col space-y-3 pt-5">
       <div className="text-sm text-muted-foreground">
         Comments {activeComments?.comments?.length}
       </div>
-      <CommentForm
-        userProfile={userProfile}
-        postId={postId}
-        onSuccess={onCommentAdded}
-      />
+      <div className="shrink-0">
+        <CommentForm
+          userProfile={userProfile}
+          postId={postId}
+          onSuccess={onCommentAdded}
+        />
+      </div>
 
       {/* Comments List */}
-      <div className="space-y-3">
-        {(activeComments?.comments || []).map((comment) =>
-          renderCommentNode(comment),
-        )}
+      <div className="min-h-0 flex-1 overflow-hidden">
+        <ScrollArea className="h-full pr-2">
+          <div className="space-y-3">
+            {(activeComments?.comments || []).map((comment) =>
+              renderCommentNode(comment),
+            )}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );

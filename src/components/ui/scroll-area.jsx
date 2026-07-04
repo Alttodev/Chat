@@ -11,6 +11,7 @@ const ScrollArea = React.forwardRef(
       viewportClassName,
       viewportRef,
       onViewportScroll,
+      hideScrollbar = false,
       ...props
     },
     ref,
@@ -23,11 +24,15 @@ const ScrollArea = React.forwardRef(
       <ScrollAreaPrimitive.Viewport
         ref={viewportRef}
         onScroll={onViewportScroll}
-        className={cn("h-full w-full rounded-[inherit]", viewportClassName)}
+        className={cn(
+          "h-full w-full rounded-[inherit]",
+          hideScrollbar && "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          viewportClassName,
+        )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
+      {hideScrollbar ? null : <ScrollBar />}
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   ),
