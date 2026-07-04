@@ -12,6 +12,8 @@ const ScrollArea = React.forwardRef(
       viewportRef,
       onViewportScroll,
       hideScrollbar = false,
+      scrollbarClassName,
+      thumbClassName,
       ...props
     },
     ref,
@@ -26,21 +28,26 @@ const ScrollArea = React.forwardRef(
         onScroll={onViewportScroll}
         className={cn(
           "h-full w-full rounded-[inherit]",
-          hideScrollbar && "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+          hideScrollbar && "no-scrollbar",
           viewportClassName,
         )}
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
-      {hideScrollbar ? null : <ScrollBar />}
+      {hideScrollbar ? null : (
+        <ScrollBar
+          className={scrollbarClassName}
+          thumbClassName={thumbClassName}
+        />
+      )}
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   ),
 );
-ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName
+ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
 const ScrollBar = React.forwardRef(
-  ({ className, orientation = "vertical", ...props }, ref) => (
+  ({ className, thumbClassName, orientation = "vertical", ...props }, ref) => (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
       ref={ref}
       orientation={orientation}
@@ -54,10 +61,15 @@ const ScrollBar = React.forwardRef(
       )}
       {...props}
     >
-      <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
+      <ScrollAreaPrimitive.ScrollAreaThumb
+        className={cn(
+          "relative flex-1 rounded-full bg-transparent",
+          thumbClassName,
+        )}
+      />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
   ),
 );
-ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName
+ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;
 
 export { ScrollArea, ScrollBar };

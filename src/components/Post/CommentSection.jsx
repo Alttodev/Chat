@@ -318,12 +318,20 @@ export function CommentSection({
     );
   };
 
+  const comments = activeComments?.comments || [];
+  const shouldUseFixedHeight = comments.length > 3;
+
   if (isLoading) {
     return <SkeletonComment />;
   }
 
   return (
-    <div className="flex h-[min(70vh,44rem)] min-h-0 flex-col space-y-3 pt-5">
+    <div
+      className={cn(
+        "flex min-h-0 flex-col space-y-3 pt-5",
+        shouldUseFixedHeight && "h-[min(70vh,44rem)]",
+      )}
+    >
       <div className="text-sm text-muted-foreground">
         Comments {activeComments?.comments?.length}
       </div>
@@ -338,9 +346,23 @@ export function CommentSection({
       {/* Comments List */}
       <div className="min-h-0 flex-1 overflow-hidden">
         <ScrollArea className="h-full pr-2">
-          <div className="space-y-3">
-            {(activeComments?.comments || []).map((comment) =>
-              renderCommentNode(comment),
+          <div className="space-y-3 pb-2">
+            {(activeComments?.comments || []).length > 0 ? (
+              (activeComments?.comments || []).map((comment) =>
+                renderCommentNode(comment),
+              )
+            ) : (
+              <div className="flex min-h-[10rem] flex-col items-center justify-center rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/30 px-4 py-8 text-center">
+                <MessageSquareText className="mb-3 h-6 w-6 text-muted-foreground/60" />
+
+                <p className="text-sm font-medium text-muted-foreground">
+                  No comments yet
+                </p>
+
+                <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground/70">
+                  Be the first to start the conversation.
+                </p>
+              </div>
             )}
           </div>
         </ScrollArea>

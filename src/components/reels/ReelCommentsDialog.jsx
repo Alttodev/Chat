@@ -476,7 +476,7 @@ export function ReelCommentsDialog({
 
           <div className="flex-1 min-h-0 overflow-hidden px-3 py-3 sm:px-4">
             <ScrollArea className="h-full pr-2">
-              <div className="space-y-3">
+              <div className="space-y-2 pb-2">
                 {isLoading ? (
                   <div
                     className={cn(
@@ -493,7 +493,7 @@ export function ReelCommentsDialog({
                 ) : (
                   <div
                     className={cn(
-                      "flex min-h-[22vh] flex-col items-center justify-center rounded-2xl border border-dashed px-4 py-10 text-center",
+                      "flex min-h-[10rem] flex-col items-center justify-center rounded-2xl border border-dashed px-4 py-10 text-center",
                       isDark
                         ? "border-white/10 bg-white/5"
                         : "border-slate-200 bg-slate-50",
@@ -515,7 +515,7 @@ export function ReelCommentsDialog({
                         isDark ? "text-white" : "text-slate-900",
                       )}
                     >
-                      Be the first to comment
+                      No comments yet
                     </p>
                     <p
                       className={cn(
