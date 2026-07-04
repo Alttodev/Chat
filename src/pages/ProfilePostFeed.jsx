@@ -123,15 +123,18 @@ export default function ProfilePostFeed() {
                   </div>
 
                   {post?.isOwner && (
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-accent">
+                        <button
+                          type="button"
+                          className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-accent"
+                        >
                           <MoreHorizontal className="h-4 w-4" />
-                        </span>
+                        </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent
                         align="end"
-                        className="mt-1 border-border shadow-lg"
+                        className="mt-1 w-44 max-w-[calc(100vw-1rem)] border-border shadow-lg sm:w-48"
                         sideOffset={8}
                       >
                         <DropdownMenuItem

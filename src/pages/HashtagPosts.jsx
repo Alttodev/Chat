@@ -244,17 +244,20 @@ const HashtagPosts = () => {
                     </div>
                   </div>
                   {post?.isOwner && (
-                    <DropdownMenu>
+                    <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
-                        <span className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100">
+                        <button
+                          type="button"
+                          className="relative cursor-pointer rounded-full border-0 p-1 transition-colors duration-200 hover:bg-slate-100"
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                           <span className="sr-only">Toggle user menu</span>
-                        </span>
+                        </button>
                       </DropdownMenuTrigger>
 
                       <DropdownMenuContent
                         align="end"
-                        className="mt-1 w-full border-slate-200 shadow-lg"
+                        className="mt-1 w-44 max-w-[calc(100vw-1rem)] border-slate-200 shadow-lg sm:w-48"
                         sideOffset={8}
                       >
                         <DropdownMenuItem
