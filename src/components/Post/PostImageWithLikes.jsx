@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Expand } from "lucide-react";
+import { Expand, Volume2, VolumeX, Play, Pause } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -10,12 +10,17 @@ import { MediaCarousel } from "../Carousel/MediaCarousel";
 
 export function PostImageWithLikes({ post, onImageClick, className }) {
   const videoRef = useRef(null);
+  const centerIconTimeoutRef = useRef(null);
 
   const [isMediaReady, setIsMediaReady] = useState(false);
 
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
   const [isPlaying, setIsPlaying] = useState(true);
+
+  const [isMuted, setIsMuted] = useState(true);
+
+  const [centerIcon, setCenterIcon] = useState(null); // "play" | "pause" | null
 
   const media =
     typeof post?.image === "string"
@@ -39,6 +44,10 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
     setIsMediaReady(false);
 
     setIsVideoPlaying(true);
+
+    setIsPlaying(true);
+
+    setIsMuted(true);
   }, [post?.image]);
 
   useEffect(() => {
@@ -51,9 +60,11 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
         if (entry.isIntersecting) {
           if (isVideoPlaying) {
             video.play().catch(() => {});
+            setIsPlaying(true);
           }
         } else {
           video.pause();
+          setIsPlaying(false);
         }
       },
 
@@ -67,6 +78,24 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
     return () => observer.disconnect();
   }, [isVideo, isVideoPlaying]);
 
+  const showCenterIcon = (type) => {
+    setCenterIcon(type);
+
+    if (centerIconTimeoutRef.current)
+      clearTimeout(centerIconTimeoutRef.current);
+
+    centerIconTimeoutRef.current = setTimeout(() => {
+      setCenterIcon(null);
+    }, 500);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (centerIconTimeoutRef.current)
+        clearTimeout(centerIconTimeoutRef.current);
+    };
+  }, []);
+
   const handleTogglePlay = () => {
     if (!videoRef.current) return;
 
@@ -74,11 +103,29 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
       videoRef.current.play().catch(() => {});
 
       setIsPlaying(true);
+      setIsVideoPlaying(true);
+
+      showCenterIcon("play");
     } else {
       videoRef.current.pause();
 
       setIsPlaying(false);
+      setIsVideoPlaying(false);
+
+      showCenterIcon("pause");
     }
+  };
+
+  const handleToggleMute = (e) => {
+    e.stopPropagation();
+
+    if (!videoRef.current) return;
+
+    const nextMuted = !videoRef.current.muted;
+
+    videoRef.current.muted = nextMuted;
+
+    setIsMuted(nextMuted);
   };
 
   const handleExpand = (e) => {
@@ -132,11 +179,34 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
             poster={videoPoster || undefined}
             autoPlay
             loop
+            muted={isMuted}
             playsInline
             preload="metadata"
             onLoadedData={() => setIsMediaReady(true)}
             onError={() => setIsMediaReady(true)}
           />
+
+          {/* CENTER PLAY/PAUSE OVERLAY */}
+          {centerIcon && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-black/50 rounded-full p-4 animate-in fade-in zoom-in-95 duration-150">
+                {centerIcon === "play" ? (
+                  <Pause size={26} className="text-white fill-white" />
+                ) : (
+                  <Play size={26} className="text-white fill-white" />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* MUTE / UNMUTE */}
+          <button
+            onClick={handleToggleMute}
+            className="absolute top-3 right-3 bg-black/60 p-2 rounded-full text-white"
+            aria-label={isMuted ? "Unmute" : "Mute"}
+          >
+            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
 
           {/* EXPAND */}
           {onImageClick && (
