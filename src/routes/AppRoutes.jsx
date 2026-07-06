@@ -31,7 +31,6 @@ import ScrollToTop from "@/components/ScrolltoTop";
 import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
-import TrendingPosts from "@/pages/Trending";
 import GoodbyePage from "@/pages/GoodbyePage";
 
 function AppRoutes() {
@@ -88,7 +87,7 @@ function AppRoutes() {
                 path="/user/:userId/posts/:postId"
                 element={<UserPostFeed />}
               />
-              <Route path="/trending" element={<TrendingPosts />} />
+             
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

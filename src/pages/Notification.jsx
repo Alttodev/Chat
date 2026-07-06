@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import {
-  UserPlus,
-  MessageCircleMore,
-  Send,
-} from "lucide-react";
+import { UserPlus, MessageCircleMore, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import { primeNotificationSound } from "@/lib/notificationSound";
@@ -14,7 +10,6 @@ import {
   useClearNotifications,
 } from "@/hooks/notificationHooks";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const formatTime = (value) => {
@@ -163,158 +158,153 @@ function NotificationPage() {
         </Button>
       </div>
 
-      <ScrollArea className="h-[220px]">
-        <div className="p-2">
-          {isLoading ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              Loading notifications...
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="py-10 text-center text-sm text-muted-foreground">
-              No new notifications
-            </div>
-          ) : (
-            <>
-              {followNotifications.length > 0 && (
-                <div className="mb-2">
-                  <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    <span>Follow Requests</span>
-                    <UserPlus className="w-3 h-3 " />
-                  </div>
-
-                  {followNotifications.map((notification) => (
-                    <button
-                      key={notification.notificationId || notification._id}
-                      type="button"
-                      onClick={() => handleNotificationClick(notification)}
-                      className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
-                    >
-                      <Avatar className="w-9 h-9">
-                        <AvatarImage
-                          className="w-full h-full object-cover object-top cursor-pointer"
-                          src={
-                            notification?.from?.profileImage ||
-                            "/placeholder.svg"
-                          }
-                        />
-                        <AvatarFallback className="bg-emerald-100 text-emerald-700">
-                          {getInitial(notification?.from?.userName)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground leading-snug">
-                          <span className="font-semibold">
-                            {notification?.from?.userName || "Someone"}
-                          </span>{" "}
-                          sent you a follow request
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatTime(notification?.createdAt)}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
+      <div className="p-2">
+        {isLoading ? (
+          <div className="py-8 text-center text-sm text-muted-foreground">
+            Loading notifications...
+          </div>
+        ) : notifications.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">
+            No new notifications
+          </div>
+        ) : (
+          <>
+            {followNotifications.length > 0 && (
+              <div className="mb-2">
+                <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Follow Requests</span>
+                  <UserPlus className="w-3 h-3 " />
                 </div>
-              )}
 
-              {chatNotifications.length > 0 && (
-                <div className="mt-2">
-                  <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    <span>Messages</span>
-                    <Send className="w-3 h-3 " />
-                  </div>
+                {followNotifications.map((notification) => (
+                  <button
+                    key={notification.notificationId || notification._id}
+                    type="button"
+                    onClick={() => handleNotificationClick(notification)}
+                    className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
+                  >
+                    <Avatar className="w-9 h-9">
+                      <AvatarImage
+                        className="w-full h-full object-cover object-top cursor-pointer"
+                        src={
+                          notification?.from?.profileImage || "/placeholder.svg"
+                        }
+                      />
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                        {getInitial(notification?.from?.userName)}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  {chatNotifications.map((notification) => (
-                    <button
-                      key={notification.notificationId || notification._id}
-                      type="button"
-                      onClick={() => handleNotificationClick(notification)}
-                      className="w-full flex items-center justify-center gap-3 px-3 py-4 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
-                    >
-                      <Avatar className="w-9 h-9">
-                        <AvatarImage
-                          className="w-full h-full object-cover object-top cursor-pointer"
-                          src={
-                            notification?.from?.profileImage ||
-                            "/placeholder.svg"
-                          }
-                        />
-                        <AvatarFallback className="bg-blue-100 text-blue-700">
-                          {getInitial(notification?.from?.userName)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground leading-snug">
-                          <span className="font-semibold">
-                            {notification?.from?.userName || "Unknown user"}
-                          </span>{" "}
-                          sent {notification?.unreadCount || 1} message
-                          {(notification?.unreadCount || 1) > 1 ? "s" : ""}
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate mt-1">
-                          {notification?.message?.text || "Image message"}
-                        </p>
-                      </div>
-
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground leading-snug">
+                        <span className="font-semibold">
+                          {notification?.from?.userName || "Someone"}
+                        </span>{" "}
+                        sent you a follow request
+                      </p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {formatTime(notification?.createdAt)}
                       </p>
-                    </button>
-                  ))}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {chatNotifications.length > 0 && (
+              <div className="mt-2">
+                <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Messages</span>
+                  <Send className="w-3 h-3 " />
                 </div>
-              )}
 
-              {commentMentionNotifications.length > 0 && (
-                <div className="mt-2">
-                  <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    <span>Comment Mentions</span>
-                    <MessageCircleMore className="w-3 h-3 " />
-                  </div>
+                {chatNotifications.map((notification) => (
+                  <button
+                    key={notification.notificationId || notification._id}
+                    type="button"
+                    onClick={() => handleNotificationClick(notification)}
+                    className="w-full flex items-center justify-center gap-3 px-3 py-4 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
+                  >
+                    <Avatar className="w-9 h-9">
+                      <AvatarImage
+                        className="w-full h-full object-cover object-top cursor-pointer"
+                        src={
+                          notification?.from?.profileImage || "/placeholder.svg"
+                        }
+                      />
+                      <AvatarFallback className="bg-blue-100 text-blue-700">
+                        {getInitial(notification?.from?.userName)}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  {commentMentionNotifications.map((notification) => (
-                    <button
-                      key={notification.notificationId || notification._id}
-                      type="button"
-                      onClick={() => handleNotificationClick(notification)}
-                      className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
-                    >
-                      <Avatar className="w-9 h-9">
-                        <AvatarImage
-                          className="w-full h-full object-cover object-top cursor-pointer"
-                          src={
-                            notification?.from?.profileImage ||
-                            "/placeholder.svg"
-                          }
-                        />
-                        <AvatarFallback className="bg-indigo-100 text-indigo-700">
-                          {getInitial(notification?.from?.userName)}
-                        </AvatarFallback>
-                      </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground leading-snug">
+                        <span className="font-semibold">
+                          {notification?.from?.userName || "Unknown user"}
+                        </span>{" "}
+                        sent {notification?.unreadCount || 1} message
+                        {(notification?.unreadCount || 1) > 1 ? "s" : ""}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate mt-1">
+                        {notification?.message?.text || "Image message"}
+                      </p>
+                    </div>
 
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-foreground leading-snug">
-                          <span className="font-semibold">
-                            {notification?.from?.userName || "Someone"}
-                          </span>{" "}
-                          mentioned you in a comment
-                        </p>
-                        <p className="text-xs text-muted-foreground truncate mt-1">
-                          {notification?.comment || notification?.message}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatTime(notification?.createdAt)}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatTime(notification?.createdAt)}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {commentMentionNotifications.length > 0 && (
+              <div className="mt-2">
+                <div className="flex items-start gap-2 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <span>Comment Mentions</span>
+                  <MessageCircleMore className="w-3 h-3 " />
                 </div>
-              )}
-            </>
-          )}
-        </div>
-      </ScrollArea>
+
+                {commentMentionNotifications.map((notification) => (
+                  <button
+                    key={notification.notificationId || notification._id}
+                    type="button"
+                    onClick={() => handleNotificationClick(notification)}
+                    className="w-full flex items-start gap-3 px-3 py-2 rounded-md hover:bg-accent transition-colors cursor-pointer text-left"
+                  >
+                    <Avatar className="w-9 h-9">
+                      <AvatarImage
+                        className="w-full h-full object-cover object-top cursor-pointer"
+                        src={
+                          notification?.from?.profileImage || "/placeholder.svg"
+                        }
+                      />
+                      <AvatarFallback className="bg-indigo-100 text-indigo-700">
+                        {getInitial(notification?.from?.userName)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground leading-snug">
+                        <span className="font-semibold">
+                          {notification?.from?.userName || "Someone"}
+                        </span>{" "}
+                        mentioned you in a comment
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate mt-1">
+                        {notification?.comment || notification?.message}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {formatTime(notification?.createdAt)}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

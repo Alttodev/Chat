@@ -155,9 +155,12 @@ export default function UserPostFeed() {
                       currentUserId={currentUser?.id}
                       onLikeChange={handleLikeChange}
                     />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {formatCount(likeCount)}
-                    </span>
+                    {likeCount === 0 ? null : (
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {formatCount(likeCount)}
+                      </span>
+                    )}
+
                     <div className="flex items-center gap-1.5">
                       <Button
                         variant="ghost"
@@ -168,9 +171,11 @@ export default function UserPostFeed() {
                       >
                         <MessageCircle style={{ width: 18, height: 18 }} />
                       </Button>
-                      <span className="text-xs font-medium text-muted-foreground">
-                        {formatCount(commentCount)}
-                      </span>
+                      {commentCount > 0 && (
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {formatCount(commentCount)}
+                        </span>
+                      )}
                     </div>
                     <Button
                       variant="ghost"

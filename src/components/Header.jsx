@@ -1,12 +1,9 @@
 import {
   Search,
-  X,
   User,
   Settings,
   Gem,
-  Send,
   Bell,
-  TrendingUp,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -88,12 +85,7 @@ export function SocialHeader() {
             className="text-muted-foreground cursor-pointer"
             onClick={() => setSearchOpen(true)}
           />
-          <div className="cursor-pointer" onClick={() => navigate("/trending")}>
-            <TrendingUp
-              className=" text-muted-foreground"
-              style={{ width: 19, height: 19 }}
-            />
-          </div>
+         
 
           {showBirthdayBadge && <BirthdayBadge onClaimed={handleClaimed} />}
           <BirthdayCelebration

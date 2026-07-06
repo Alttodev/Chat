@@ -1,5 +1,5 @@
 import {
-    BadgeCheck,
+  BadgeCheck,
   MessageCircle,
   MoreHorizontal,
   Send,
@@ -329,9 +329,11 @@ const HashtagPosts = () => {
                       currentUserId={post?.user?._id}
                       onLikeChange={handleLikeChange}
                     />
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {formatCount(likeCount)}
-                    </span>
+                    {likeCount > 0 && (
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {formatCount(likeCount)}
+                      </span>
+                    )}
 
                     <div className="flex items-center gap-1.5">
                       <Button
@@ -343,9 +345,11 @@ const HashtagPosts = () => {
                       >
                         <MessageCircle style={{ width: 18, height: 18 }} />
                       </Button>
-                      <span className="text-xs font-medium text-muted-foreground">
-                        {formatCount(commentCount)}
-                      </span>
+                      {commentCount > 0 && (
+                        <span className="text-xs font-medium text-muted-foreground">
+                          {formatCount(commentCount)}
+                        </span>
+                      )}
                     </div>
 
                     <Button

@@ -8,7 +8,7 @@ import {
   useRequestDelete,
   useRequestListInfo,
 } from "@/hooks/postHooks";
-import { toastError, toastSuccess } from "@/lib/toast";
+import { toastError } from "@/lib/toast";
 
 const getRecommendedByLabel = (user) => {
   const friendNames = [
@@ -63,8 +63,8 @@ function UserCard({ user, profileId, recommendedUser }) {
 
   const handleFollow = async () => {
     try {
-      const res = await followRequest(userId);
-      toastSuccess(res?.message);
+      await followRequest(userId);
+      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -72,11 +72,11 @@ function UserCard({ user, profileId, recommendedUser }) {
 
   const handleUnfollow = async () => {
     try {
-      const res = await unfollowRequest({
+      await unfollowRequest({
         fromId: profileId,
         toId: userId,
       });
-      toastSuccess(res?.message);
+      // toastSuccess(res?.message);
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }

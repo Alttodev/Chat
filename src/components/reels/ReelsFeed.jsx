@@ -3,7 +3,7 @@ import { Sparkles, Camera } from "lucide-react";
 import { usePostListVideos } from "@/hooks/postHooks";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
-import { useZustandImagePopup, useZustandSharePopup } from "@/lib/zustand";
+import { useZustandSharePopup } from "@/lib/zustand";
 import { ReelCommentsDialog } from "./ReelCommentsDialog";
 import { Spinner } from "../ui/shadcn-io/spinner";
 import { PostSkeleton } from "../skeleton/postListSkeleton";
@@ -11,7 +11,7 @@ import { PostImageDialog } from "../modals/postImageModal";
 
 export function ReelsFeed() {
   const { openShareModal } = useZustandSharePopup();
-  const { openImageModal } = useZustandImagePopup();
+
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
     usePostListVideos();
   const scrollRef = useRef(null);
@@ -107,16 +107,11 @@ export function ReelsFeed() {
       <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-4">
         <div className="absolute inset-x-0 top-0  z-30 pointer-events-none">
           <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-4">
-            <h1 className="pointer-events-auto text-xl font-bold text-white drop-shadow-md sm:text-2xl">
-              Reels
-            </h1>
-
-            <button
-              onClick={openImageModal}
-              className="pointer-events-auto rounded-full p-2 hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              <Camera className="h-6 w-6 text-white drop-shadow-md" />
-            </button>
+            {!reels.length ? null : (
+              <h1 className="pointer-events-auto text-xl font-bold text-white drop-shadow-md sm:text-2xl">
+                Reels
+              </h1>
+            )}
           </div>
         </div>
 

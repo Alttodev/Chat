@@ -231,6 +231,7 @@ export function CenterFeed() {
           const likeCount = typeof post?.likes === "number" ? post.likes : 0;
           const commentCount =
             commentCounts[post._id] ?? getInitialCommentCount(post);
+
           const currentUserId = userProfile?.profile?.id
             ? String(userProfile.profile.id)
             : null;
@@ -353,9 +354,11 @@ export function CenterFeed() {
                           currentUserId={userProfile?.profile?.id}
                           onLikeChange={handleLikeChange}
                         />
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {formatCount(likeCount)}
-                        </span>
+                        {likeCount === 0 ? null : (
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {formatCount(likeCount)}
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex items-center gap-1.5">
@@ -368,9 +371,11 @@ export function CenterFeed() {
                         >
                           <MessageCircle style={{ width: 18, height: 18 }} />
                         </Button>
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {formatCount(commentCount)}
-                        </span>
+                        {commentCount === 0 ? null : (
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {formatCount(commentCount)}
+                          </span>
+                        )}
                       </div>
 
                       <Button
@@ -410,20 +415,20 @@ export function CenterFeed() {
                           )} and others`}
                     </Link>
                   )}
-                {openPostId === post._id && (
-                  <div className="mt-3">
-                    <CommentSection
-                      postId={post._id}
-                      userProfile={userProfile?.profile}
-                      onCommentAdded={() =>
-                        handleCommentCountChange(post._id, 1)
-                      }
-                      onCommentRemoved={() =>
-                        handleCommentCountChange(post._id, -1)
-                      }
-                      highlightCommentId={
-                        targetPostId === post._id
-                          ? targetCommentId
+                  {openPostId === post._id && (
+                    <div className="mt-3">
+                      <CommentSection
+                        postId={post._id}
+                        userProfile={userProfile?.profile}
+                        onCommentAdded={() =>
+                          handleCommentCountChange(post._id, 1)
+                        }
+                        onCommentRemoved={() =>
+                          handleCommentCountChange(post._id, -1)
+                        }
+                        highlightCommentId={
+                          targetPostId === post._id
+                            ? targetCommentId
                             : undefined
                         }
                       />
