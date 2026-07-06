@@ -192,7 +192,7 @@ export function ReelCommentsDialog({
               </div>
 
               {comment?.editable ? (
-                <DropdownMenu modal={false}>
+                <DropdownMenu modal={true}>
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"

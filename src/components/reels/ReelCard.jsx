@@ -341,9 +341,11 @@ export function ReelCard({
                   active={isLiked}
                   onClick={handleLike}
                 />
-                <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
-                  {formatCount(likeCount)}
-                </span>
+                {likeCount > 0 && (
+                  <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
+                    {formatCount(likeCount)}
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-col items-center">
@@ -352,9 +354,11 @@ export function ReelCard({
                   label="Comment on reel"
                   onClick={onComment}
                 />
-                <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
-                  {formatCount(commentCount)}
-                </span>
+                {commentCount > 0 && (
+                  <span className="text-xs mt-2 font-medium text-white drop-shadow-md">
+                    {formatCount(commentCount)}
+                  </span>
+                )}
               </div>
 
               <ActionButton
