@@ -32,8 +32,7 @@ import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 import GoodbyePage from "@/pages/GoodbyePage";
-import LandingPage from "@/pages/LandingPage"; 
-
+import LandingPage from "@/pages/LandingPage";
 
 function AppRoutes() {
   return (
@@ -41,11 +40,8 @@ function AppRoutes() {
       <Router>
         <ScrollToTop />
         <Routes>
-      
-          <Route path="/" element={<LandingPage />} />
-          {/* <Route path="/explore" element={<Explore />} /> */}
-
           <Route element={<PublicRoute />}>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginFormComponent />} />
             <Route path="/signup" element={<SignupFormComponent />} />
             <Route path="/reset" element={<ResetFormComponent />} />
