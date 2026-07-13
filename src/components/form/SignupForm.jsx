@@ -32,7 +32,7 @@ const SignupForm = () => {
     try {
       const res = await userCreate(data);
       toastSuccess(res?.message);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       toastError(error?.response?.data?.msg || "Something went wrong");
     }
@@ -165,7 +165,7 @@ const SignupForm = () => {
         <div className="mt-4 flex justify-between sm:mt-6">
           <div className="text-sm text-gray-600">
             Back to &nbsp;
-            <Link to="/" className="text-emerald-600">
+            <Link to="/login" className="text-emerald-600">
               Login
             </Link>
           </div>

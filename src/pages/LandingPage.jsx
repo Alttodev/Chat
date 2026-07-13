@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import logo from "@/assets/logo.png";
 
 const APP_NAME = "Clix";
@@ -123,6 +125,94 @@ function ReelCard({ rotate, translate, gradient, delay, z }) {
   );
 }
 
+const SOCIAL_ICONS = [
+  {
+    path: "M12 21s-6.7-4.35-9.33-8.2C.9 10.1 1.6 6.6 4.6 5.1 6.9 3.95 9.4 4.7 11 6.6l1 1.2 1-1.2c1.6-1.9 4.1-2.65 6.4-1.5 3 1.5 3.7 5 1.93 7.7C18.7 16.65 12 21 12 21z",
+    top: "6%",
+    left: "4%",
+    size: 30,
+    delay: 0,
+  },
+  {
+    path: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
+    top: "68%",
+    left: "0%",
+    size: 26,
+    delay: 0.6,
+  },
+  {
+    path: "M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 0 6h.17A3 3 0 1 0 18 8zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm12 6a3 3 0 1 0-2.98-3.36l-6.36-3.18a3 3 0 1 0 0 1.08l6.36 3.18A3 3 0 1 0 18 21z",
+    top: "10%",
+    left: "88%",
+    size: 24,
+    delay: 1.1,
+  },
+  {
+    path: "M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0",
+    top: "78%",
+    left: "90%",
+    size: 22,
+    delay: 1.6,
+  },
+];
+
+function SocialPulseField() {
+  return (
+    <div className="absolute inset-0 pointer-events-none ">
+      {SOCIAL_ICONS.map((s, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full flex items-center justify-center"
+          style={{
+            top: s.top,
+            left: s.left,
+            width: s.size + 22,
+            height: s.size + 22,
+            background: `${COLOR.amber}14`, // ~8% emerald tint
+          }}
+          animate={{
+            y: [0, -14, 0],
+            scale: [1, 1.06, 1],
+            opacity: [0.55, 1, 0.55],
+          }}
+          transition={{
+            duration: 3.2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: s.delay,
+          }}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width={s.size}
+            height={s.size}
+            fill="none"
+            stroke={COLOR.amber}
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={s.path} />
+          </svg>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+const fadeLeft = {
+  hidden: { opacity: 0, x: -60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } },
+};
+const fadeRight = {
+  hidden: { opacity: 0, x: 60 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } },
+};
+const fadeUp = {
+  hidden: { opacity: 0, y: 32 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export default function LandingPage() {
   return (
     <div
@@ -144,8 +234,11 @@ export default function LandingPage() {
       {/* ---------------------------------------------------------------- */}
       {/* Nav                                                              */}
       {/* ---------------------------------------------------------------- */}
-      <header
-        className="sticky top-0 z-30 backdrop-blur-md  border-black/5"
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="sticky top-0 z-30 backdrop-blur-md border-b border-black/5"
         style={{ background: `${COLOR.bg}CC` }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -182,10 +275,13 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-      </header>
+      </motion.header>
 
-      <section className="max-w-6xl mx-auto px-6 pt-16 pb-28 grid lg:grid-cols-2 gap-16 items-center">
-        <div>
+      {/* ---------------------------------------------------------------- */}
+      {/* Hero — headline slides in from the left, visual from the right    */}
+      {/* ---------------------------------------------------------------- */}
+      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-28 grid lg:grid-cols-2 gap-16 items-center">
+        <motion.div initial="hidden" animate="show" variants={fadeLeft}>
           <span
             className="inline-block text-xs tracking-[0.2em] uppercase px-3 py-1 rounded-full mb-6"
             style={{
@@ -221,9 +317,15 @@ export default function LandingPage() {
               Create your account
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="relative h-[420px] hidden sm:block">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={fadeRight}
+          className="relative h-[420px] "
+        >
+          <SocialPulseField />
           <div className="absolute inset-0 flex items-center justify-center">
             <ReelCard
               rotate={-14}
@@ -247,7 +349,7 @@ export default function LandingPage() {
               z={3}
             />
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ---------------------------------------------------------------- */}
@@ -271,17 +373,29 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------- */}
+      {/* Features — alternate slide-in direction, revealed on scroll       */}
+      {/* ---------------------------------------------------------------- */}
       <section id="features" className="max-w-6xl mx-auto px-6 py-28">
-        <h2
+        <motion.h2
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={fadeUp}
           className="text-3xl sm:text-4xl mb-14 max-w-lg tracking-tight"
           style={displayFont}
         >
           Everything a feed needs. Nothing it doesn't.
-        </h2>
+        </motion.h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {FEATURES.map((f) => (
-            <div
+          {FEATURES.map((f, i) => (
+            <motion.div
               key={f.tag}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={i % 2 === 0 ? fadeLeft : fadeRight}
+              transition={{ delay: (i % 3) * 0.08 }}
               className="p-6 rounded-2xl border border-black/5 transition-colors hover:border-black/15"
               style={{ background: COLOR.surface }}
             >
@@ -303,13 +417,20 @@ export default function LandingPage() {
               <p className="text-sm" style={{ color: COLOR.dim }}>
                 {f.body}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
+      {/* ---------------------------------------------------------------- */}
+      {/* CTA band                                                         */}
+      {/* ---------------------------------------------------------------- */}
       <section className="max-w-6xl mx-auto px-6 pb-28">
-        <div
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={fadeUp}
           className="rounded-3xl px-8 py-16 sm:py-20 text-center relative overflow-hidden"
           style={{ background: COLOR.surface }}
         >
@@ -341,13 +462,13 @@ export default function LandingPage() {
           >
             Get started — it's free
           </Link>
-        </div>
+        </motion.div>
       </section>
 
       {/* ---------------------------------------------------------------- */}
       {/* Footer                                                           */}
       {/* ---------------------------------------------------------------- */}
-      <footer>
+      <footer className="border-t">
         <div
           className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm"
           style={{ color: COLOR.dim }}

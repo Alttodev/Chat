@@ -37,7 +37,7 @@ const ResetMailForm = () => {
         token,
         password: data.password,
       });
-      navigate("/");
+      navigate("/login");
       toastSuccess(res?.message);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
@@ -115,7 +115,7 @@ const ResetMailForm = () => {
         <div className="mt-4 flex justify-between sm:mt-6">
           <div className="text-sm text-gray-600">
             Back to &nbsp;
-            <Link to="/" className="text-emerald-600">
+            <Link to="/login" className="text-emerald-600">
               Login
             </Link>
           </div>
