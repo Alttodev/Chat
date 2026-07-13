@@ -32,6 +32,8 @@ import ProfilePostFeed from "@/pages/ProfilePostFeed";
 import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 import GoodbyePage from "@/pages/GoodbyePage";
+import LandingPage from "@/pages/LandingPage"; 
+
 
 function AppRoutes() {
   return (
@@ -39,8 +41,12 @@ function AppRoutes() {
       <Router>
         <ScrollToTop />
         <Routes>
+      
+          <Route path="/" element={<LandingPage />} />
+          {/* <Route path="/explore" element={<Explore />} /> */}
+
           <Route element={<PublicRoute />}>
-            <Route path="/" element={<LoginFormComponent />} />
+            <Route path="/login" element={<LoginFormComponent />} />
             <Route path="/signup" element={<SignupFormComponent />} />
             <Route path="/reset" element={<ResetFormComponent />} />
             <Route
@@ -59,10 +65,6 @@ function AppRoutes() {
           <Route element={<ProtectedRoute />}>
             <Route element={<HomeLayout />}>
               <Route path="/home" element={<CenterFeed />} />
-              {/* <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsAndConditions />} /> */}
               <Route path="/notification" element={<NotificationPage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />
@@ -87,7 +89,6 @@ function AppRoutes() {
                 path="/user/:userId/posts/:postId"
                 element={<UserPostFeed />}
               />
-             
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
