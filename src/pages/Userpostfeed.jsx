@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { MessageCircle, Send } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -24,17 +24,21 @@ import { formatCount } from "@/lib/formatCount";
 export default function UserPostFeed() {
   const { posts, userInfo, currentUser } = useUserPostStore();
 
-  const { openPostId, toggleComments } = useCommentStore();
+  const { openPostId, toggleComments} = useCommentStore();
   const { open } = useImageModalStore();
   const { openShareModal } = useZustandSharePopup();
 
+  const { postId } = useParams();
+  const targetPostId = postId;
   const firstPostRef = useRef(null);
   const [localPosts, setLocalPosts] = useState([]);
   const [commentCounts, setCommentCounts] = useState({});
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, []);
+    if (!targetPostId) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [targetPostId]);
 
   useEffect(() => {
     setLocalPosts(posts);
@@ -42,7 +46,14 @@ export default function UserPostFeed() {
 
   const user = userInfo;
   const currentUserId = user?._id ? String(user._id) : null;
-  const displayPosts = useMemo(() => localPosts, [localPosts]);
+  const displayPosts = useMemo(() => {
+    if (!targetPostId) return localPosts;
+
+    const startIndex = localPosts.findIndex(
+      (post) => post._id === targetPostId,
+    );
+    return startIndex >= 0 ? localPosts.slice(startIndex) : localPosts;
+  }, [localPosts, targetPostId]);
 
   const handleLikeChange = (postId, updated) => {
     const patchPost = (post) => {
@@ -113,8 +124,9 @@ export default function UserPostFeed() {
           return (
             <Card
               key={post._id}
+              id={`post-${post._id}`}
               ref={i === 0 ? firstPostRef : null}
-              className="overflow-hidden"
+              className="overflow-hidden scroll-mt-28"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
