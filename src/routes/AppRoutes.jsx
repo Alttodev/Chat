@@ -34,6 +34,7 @@ import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 import GoodbyePage from "@/pages/GoodbyePage";
 import LandingPage from "@/pages/LandingPage";
 import Live from "@/pages/Live";
+import LiveViewerPage from "@/pages/LiveViewerPage";
 
 function AppRoutes() {
   return (
@@ -79,6 +80,7 @@ function AppRoutes() {
               <Route path="/posts/:id/likes" element={<PostLikes />} />
               <Route path="/posts/:id/liked-users" element={<PostLikes />} />
               <Route path="/hashtags/:tag" element={<HashtagPosts />} />
+              <Route path="/live/:userId" element={<LiveViewerPage />} />
               <Route
                 path="/profile/posts/:postId"
                 element={<ProfilePostFeed />}

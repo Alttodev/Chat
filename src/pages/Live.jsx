@@ -9,7 +9,7 @@ export default function Live() {
 
   if (session) {
     return (
-      <div className="pb-6">
+      <div className="space-y-4 pb-6">
         <LiveStoryBar />
         <Broadcaster
           token={session.token}
@@ -22,6 +22,8 @@ export default function Live() {
 
   return (
     <div className="min-h-[calc(100vh-8rem)] space-y-6 pb-6">
+      <LiveStoryBar />
+
       <div className="flex flex-col gap-4 rounded-3xl border border-border/60 bg-gradient-to-br from-emerald-500/10 via-white to-sky-500/10 p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
