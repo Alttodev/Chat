@@ -1,6 +1,6 @@
 import { Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Broadcaster from "@/components/Broadcaster";
+import Broadcaster from "@/components/BroadCaster";
 import { useBroadcast } from "@/hooks/useBroadCast";
 import LiveStoryBar from "@/components/Live/LiveStoryBar";
 
