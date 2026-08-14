@@ -1,10 +1,4 @@
-import {
-  Search,
-  User,
-  Settings,
-  Gem,
-  Bell,
-} from "lucide-react";
+import { Search, User, Settings, Gem, Bell, Radio } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -85,7 +79,6 @@ export function SocialHeader() {
             className="text-muted-foreground cursor-pointer"
             onClick={() => setSearchOpen(true)}
           />
-         
 
           {showBirthdayBadge && <BirthdayBadge onClaimed={handleClaimed} />}
           <BirthdayCelebration
@@ -173,6 +166,11 @@ export function SocialHeader() {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <User className="w-4 h-4" />
                   Profile
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate("/live")}>
+                  <Radio className="w-4 h-4" />
+                  Live
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>

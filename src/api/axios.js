@@ -1,5 +1,17 @@
 import axiosInstance from "./axiosInstance";
 
+
+export const liveApi = {
+  start: () => axiosInstance.post("/live/start").then((res) => res.data),
+ 
+  join: (hostUserId) =>
+   axiosInstance.post(`/live/join/${hostUserId}`).then((res) => res.data),
+ 
+  end: () => axiosInstance.post("/live/end").then((res) => res.data),
+ 
+  getActive: () => axiosInstance.get("/live/active").then((res) => res.data),
+};
+
 export const userSignup = async (formData) => {
   const { data } = await axiosInstance.post(`/auth/signup`, formData);
   return data;

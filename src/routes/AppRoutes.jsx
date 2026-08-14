@@ -33,6 +33,7 @@ import UserPostFeed from "@/pages/Userpostfeed";
 import GoogleAuthSuccess from "@/pages/GoogleAuthSuccess";
 import GoodbyePage from "@/pages/GoodbyePage";
 import LandingPage from "@/pages/LandingPage";
+import Live from "@/pages/Live";
 
 function AppRoutes() {
   return (
@@ -68,6 +69,7 @@ function AppRoutes() {
               <Route path="/profileViews" element={<ProfileViews />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
+              <Route path="/live" element={<Live />} />
               <Route path="/reels" element={<Reels />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/settings" element={<SettingsComponent />} />

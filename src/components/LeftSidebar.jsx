@@ -6,6 +6,7 @@ import {
   Gem,
   Send,
   PlaySquare,
+  Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -16,7 +17,8 @@ export function LeftSidebar() {
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
     { icon: User, label: "Profile", path: "/profile" },
-    { icon:  PlaySquare, label: "Reels", path: "/reels" },
+    { icon: PlaySquare, label: "Reels", path: "/reels" },
+    { icon: Radio, label: "Live", path: "/live" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: Send, label: "Chat", path: "/messages" },
     { icon: Gem, label: "Upgrade", path: "/subscription" },
