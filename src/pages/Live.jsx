@@ -43,7 +43,7 @@ export default function Live() {
         <Button
           disabled={loading}
           onClick={startLive}
-          className="h-12 rounded-full bg-emerald-600 px-6 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500"
+          className="h-12 rounded-full bg-emerald-600 px-6 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 cursor-pointer"
         >
           {loading ? "Starting…" : "Start live"}
         </Button>

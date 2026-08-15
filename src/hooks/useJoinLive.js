@@ -17,7 +17,13 @@ export function useJoinLive() {
     setError(null);
     try {
       const data = await liveApi.join(hostUserId);
-      setSession({ token: data.token, serverUrl: data.url, roomName: data.roomName });
+      setSession({
+        token: data.token,
+        serverUrl: data.url,
+        roomName: data.roomName,
+        hostUsername: data.hostUsername,
+        hostAvatarUrl: data.hostAvatarUrl,
+      });
       return data;
     } catch (err) {
       setError(

@@ -38,7 +38,7 @@ export default function LiveViewerPage() {
         <p className="text-sm text-red-600">{error}</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-sm text-muted-foreground underline"
+          className="text-sm text-muted-foreground underline cursor-pointer"
         >
           Go back
         </button>
@@ -53,7 +53,7 @@ export default function LiveViewerPage() {
       <Viewer
         token={session.token}
         serverUrl={session.serverUrl}
-        hostUsername={userId}
+        hostUsername={session.hostUsername || userId}
         onLeave={handleLeave}
       />
     </div>

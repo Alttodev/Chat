@@ -17,7 +17,7 @@ export default function LiveStoryBar() {
         <button
           key={user.userId}
           onClick={() => navigate(`/live/${user.userId}`)}
-          className="flex flex-col items-center gap-1"
+          className="flex flex-col items-center gap-1 cursor-pointer"
         >
           <div className="relative">
             <img
