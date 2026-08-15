@@ -2,11 +2,6 @@
 import { useEffect, useState } from "react";
 import { liveApi } from "@/api/axios";
 
-/**
- * Polls who's currently live, for showing badges in the feed/profile.
- * Swap the setInterval for a Socket.io listener later if you want
- * instant updates instead of polling.
- */
 export function useActiveLive(pollMs = 10000) {
   const [activeUsers, setActiveUsers] = useState([]);
   const [loading, setLoading] = useState(true);

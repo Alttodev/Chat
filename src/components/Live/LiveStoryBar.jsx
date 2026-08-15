@@ -1,7 +1,3 @@
-// components/feed/LiveStoryBar.jsx
-// Example of where useActiveLive actually gets called — drop this at the
-// top of your Home/Feed page, above the regular story avatars.
-
 import { useActiveLive } from "@/hooks/useActiveLive";
 import { useNavigate } from "react-router-dom"; // swap for your router
 

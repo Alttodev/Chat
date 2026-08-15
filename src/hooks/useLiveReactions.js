@@ -1,7 +1,3 @@
-// hooks/useLiveReactions.js
-// Must be called from a component rendered INSIDE <LiveKitRoom> — it uses
-// LiveKit's room context via useDataChannel.
-
 import { useState, useCallback } from "react";
 import { useDataChannel } from "@livekit/components-react";
 
@@ -22,8 +18,6 @@ export function useLiveReactions() {
     setReactions((prev) => prev.filter((r) => r.id !== id));
   }, []);
 
-  // "reactions" topic keeps this separate from any other data messages
-  // (e.g. live comments) you might add on the same room later.
   const { send } = useDataChannel("reactions", (msg) => {
     try {
       const { emoji } = JSON.parse(decoder.decode(msg.payload));

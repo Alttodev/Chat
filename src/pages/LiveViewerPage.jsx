@@ -1,7 +1,3 @@
-// pages/LiveViewerPage.jsx
-// Route this at /live/:userId — LiveStoryBar already navigates here when
-// someone taps a live badge.
-
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Viewer from "@/components/Live/Viewer";

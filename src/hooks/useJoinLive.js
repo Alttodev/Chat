@@ -2,11 +2,6 @@
 import { useCallback, useState } from "react";
 import { liveApi } from "@/api/axios";
 
-/**
- * Handles a viewer joining a specific host's live session.
- * Usage: const { session, joinLive, leaveLive } = useJoinLive();
- *        await joinLive(hostUserId)
- */
 export function useJoinLive() {
   const [session, setSession] = useState(null); // { token, url, roomName } | null
   const [loading, setLoading] = useState(false);

@@ -2,11 +2,6 @@
 import { useCallback, useState } from "react";
 import { liveApi } from "@/api/axios";
 
-/**
- * Manages the current user's own live session (starting/ending it).
- * Returns the LiveKit session details once started so you can pass
- * them straight into <Broadcaster />.
- */
 export function useBroadcast() {
   const [session, setSession] = useState(null); // { token, url, roomName } | null
   const [loading, setLoading] = useState(false);
