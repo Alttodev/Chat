@@ -1,12 +1,17 @@
 import { useActiveLive } from "@/hooks/useActiveLive";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { Radio } from "lucide-react";
+import live from "@/assets/live_image.png";
 
 export default function LiveStoryBar() {
   const { activeUsers, loading } = useActiveLive();
   const navigate = useNavigate();
 
-  if (loading || activeUsers.length === 0) return null;
+  if (loading) return null;
+
+  if (activeUsers.length === 0) {
+    return <img src={live} className="h-full w-full object-cover" />;
+  }
 
   return (
     <div className="flex flex-col gap-2">
