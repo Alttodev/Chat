@@ -10,11 +10,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
-import { useActiveLive } from "@/hooks/useActiveLive";
 
 export function LeftSidebar() {
   const location = useLocation();
-  const { activeUsers } = useActiveLive();
 
   const menuItems = [
     { icon: Home, label: "Home", path: "/home" },
@@ -38,9 +36,8 @@ export function LeftSidebar() {
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
-            const isLiveNavItem = item.label === "Live";
-            const hasLiveUsers = isLiveNavItem && activeUsers.length > 0;
-
+         
+           
             return (
               <Link key={item.label} to={item.path}>
                 <Button
@@ -53,9 +50,7 @@ export function LeftSidebar() {
                 >
                   <span className="relative inline-flex items-center justify-center">
                     <item.icon className="w-5 h-5" />
-                    {hasLiveUsers && (
-                      <span className="absolute top-0.5 left-0.6 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-background animate-pulse" />
-                    )}
+                   
                   </span>
                   {item.label}
                 </Button>

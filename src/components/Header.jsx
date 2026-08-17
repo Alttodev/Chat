@@ -20,7 +20,6 @@ import { useNotificationCounts } from "@/hooks/notificationHooks";
 import { isBirthdayClaimedThisYear, isBirthdayToday } from "@/lib/birthday";
 import { BirthdayBadge } from "./birthday/BirthdayBadge";
 import { BirthdayCelebration } from "./birthday/BirthdayCelebration";
-import { useActiveLive } from "@/hooks/useActiveLive";
 
 export function SocialHeader() {
   const navigate = useNavigate();
@@ -30,8 +29,6 @@ export function SocialHeader() {
   const { data: countsData } = useNotificationCounts();
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [claimedReward, setClaimedReward] = useState(null);
-  const { activeUsers } = useActiveLive();
-  const hasLiveUsers = activeUsers.length > 0;
 
   const showBirthdayBadge =
     isBirthdayToday(userProfile?.profile?.dateOfBirth) &&
@@ -179,9 +176,7 @@ export function SocialHeader() {
                     <Radio className="w-4 h-4" />
                     <span>Live</span>
                   </div>
-                  {hasLiveUsers && (
-                    <span className="absolute left-3 top-4 h-2 w-2 -translate-y-1/2 rounded-full bg-red-600 ring-2 ring-background animate-pulse" />
-                  )}
+                 
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>
