@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Gem } from "lucide-react";
+import { Check, Crown } from "lucide-react";
 import { useState } from "react";
 import {
   createSubscriptionOrder,
@@ -101,7 +101,7 @@ function SubscriptionCard() {
       {/* Header Section */}
       <div className="text-start">
         <h1 className="text-2xl font-semibold tracking-[0.1em] text-emerald-600 flex items-center gap-2">
-          <Gem className="h-5 w-5" />
+          <Crown className="h-5 w-5" />
           Premium Plans
         </h1>
       </div>

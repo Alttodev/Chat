@@ -1,4 +1,4 @@
-import { Search, User, Settings, Gem, Bell, Radio } from "lucide-react";
+import { Search, User, Settings, Crown, Bell, Radio } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -180,7 +180,7 @@ export function SocialHeader() {
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>
-                  <Gem className="w-4 h-4" />
+                  <Crown className="w-4 h-4" />
                   Upgrade
                 </DropdownMenuItem>
 
