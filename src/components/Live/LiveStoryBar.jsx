@@ -1,16 +1,44 @@
 import { useActiveLive } from "@/hooks/useActiveLive";
 import { useNavigate } from "react-router-dom";
 import { Radio } from "lucide-react";
+import { useState, useEffect } from "react";
 import live from "@/assets/live_image.png";
 
 export default function LiveStoryBar() {
   const { activeUsers, loading } = useActiveLive();
   const navigate = useNavigate();
+  const [showPoster, setShowPoster] = useState(false);
 
-  if (loading) return null;
+  useEffect(() => {
+    if (!loading && activeUsers.length === 0) {
+      const timer = setTimeout(() => setShowPoster(true), 250);
+      return () => clearTimeout(timer);
+    }
+
+    setShowPoster(false);
+  }, [loading, activeUsers.length]);
 
   if (activeUsers.length === 0) {
-    return <img src={live} className="h-full w-full object-cover" />;
+    return (
+      <>
+        {!showPoster ? (
+          <div className="flex h-28 w-full items-center justify-center ">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
+              Loading...
+            </div>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm">
+            <img
+              src={live}
+              alt="No live users"
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
+      </>
+    );
   }
 
   return (
