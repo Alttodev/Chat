@@ -3,10 +3,10 @@ import { useCallback, useState } from "react";
 import { liveApi } from "@/api/axios";
 
 export function useJoinLive() {
-  const [session, setSession] = useState(null); // { token, url, roomName } | null
+  const [session, setSession] = useState(null); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+ 
   const joinLive = useCallback(async (hostUserId) => {
     setLoading(true);
     setError(null);
@@ -16,6 +16,7 @@ export function useJoinLive() {
         token: data.token,
         serverUrl: data.url,
         roomName: data.roomName,
+        sessionId: data.sessionId,
         hostUsername: data.hostUsername,
         hostAvatarUrl: data.hostAvatarUrl,
       });
@@ -29,10 +30,10 @@ export function useJoinLive() {
       setLoading(false);
     }
   }, []);
-
+ 
   const leaveLive = useCallback(() => {
     setSession(null);
   }, []);
-
+ 
   return { session, loading, error, joinLive, leaveLive };
 }

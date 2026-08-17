@@ -9,9 +9,9 @@ import {
 import { Track } from "livekit-client";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLiveReactions } from "@/hooks/useLiveReactions";
-import FloatingEmojis from "@/components/Live/FloatingEmojis";
-import EmojiReactionBar from "@/components/Live/EmojiReactionbar";
+import { useLiveComments } from "@/hooks/useLiveComments";
+import WatchersList from "@/components/Live/WatchersList";
+import CommentsPanel from "@/components/Live/CommentsPanel";
 
 function RemoteVideo() {
   const tracks = useTracks([Track.Source.Camera]);
@@ -30,8 +30,6 @@ function RemoteVideo() {
 }
 
 function ViewerCountBadge() {
-  // Includes the broadcaster + every other viewer, so subtract 1 for the
-  // broadcaster to show a count that matches what the broadcaster sees.
   const remoteParticipants = useRemoteParticipants();
   const count = Math.max(remoteParticipants.length - 1, 0);
 
@@ -42,17 +40,16 @@ function ViewerCountBadge() {
   );
 }
 
-function ReactionsLayer() {
-  const { reactions, sendReaction, removeReaction } = useLiveReactions();
-  return (
-    <>
-      <FloatingEmojis reactions={reactions} onExpire={removeReaction} />
-      <EmojiReactionBar onSend={sendReaction} />
-    </>
-  );
-}
+export default function Viewer({
+  token,
+  serverUrl,
+  hostUsername,
+  hostUserId,
+  sessionId,
+  onLeave,
+}) {
+  const { comments, postComment, posting } = useLiveComments(sessionId);
 
-export default function Viewer({ token, serverUrl, hostUsername, onLeave }) {
   return (
     <LiveKitRoom
       token={token}
@@ -65,13 +62,15 @@ export default function Viewer({ token, serverUrl, hostUsername, onLeave }) {
     >
       <RemoteVideo />
       <RoomAudioRenderer />
-      <ReactionsLayer />
 
       <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur">
         @{hostUsername}
       </div>
 
       <ViewerCountBadge />
+      <WatchersList excludeIdentity={hostUserId} />
+
+      <CommentsPanel comments={comments} onSend={postComment} posting={posting} />
 
       <Button
         size="icon"

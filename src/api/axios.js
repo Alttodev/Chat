@@ -1,15 +1,19 @@
 import axiosInstance from "./axiosInstance";
 
-
 export const liveApi = {
   start: () => axiosInstance.post("/live/start").then((res) => res.data),
- 
+
   join: (hostUserId) =>
-   axiosInstance.post(`/live/join/${hostUserId}`).then((res) => res.data),
- 
+    axiosInstance.post(`/live/join/${hostUserId}`).then((res) => res.data),
+
   end: () => axiosInstance.post("/live/end").then((res) => res.data),
- 
+
   getActive: () => axiosInstance.get("/live/active").then((res) => res.data),
+   postComment: (sessionId, text) =>
+   axiosInstance.post(`/live/comment/${sessionId}`, { text }).then((res) => res.data),
+ 
+  getComments: (sessionId) =>
+    axiosInstance.get(`/live/comments/${sessionId}`).then((res) => res.data),
 };
 
 export const userSignup = async (formData) => {
@@ -161,12 +165,9 @@ export const markNotificationRead = async (notificationId) => {
 };
 
 export const clearNotifications = async () => {
-  const { data } = await axiosInstance.put(
-    "/notifications/clear-all"
-  );
+  const { data } = await axiosInstance.put("/notifications/clear-all");
   return data;
 };
-
 
 export const getNotificationSettings = async () => {
   const { data } = await axiosInstance.get(`/profile/notification-settings`);
@@ -263,7 +264,6 @@ export const getAllProfiles = async () => {
   const { data } = await axiosInstance.get(`/profile/userProfiles`);
   return data;
 };
-
 
 export const getUserPost = async ({ pageParam = 1 }) => {
   const { data } = await axiosInstance.get(
@@ -388,7 +388,6 @@ export const userAccountDelete = async () => {
   return data;
 };
 
-
 export const userPostDelete = async (id) => {
   const { data } = await axiosInstance.delete(`/post/delete/${id}`);
   return data;
@@ -407,7 +406,6 @@ export const userRequestDelete = async ({ fromId, toId }) => {
   );
   return data;
 };
-
 
 export const submitPuzzleResult = async ({
   userId,

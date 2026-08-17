@@ -10,8 +10,9 @@ import {
 import { Track } from "livekit-client";
 import { Mic, MicOff, Video as VideoIcon, VideoOff, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useLiveReactions } from "@/hooks/useLiveReactions";
-import FloatingEmojis from "@/components/Live/FloatingEmojis";
+import { useLiveComments } from "@/hooks/useLiveComments";
+import WatchersList from "@/components/Live/WatchersList";
+import CommentsPanel from "@/components/Live/CommentsPanel";
 
 function BroadcastControls({ onEnd }) {
   const { localParticipant, isCameraEnabled, isMicrophoneEnabled } =
@@ -43,12 +44,12 @@ function BroadcastControls({ onEnd }) {
   };
 
   return (
-    <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-3">
+    <div className="absolute bottom-16 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3">
       <Button
         size="icon"
         variant="secondary"
         disabled={busy}
-        className="h-12 w-12 rounded-full bg-white/90 backdrop-blur hover:bg-white cursor-pointer"
+        className="h-12 w-12 rounded-full bg-white/90 backdrop-blur hover:bg-white"
         onClick={toggleMic}
       >
         {isMicrophoneEnabled ? (
@@ -61,7 +62,7 @@ function BroadcastControls({ onEnd }) {
         size="icon"
         variant="secondary"
         disabled={busy}
-        className="h-12 w-12 rounded-full bg-white/90 backdrop-blur hover:bg-white cursor-pointer"
+        className="h-12 w-12 rounded-full bg-white/90 backdrop-blur hover:bg-white"
         onClick={toggleCam}
       >
         {isCameraEnabled ? (
@@ -72,7 +73,7 @@ function BroadcastControls({ onEnd }) {
       </Button>
       <Button
         size="icon"
-        className="h-12 w-12 rounded-full bg-red-600 hover:bg-red-500 cursor-pointer"
+        className="h-12 w-12 rounded-full bg-red-600 hover:bg-red-500"
         onClick={onEnd}
       >
         <X className="h-5 w-5 text-white" />
@@ -82,8 +83,6 @@ function BroadcastControls({ onEnd }) {
 }
 
 function LocalPreview() {
-  // onlySubscribed: false — local tracks never go through "subscription",
-  // so the default (true) filters them out and the preview stays blank.
   const tracks = useTracks([Track.Source.Camera], { onlySubscribed: false });
   const localTrack = tracks.find((t) => t.participant.isLocal);
 
@@ -94,9 +93,6 @@ function LocalPreview() {
 }
 
 function ViewerCountBadge() {
-  // Remote participants = everyone in the room except the broadcaster
-  // themself, which is exactly "who's watching". This updates live as
-  // people join/leave, unlike a DB counter that only ever increments.
   const remoteParticipants = useRemoteParticipants();
 
   return (
@@ -106,12 +102,9 @@ function ViewerCountBadge() {
   );
 }
 
-function ReactionsOverlay() {
-  const { reactions, removeReaction } = useLiveReactions();
-  return <FloatingEmojis reactions={reactions} onExpire={removeReaction} />;
-}
+export default function Broadcaster({ token, serverUrl, hostUserId, sessionId, onEnd }) {
+  const { comments, postComment, posting } = useLiveComments(sessionId);
 
-export default function Broadcaster({ token, serverUrl, onEnd }) {
   return (
     <LiveKitRoom
       token={token}
@@ -123,7 +116,6 @@ export default function Broadcaster({ token, serverUrl, onEnd }) {
       className="relative h-[calc(100vh-8rem)] w-full overflow-hidden rounded-3xl bg-black"
     >
       <LocalPreview />
-      <ReactionsOverlay />
 
       <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
         <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
@@ -131,6 +123,9 @@ export default function Broadcaster({ token, serverUrl, onEnd }) {
       </div>
 
       <ViewerCountBadge />
+      <WatchersList excludeIdentity={hostUserId} />
+
+      <CommentsPanel comments={comments} onSend={postComment} posting={posting} />
 
       <BroadcastControls onEnd={onEnd} />
     </LiveKitRoom>

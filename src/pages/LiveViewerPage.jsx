@@ -1,3 +1,5 @@
+
+
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Viewer from "@/components/Live/Viewer";
@@ -34,7 +36,7 @@ export default function LiveViewerPage() {
         <p className="text-sm text-red-600">{error}</p>
         <button
           onClick={() => navigate(-1)}
-          className="text-sm text-muted-foreground underline cursor-pointer"
+          className="text-sm text-muted-foreground underline"
         >
           Go back
         </button>
@@ -50,6 +52,8 @@ export default function LiveViewerPage() {
         token={session.token}
         serverUrl={session.serverUrl}
         hostUsername={session.hostUsername || userId}
+        hostUserId={userId}
+        sessionId={session.sessionId}
         onLeave={handleLeave}
       />
     </div>
