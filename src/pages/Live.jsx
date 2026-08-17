@@ -32,16 +32,16 @@ export default function Live() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground">Go live</p>
-          <p className="text-xs text-muted-foreground">
-            Share what you're doing right now
+          <p className="text-md font-semibold text-foreground">Go live</p>
+          <p className="text-sm text-muted-foreground">
+            Share what you're doing 
           </p>
         </div>
 
         <Button
           disabled={loading}
           onClick={startLive}
-          className="h-auto flex-shrink-0 rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 cursor-pointer"
+          className="h-auto flex-shrink-0 rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 cursor-pointer"
         >
           {loading ? "Starting…" : "Start"}
         </Button>

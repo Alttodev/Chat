@@ -29,13 +29,13 @@ export default function LiveStoryBar() {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-foreground">
+            <p className="truncate text-md font-semibold text-foreground">
               {user.username}
             </p>
-            <p className="text-xs text-muted-foreground">is live now</p>
+            <p className="text-sm text-muted-foreground">is live now</p>
           </div>
 
-          <span className="flex-shrink-0 rounded-full bg-red-600 px-4 py-1.5 text-xs font-semibold text-white cursor-pointer">
+          <span className="flex-shrink-0 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white cursor-pointer">
             Join
           </span>
         </button>
