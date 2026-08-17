@@ -15,6 +15,8 @@ function HomeLayout() {
   const isReels = pathname === "/reels";
   const isMessages = pathname === "/messages";
   const isHome = pathname === "/home";
+  const isLive = pathname === "/live";
+  const isLiveViewer = pathname.startsWith("/live/");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -42,7 +44,7 @@ function HomeLayout() {
               : isReels
                 ? "px-0  pt-0 pb-0 sm:pt-20"
                 : isHome
-                  ? "pt-16"
+                  ? "pt-16" : isLive || isLiveViewer ? "pt-20 pb-20"
                   : "pt-20 sm:pt-24",
           )}
         >
