@@ -24,7 +24,6 @@ export default function LiveStoryBar() {
         {!showPoster ? (
           <div className="flex h-28 w-full items-center justify-center ">
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
               Loading...
             </div>
           </div>
