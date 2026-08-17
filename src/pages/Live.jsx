@@ -26,9 +26,6 @@ export default function Live() {
 
   return (
     <div className="min-h-[calc(100vh-8rem)] space-y-2 px-4 py-3">
-      {/* Same card shape/spacing as LiveStoryBar items below, so the two
-          lists read as one consistent list rather than two different
-          components glued together. */}
       <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-white p-3 shadow-sm">
         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
           <Radio className="h-5 w-5" />

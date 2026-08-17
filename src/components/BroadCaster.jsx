@@ -102,8 +102,15 @@ function ViewerCountBadge() {
   );
 }
 
-export default function Broadcaster({ token, serverUrl, hostUserId, sessionId, onEnd }) {
+export default function Broadcaster({
+  token,
+  serverUrl,
+  hostUserId,
+  sessionId,
+  onEnd,
+}) {
   const { comments, postComment, posting } = useLiveComments(sessionId);
+  const [controlsVisible, setControlsVisible] = useState(true);
 
   return (
     <LiveKitRoom
@@ -113,6 +120,7 @@ export default function Broadcaster({ token, serverUrl, hostUserId, sessionId, o
       video
       audio
       onDisconnected={onEnd}
+      onClick={() => setControlsVisible((v) => !v)}
       className="relative h-[calc(100vh-8rem)] w-full overflow-hidden rounded-3xl bg-black"
     >
       <LocalPreview />
@@ -123,11 +131,26 @@ export default function Broadcaster({ token, serverUrl, hostUserId, sessionId, o
       </div>
 
       <ViewerCountBadge />
-      <WatchersList excludeIdentity={hostUserId} />
 
-      <CommentsPanel comments={comments} onSend={postComment} posting={posting} />
+      <div onClick={(e) => e.stopPropagation()}>
+        <WatchersList excludeIdentity={hostUserId} />
+        <CommentsPanel
+          comments={comments}
+          onSend={postComment}
+          posting={posting}
+        />
+      </div>
 
-      <BroadcastControls onEnd={onEnd} />
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`transition-opacity duration-300 ${
+          controlsVisible
+            ? "opacity-100"
+            : "pointer-events-none opacity-0"
+        }`}
+      >
+        <BroadcastControls onEnd={onEnd} />
+      </div>
     </LiveKitRoom>
   );
 }
