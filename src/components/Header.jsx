@@ -181,7 +181,7 @@ export function SocialHeader() {
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>
                   <Crown className="w-4 h-4" />
-                  Upgrade
+                  Premium
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/settings")}>

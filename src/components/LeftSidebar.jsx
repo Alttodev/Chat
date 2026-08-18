@@ -21,7 +21,7 @@ export function LeftSidebar() {
     { icon: Radio, label: "Live", path: "/live" },
     { icon: Users, label: "Friends", path: "/friends" },
     { icon: Send, label: "Chat", path: "/messages" },
-    { icon: Crown, label: "Upgrade", path: "/subscription" },
+    { icon: Crown, label: "Premium", path: "/subscription" },
     { icon: Settings, label: "Settings", path: "/settings" },
     // { icon: Info, label: "About Us", path: "/about" },
     // { icon: Phone, label: "Contact Us", path: "/contact" },
