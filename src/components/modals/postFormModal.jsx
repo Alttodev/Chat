@@ -13,7 +13,7 @@ export function PostFormDialog() {
       <DialogContent
         className="
          fixed
-    top-5
+    top-20
     left-1/2
     -translate-x-1/2
     translate-y-0
