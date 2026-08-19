@@ -1,7 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useZustandImagePopup } from "@/lib/zustand";
+import { useZustandFormPopup, useZustandImagePopup } from "@/lib/zustand";
 import { ImageUpload } from "../form_inputs/ImageUpload";
 import { usePostCreate } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
@@ -17,6 +17,7 @@ import { useAuthStore } from "@/store/authStore";
 
 export function PostImageForm() {
   const { closeImageModal } = useZustandImagePopup();
+    const { closeFormModal } = useZustandFormPopup();
   const userId = useAuthStore((state) => state.user?.userName);
   const { mutateAsync: createPost } = usePostCreate();
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
@@ -113,6 +114,7 @@ export function PostImageForm() {
       reset();
       setSelectedLocation(null);
       closeImageModal(null);
+      closeFormModal(null);
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
