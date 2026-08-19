@@ -224,7 +224,7 @@ export function CenterFeed() {
       <div className="w-full max-w-3xl mx-auto px-0 mt-1  md:mt-8 space-y-4 pb-20">
         <Card id="create-post" className="hidden lg:block">
           <CardContent className="p-3">
-            <PostForm userProfile={userProfile} />
+            <PostForm userProfile={userProfile} aiTarget="feed-post" />
           </CardContent>
         </Card>
 

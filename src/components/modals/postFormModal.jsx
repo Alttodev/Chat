@@ -29,7 +29,7 @@ export function PostFormDialog() {
         <DialogTitle className="text-emerald-600 flex justify-center">
           Add Post
         </DialogTitle>
-        <PostForm />
+        <PostForm aiTarget="modal-post" />
       </DialogContent>
     </Dialog>
   );

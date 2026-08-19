@@ -13,7 +13,11 @@ import {
   X,
   BarChart3,
 } from "lucide-react";
-import { useAIPromptStore, useZustandFormPopup, useZustandImagePopup } from "@/lib/zustand";
+import {
+  useAIPromptStore,
+  useZustandFormPopup,
+  useZustandImagePopup,
+} from "@/lib/zustand";
 import { useMemo, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import LocationPickerDialog from "../form_inputs/LocationPickerDialog";
@@ -22,7 +26,7 @@ import axiosInstance from "@/api/axiosInstance";
 import AIPromptDialog from "../modals/aiPromptDialog";
 import { useAuthStore } from "@/store/authStore";
 
-export function PostForm({ userProfile }) {
+export function PostForm({ userProfile, aiTarget = "post" }) {
   const { mutateAsync: createPost } = usePostCreate();
   const { mutateAsync: createPoll } = usePollCreate();
   const userId = useAuthStore((state) => state.user?.userName);
@@ -297,7 +301,7 @@ export function PostForm({ userProfile }) {
                 </span>
 
                 <span
-                  onClick={() => openDialog("post")}
+                  onClick={() => openDialog(aiTarget)}
                   className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-emerald-600 transition hover:bg-emerald-50"
                 >
                   <Sparkles className="h-5 w-5 text-sky-500" />
@@ -426,7 +430,7 @@ export function PostForm({ userProfile }) {
         />
       </form>
 
-      <AIPromptDialog onGenerate={handleGenerateAI} />
+      <AIPromptDialog target={aiTarget} onGenerate={handleGenerateAI} />
     </>
   );
 }

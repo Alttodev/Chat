@@ -19,17 +19,28 @@ const SUGGESTIONS = [
   "Create a bio-style post",
 ];
 
-export default function AIPromptDialog({ onGenerate }) {
-  const { isOpen, prompt, isGenerating, setPrompt, closeDialog } =
-    useAIPromptStore();
+export default function AIPromptDialog({ target = "post", onGenerate }) {
+  const {
+    isOpen,
+    prompt,
+    isGenerating,
+    target: activeTarget,
+    setPrompt,
+    closeDialog,
+  } = useAIPromptStore();
 
   const handleGenerate = async () => {
+    if (!onGenerate) return;
+
     await onGenerate(prompt);
     setPrompt("");
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={closeDialog}>
+    <Dialog
+      open={isOpen && activeTarget === target}
+      onOpenChange={(open) => !open && closeDialog()}
+    >
       <DialogContent className="w-[95vw] max-w-xl overflow-hidden rounded-2xl border border-border bg-background p-0 shadow-2xl [&_button]:cursor-pointer">
         <div className="border-b border-border px-5 py-4">
           <DialogHeader>
