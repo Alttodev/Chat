@@ -16,6 +16,15 @@ export const liveApi = {
     axiosInstance.get(`/live/comments/${sessionId}`).then((res) => res.data),
 };
 
+export const pollApi = {
+  create: (data) => axiosInstance.post("/polls", data).then((r) => r.data),
+  list: () => axiosInstance.get("/polls").then((r) => r.data),
+  getOne: (pollId) => axiosInstance.get(`/polls/${pollId}`).then((r) => r.data),
+  vote: (pollId, optionId) =>
+    axiosInstance.post(`/polls/${pollId}/vote`, { optionId }).then((r) => r.data),
+  remove: (pollId) => axiosInstance.delete(`/polls/${pollId}`).then((r) => r.data),
+};
+
 export const userSignup = async (formData) => {
   const { data } = await axiosInstance.post(`/auth/signup`, formData);
   return data;

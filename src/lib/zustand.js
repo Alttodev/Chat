@@ -15,6 +15,13 @@ export const useZustandImagePopup = create((set) => ({
   closeImageModal: () => set({ isImageOpen: false, modalImageData: null }),
 }));
 
+export const useZustandFormPopup = create((set) => ({
+  isFormOpen: false,
+  modalFormData: null,
+  openFormModal: (data) => set({ isFormOpen: true, modalFormData: data }),
+  closeFormModal: () => set({ isFormOpen: false, modalFormData: null }),
+}));
+
 export const useCommentStore = create((set) => ({
   openPostId: null,
   toggleComments: (postId) =>

@@ -45,6 +45,7 @@ import { FollowSuggestions } from "./suggestions/FollowSuggestions";
 import { formatShortUsername } from "@/lib/shortUserName";
 import StatusStrip from "./status/StatusStrip";
 import { formatCount } from "@/lib/formatCount";
+import PollOptionsBlock from "./poll/PollOptionsBlock";
 
 export function CenterFeed() {
   const { openModal } = useZustandPopup();
@@ -345,6 +346,9 @@ export function CenterFeed() {
                   />
 
                   <PostContent text={post?.postText} className="mt-3 pl-2" />
+                  {post?.postType === "poll" && (
+                    <PollOptionsBlock post={post} />
+                  )}
 
                   <div className="mt-3 flex items-center gap-1">
                     <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">

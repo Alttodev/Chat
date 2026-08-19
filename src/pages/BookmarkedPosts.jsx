@@ -46,6 +46,7 @@ import { CommentSection } from "@/components/Post/CommentSection";
 import { PostSkeleton } from "@/components/skeleton/postListSkeleton";
 import { formatShortUsername } from "@/lib/shortUserName";
 import { formatCount } from "@/lib/formatCount";
+import PollOptionsBlock from "@/components/poll/PollOptionsBlock";
 
 const BookmarkedPosts = () => {
   const navigate = useNavigate();
@@ -344,6 +345,7 @@ const BookmarkedPosts = () => {
                 />
 
                 <PostContent text={post?.postText} className="mb-4 mt-3 pl-2" />
+                {post?.postType === "poll" && <PollOptionsBlock post={post} />}
 
                 <div className="mt-3 flex items-center gap-1">
                   <div className="flex flex-wrap items-center gap-3 sm:flex-nowrap">
