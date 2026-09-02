@@ -25,6 +25,15 @@ export const pollApi = {
   remove: (pollId) => axiosInstance.delete(`/polls/${pollId}`).then((r) => r.data),
 };
 
+//chatbot
+
+export const chatbotApi = {
+  sendMessage: (message, history) =>
+    axiosInstance
+      .post("/ai/chatbot", { message, history })
+      .then((res) => res.data),
+};
+
 export const userSignup = async (formData) => {
   const { data } = await axiosInstance.post(`/auth/signup`, formData);
   return data;
