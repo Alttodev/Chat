@@ -50,7 +50,7 @@ export default function ChatbotWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[350px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-border/60 bg-white shadow-2xl">
+        <div className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[350px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden  rounded-3xl border border-border/60 bg-white shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/60 bg-emerald-50 px-4 py-3">
             <div className="flex items-center gap-2">
@@ -80,8 +80,8 @@ export default function ChatbotWidget() {
 
           {/* Messages */}
           <div
-            ref={scrollRef}
-            className="flex-1 space-y-3 overflow-y-auto px-4 py-4"
+            ref={scrollRef} 
+            className="flex-1 space-y-3 overflow-y-auto px-4 py-4 no-scrollbar"
           >
             {messages.map((msg, i) => (
               <div
