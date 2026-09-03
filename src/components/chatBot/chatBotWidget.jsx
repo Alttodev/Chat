@@ -28,7 +28,7 @@ export default function ChatbotWidget() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open Clix AI"
-          className="group fixed bottom-14 right-1 sm:right-0 z-50 flex h-10 w-10 cursor-pointer items-center justify-center sm:h-12 sm:w-12"
+          className="group fixed bottom-18 right-1 sm:right-0 z-50 flex h-10 w-10 cursor-pointer items-center justify-center sm:h-12 sm:w-12"
         >
           {/* Soft green glow */}
           <span className="absolute inset-0 rounded-full bg-emerald-500/20 blur-md transition-opacity duration-300 group-hover:bg-emerald-500/30" />
