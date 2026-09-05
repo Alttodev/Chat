@@ -26,6 +26,7 @@ import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import StatusUserStrip from "@/components/status/StatusUserStrip";
 import StatusViewer from "@/components/status/StatusViewer";
+import PostContent from "@/components/Post/PostContent";
 import { UserPostGridView } from "@/components/Post/UserPostGridView";
 import { useUserPostStore } from "@/lib/zustand";
 
@@ -38,7 +39,6 @@ const UsersInfo = () => {
   const loadMoreRef = useRef(null);
   const params = useParams();
   const id = params?.id;
-
 
   const [searchParams] = useSearchParams();
   const targetPostId = searchParams.get("postId");
@@ -223,11 +223,7 @@ const UsersInfo = () => {
               </div>
             )}
 
-            {user?.bio && (
-              <p className="text-sm leading-snug text-foreground break-words max-w-sm">
-                {user.bio}
-              </p>
-            )}
+            {user?.bio && <PostContent text={user.bio} className="max-w-sm" />}
           </div>
 
           <div className="mt-3 mb-4 flex items-center gap-2">
