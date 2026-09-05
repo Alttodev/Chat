@@ -18,6 +18,7 @@ import { useRequestVerifiedBadge } from "@/hooks/verifybadgeHooks";
 import { ProfileEditDialog } from "@/components/modals/profileEditModal";
 import StatusMeStrip from "@/components/status/StatusMeStrip";
 import { PostGridView } from "@/components/Post/PostGridView";
+import PostContent from "@/components/Post/PostContent";
 import { Button } from "@/components/ui/button";
 
 const Profile = () => {
@@ -206,9 +207,10 @@ const Profile = () => {
             )}
 
             {userProfile?.profile?.bio && (
-              <p className="text-sm leading-snug text-foreground break-words max-w-sm">
-                {userProfile?.profile?.bio}
-              </p>
+              <PostContent
+                text={userProfile.profile.bio}
+                className="max-w-sm"
+              />
             )}
           </div>
 
