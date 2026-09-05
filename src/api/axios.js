@@ -171,7 +171,7 @@ export const getNotifications = async ({ limit = 30 } = {}) => {
 };
 
 export const getNotificationCounts = async () => {
-  const { data } = await axiosInstance.get(`/notifications/counts`);
+  const { data } = await axiosInstance.get(`/notifications/notification`);
   return data;
 };
 
@@ -359,6 +359,14 @@ export const getFollowRequestInfo = async ({ fromId, toId }) => {
   const { data } = await axiosInstance.get(
     `/follow/requests/${fromId}/${toId}`,
   );
+  return data;
+};
+//new
+
+export const getBatchFollowStatus = async (toIds) => {
+  const { data } = await axiosInstance.post(`/follow/requests/batch-status`, {
+    toIds,
+  });
   return data;
 };
 

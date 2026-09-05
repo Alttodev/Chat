@@ -1,5 +1,6 @@
 import { UsersListSkeleton } from "@/components/skeleton/userListSkeleton";
 import { useUserFollowing } from "@/hooks/postHooks";
+import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 import { useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -23,6 +24,18 @@ function UsersFollowingList() {
     return data?.pages?.flatMap((page) => page?.totalFollowing || []) || [];
   }, [data]);
 
+  const followingIds = useMemo(
+    () =>
+      totalFollowing
+        .map((user) => String(user?.to?._id ?? ""))
+        .filter(Boolean),
+    [totalFollowing],
+  );
+  const {
+    statuses,
+    isLoading: isStatusLoading,
+    setStatus,
+  } = useUserFollowStatuses(followingIds);
 
   useEffect(() => {
     if (!loadMoreRef.current) return;
@@ -62,13 +75,19 @@ function UsersFollowingList() {
       </div>
 
       <div className="space-y-4">
-        {totalFollowing.map((user) => (
-          <UserFollowingCard
-            key={user?._id}
-            user={user}
-            profileId={profileId}
-          />
-        ))}
+        {totalFollowing.map((user) => {
+          const userId = String(user?.to?._id ?? "");
+          return (
+            <UserFollowingCard
+              key={userId}
+              user={user}
+              profileId={profileId}
+              status={statuses[userId]}
+              isStatusLoading={isStatusLoading}
+              onStatusChange={(patch) => setStatus(userId, patch)}
+            />
+          );
+        })}
       </div>
 
       <div ref={loadMoreRef} className="py-4">

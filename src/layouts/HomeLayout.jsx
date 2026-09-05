@@ -23,7 +23,7 @@ function HomeLayout() {
     <div className="min-h-screen bg-background flex flex-col">
       <div className={cn(isMessages || isReels ? "hidden md:block" : "block")}>
         <SocialHeader />
-        <ChatbotWidget/>
+        <ChatbotWidget />
       </div>
 
       <StatusViewer />
@@ -46,8 +46,10 @@ function HomeLayout() {
               : isReels
                 ? "px-0  pt-0 pb-0 sm:pt-20"
                 : isHome
-                  ? "pt-16" : isLive || isLiveViewer ? "pt-20 pb-20"
-                  : "pt-20 sm:pt-24",
+                  ? "pt-16"
+                  : isLive || isLiveViewer
+                    ? "pt-20 pb-20"
+                    : "pt-20 sm:pt-24",
           )}
         >
           <Outlet />
@@ -56,7 +58,6 @@ function HomeLayout() {
         {/* Right Sidebar */}
         <aside className="hidden lg:block fixed right-0 top-16 h-[calc(100vh-4rem)] w-80 bg-sidebar border-l border-sidebar-border overflow-y-auto">
           <RightSidebar />
-          
         </aside>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { UsersListSkeleton } from "@/components/skeleton/userListSkeleton";
 import { useUserFollowers } from "@/hooks/postHooks";
+import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 import { useEffect, useMemo, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -16,6 +17,22 @@ function UsersFriendsList() {
   const followers = useMemo(() => {
     return data?.pages?.flatMap((page) => page?.totalFollowers || []) || [];
   }, [data]);
+
+  // Note: this card's user object is nested under `from` (see
+  // UserFriendCard), unlike UserCard/RightUserCard where it's the user
+  // object itself.
+  const followerIds = useMemo(
+    () =>
+      followers
+        .map((user) => String(user?.from?._id ?? ""))
+        .filter(Boolean),
+    [followers],
+  );
+  const {
+    statuses,
+    isLoading: isStatusLoading,
+    setStatus,
+  } = useUserFollowStatuses(followerIds);
 
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage) return;
@@ -52,9 +69,19 @@ function UsersFriendsList() {
       </div>
 
       <div className="space-y-4">
-        {followers.map((user) => (
-          <UserFriendCard key={user?._id} user={user} profileId={profileId} />
-        ))}
+        {followers.map((user) => {
+          const userId = String(user?.from?._id ?? "");
+          return (
+            <UserFriendCard
+              key={userId}
+              user={user}
+              profileId={profileId}
+              status={statuses[userId]}
+              isStatusLoading={isStatusLoading}
+              onStatusChange={(patch) => setStatus(userId, patch)}
+            />
+          );
+        })}
       </div>
 
       <div ref={loadMoreRef} className="py-4">

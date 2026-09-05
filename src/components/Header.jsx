@@ -16,10 +16,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logo from "@/assets/logo.png";
 import { CommandDialog, CommandInput, CommandList } from "./ui/command";
-import { useNotificationCounts } from "@/hooks/notificationHooks";
+
 import { isBirthdayClaimedThisYear, isBirthdayToday } from "@/lib/birthday";
 import { BirthdayBadge } from "./birthday/BirthdayBadge";
 import { BirthdayCelebration } from "./birthday/BirthdayCelebration";
+import { useNotificationCounts } from "@/hooks/notificationHooks";
+
 
 export function SocialHeader() {
   const navigate = useNavigate();

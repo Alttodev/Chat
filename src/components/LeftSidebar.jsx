@@ -30,7 +30,7 @@ export function LeftSidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-sidebar border-r border-sidebar-border overflow-y-auto">
+    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] no-scrollbar w-64 bg-sidebar border-r border-sidebar-border overflow-y-auto">
       <div className="p-4 space-y-2">
         {/* Navigation Menu */}
         <nav className="space-y-1">

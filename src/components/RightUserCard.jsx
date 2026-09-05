@@ -2,11 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-import {
-  useProfileFollow,
-  useRequestDelete,
-  useRequestListInfo,
-} from "@/hooks/postHooks";
+import { useProfileFollow, useRequestDelete } from "@/hooks/postHooks";
 
 import { toastError } from "@/lib/toast";
 import { BadgeCheck, MapPin } from "lucide-react";
@@ -50,21 +46,13 @@ function RightUserCard({
   user,
   profileId,
   compact = false,
-  requestStatus: requestStatusOverride,
+  requestStatus,
+  onStatusChange,
 }) {
   const userId = user?.id ?? user?._id;
-  const useRequestQuery = requestStatusOverride === undefined;
 
-  const { data: requestStatus } = useRequestListInfo({
-    fromId: profileId,
-    toId: userId,
-    enabled: useRequestQuery,
-  });
-  const activeRequestStatus =
-    requestStatusOverride === undefined ? requestStatus : requestStatusOverride;
-
-  const reqStatus = activeRequestStatus?.request?.status;
-  const friends = activeRequestStatus?.request?.isFriends;
+  const reqStatus = requestStatus?.request?.status;
+  const friends = requestStatus?.request?.isFriends;
   const recommendedByLabel = getRecommendedByLabel(user);
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
@@ -76,6 +64,7 @@ function RightUserCard({
   const handleFollow = async () => {
     try {
       await followRequest(userId);
+      onStatusChange?.({ status: "pending", isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -87,6 +76,7 @@ function RightUserCard({
         fromId: profileId,
         toId: userId,
       });
+      onStatusChange?.({ status: null, isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }

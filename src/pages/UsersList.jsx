@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useAuthStore } from "@/store/authStore";
 import UserCard from "@/components/UserCard";
 import { useRecommendedConnections } from "@/hooks/postHooks";
+import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 
 function UsersList() {
   const { profileId } = useAuthStore();
@@ -20,6 +21,13 @@ function UsersList() {
         .filter(([id]) => Boolean(id)),
     );
   }, [recommendations]);
+
+  const userIds = useMemo(
+    () => (data?.profiles || []).map((user) => String(user?.id ?? user?._id ?? "")).filter(Boolean),
+    [data],
+  );
+  const { statuses, isLoading: isStatusLoading, setStatus } =
+    useUserFollowStatuses(userIds);
 
   if (isFetching) {
     return <UsersListSkeleton />;
@@ -43,6 +51,9 @@ function UsersList() {
             user={user}
             profileId={profileId}
             recommendedUser={recommendedUser}
+            status={statuses[userId]}
+            isStatusLoading={isStatusLoading}
+            onStatusChange={(patch) => setStatus(userId, patch)}
           />
         );
       })}

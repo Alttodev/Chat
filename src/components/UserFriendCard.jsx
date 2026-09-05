@@ -1,16 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  useProfileFollow,
-  useRequestDelete,
-  useRequestListInfo,
-} from "@/hooks/postHooks";
+import { useProfileFollow, useRequestDelete } from "@/hooks/postHooks";
 import { toastError, toastSuccess } from "@/lib/toast";
 import { BadgeCheck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function UserFriendCard({ user, profileId }) {
+// status / isStatusLoading / onStatusChange now come from the PARENT
+// (via useUserFollowStatuses) — same pattern as UserCard and
+// RightUserCard, so this card no longer fetches its own status.
+function UserFriendCard({
+  user,
+  profileId,
+  status,
+  isStatusLoading,
+  onStatusChange,
+}) {
   const target = user?.from;
   const userId = target?._id;
 
@@ -20,19 +25,15 @@ function UserFriendCard({ user, profileId }) {
   const { mutateAsync: unfollowRequest, isPending: isUnfollowing } =
     useRequestDelete();
 
-  const { data: requestStatus, isFetching } = useRequestListInfo({
-    fromId: profileId,
-    toId: userId,
-  });
-
-  const reqStatus = requestStatus?.request?.status;
-  const friends = requestStatus?.request?.isFriends;
+  const reqStatus = status?.status;
+  const friends = status?.isFriends;
   const canOpenProfile = profileId !== userId;
 
   const handleFollow = async () => {
     try {
       const res = await followRequest(userId);
       toastSuccess(res?.message);
+      onStatusChange?.({ status: "pending", isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -45,6 +46,7 @@ function UserFriendCard({ user, profileId }) {
         toId: userId,
       });
       toastSuccess(res?.message);
+      onStatusChange?.({ status: null, isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -138,7 +140,7 @@ function UserFriendCard({ user, profileId }) {
           <div className="shrink-0">
             {reqStatus === "pending" ? (
               <Button
-                disabled={isFetching}
+                disabled={isStatusLoading}
                 className="
                  w-28 h-8 rounded-lg text-xs font-medium
                   cursor-default
@@ -155,7 +157,7 @@ function UserFriendCard({ user, profileId }) {
               profileId !== userId && (
                 <Button
                   onClick={friends ? handleUnfollow : handleFollow}
-                  disabled={isFetching || isFollowing || isUnfollowing}
+                  disabled={isStatusLoading || isFollowing || isUnfollowing}
                   className={`
                   w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
                   

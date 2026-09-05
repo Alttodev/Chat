@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Bot, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { useChatbot } from "@/hooks/useChatBot";
 
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [draft, setDraft] = useState("");
   const { messages, sending, sendMessage } = useChatbot();
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -20,6 +29,8 @@ export default function ChatbotWidget() {
     sendMessage(draft);
     setDraft("");
   };
+
+  if (!isReady) return null;
 
   return (
     <>
@@ -80,7 +91,7 @@ export default function ChatbotWidget() {
 
           {/* Messages */}
           <div
-            ref={scrollRef} 
+            ref={scrollRef}
             className="flex-1 space-y-3 overflow-y-auto px-4 py-4 no-scrollbar"
           >
             {messages.map((msg, i) => (

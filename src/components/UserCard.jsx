@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BadgeCheck, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
-  useProfileFollow,
-  useRequestDelete,
-  useRequestListInfo,
-} from "@/hooks/postHooks";
+import { useProfileFollow, useRequestDelete } from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
 
 const getRecommendedByLabel = (user) => {
@@ -43,17 +39,19 @@ const getRecommendedByLabel = (user) => {
   }`;
 };
 
-function UserCard({ user, profileId, recommendedUser }) {
+function UserCard({
+  user,
+  profileId,
+  recommendedUser,
+  status,
+  isStatusLoading,
+  onStatusChange,
+}) {
   const userId = user?.id;
   const canOpenProfile = profileId !== userId;
 
-  const { data: requestStatus, isFetching } = useRequestListInfo({
-    fromId: profileId,
-    toId: userId,
-  });
-
-  const reqStatus = requestStatus?.request?.status;
-  const friends = requestStatus?.request?.isFriends;
+  const reqStatus = status?.status;
+  const friends = status?.isFriends;
   const recommendedByLabel = getRecommendedByLabel(recommendedUser);
 
   const { mutateAsync: followRequest, isPending: isFollowing } =
@@ -64,7 +62,8 @@ function UserCard({ user, profileId, recommendedUser }) {
   const handleFollow = async () => {
     try {
       await followRequest(userId);
-      // toastSuccess(res?.message);
+      // Update ONLY this card locally — no refetch of the other cards.
+      onStatusChange?.({ status: "pending", isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -76,7 +75,7 @@ function UserCard({ user, profileId, recommendedUser }) {
         fromId: profileId,
         toId: userId,
       });
-      // toastSuccess(res?.message);
+      onStatusChange?.({ status: null, isFriends: false });
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
@@ -197,7 +196,7 @@ function UserCard({ user, profileId, recommendedUser }) {
           <div className="shrink-0">
             {reqStatus === "pending" ? (
               <Button
-                disabled={isFetching}
+                disabled={isStatusLoading}
                 className="
                  w-28 h-8 rounded-lg text-xs font-medium
                   cursor-default
@@ -214,8 +213,8 @@ function UserCard({ user, profileId, recommendedUser }) {
               profileId !== userId && (
                 <Button
                   onClick={friends ? handleUnfollow : handleFollow}
-                  loading={isFetching}
-                  disabled={isFetching || isFollowing || isUnfollowing}
+                  loading={isStatusLoading}
+                  disabled={isStatusLoading || isFollowing || isUnfollowing}
                   className={`
                   w-28 h-8 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-none cursor-pointer
                     ${

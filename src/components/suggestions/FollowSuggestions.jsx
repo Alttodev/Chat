@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRequestList, useRecommendedConnections } from "@/hooks/postHooks";
+import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -91,6 +92,18 @@ export function FollowSuggestions({ compact = false, className }) {
     ? suggestions.slice(0, 8)
     : suggestions.slice(0, 4);
 
+  const userIds = useMemo(
+    () =>
+      visibleSuggestions
+        .map((user) => String(user?.id ?? user?._id ?? ""))
+        .filter(Boolean),
+    [visibleSuggestions],
+  );
+  const {
+    statuses,
+    setStatus,
+  } = useUserFollowStatuses(userIds);
+
   const isRequestLoading = isRecommendationsLoading || isRequestListLoading;
 
   if (isRequestLoading) {
@@ -164,14 +177,19 @@ export function FollowSuggestions({ compact = false, className }) {
         </div>
 
         <div className="flex w-full max-w-full gap-3 overflow-x-auto overflow-y-hidden pb-1 pr-1 no-scrollbar snap-x snap-mandatory overscroll-x-contain scroll-smooth">
-          {visibleSuggestions.map((user) => (
-            <RightUserCard
-              key={user?.id ?? user?._id}
-              user={user}
-              profileId={profileId}
-              compact
-            />
-          ))}
+          {visibleSuggestions.map((user) => {
+            const userId = String(user?.id ?? user?._id ?? "");
+            return (
+              <RightUserCard
+                key={userId}
+                user={user}
+                profileId={profileId}
+                compact
+                requestStatus={{ request: statuses[userId] }}
+                onStatusChange={(patch) => setStatus(userId, patch)}
+              />
+            );
+          })}
         </div>
       </section>
     );
@@ -185,7 +203,6 @@ export function FollowSuggestions({ compact = false, className }) {
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <CardTitle className="flex items-center justify-between gap-2 text-sm font-semibold sm:text-lg">
-              {/* <Compass className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" /> */}
               Follow Suggestions
               <Button
                 type="button"
@@ -219,13 +236,18 @@ export function FollowSuggestions({ compact = false, className }) {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {visibleSuggestions.map((user) => (
-          <RightUserCard
-            key={user?.id ?? user?._id}
-            user={user}
-            profileId={profileId}
-          />
-        ))}
+        {visibleSuggestions.map((user) => {
+          const userId = String(user?.id ?? user?._id ?? "");
+          return (
+            <RightUserCard
+              key={userId}
+              user={user}
+              profileId={profileId}
+              requestStatus={{ request: statuses[userId] }}
+              onStatusChange={(patch) => setStatus(userId, patch)}
+            />
+          );
+        })}
 
         {suggestions.length > visibleSuggestions.length && (
           <Button
