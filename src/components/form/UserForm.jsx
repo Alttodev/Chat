@@ -11,7 +11,6 @@ import { useUserCreate } from "@/hooks/authHooks";
 import { getProfile } from "@/api/axios";
 import { useSocket } from "@/lib/socket";
 import { useAuthStore } from "@/store/authStore";
-import messageBg from "@/assets/bgwallpaper.png";
 import { Camera, Loader2 } from "lucide-react";
 
 const MOBILE_FOLLOW_SUGGESTIONS_HIDDEN_KEY = "mobile-follow-suggestions-hidden";
@@ -80,11 +79,7 @@ const ProfileCreateForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div
-        className="absolute z-0 inset-0 bg-cover bg-center bg-no-repeat opacity-[0.56]"
-        style={{ backgroundImage: `url(${messageBg})` }}
-      />
-      <div className="relative z-0 w-full max-w-md bg-white shadow-lg  rounded-[32px] p-6">
+      <div className="w-full max-w-md rounded-[32px] border border-white/70 bg-white/95 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.12),0_8px_24px_rgba(16,185,129,0.15)] backdrop-blur-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
         {/* Logo */}
 
         {/* Heading */}

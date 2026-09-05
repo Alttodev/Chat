@@ -249,7 +249,7 @@ export function PersonalInfoForm({ userProfile, isEditing, closeEditing }) {
         )}
       </form>
 
-      <AIPromptDialog onGenerate={handleGenerateAI} />
+      <AIPromptDialog target="bio" onGenerate={handleGenerateAI} />
     </>
   );
 }

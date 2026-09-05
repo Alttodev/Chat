@@ -9,7 +9,6 @@ import {
   usePostLike,
   useProfileFollow,
   useRequestDelete,
-  useRequestListInfo,
 } from "@/hooks/postHooks";
 import { toastError } from "@/lib/toast";
 import { Link } from "react-router-dom";
@@ -50,6 +49,9 @@ export function ReelCard({
   commentCount: commentCountProp,
   onComment,
   onShare,
+  followStatus,
+  isFollowStatusLoading,
+  onFollowStatusChange,
 }) {
   const videoRef = useRef(null);
   const { profileId } = useAuthStore();
@@ -72,14 +74,8 @@ export function ReelCard({
   );
   const userId = post?.user?._id;
   const canFollowUser = Boolean(profileId && userId && profileId !== userId);
-  const { data: requestStatus, isFetching: isRequestFetching } =
-    useRequestListInfo({
-      fromId: profileId,
-      toId: userId,
-      enabled: canFollowUser,
-    });
-  const reqStatus = requestStatus?.request?.status;
-  const friends = requestStatus?.request?.isFriends;
+  const reqStatus = followStatus?.status;
+  const friends = followStatus?.isFriends;
 
   const userInfo = post?.user || {};
 
@@ -184,6 +180,7 @@ export function ReelCard({
 
     try {
       await followRequest(userId);
+      onFollowStatusChange?.({ status: "pending", isFriends: false });
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -197,6 +194,7 @@ export function ReelCard({
         fromId: profileId,
         toId: userId,
       });
+      onFollowStatusChange?.({ status: null, isFriends: false });
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }
@@ -308,7 +306,9 @@ export function ReelCard({
                             type="button"
                             onClick={friends ? handleUnfollow : handleFollow}
                             disabled={
-                              isRequestFetching || isFollowing || isUnfollowing
+                              isFollowStatusLoading ||
+                              isFollowing ||
+                              isUnfollowing
                             }
                             className={cn(
                               "h-8 rounded-full px-3 text-xs font-semibold shadow-sm transition-all active:scale-95 cursor-pointer",

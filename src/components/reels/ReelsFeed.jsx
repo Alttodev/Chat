@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Sparkles, Camera } from "lucide-react";
 import { usePostListVideos } from "@/hooks/postHooks";
+import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 import { isVideoMediaUrl } from "@/lib/media";
 import ReelCard from "./ReelCard";
 import { useZustandSharePopup } from "@/lib/zustand";
@@ -39,6 +40,16 @@ export function ReelsFeed() {
       }),
     [posts],
   );
+
+  const reelAuthorIds = useMemo(() => {
+    const ids = reels.map((post) => String(post?.user?._id ?? "")).filter(Boolean);
+    return [...new Set(ids)];
+  }, [reels]);
+  const {
+    statuses: followStatuses,
+    isLoading: isFollowStatusLoading,
+    setStatus: setFollowStatus,
+  } = useUserFollowStatuses(reelAuthorIds);
 
   const getInitialCommentCount = (post) =>
     post?.commentCount ||
@@ -119,27 +130,35 @@ export function ReelsFeed() {
           ref={scrollRef}
           className="no-scrollbar h-[100dvh] overflow-y-auto snap-y snap-mandatory overscroll-y-contain scroll-smooth"
         >
-          {reels.map((post, index) => (
-            <div
-              key={post?._id || `reel-${index}`}
-              ref={(node) => {
-                itemRefs.current[index] = node;
-              }}
-              data-index={index}
-              className="snap-start h-full"
-            >
-              <ReelCard
-                post={post}
-                index={index}
-                isActive={index === activeIndex}
-                commentCount={
-                  commentCounts[post._id] ?? getInitialCommentCount(post)
-                }
-                onComment={() => setSelectedCommentPost(post)}
-                onShare={() => openShareModal(post?._id)}
-              />
-            </div>
-          ))}
+          {reels.map((post, index) => {
+            const authorId = String(post?.user?._id ?? "");
+            return (
+              <div
+                key={post?._id || `reel-${index}`}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
+                data-index={index}
+                className="snap-start h-full"
+              >
+                <ReelCard
+                  post={post}
+                  index={index}
+                  isActive={index === activeIndex}
+                  commentCount={
+                    commentCounts[post._id] ?? getInitialCommentCount(post)
+                  }
+                  onComment={() => setSelectedCommentPost(post)}
+                  onShare={() => openShareModal(post?._id)}
+                  followStatus={followStatuses[authorId]}
+                  isFollowStatusLoading={isFollowStatusLoading}
+                  onFollowStatusChange={(patch) =>
+                    setFollowStatus(authorId, patch)
+                  }
+                />
+              </div>
+            );
+          })}
 
           {!reels.length ? (
             <div className="flex h-[60vh] flex-col items-center justify-center gap-3 rounded-[28px] border border-dashed border-border bg-background text-center">
