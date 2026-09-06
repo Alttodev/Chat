@@ -2,7 +2,6 @@ import { useActiveLive } from "@/hooks/useActiveLive";
 import { useNavigate } from "react-router-dom";
 import { Radio } from "lucide-react";
 import { useState, useEffect } from "react";
-import live from "@/assets/live_image.png";
 
 export default function LiveStoryBar() {
   const { activeUsers, loading } = useActiveLive();
@@ -28,12 +27,8 @@ export default function LiveStoryBar() {
             </div>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-border/60 bg-white shadow-sm">
-            <img
-              src={live}
-              alt="No live users"
-              className="h-full w-full object-cover"
-            />
+          <div className="flex h-28 w-full items-center justify-center   text-sm font-medium text-muted-foreground ">
+            No live users
           </div>
         )}
       </>
