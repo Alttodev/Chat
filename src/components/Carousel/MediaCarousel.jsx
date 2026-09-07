@@ -32,7 +32,7 @@ export function MediaCarousel({ images, onImageClick }) {
                 src={img}
                 onClick={onImageClick}
                 alt={`media-${i}`}
-                className="w-full aspect-square object-cover select-none cursor-pointer"
+                className="w-full aspect-square lg:aspect-[4/3] object-cover select-none cursor-pointer"
                 loading="lazy"
               />
             </div>

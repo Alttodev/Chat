@@ -172,7 +172,7 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
           <video
             ref={videoRef}
             className={cn(
-              "w-full aspect-square object-cover transition-opacity duration-300",
+              "w-full aspect-square lg:aspect-[4/3] object-cover transition-opacity duration-300",
               isMediaReady ? "opacity-100" : "opacity-0",
             )}
             src={firstMedia}
@@ -225,7 +225,7 @@ export function PostImageWithLikes({ post, onImageClick, className }) {
   if (isSingleImage) {
     return (
       <div className={cn("relative overflow-hidden rounded-lg", className)}>
-        <div className="w-full aspect-square overflow-hidden rounded-lg">
+        <div className="w-full aspect-square lg:aspect-[4/3] overflow-hidden rounded-lg">
           <img
             onClick={onImageClick}
             className={cn(
