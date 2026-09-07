@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { BadgeCheck, Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import {
+  BadgeCheck,
+  Bookmark,
+  Heart,
+  MessageCircle,
+  Share2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -397,7 +403,11 @@ export function ReelCard({
                 onClick={handleBookmark}
               />
 
-              <ActionButton icon={Send} label="Share reel" onClick={onShare} />
+              <ActionButton
+                icon={Share2}
+                label="Share reel"
+                onClick={onShare}
+              />
             </div>
           </div>
         </div>

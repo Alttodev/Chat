@@ -2,7 +2,7 @@ import {
   BadgeCheck,
   Bookmark,
   MoreHorizontal,
-  Send,
+  Share2,
   SquarePen,
   Trash2,
   MessageCircle,
@@ -384,7 +384,7 @@ const BookmarkedPosts = () => {
                       className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
                       aria-label="Share post"
                     >
-                      <Send style={{ width: 18, height: 18 }} />
+                      <Share2 style={{ width: 18, height: 18 }} />
                     </Button>
                   </div>
 

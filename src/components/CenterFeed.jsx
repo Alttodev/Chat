@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   MessageCircle,
-  Send,
+  Share2,
   MoreHorizontal,
   Trash2,
   SquarePen,
@@ -389,7 +389,7 @@ export function CenterFeed() {
                         className="h-9 w-9 shrink-0 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
                         aria-label="Share post"
                       >
-                        <Send style={{ width: 18, height: 18 }} />
+                        <Share2 style={{ width: 18, height: 18 }} />
                       </Button>
                     </div>
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Share2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import { formatCount } from "@/lib/formatCount";
 export default function UserPostFeed() {
   const { posts, userInfo, currentUser } = useUserPostStore();
 
-  const { openPostId, toggleComments} = useCommentStore();
+  const { openPostId, toggleComments } = useCommentStore();
   const { open } = useImageModalStore();
   const { openShareModal } = useZustandSharePopup();
 
@@ -196,7 +196,7 @@ export default function UserPostFeed() {
                       className="h-9 w-9 cursor-pointer p-0 text-muted-foreground hover:bg-transparent hover:text-muted-foreground"
                       aria-label="Share post"
                     >
-                      <Send style={{ width: 18, height: 18 }} />
+                      <Share2 style={{ width: 18, height: 18 }} />
                     </Button>
                   </div>
                   <PostBookmarkComponent
