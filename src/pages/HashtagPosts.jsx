@@ -5,13 +5,19 @@ import {
   Send,
   SquarePen,
   Trash2,
+  ArrowLeft,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useEffect, useMemo, useState, useRef } from "react";
 
 import {
@@ -47,6 +53,7 @@ import { formatCount } from "@/lib/formatCount";
 
 const HashtagPosts = () => {
   const { tag } = useParams();
+  const navigate = useNavigate();
   const { openShareModal } = useZustandSharePopup();
   const { openModal } = useZustandPopup();
   const { data: profileData } = useUserDetail();
@@ -174,11 +181,22 @@ const HashtagPosts = () => {
     backdrop-blur-md
   "
       >
-        <div className="flex items-center justify-between">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span
-                className="
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="cursor-pointer text-foreground hover:bg-transparent hover:text-foreground"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span
+                  className="
             rounded-full
             bg-blue-100
             px-2 py-0.5
@@ -187,25 +205,26 @@ const HashtagPosts = () => {
             dark:bg-blue-950/40
             dark:text-blue-300
           "
-              >
-                HASHTAG
-              </span>
+                >
+                  HASHTAG
+                </span>
 
-              <h1
-                className="
+                <h1
+                  className="
             truncate
             text-lg font-bold
             text-foreground
             sm:text-xl
           "
-              >
-                #{tag}
-              </h1>
-            </div>
+                >
+                  #{tag}
+                </h1>
+              </div>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              {data?.totalPosts || 0} posts related to this hashtag
-            </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {data?.totalPosts || 0} posts related to this hashtag
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ import { toastError } from "@/lib/toast";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { formatCount } from "@/lib/formatCount";
+import PostContent from "@/components/Post/PostContent";
 
 function ActionButton({
   icon,
@@ -57,6 +58,7 @@ export function ReelCard({
   const { profileId } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isPostTextExpanded, setIsPostTextExpanded] = useState(false);
   const { mutateAsync: postLike } = usePostLike();
   const { mutateAsync: postBookmark } = usePostBookmark();
   const { mutateAsync: followRequest, isPending: isFollowing } =
@@ -94,6 +96,7 @@ export function ReelCard({
   useEffect(() => {
     setIsPlaying(true);
     setIsReady(false);
+    setIsPostTextExpanded(false);
     setIsLiked(!!post?.likedByMe);
     setLikeCount(typeof post?.likes === "number" ? post.likes : 0);
     setIsBookmarked(Boolean(post?.bookmarkedByMe));
@@ -265,7 +268,7 @@ export function ReelCard({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start  gap-6 ">
                     <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex mt-2 items-center gap-1.5">
                         {profileId === post?.user?._id ? (
                           <div className="flex min-w-0 items-center gap-1">
                             <span className="truncate text-sm font-medium sm:text-base">
@@ -292,12 +295,12 @@ export function ReelCard({
                     </div>
 
                     {canFollowUser ? (
-                      <div className="shrink-0">
+                      <div className="shrink-0 mt-1">
                         {reqStatus === "pending" ? (
                           <Button
                             type="button"
                             disabled
-                            className="h-8 rounded-full border border-rose-500/20 bg-rose-500/10 px-3 text-xs font-medium text-rose-500 shadow-sm cursor-pointer"
+                            className="h-8 cursor-default rounded-full border border-rose-500/20 bg-rose-500/10 px-3 text-xs font-medium text-rose-600 shadow-sm hover:bg-rose-500/15 disabled:opacity-100"
                           >
                             Pending
                           </Button>
@@ -325,9 +328,34 @@ export function ReelCard({
                   </div>
 
                   {post?.postText ? (
-                    <p className="line-clamp-2 text-xs leading-relaxed text-white/85 transition-opacity duration-200 sm:line-clamp-3 sm:text-sm">
-                      {post.postText}
-                    </p>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (event.target.closest("a")) return;
+                        setIsPostTextExpanded((expanded) => !expanded);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setIsPostTextExpanded((expanded) => !expanded);
+                        }
+                      }}
+                      className={cn(
+                        "mt-2 max-w-full cursor-pointer text-left transition-opacity duration-200 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-white/85 sm:[&_p]:text-sm",
+                        !isPostTextExpanded &&
+                          "[&_p]:line-clamp-2 sm:[&_p]:line-clamp-3",
+                      )}
+                      aria-expanded={isPostTextExpanded}
+                      aria-label={
+                        isPostTextExpanded
+                          ? "Collapse post text"
+                          : "Show full post text"
+                      }
+                    >
+                      <PostContent text={post.postText} />
+                    </div>
                   ) : null}
                 </div>
               </div>
