@@ -169,7 +169,7 @@ const UsersInfo = () => {
 
               {/* Followers */}
               <div className="flex flex-col items-center gap-0.5">
-                {countData?.totalFriends > 0 ? (
+                {countData?.totalFriends > 0 && user?.isPublic ? (
                   <Link
                     to={`/friends/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
@@ -188,7 +188,7 @@ const UsersInfo = () => {
 
               {/* Following */}
               <div className="flex flex-col items-center gap-0.5">
-                {countData?.totalFollowing > 0 ? (
+                {countData?.totalFollowing > 0 && user?.isPublic ? (
                   <Link
                     to={`/following/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
