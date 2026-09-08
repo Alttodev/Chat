@@ -59,6 +59,7 @@ const UsersInfo = () => {
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
 
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(id);
 
@@ -88,6 +89,7 @@ const UsersInfo = () => {
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
   const canViewConnections = user?.isPublic || friends;
+  const followedByStatus = data?.pages?.[0]?.followedByStatus;
 
   // Store posts for the grid feed page
   const { setPosts, setUserInfo, setCurrentUser } = useUserPostStore();
@@ -141,6 +143,18 @@ const UsersInfo = () => {
     } catch (err) {
       toastError(err?.response?.data?.message || "Something went wrong");
     }
+  };
+
+  const handleMessage = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (followedByStatus !== "accepted") {
+      toastError("Users must follow each other to send message.");
+      return;
+    }
+
+    navigate(`/messages?userId=${id}&name=${user?.userName}`);
   };
 
   if (isLoading) {
@@ -253,11 +267,7 @@ const UsersInfo = () => {
                 {friends && (
                   <Button
                     variant="outline"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      navigate(`/messages?userId=${id}&name=${user?.userName}`);
-                    }}
+                    onClick={handleMessage}
                     className="w-28 h-8 rounded-lg text-xs font-semibold shadow-none cursor-pointer"
                   >
                     Message
