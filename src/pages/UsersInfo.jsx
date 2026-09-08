@@ -87,6 +87,7 @@ const UsersInfo = () => {
   const user = data?.pages?.[0]?.userDetail;
   const currentUser = data?.pages?.[0]?.currentUser;
   const totalPosts = data?.pages?.[0]?.totalPosts;
+  const canViewConnections = user?.isPublic || friends;
 
   // Store posts for the grid feed page
   const { setPosts, setUserInfo, setCurrentUser } = useUserPostStore();
@@ -169,7 +170,7 @@ const UsersInfo = () => {
 
               {/* Followers */}
               <div className="flex flex-col items-center gap-0.5">
-                {countData?.totalFriends > 0 && user?.isPublic ? (
+                {countData?.totalFriends > 0 && canViewConnections ? (
                   <Link
                     to={`/friends/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
@@ -188,7 +189,7 @@ const UsersInfo = () => {
 
               {/* Following */}
               <div className="flex flex-col items-center gap-0.5">
-                {countData?.totalFollowing > 0 && user?.isPublic ? (
+                {countData?.totalFollowing > 0 && canViewConnections ? (
                   <Link
                     to={`/following/${user?._id}`}
                     className="text-lg font-semibold text-foreground leading-none hover:opacity-70 transition-opacity"
