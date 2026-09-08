@@ -2,6 +2,7 @@ import { useActiveLive } from "@/hooks/useActiveLive";
 import { useNavigate } from "react-router-dom";
 import { Radio } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Spinner } from "../ui/shadcn-io/spinner";
 
 export default function LiveStoryBar() {
   const { activeUsers, loading } = useActiveLive();
@@ -22,12 +23,10 @@ export default function LiveStoryBar() {
       <>
         {!showPoster ? (
           <div className="flex h-28 w-full items-center justify-center ">
-            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              Loading...
-            </div>
+            <Spinner className="text-emerald-600" size={44} />
           </div>
         ) : (
-          <div className="flex h-28 w-full items-center justify-center   text-sm font-medium text-muted-foreground ">
+          <div className="flex h-28 w-full items-center justify-center  text-sm sm:text-md font-medium text-muted-foreground ">
             No live users
           </div>
         )}
