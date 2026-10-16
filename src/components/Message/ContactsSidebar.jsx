@@ -30,7 +30,7 @@ export default function ContactsSidebar({
           variant="ghost"
           size="icon"
           className="md:hidden"
-          onClick={() => navigate('/home')}
+          onClick={() => navigate("/feed")}
         >
           <ArrowLeft className="w-5 h-5 text-emerald-600" />
         </Button>

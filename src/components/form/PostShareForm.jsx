@@ -5,7 +5,7 @@ function PostShareForm({ postId }) {
   const shareText = "Check out this post";
 
   const shareUrl = React.useMemo(() => {
-    const url = new URL("/home", window.location.origin);
+    const url = new URL("/feed", window.location.origin);
 
     if (postId) {
       url.searchParams.set("postId", postId);

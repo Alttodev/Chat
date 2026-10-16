@@ -68,7 +68,7 @@ const LoginForm = () => {
             userName: resp?.profile?.userName || res?.user?.userName || "there",
           }),
         );
-        navigate("/home");
+        navigate("/feed");
       } else {
         setProfileId(null);
         navigate("/profile/create");

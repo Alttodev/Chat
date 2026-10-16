@@ -210,8 +210,10 @@ export function CenterFeed() {
 
   if (isLoading) {
     return (
-      <div className="min-h-90 flex items-center justify-center">
-        <Spinner className="text-emerald-600" size={44} />
+      <div className="mx-auto w-full max-w-3xl space-y-4 px-4 py-6">
+        <div className="flex min-h-90 items-center justify-center">
+          <Spinner className="text-emerald-600" size={44} />
+        </div>
       </div>
     );
   }

@@ -118,6 +118,7 @@ export function StatusUserStrip({ className, user }) {
               openStatus({
                 status: userStatus,
                 user,
+                hideMenu: true,
               });
             }}
           />

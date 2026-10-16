@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, SearchX } from "lucide-react";
+import { Newspaper, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
@@ -32,9 +32,9 @@ export default function NotFound() {
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild className="h-12 rounded-full px-6 shadow-lg">
-              <Link to="/home">
-                <Home className="mr-2 h-4 w-4" />
-                Back to Home
+              <Link to="/feed">
+                <Newspaper className="mr-2 h-4 w-4" />
+                Back to Feed
               </Link>
             </Button>
           </div>
@@ -42,7 +42,7 @@ export default function NotFound() {
           <div className="mt-10 grid gap-3 text-left sm:grid-cols-3">
             {[
               {
-                title: "Home",
+                title: "Feed",
                 desc: "Return to your feed and pick up where you left off.",
               },
               {

@@ -119,7 +119,7 @@ function NotificationPage() {
           ? postOwnerId?.toString?.() === profileId?.toString?.()
             ? `/profile?postId=${notification?.postId}&commentId=${notification?.commentId}`
             : `/users/${postOwnerId}?postId=${notification?.postId}&commentId=${notification?.commentId}`
-          : `/home?postId=${notification?.postId}&commentId=${notification?.commentId}`;
+          : `/feed?postId=${notification?.postId}&commentId=${notification?.commentId}`;
       }
 
       try {

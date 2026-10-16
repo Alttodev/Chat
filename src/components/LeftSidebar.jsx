@@ -1,5 +1,5 @@
 import {
-  Home,
+  Newspaper,
   Users,
   Settings,
   User,
@@ -15,7 +15,7 @@ export function LeftSidebar() {
   const location = useLocation();
 
   const menuItems = [
-    { icon: Home, label: "Home", path: "/home" },
+    { icon: Newspaper, label: "Feed", path: "/feed" },
     { icon: User, label: "Profile", path: "/profile" },
     { icon: PlaySquare, label: "Reels", path: "/reels" },
     { icon: Radio, label: "Live", path: "/live" },
@@ -36,8 +36,7 @@ export function LeftSidebar() {
         <nav className="space-y-1">
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
-         
-           
+
             return (
               <Link key={item.label} to={item.path}>
                 <Button
@@ -50,7 +49,6 @@ export function LeftSidebar() {
                 >
                   <span className="relative inline-flex items-center justify-center">
                     <item.icon className="w-5 h-5" />
-                   
                   </span>
                   {item.label}
                 </Button>

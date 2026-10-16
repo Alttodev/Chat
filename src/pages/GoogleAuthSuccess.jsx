@@ -52,7 +52,7 @@ const GoogleAuthSuccess = () => {
             }),
           );
           toastSuccess("Logged in with Google");
-          navigate("/home", { replace: true });
+          navigate("/feed", { replace: true });
         } else {
           setProfileId(null);
           navigate("/profile/create", { replace: true });

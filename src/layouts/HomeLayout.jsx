@@ -15,7 +15,7 @@ function HomeLayout() {
 
   const isReels = pathname === "/reels";
   const isMessages = pathname === "/messages";
-  const isHome = pathname === "/home";
+  const isFeed = pathname === "/feed";
   const isLive = pathname === "/live";
   const isLiveViewer = pathname.startsWith("/live/");
 
@@ -45,7 +45,7 @@ function HomeLayout() {
               ? "pt-0 pb-0 py-0 mt-0 sm:pt-16"
               : isReels
                 ? "px-0  pt-0 pb-0 sm:pt-20"
-                : isHome
+                : isFeed
                   ? "pt-16"
                   : isLive || isLiveViewer
                     ? "pt-20 pb-20"

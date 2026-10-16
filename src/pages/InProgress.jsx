@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Construction, Home } from "lucide-react";
+import { ArrowLeft, Construction, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function InProgress() {
@@ -30,9 +30,9 @@ export default function InProgress() {
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild className="h-12 rounded-full px-6 shadow-lg">
-              <Link to="/home">
-                <Home className="mr-2 h-4 w-4" />
-                Back to Home
+              <Link to="/feed">
+                <Newspaper className="mr-2 h-4 w-4" />
+                Back to Feed
               </Link>
             </Button>
 

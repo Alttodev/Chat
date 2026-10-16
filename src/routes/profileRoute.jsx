@@ -11,7 +11,7 @@ const ProfileRoute = () => {
 
   // already has profile -> redirect home
   if (profileId) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/feed" replace />;
   }
 
   // allow create profile page

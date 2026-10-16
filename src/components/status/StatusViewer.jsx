@@ -83,6 +83,7 @@ export function StatusViewer() {
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
   const statusId = status?.status?._id || status?._id;
   const statusUserId = user?._id || user?.id;
+  const hideMenu = status?.hideMenu;
 
   const isOwner = user?._id === currentUserId || user?.id === currentUserId;
 
@@ -120,19 +121,19 @@ export function StatusViewer() {
     bgAudioRef.current = new Audio(backgroundSong.src);
     bgAudioRef.current.loop = true;
     bgAudioRef.current.volume = 0.6;
-    bgAudioRef.current.play().catch(() => {});
 
     return () => stopAudio();
   }, [isOpen, hasSong, backgroundSong?.src]);
 
   useEffect(() => {
     if (!bgAudioRef.current) return;
+
     if (isPaused) {
       bgAudioRef.current.pause();
     } else {
       bgAudioRef.current.play().catch(() => {});
     }
-  }, [isPaused]);
+  }, [isPaused, isOpen, hasSong, backgroundSong?.src]);
 
   useEffect(() => () => stopAudio(), []);
 
@@ -306,35 +307,37 @@ export function StatusViewer() {
           </div>
 
           {/* menu */}
-          <div className="relative flex items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex h-10 w-10 cursor-pointer items-center justify-center">
-                  <MoreVertical className="h-5 w-5" />
-                </button>
-              </DropdownMenuTrigger>
+          {!hideMenu && (
+            <div className="relative flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex h-10 w-10 cursor-pointer items-center justify-center">
+                    <MoreVertical className="h-5 w-5" />
+                  </button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-26">
-                {isOwner && (
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                )}
-                {!isOwner && (
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    disabled={isHiding}
-                    onClick={handleHide}
-                  >
-                    Hide
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <DropdownMenuContent align="end" className="w-26">
+                  {isOwner && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={handleDelete}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  )}
+                  {!isOwner && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      disabled={isHiding}
+                      onClick={handleHide}
+                    >
+                      Hide
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </header>
 
         {/* ── Song ticker row ── */}

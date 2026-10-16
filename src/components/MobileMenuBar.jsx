@@ -1,4 +1,4 @@
-import { Home, PlaySquare, Plus, Send, Users } from "lucide-react";
+import { Newspaper, PlaySquare, Plus, Send, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useZustandFormPopup } from "@/lib/zustand";
@@ -6,12 +6,12 @@ import { PostFormDialog } from "./modals/postFormModal";
 
 export function MobileMenuBar() {
   const location = useLocation();
-  const {  openFormModal } = useZustandFormPopup();
+  const { openFormModal } = useZustandFormPopup();
   const isReels = location.pathname === "/reels";
   const isMessage = location.pathname === "/messages";
 
   const menuItems = [
-    { icon: Home, label: "Home", path: "/home" },
+    { icon: Newspaper, label: "Feed", path: "/feed" },
     { icon: PlaySquare, label: "Reels", path: "/reels" },
     null,
     { icon: Users, label: "Friends", path: "/friends" },
@@ -31,7 +31,7 @@ export function MobileMenuBar() {
                 return (
                   <div key="center" className="relative flex justify-center">
                     <Button
-                      onClick={ openFormModal}
+                      onClick={openFormModal}
                       variant="ghost"
                       className="h-13 w-13 p-0 bg-transparent hover:bg-transparent"
                     >

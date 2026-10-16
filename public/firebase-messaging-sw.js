@@ -38,7 +38,7 @@ self.addEventListener("notificationclick", function (event) {
   let url = new URL("/messages", self.location.origin).href;
 
   if (data.type === "comment-mention") {
-    url = new URL("/home", self.location.origin).href;
+    url = new URL("/feed", self.location.origin).href;
   }
 
   event.waitUntil(

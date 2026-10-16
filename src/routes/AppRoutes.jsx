@@ -35,12 +35,14 @@ import GoodbyePage from "@/pages/GoodbyePage";
 import LandingPage from "@/pages/LandingPage";
 import Live from "@/pages/Live";
 import LiveViewerPage from "@/pages/LiveViewerPage";
+import { NetworkStatus } from "@/components/NetworkStatus";
 
 function AppRoutes() {
   return (
     <div>
       <Router>
         <ScrollToTop />
+        <NetworkStatus />
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/" element={<LandingPage />} />
@@ -62,7 +64,7 @@ function AppRoutes() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route element={<HomeLayout />}>
-              <Route path="/home" element={<CenterFeed />} />
+              <Route path="/feed" element={<CenterFeed />} />
               <Route path="/notification" element={<NotificationPage />} />
               <Route path="/friends" element={<Friends />} />
               <Route path="/friends/:id" element={<UsersFriendsList />} />

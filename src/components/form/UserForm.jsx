@@ -71,7 +71,7 @@ const ProfileCreateForm = () => {
         );
       }
 
-      navigate("/home");
+      navigate("/feed");
     } catch (error) {
       toastError(error?.response?.data?.message || "Something went wrong");
     }

@@ -242,7 +242,7 @@ export default function LandingPage() {
         style={{ background: `${COLOR.bg}CC` }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/home" className="flex items-center gap-2">
+          <Link to="/feed" className="flex items-center gap-2">
             <img src={logo} alt="Clix Logo" className="w-8 h-8" />
             <span className="text-xl md:text-2xl font-bold text-emerald-600">
               {APP_NAME}
@@ -473,7 +473,7 @@ export default function LandingPage() {
           className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm"
           style={{ color: COLOR.dim }}
         >
-          <Link to="/home" className="flex items-center gap-2">
+          <Link to="/feed" className="flex items-center gap-2">
             <span className="text-md md:text-xl font-bold text-emerald-600">
               {APP_NAME}
             </span>

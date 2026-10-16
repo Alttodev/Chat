@@ -13,7 +13,7 @@ const PublicRoute = () => {
   ];
 
   if (token && profileId && !allowedPublicPaths.includes(location.pathname)) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/feed" replace />;
   }
 
   // if (token && !profileId && location.pathname !== "/profile/create") {

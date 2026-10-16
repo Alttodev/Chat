@@ -25,7 +25,6 @@ import { ImageViewer } from "@/components/modals/imageViewer";
 import { useScrollToPost } from "@/hooks/useScrollToPost";
 import { useMarkProfileViewSeen } from "@/hooks/profileViewHooks";
 import StatusUserStrip from "@/components/status/StatusUserStrip";
-import StatusViewer from "@/components/status/StatusViewer";
 import PostContent from "@/components/Post/PostContent";
 import { UserPostGridView } from "@/components/Post/UserPostGridView";
 import { useUserPostStore } from "@/lib/zustand";
@@ -58,7 +57,6 @@ const UsersInfo = () => {
 
   const reqStatus = requestStatus?.request?.status;
   const friends = requestStatus?.request?.isFriends;
-
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useUserPostList(id);
@@ -315,8 +313,6 @@ const UsersInfo = () => {
           </p>
         </div>
       )}
-
-      <StatusViewer />
     </div>
   );
 };

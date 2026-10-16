@@ -22,7 +22,6 @@ import { BirthdayBadge } from "./birthday/BirthdayBadge";
 import { BirthdayCelebration } from "./birthday/BirthdayCelebration";
 import { useNotificationCounts } from "@/hooks/notificationHooks";
 
-
 export function SocialHeader() {
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -66,7 +65,7 @@ export function SocialHeader() {
         {/* Left section - Logo + Search */}
         <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
           {/* Logo */}
-          <Link to="/home" className="flex items-center gap-2">
+          <Link to="/feed" className="flex items-center gap-2">
             <img src={logo} alt="Clix Logo" className="w-8 h-8" />
             <span className=" text-xl md:text-2xl font-bold text-emerald-600">
               Clix
@@ -178,7 +177,6 @@ export function SocialHeader() {
                     <Radio className="w-4 h-4" />
                     <span>Live</span>
                   </div>
-                 
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>
