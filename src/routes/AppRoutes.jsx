@@ -73,6 +73,7 @@ function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/live" element={<Live />} />
+              <Route path="/events" element={<InProgress />} />
               <Route path="/reels" element={<Reels />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/settings" element={<SettingsComponent />} />

@@ -1,4 +1,12 @@
-import { Search, User, Settings, Crown, Bell, Radio } from "lucide-react";
+import {
+  Search,
+  User,
+  Settings,
+  Crown,
+  Bell,
+  Radio,
+  CalendarDays,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserDetail } from "@/hooks/authHooks";
@@ -177,6 +185,11 @@ export function SocialHeader() {
                     <Radio className="w-4 h-4" />
                     <span>Live</span>
                   </div>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => navigate("/events")}>
+                  <CalendarDays className="w-4 h-4" />
+                  Events
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>
