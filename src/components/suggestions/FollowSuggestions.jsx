@@ -9,11 +9,7 @@ import {
 import { useRequestList, useRecommendedConnections } from "@/hooks/postHooks";
 import { useUserFollowStatuses } from "@/hooks/useUserFollowStatuses";
 import { cn } from "@/lib/utils";
-import {
-  ArrowRight,
-  MoreHorizontal,
-  UserPlus,
-} from "lucide-react";
+import {  MoreHorizontal, UserPlus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -99,10 +95,7 @@ export function FollowSuggestions({ compact = false, className }) {
         .filter(Boolean),
     [visibleSuggestions],
   );
-  const {
-    statuses,
-    setStatus,
-  } = useUserFollowStatuses(userIds);
+  const { statuses, setStatus } = useUserFollowStatuses(userIds);
 
   const isRequestLoading = isRecommendationsLoading || isRequestListLoading;
 
@@ -216,17 +209,7 @@ export function FollowSuggestions({ compact = false, className }) {
     hover:bg-transparent
     cursor-pointer
   "
-              >
-                <ArrowRight
-                  className="
-      h-4 w-4
-      text-emerald-700
-      transition-transform
-      duration-300
-      group-hover:translate-x-1
-    "
-                />
-              </Button>
+              ></Button>
             </CardTitle>
             <CardDescription className="text-[11px] leading-4 sm:text-sm">
               A clean way to discover more people in your network.
