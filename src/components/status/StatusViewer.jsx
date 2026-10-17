@@ -81,6 +81,7 @@ export function StatusViewer() {
 
   const userName = user?.userName || "Status";
   const seenBy = status?.status?.seenBy || status?.seenBy || [];
+  
   const statusId = status?.status?._id || status?._id;
   const statusUserId = user?._id || user?.id;
   const hideMenu = status?.hideMenu;

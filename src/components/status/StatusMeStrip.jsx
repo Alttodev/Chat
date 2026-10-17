@@ -84,11 +84,13 @@ export function StatusMeStrip({ className, user }) {
   const { data: myStatusData } = useMyStatus();
 
   const userStatus = myStatusData?.status;
+ 
 
   const { openStatus } = useStatusViewerStore();
   const { open } = useImageModalStore();
 
   const hasMyStatus = Boolean(userStatus?.image);
+   
 
   return (
     <section className={cn("relative z-40 mx-auto w-auto", className)}>

@@ -49,6 +49,7 @@ const UsersInfo = () => {
 
   const { data: count } = useUserInfoCount(id);
   const countData = useMemo(() => count, [count]);
+ 
 
   const { data: requestStatus } = useRequestListInfo({
     fromId: profileId,
