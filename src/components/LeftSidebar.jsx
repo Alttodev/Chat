@@ -22,7 +22,7 @@ export function LeftSidebar() {
     { icon: Radio, label: "Live", path: "/live" },
     { icon: MessagesSquare, label: "Community", path: "/community" },
     { icon: UsersRound, label: "Friends", path: "/friends" },
-    { icon: Send, label: "Chat", path: "/messages" },
+    { icon: Send, label: "Chats", path: "/messages" },
     { icon: Crown, label: "Premium", path: "/subscription" },
     { icon: Settings, label: "Settings", path: "/settings" },
     // { icon: Info, label: "About Us", path: "/about" },
