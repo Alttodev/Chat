@@ -1,4 +1,4 @@
-import { Newspaper, PlaySquare, Plus, Send, Users } from "lucide-react";
+import { Newspaper, PlaySquare, Plus, Send, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useZustandFormPopup } from "@/lib/zustand";
@@ -14,7 +14,7 @@ export function MobileMenuBar() {
     { icon: Newspaper, label: "Feed", path: "/feed" },
     { icon: PlaySquare, label: "Reels", path: "/reels" },
     null,
-    { icon: Users, label: "Friends", path: "/friends" },
+    { icon: UsersRound, label: "Friends", path: "/friends" },
     { icon: Send, label: "Message", path: "/messages" },
   ];
 

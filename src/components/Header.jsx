@@ -5,7 +5,7 @@ import {
   Crown,
   Bell,
   Radio,
-  CalendarDays,
+  MessagesSquare,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -187,9 +187,9 @@ export function SocialHeader() {
                   </div>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => navigate("/events")}>
-                  <CalendarDays className="w-4 h-4" />
-                  Events
+                <DropdownMenuItem onClick={() => navigate("/community")}>
+                  <MessagesSquare className="w-4 h-4" />
+                  Community
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>

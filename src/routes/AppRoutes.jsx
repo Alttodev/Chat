@@ -7,7 +7,12 @@ import ProfileCreateForm from "@/components/form/UserForm";
 import HomeLayout from "@/layouts/HomeLayout";
 import Friends from "@/pages/Friends";
 import Message from "@/pages/Message";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import UsersInfo from "@/pages/UsersInfo";
@@ -73,7 +78,11 @@ function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/live" element={<Live />} />
-              <Route path="/events" element={<InProgress />} />
+              <Route path="/community" element={<InProgress community />} />
+              <Route
+                path="/events"
+                element={<Navigate to="/community" replace />}
+              />
               <Route path="/reels" element={<Reels />} />
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/settings" element={<SettingsComponent />} />

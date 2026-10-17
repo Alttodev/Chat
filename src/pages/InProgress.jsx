@@ -1,9 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Construction, Newspaper } from "lucide-react";
+import {
+  ArrowLeft,
+  Construction,
+  MessagesSquare,
+  Newspaper,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function InProgress() {
+export default function InProgress({ community = false }) {
   const navigate = useNavigate();
+  const PageIcon = community ? MessagesSquare : Construction;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.16),_transparent_28%),linear-gradient(180deg,_#F8FAFF_0%,_#EEF2FF_100%)]">
@@ -16,16 +22,17 @@ export default function InProgress() {
       <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
         <div className="w-full max-w-2xl rounded-3xl border border-white/70 bg-white/70 p-8 text-center shadow-[0_20px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl md:p-12">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-green-500 to-teal-400 text-white shadow-lg">
-            <Construction className="h-8 w-8" />
+            <PageIcon className="h-8 w-8" />
           </div>
 
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">
-            Coming Soon
+            {community ? "Community" : "Coming Soon"}
           </p>
 
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 md:text-lg">
-            The page you&apos;re looking for is currently being developed.
-            Please check back later.
+            {community
+              ? "Community spaces are coming soon. Find your people and connect around what matters to you."
+              : "The page you&apos;re looking for is currently being developed. Please check back later."}
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
