@@ -22,11 +22,11 @@ export function NetworkStatus() {
   if (isOnline) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-20 z-[100] flex justify-center px-4">
       <div
         role="status"
         aria-live="polite"
-        className="flex w-full max-w-md items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+        className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 shadow-lg dark:border-amber-800 dark:bg-amber-950/90 dark:text-amber-100"
       >
         <WifiOff className="h-5 w-5 shrink-0" aria-hidden="true" />
         <div>
