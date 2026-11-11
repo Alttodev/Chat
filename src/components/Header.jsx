@@ -5,7 +5,7 @@ import {
   Crown,
   Bell,
   Radio,
-  MessagesSquare,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -187,9 +187,9 @@ export function SocialHeader() {
                   </div>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => navigate("/community")}>
-                  <MessagesSquare className="w-4 h-4" />
-                  Community
+                <DropdownMenuItem onClick={() => navigate("/jobs")}>
+                  <BriefcaseBusiness className="w-4 h-4" />
+                  Jobs
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => navigate("/subscription")}>

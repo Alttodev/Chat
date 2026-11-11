@@ -1,6 +1,5 @@
 import {
   Newspaper,
-  MessagesSquare,
   UsersRound,
   Settings,
   User,
@@ -8,6 +7,7 @@ import {
   Send,
   PlaySquare,
   Radio,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
@@ -20,7 +20,7 @@ export function LeftSidebar() {
     { icon: User, label: "Profile", path: "/profile" },
     { icon: PlaySquare, label: "Reels", path: "/reels" },
     { icon: Radio, label: "Live", path: "/live" },
-    { icon: MessagesSquare, label: "Community", path: "/community" },
+    { icon: BriefcaseBusiness, label: "Jobs", path: "/jobs" },
     { icon: UsersRound, label: "Friends", path: "/friends" },
     { icon: Send, label: "Chats", path: "/messages" },
     { icon: Crown, label: "Premium", path: "/subscription" },

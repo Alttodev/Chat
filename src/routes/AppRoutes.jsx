@@ -78,10 +78,10 @@ function AppRoutes() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/messages" element={<Message />} />
               <Route path="/live" element={<Live />} />
-              <Route path="/community" element={<InProgress community />} />
+              <Route path="/jobs" element={<InProgress jobs />} />
               <Route
                 path="/events"
-                element={<Navigate to="/community" replace />}
+                element={<Navigate to="/jobs" replace />}
               />
               <Route path="/reels" element={<Reels />} />
               <Route path="/subscription" element={<Subscription />} />

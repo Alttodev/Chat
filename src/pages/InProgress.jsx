@@ -1,15 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
+  BriefcaseBusiness,
   Construction,
-  MessagesSquare,
   Newspaper,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function InProgress({ community = false }) {
+export default function InProgress({ jobs = false }) {
   const navigate = useNavigate();
-  const PageIcon = community ? MessagesSquare : Construction;
+  const PageIcon = jobs ? BriefcaseBusiness : Construction;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(56,189,248,0.16),_transparent_28%),linear-gradient(180deg,_#F8FAFF_0%,_#EEF2FF_100%)]">
@@ -26,12 +26,12 @@ export default function InProgress({ community = false }) {
           </div>
 
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">
-            {community ? "Community" : "Coming Soon"}
+            {jobs ? "Jobs" : "Coming Soon"}
           </p>
 
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 md:text-lg">
-            {community
-              ? "Community spaces are coming soon. Find your people and connect around what matters to you."
+            {jobs
+              ? "Discover career opportunities and find your next role. Jobs are coming soon."
               : "The page you&apos;re looking for is currently being developed. Please check back later."}
           </p>
 
